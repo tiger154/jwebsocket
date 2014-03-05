@@ -45,35 +45,67 @@ public class ItemStorageQuota implements IQuotaStorage {
     private IItemCollection mCollectionQuotaInstance = null;
     private static final Logger mLog = Logging.getLogger();
 
-    public void setCollectionQuotaName(String mCollectionQuotaName) {
+	/**
+	 *
+	 * @param mCollectionQuotaName
+	 */
+	public void setCollectionQuotaName(String mCollectionQuotaName) {
         this.mCollectionQuotaName = mCollectionQuotaName;
     }
-    
-    public void setRootUser(String mRootUser) {
+
+	/**
+	 *
+	 * @param mRootUser
+	 */
+	public void setRootUser(String mRootUser) {
         this.mRootUser = mRootUser;
     }
 
-    public void setCollectionQuotaInstanceName(String mCollectionQuotaInstanceName) {
+	/**
+	 *
+	 * @param mCollectionQuotaInstanceName
+	 */
+	public void setCollectionQuotaInstanceName(String mCollectionQuotaInstanceName) {
         this.mCollectionQuotaInstanceName = mCollectionQuotaInstanceName;
     }
 
-    public void setQuotaDefinition(IItemDefinition mQuotaDefinition) {
+	/**
+	 *
+	 * @param mQuotaDefinition
+	 */
+	public void setQuotaDefinition(IItemDefinition mQuotaDefinition) {
         this.mQuotaDefinition = mQuotaDefinition;
     }
 
-    public void setquotaInstanceDefinition(IItemDefinition mquotaInstanceDefinition) {
+	/**
+	 *
+	 * @param mquotaInstanceDefinition
+	 */
+	public void setquotaInstanceDefinition(IItemDefinition mquotaInstanceDefinition) {
         this.mquotaInstanceDefinition = mquotaInstanceDefinition;
     }
 
-    public void setCollectionAccessPassword(String mCollectionAccessPassword) {
+	/**
+	 *
+	 * @param mCollectionAccessPassword
+	 */
+	public void setCollectionAccessPassword(String mCollectionAccessPassword) {
         this.mCollectionAccessPassword = mCollectionAccessPassword;
     }
 
-    public void setCollectionSecretPassword(String mCollectionSecretPassword) {
+	/**
+	 *
+	 * @param mCollectionSecretPassword
+	 */
+	public void setCollectionSecretPassword(String mCollectionSecretPassword) {
         this.mCollectionSecretPassword = mCollectionSecretPassword;
     }
 
-    @Override
+	/**
+	 *
+	 * @throws Exception
+	 */
+	@Override
     public void initialize() throws Exception {
         
         // getting the collection provider
@@ -124,7 +156,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         
     }
 
-    @Override
+	/**
+	 *
+	 * @param aQuota
+	 * @return
+	 */
+	@Override
     public boolean save(IQuotaSingleInstance aQuota) {
         try {
             ItemCollectionUtils.saveItem(mRootUser, mCollectionQuota, new MapAppender()
@@ -143,7 +180,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         return true;
     }
 
-    @Override
+	/**
+	 *
+	 * @param aQuota
+	 * @return
+	 */
+	@Override
     public boolean save(QuotaChildSI aQuota) {
         try {
             ItemCollectionUtils.saveItem(mRootUser, mCollectionQuotaInstance, new MapAppender()
@@ -158,7 +200,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         return true;
     }
 
-    @Override
+	/**
+	 *
+	 * @param aUuid
+	 * @param aInstance
+	 */
+	@Override
     public void remove(String aUuid, String aInstance) {
 
         try {
@@ -186,7 +233,11 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @param aQuotaChild
+	 */
+	@Override
     public void remove(QuotaChildSI aQuotaChild) {
 
         try {
@@ -205,7 +256,13 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @param aUuid
+	 * @param aValue
+	 * @return
+	 */
+	@Override
     public long update(String aUuid, Long aValue) {
         
         try {
@@ -226,7 +283,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         return aValue;
     }
 
-    @Override
+	/**
+	 *
+	 * @param aQuotaChild
+	 * @return
+	 */
+	@Override
     public long update(QuotaChildSI aQuotaChild) {
 
         try {
@@ -248,7 +310,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         return aQuotaChild.getValue();
     }
 
-    @Override
+	/**
+	 *
+	 * @param aUuid
+	 * @return
+	 */
+	@Override
     public boolean quotaExist(String aUuid) {
 
         try {
@@ -265,7 +332,15 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @param aNameSpace
+	 * @param aQuotaIdentifier
+	 * @param aInstance
+	 * @param aActions
+	 * @return
+	 */
+	@Override
     public boolean quotaExist(String aNameSpace, String aQuotaIdentifier,
             String aInstance, String aActions) {
 
@@ -303,12 +378,22 @@ public class ItemStorageQuota implements IQuotaStorage {
 
     }
 
-    @Override
+	/**
+	 *
+	 * @param aUuid
+	 * @return
+	 */
+	@Override
     public String getActions(String aUuid) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
+	/**
+	 *
+	 * @param aQuotaType
+	 * @return
+	 */
+	@Override
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -324,7 +409,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @param aIdentifier
+	 * @return
+	 */
+	@Override
     public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -341,7 +431,14 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @param aIdentifier
+	 * @param aNameSpace
+	 * @param aInstanceType
+	 * @return
+	 */
+	@Override
     public List<IQuotaSingleInstance> getQuotasByIdentifierNSInstanceType(String aIdentifier, String aNameSpace, String aInstanceType) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -365,7 +462,14 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @param aQuotaType
+	 * @param aNs
+	 * @param aInstance
+	 * @return
+	 */
+	@Override
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -388,7 +492,17 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @param aQuotaIdentifier
+	 * @param aNs
+	 * @param aInstance
+	 * @param aInstanceType
+	 * @param aActions
+	 * @return
+	 * @throws ExceptionQuotaNotFound
+	 */
+	@Override
     public String getUuid(String aQuotaIdentifier, String aNs, String aInstance,
             String aInstanceType,String aActions ) throws ExceptionQuotaNotFound {
 
@@ -428,7 +542,13 @@ public class ItemStorageQuota implements IQuotaStorage {
         return lUuid;
     }
 
-    @Override
+	/**
+	 *
+	 * @param aQuotaType
+	 * @param aInstance
+	 * @return
+	 */
+	@Override
     public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType, String aInstance) {
         FastList<IQuotaSingleInstance> lResult = null;
         try {
@@ -449,7 +569,13 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @param aQuotaType
+	 * @param aNs
+	 * @return
+	 */
+	@Override
     public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -471,7 +597,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @param aUuid
+	 * @return
+	 */
+	@Override
     public IQuotaSingleInstance getQuotaByUuid(String aUuid) {
 
         IQuotaSingleInstance lSingle = null;
@@ -488,12 +619,23 @@ public class ItemStorageQuota implements IQuotaStorage {
         return lSingle;
     }
 
-    @Override
+	/**
+	 *
+	 * @param aUuid
+	 * @param aInstance
+	 * @return
+	 */
+	@Override
     public Map<String, Object> getRawQuota(String aUuid, String aInstance) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
+	/**
+	 *
+	 * @param aUuid
+	 * @param aResetDate
+	 */
+	@Override
     public void updateIntervalResetDate(String aUuid, String aResetDate) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

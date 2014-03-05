@@ -2,7 +2,7 @@
 // jWebSocket - MBeanEnabledExporter (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import org.springframework.jmx.export.MBeanExportException;
 import org.springframework.jmx.export.MBeanExporter;
 
 /**
- * Class that redefines certain features of Spring MBeanExporter taking into 
+ * Class that redefines certain features of Spring MBeanExporter taking into
  * account the characteristics of the module.
- * 
+ *
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class MBeanEnabledExporter extends MBeanExporter {
@@ -67,14 +67,14 @@ public class MBeanEnabledExporter extends MBeanExporter {
 	/**
 	 * Method for creating an ModelMBeanExtension object inserting the object to
 	 * be exported and its metadata.
-	 * 
+	 *
 	 * @param managedResource
 	 * @param beanKey
 	 * @return
 	 */
 	@Override
-	protected ModelMBean createAndConfigureMBean(Object managedResource, 
-		String beanKey) {
+	protected ModelMBean createAndConfigureMBean(Object managedResource,
+			String beanKey) {
 		try {
 			JMXDefinition lDefinition = mDefinitions.get(beanKey);
 			if (lDefinition != null) {
@@ -85,7 +85,7 @@ public class MBeanEnabledExporter extends MBeanExporter {
 			}
 		} catch (Exception ex) {
 			throw new MBeanExportException("Could not create ModelMBean for "
-					+ "managed resource [" + managedResource + "] with key '" 
+					+ "managed resource [" + managedResource + "] with key '"
 					+ beanKey + "'", ex);
 		}
 		return null;

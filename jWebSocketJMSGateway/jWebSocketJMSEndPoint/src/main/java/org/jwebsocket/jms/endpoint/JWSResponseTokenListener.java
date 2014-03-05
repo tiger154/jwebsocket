@@ -1,8 +1,8 @@
-//  ---------------------------------------------------------------------------
-//  jWebSocket - JWSResponseTokenListener (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	jWebSocket - JWSResponseTokenListener (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -28,13 +28,23 @@ import org.jwebsocket.token.Token;
  */
 public class JWSResponseTokenListener implements IJMSResponseListener {
 
+	/**
+	 *
+	 */
 	public static final String RESP_TIME_FIELD = "$respTimeElapsed";
 	private String mResponseTimeField = null;
 	private Long mRequestTime = null;
 
+	/**
+	 *
+	 */
 	public JWSResponseTokenListener() {
 	}
 
+	/**
+	 *
+	 * @param aResponseTimeField
+	 */
 	public JWSResponseTokenListener(String aResponseTimeField) {
 		mResponseTimeField = aResponseTimeField;
 		mRequestTime = System.currentTimeMillis();

@@ -244,6 +244,8 @@ xcopy %conf%LoggingPlugIn\*.xml %tempdir%conf\LoggingPlugIn\ /s /i /y
 xcopy %conf%MailPlugIn\*.xml %tempdir%conf\MailPlugIn\ /s /i /y
 xcopy %conf%QuotaPlugIn\*.xml %tempdir%conf\QuotaPlugIn\ /s /i /y
 xcopy %conf%ReportingPlugIn\*.xml %tempdir%conf\ReportingPlugIn\ /s /i /y
+xcopy %conf%ReportingPlugIn\reports\*.jrxml %tempdir%conf\ReportingPlugIn\reports /s /i /y
+xcopy %conf%ReportingPlugIn\reports\*.png %tempdir%conf\ReportingPlugIn\reports /s /i /y
 xcopy %conf%Resources\*.xml %tempdir%conf\Resources\ /s /i /y
 xcopy %conf%RTCPlugIn\*.xml %tempdir%conf\RTCPlugIn\ /s /i /y
 xcopy %conf%ScriptingPlugIn\*.xml %tempdir%conf\ScriptingPlugIn\ /s /i /y

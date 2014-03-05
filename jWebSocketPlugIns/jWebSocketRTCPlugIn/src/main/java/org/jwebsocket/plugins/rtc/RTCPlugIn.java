@@ -2,7 +2,7 @@
 //	jWebSocket RTC Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -76,12 +77,11 @@ public class RTCPlugIn extends TokenPlugIn {
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.rtc.settings");
 
-
 				if (mLog.isInfoEnabled()) {
 					mLog.info("RTC plug-in successfully instantiated.");
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (BeansException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating RTC plug-in"));
 			throw lEx;
 		}

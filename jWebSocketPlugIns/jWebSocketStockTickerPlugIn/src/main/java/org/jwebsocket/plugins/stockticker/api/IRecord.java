@@ -12,35 +12,99 @@ import java.util.List;
  */
 public interface IRecord {
 
-    Integer getId();
+	/**
+	 *
+	 * @return
+	 */
+	Integer getId();
 
-    void setId(Integer mId);
+	/**
+	 *
+	 * @param mId
+	 */
+	void setId(Integer mId);
 
-    String getName();
+	/**
+	 *
+	 * @return
+	 */
+	String getName();
 
-    void setName(String aName);
+	/**
+	 *
+	 * @param aName
+	 */
+	void setName(String aName);
 
-    Double getBid();
+	/**
+	 *
+	 * @return
+	 */
+	Double getBid();
 
-    void setBid(Double aBid);
+	/**
+	 *
+	 * @param aBid
+	 */
+	void setBid(Double aBid);
 
-    Double getPrice();
+	/**
+	 *
+	 * @return
+	 */
+	Double getPrice();
 
-    void setPrice(Double aPrice);
+	/**
+	 *
+	 * @param aPrice
+	 */
+	void setPrice(Double aPrice);
 
-    Double getAsk();
+	/**
+	 *
+	 * @return
+	 */
+	Double getAsk();
 
-    void setAsk(Double aAsk);
+	/**
+	 *
+	 * @param aAsk
+	 */
+	void setAsk(Double aAsk);
 
-    Double getChng();
+	/**
+	 *
+	 * @return
+	 */
+	Double getChng();
 
-    void setChng(Double aChng);
+	/**
+	 *
+	 * @param aChng
+	 */
+	void setChng(Double aChng);
 
-    Integer getTrend();
+	/**
+	 *
+	 * @return
+	 */
+	Integer getTrend();
 
-    void setTrend(Integer aTrend);
-    
-    List<Double> getHistoy();
-    
-    void setHistoy(List<Double> mHistoy) ;
+	/**
+	 *
+	 * @param aTrend
+	 */
+	void setTrend(Integer aTrend);
+
+	/**
+	 *
+	 * @return
+	 */
+	List<Double> getHistoy();
+
+	/**
+	 *
+	 * @param mHistoy
+	 */
+	void setHistoy(List<Double> mHistoy);
 }

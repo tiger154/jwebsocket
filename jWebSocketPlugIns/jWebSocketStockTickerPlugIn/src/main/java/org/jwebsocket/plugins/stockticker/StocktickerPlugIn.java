@@ -37,11 +37,17 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 	private boolean mThreadStarted = false;
 	private List<WebSocketConnector> mClients = new FastList<WebSocketConnector>();
 
-
+	/**
+	 *
+	 */
 	public StocktickerPlugIn() {
 		mService = new StocktickerService();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public List<WebSocketConnector> getClients() {
 		return mClients;
 	}
@@ -52,6 +58,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 		mStocktickerThread = new Thread(mService);
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(CreateUser aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing CreateUser event notification...");
@@ -68,6 +79,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(Login aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing Login event notification...");
@@ -82,6 +98,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(GetTickets aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing GetTickets event notification...");
@@ -98,6 +119,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 		aResponseEvent.getArgs().setList("data", mService.listRecords());
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(Buy aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing Buy event notification...");
@@ -113,6 +139,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(ReadBuy aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing ReadBuy event notification...");
@@ -120,6 +151,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 		aResponseEvent.getArgs().setList("data", mService.readBuy((String) aEvent.getConnector().getVar("userlogin")));
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(Sell aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing Sell event notification...");
@@ -134,6 +170,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(Combobox aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing Combox event notification...");
@@ -141,6 +182,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 		aResponseEvent.getArgs().setList("data", (List<String>) mService.showComb((String) aEvent.getConnector().getVar("userlogin")));
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(Chart aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing Chart event notification...");
@@ -148,6 +194,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 		aResponseEvent.getArgs().setInteger("data", mService.chart((String) aEvent.getConnector().getVar("userlogin"), aEvent.getNamechart()));
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(Logout aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing Logout event notification...");
@@ -162,6 +213,11 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(EngineStopped aEvent, ResponseEvent aResponseEvent) {
 		mThreadStarted = false;
 		try {

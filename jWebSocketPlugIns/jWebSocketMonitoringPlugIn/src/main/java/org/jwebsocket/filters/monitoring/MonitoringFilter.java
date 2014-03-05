@@ -2,7 +2,7 @@
 //	jWebSocket - MonitoringFilter (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -63,18 +63,46 @@ public class MonitoringFilter extends TokenFilter {
 	private final static String DB_NAME = "db_charting";
 	private final static String DB_COL_PLUGINS_USAGE = "use_plugins";
 	private final static String DB_COL_EXCHANGES_USAGE = "exchanges_server";
+
+	/**
+	 *
+	 */
 	public static MemoryStorage<String, PlugInObjectInMemory> mPlugInsMemoryStorage;
 	private final static String TT_IN = "in";
 	private final static String TT_OUT = "out";
 	private static final String TT_REQUESTS = "requests";
 	private final static Integer TIME_TO_SAVE = 800; // Miliseconds required
 	private final static Integer TIME_TO_UPDATE_PLUGINS = 1000; // Seconds required
+
+	/**
+	 *
+	 */
 	public static Thread mThreadMemoryDataToMongoDB;
+
+	/**
+	 *
+	 */
 	public static boolean mIsMemoryDataToMongoDBRunning = true;
+
+	/**
+	 *
+	 */
 	public static Thread mThreadUpdatePlugIns;
+
+	/**
+	 *
+	 */
 	public static boolean mIsUpdatePlugInsRunning = true;
+
+	/**
+	 *
+	 */
 	public static String mCurrentHour = "h" + String.valueOf(Calendar.getInstance().get(Calendar.HOUR));
 	private static final SimpleDateFormat mFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+	/**
+	 *
+	 */
 	public PlugInObjectInMemory mCurrentPlugIn;
 
 	/**

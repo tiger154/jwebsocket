@@ -13,20 +13,20 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class Chart extends C2SEvent {
 
-    private String mNamechart;
+	private String mNamechart;
 
-    /**
-     * @return the mName
-     */
-    public String getNamechart() {
-        return mNamechart;
-    }
+	/**
+	 * @return the mName
+	 */
+	public String getNamechart() {
+		return mNamechart;
+	}
 
-    /**
-     * @param mName the mName to set
-     */
-    @ImportFromToken
-    public void setNamechart(String aName) {
-        this.mNamechart= aName;
-    }
+	/**
+	 * @param mName the mName to set
+	 */
+	@ImportFromToken
+	public void setNamechart(String aName) {
+		this.mNamechart = aName;
+	}
 }

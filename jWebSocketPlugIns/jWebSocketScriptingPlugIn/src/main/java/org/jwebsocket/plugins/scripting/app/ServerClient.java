@@ -2,7 +2,7 @@
 //	jWebSocket - ServerClient for Scripting Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -117,46 +117,86 @@ public class ServerClient {
 		}, 0, 50);
 	}
 
+	/**
+	 *
+	 * @param aScriptApp
+	 */
 	public ServerClient(BaseScriptApp aScriptApp) {
 		mClient = new InternalClient();
 		mScriptApp = aScriptApp;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getId() {
 		return mClient.getId();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getUsername() {
 		return mClient.getUsername();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public InternalConnector getConnector() {
 		return mClient.getConnector();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public boolean isConnected() {
 		return mClient.isConnected();
 	}
 
+	/**
+	 *
+	 */
 	public void open() {
 		if (!isConnected()) {
 			mQueuedOperations.add(new OpenOperation(mClient));
 		}
 	}
 
+	/**
+	 *
+	 * @param aPacket
+	 */
 	public void sendPacket(String aPacket) {
 		sendPacket(new RawPacket(aPacket));
 	}
 
+	/**
+	 *
+	 * @param aPacket
+	 */
 	public void sendPacket(WebSocketPacket aPacket) {
 		mQueuedOperations.add(new SendPacketOperation(mClient, aPacket));
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 */
 	public void sendToken(Map aToken) {
 		Token lToken = TokenFactory.createToken(aToken);
 		mClient.sendToken(lToken);
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @param aListener
+	 */
 	public void sendToken(Map aToken, Object aListener) {
 		final WebSocketResponseTokenListener lListener = (WebSocketResponseTokenListener) ((Invocable) mScriptApp.getEngine())
 				.getInterface(aListener, WebSocketResponseTokenListener.class);
@@ -206,15 +246,27 @@ public class ServerClient {
 				}));
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 * @return
+	 */
 	public IInternalConnectorListener addListener(Object aListener) {
 		return mClient.addListener((IInternalConnectorListener) ((Invocable) mScriptApp.getEngine())
 				.getInterface(aListener, IInternalConnectorListener.class));
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public void removeListener(IInternalConnectorListener aListener) {
 		mClient.removeListener(aListener);
 	}
 
+	/**
+	 *
+	 */
 	public void close() {
 		if (isConnected()) {
 			mQueuedOperations.add(new CloseOperation(mClient));

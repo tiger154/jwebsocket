@@ -16,7 +16,19 @@ public class QuotaIntervalSI extends QuotaBaseInstance {
 
     private Interval mInterval;
 
-    public QuotaIntervalSI(Interval aInterval, long aValue,
+	/**
+	 *
+	 * @param aInterval
+	 * @param aValue
+	 * @param aInstance
+	 * @param aUuid
+	 * @param aNamesPace
+	 * @param aQuotaType
+	 * @param aQuotaIdentifier
+	 * @param aInstanceType
+	 * @param aActions
+	 */
+	public QuotaIntervalSI(Interval aInterval, long aValue,
             String aInstance, String aUuid, String aNamesPace,
             String aQuotaType, String aQuotaIdentifier, String aInstanceType, String aActions) {
         super(aValue, aInstance, aUuid, aNamesPace, aQuotaType, aQuotaIdentifier, aInstanceType, aActions);
@@ -24,7 +36,11 @@ public class QuotaIntervalSI extends QuotaBaseInstance {
 
     }
 
-    @Override
+	/**
+	 *
+	 * @return
+	 */
+	@Override
     public FastMap<String, Object> writeToMap() {
         FastMap<String, Object> ltemMap = super.writeToMap();
         ltemMap.put("maxValue", mValue);

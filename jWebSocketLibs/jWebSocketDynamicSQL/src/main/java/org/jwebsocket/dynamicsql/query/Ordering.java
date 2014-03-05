@@ -7,7 +7,14 @@ package org.jwebsocket.dynamicsql.query;
  */
 public enum Ordering {
 
+	/**
+	 *
+	 */
 	ASCENDING(" ASC"),
+
+	/**
+	 *
+	 */
 	DESCENDING(" DESC");
 	private final String mDirStr;
 

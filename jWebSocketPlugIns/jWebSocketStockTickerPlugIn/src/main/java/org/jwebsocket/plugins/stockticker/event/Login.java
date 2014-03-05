@@ -13,28 +13,40 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class Login extends C2SEvent {
 
-    private String mUser;
-    private String mPass;
+	private String mUser;
+	private String mPass;
 
-    
-    @ImportFromToken
-    public void setUser(String aUser) {
-        mUser = aUser;
-    }
+	/**
+	 *
+	 * @param aUser
+	 */
+	@ImportFromToken
+	public void setUser(String aUser) {
+		mUser = aUser;
+	}
 
-    
-    @ImportFromToken
-    public void setPass(String aPass) {
-        mPass = aPass;
-    }
+	/**
+	 *
+	 * @param aPass
+	 */
+	@ImportFromToken
+	public void setPass(String aPass) {
+		mPass = aPass;
+	}
 
-    
-    public String getUser() {
-        return mUser;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public String getUser() {
+		return mUser;
+	}
 
-    
-    public String getPass() {
-        return mPass;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public String getPass() {
+		return mPass;
+	}
 }

@@ -2,7 +2,7 @@
 // jWebSocket - JMXDefinition (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -230,8 +230,8 @@ public class JMXDefinition {
 	 * @return
 	 */
 	protected ModelMBeanAttributeInfo[] createMBeanAttributeInfoArray() {
-		ModelMBeanAttributeInfo[] lInfoArray =
-				new ModelMBeanAttributeInfo[mAttributes.length];
+		ModelMBeanAttributeInfo[] lInfoArray
+				= new ModelMBeanAttributeInfo[mAttributes.length];
 		for (int i = 0; i < mAttributes.length; i++) {
 			lInfoArray[i] = mAttributes[i].createMBeanAttributeInfo();
 		}
@@ -244,8 +244,8 @@ public class JMXDefinition {
 	 */
 	protected ModelMBeanConstructorInfo[] createMBeanConstructorInfoArray() {
 		int lCount = mConstructors.length;
-		ModelMBeanConstructorInfo[] lInfoArray =
-				new ModelMBeanConstructorInfo[lCount];
+		ModelMBeanConstructorInfo[] lInfoArray
+				= new ModelMBeanConstructorInfo[lCount];
 		for (int i = 0; i < lCount; i++) {
 			lInfoArray[i] = mConstructors[i].createMBeanConstructorInfo();
 		}
@@ -257,8 +257,8 @@ public class JMXDefinition {
 	 * @return
 	 */
 	protected ModelMBeanOperationInfo[] createMBeanOperationInfoArray() {
-		ModelMBeanOperationInfo[] lInfoArray =
-				new ModelMBeanOperationInfo[mOperations.length];
+		ModelMBeanOperationInfo[] lInfoArray
+				= new ModelMBeanOperationInfo[mOperations.length];
 		for (int i = 0; i < mOperations.length; i++) {
 			lInfoArray[i] = mOperations[i].createMBeanOperationInfo();
 		}
@@ -270,8 +270,8 @@ public class JMXDefinition {
 	 * @return
 	 */
 	protected ModelMBeanNotificationInfo[] createMBeanNotificationInfoArray() {
-		ModelMBeanNotificationInfo[] lInfoArray =
-				new ModelMBeanNotificationInfo[mNotifications.length];
+		ModelMBeanNotificationInfo[] lInfoArray
+				= new ModelMBeanNotificationInfo[mNotifications.length];
 		for (int i = 0; i < mNotifications.length; i++) {
 			lInfoArray[i] = mNotifications[i].createMBeanNotificationInfo();
 		}

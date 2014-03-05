@@ -2,7 +2,7 @@
 //	jWebSocket - DefaultMessageDelegate (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -54,11 +54,11 @@ import org.springframework.jms.support.converter.SimpleMessageConverter;
  */
 public class DefaultMessageDelegate implements MessageDelegate, MessageConsumerRegistry {
 
-	private Logger mLog = Logging.getLogger();
+	private final Logger mLog = Logging.getLogger();
 	private final Map<String, MessageListenerToken> mTokens = new ConcurrentHashMap<String, MessageListenerToken>();
 	private final TokenPlugIn mTokenPlugin;
-	private MessageConverter mMsgConverter = new SimpleMessageConverter();
-	private DestinationIdentifier mDestIdentifier;
+	private final MessageConverter mMsgConverter = new SimpleMessageConverter();
+	private final DestinationIdentifier mDestIdentifier;
 
 	/**
 	 *

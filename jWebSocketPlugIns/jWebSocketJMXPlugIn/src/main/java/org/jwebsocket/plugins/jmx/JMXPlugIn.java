@@ -2,7 +2,7 @@
 // jWebSocket - JMXPlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ public class JMXPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_JMX =
-			JWebSocketServerConstants.NS_BASE + ".plugins.jmx";
+	public static final String NS_JMX
+			= JWebSocketServerConstants.NS_BASE + ".plugins.jmx";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JMXPlugIn";
@@ -121,6 +121,8 @@ public class JMXPlugIn extends TokenPlugIn {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aEngine
 	 */
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
@@ -130,13 +132,11 @@ public class JMXPlugIn extends TokenPlugIn {
 
 		lFactory.getBean("exporter");
 
-
 		SSLAdaptorServerSocketFactory lSSLSocket = new SSLAdaptorServerSocketFactory();
 		lSSLSocket.setKeyStoreName(JWebSocketConfig.getConfigFolder("jWebSocket.ks"));
 		String lKeyPass = getServer().getEngines().get("tcp0").getConfiguration().getKeyStorePassword();
 		lSSLSocket.setKeyStorePassword(lKeyPass);
 		mHttpSSLAdaptor.setSocketFactory(lSSLSocket);
-
 
 		try {
 			mRmiConnector = (RMIConnectorServer) lFactory.getBean("rmiConnector");
@@ -158,8 +158,8 @@ public class JMXPlugIn extends TokenPlugIn {
 			String lBeanPath = JWebSocketConfig.getConfigFolder("")
 					+ getString("beans_config");
 
-			JMXPlugInsExporter lPluginsExporter =
-					new JMXPlugInsExporter(lBeanPath, lMBServer);
+			JMXPlugInsExporter lPluginsExporter
+					= new JMXPlugInsExporter(lBeanPath, lMBServer);
 
 			lPluginsExporter.createMBeansToExport();
 		} catch (Exception ex) {
@@ -169,6 +169,8 @@ public class JMXPlugIn extends TokenPlugIn {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aEngine
 	 */
 	@Override
 	public void engineStopped(WebSocketEngine aEngine) {

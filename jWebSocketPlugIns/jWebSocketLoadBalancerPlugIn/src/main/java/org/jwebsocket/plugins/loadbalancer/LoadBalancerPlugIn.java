@@ -236,8 +236,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		sendToken(aConnector, lResponse);
 	}
-	
-	void checkPasswords(Cluster aCluster, String aPassword){
+
+	void checkPasswords(Cluster aCluster, String aPassword) {
 		// checking password
 		if (null != aCluster.getPassword()) {
 			Assert.notNull(aPassword, "The given cluster 'password' cannot be null!");
@@ -271,7 +271,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		final Cluster lCluster = getClusterByAlias(lClusterAlias);
 		// checking password
 		checkPasswords(lCluster, lPassword);
-		
+
 		ClusterEndPoint lClusterEndPoint = lCluster.containsEndPoint(lEndPointId);
 
 		Assert.notNull(lClusterEndPoint, "The target endpoint does not exists!");
@@ -318,7 +318,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		final Cluster lCluster = getClusterByAlias(lClusterAlias);
 		// checking password
 		checkPasswords(lCluster, lPassword);
-		
+
 		ClusterEndPoint lClusterEndPoint = lCluster.containsEndPoint(lEndPointId);
 
 		Assert.notNull(lClusterEndPoint, "The target endpoint does not exists!");

@@ -2,7 +2,7 @@
 //	jWebSocket - ClassPathUpdater (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -48,13 +48,14 @@ public interface IDatabase {
 	 * parameters.
 	 *
 	 * @param aTableName the table name to find.
+	 * @return 
 	 */
 	public Boolean existsTable(String aTableName);
 
 	/**
 	 * Allows to drop physically a table to the database.
 	 *
-	 * @param aTable the table name to drop.
+	 * @param aTableName the table name to drop.
 	 */
 	public void dropTable(String aTableName);
 

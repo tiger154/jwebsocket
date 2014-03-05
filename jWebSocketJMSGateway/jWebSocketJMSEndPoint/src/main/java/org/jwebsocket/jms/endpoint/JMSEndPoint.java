@@ -1,8 +1,8 @@
-//  ---------------------------------------------------------------------------
-//  jWebSocket - JMS Gateway Client (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	jWebSocket - JMS Gateway Client (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -106,9 +106,12 @@ public class JMSEndPoint {
 		mSender = new JMSEndPointSender(this);
 	}
 
+	/**
+	 *
+	 */
 	public JMSEndPoint() {
 	}
-	
+
 	/**
 	 *
 	 * @param aBrokerURI
@@ -132,6 +135,17 @@ public class JMSEndPoint {
 		}
 	}
 
+	/**
+	 *
+	 * @param aBrokerURI
+	 * @param aGatewayTopic
+	 * @param aGatewayId
+	 * @param aEndPointId
+	 * @param aThreadPoolSize
+	 * @param aDurable
+	 * @return
+	 * @throws JMSException
+	 */
 	public static JMSEndPoint getInstance(String aBrokerURI, String aGatewayTopic,
 			String aGatewayId, String aEndPointId, int aThreadPoolSize,
 			boolean aDurable) throws JMSException {

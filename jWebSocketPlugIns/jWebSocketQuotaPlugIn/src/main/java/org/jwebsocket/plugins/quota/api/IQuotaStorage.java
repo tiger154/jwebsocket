@@ -15,46 +15,160 @@ import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaNotFound;
  */
 public interface IQuotaStorage {
 
-    public boolean save(IQuotaSingleInstance aQuota);
+	/**
+	 *
+	 * @param aQuota
+	 * @return
+	 */
+	public boolean save(IQuotaSingleInstance aQuota);
 
-    public boolean save(QuotaChildSI aQuota);
-    
-    public void initialize() throws Exception;
+	/**
+	 *
+	 * @param aQuota
+	 * @return
+	 */
+	public boolean save(QuotaChildSI aQuota);
 
-    public void remove(String aInstance, String aUuid);
+	/**
+	 *
+	 * @throws Exception
+	 */
+	public void initialize() throws Exception;
 
-    public void remove(QuotaChildSI aQuotaChild);
+	/**
+	 *
+	 * @param aInstance
+	 * @param aUuid
+	 */
+	public void remove(String aInstance, String aUuid);
 
-    public long update(String aUuid, Long aValue);
+	/**
+	 *
+	 * @param aQuotaChild
+	 */
+	public void remove(QuotaChildSI aQuotaChild);
 
-    public long update(QuotaChildSI aQuotaChild);
+	/**
+	 *
+	 * @param aUuid
+	 * @param aValue
+	 * @return
+	 */
+	public long update(String aUuid, Long aValue);
 
-    public boolean quotaExist(String aUuid);
+	/**
+	 *
+	 * @param aQuotaChild
+	 * @return
+	 */
+	public long update(QuotaChildSI aQuotaChild);
 
-    public boolean quotaExist(String aNameSpace, String aQuotaIdentifier, 
-            String aInstance, String aActions);
+	/**
+	 *
+	 * @param aUuid
+	 * @return
+	 */
+	public boolean quotaExist(String aUuid);
 
-    public String getActions(String aUuid);
+	/**
+	 *
+	 * @param aNameSpace
+	 * @param aQuotaIdentifier
+	 * @param aInstance
+	 * @param aActions
+	 * @return
+	 */
+	public boolean quotaExist(String aNameSpace, String aQuotaIdentifier,
+			String aInstance, String aActions);
 
-    public List<IQuotaSingleInstance> getQuotas(String aQuotaType);
+	/**
+	 *
+	 * @param aUuid
+	 * @return
+	 */
+	public String getActions(String aUuid);
 
-    public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier);
+	/**
+	 *
+	 * @param aQuotaType
+	 * @return
+	 */
+	public List<IQuotaSingleInstance> getQuotas(String aQuotaType);
 
-    public List<IQuotaSingleInstance> getQuotasByIdentifierNSInstanceType(String aIdentifier,
-            String aNameSpace, String aInstanceType);
+	/**
+	 *
+	 * @param aIdentifier
+	 * @return
+	 */
+	public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier);
 
-    public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance);
-    
-    public String getUuid(String aQuotaIdentifier, String aNs, String aInstance,
-            String aInstanceType,String aActions ) throws ExceptionQuotaNotFound;
+	/**
+	 *
+	 * @param aIdentifier
+	 * @param aNameSpace
+	 * @param aInstanceType
+	 * @return
+	 */
+	public List<IQuotaSingleInstance> getQuotasByIdentifierNSInstanceType(String aIdentifier,
+			String aNameSpace, String aInstanceType);
 
-    public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType, String aInstance);
+	/**
+	 *
+	 * @param aQuotaType
+	 * @param aNs
+	 * @param aInstance
+	 * @return
+	 */
+	public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance);
 
-    public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs);
+	/**
+	 *
+	 * @param aQuotaIdentifier
+	 * @param aNs
+	 * @param aInstance
+	 * @param aInstanceType
+	 * @param aActions
+	 * @return
+	 * @throws ExceptionQuotaNotFound
+	 */
+	public String getUuid(String aQuotaIdentifier, String aNs, String aInstance,
+			String aInstanceType, String aActions) throws ExceptionQuotaNotFound;
 
-    public IQuotaSingleInstance getQuotaByUuid(String aUuid);
+	/**
+	 *
+	 * @param aQuotaType
+	 * @param aInstance
+	 * @return
+	 */
+	public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType, String aInstance);
 
-    public Map<String, Object> getRawQuota(String aUuid, String aInstance);
+	/**
+	 *
+	 * @param aQuotaType
+	 * @param aNs
+	 * @return
+	 */
+	public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs);
 
-    public void updateIntervalResetDate(String aUuid, String aResetDate);
+	/**
+	 *
+	 * @param aUuid
+	 * @return
+	 */
+	public IQuotaSingleInstance getQuotaByUuid(String aUuid);
+
+	/**
+	 *
+	 * @param aUuid
+	 * @param aInstance
+	 * @return
+	 */
+	public Map<String, Object> getRawQuota(String aUuid, String aInstance);
+
+	/**
+	 *
+	 * @param aUuid
+	 * @param aResetDate
+	 */
+	public void updateIntervalResetDate(String aUuid, String aResetDate);
 }

@@ -17,12 +17,29 @@ import org.jwebsocket.util.Tools;
  */
 public class QuotaHelper {
 
-    public static String generateQuotaUUID() {
+	/**
+	 *
+	 * @return
+	 */
+	public static String generateQuotaUUID() {
         return Tools.getMD5(UUID.randomUUID().toString());
     }
 
     // to do with map
-    public static IQuotaSingleInstance factorySingleInstance(long aValue, String aInstance,
+
+	/**
+	 *
+	 * @param aValue
+	 * @param aInstance
+	 * @param aUuid
+	 * @param aNamesPace
+	 * @param aQuotaType
+	 * @param aQuotaIdentifier
+	 * @param aInstanceType
+	 * @param aActions
+	 * @return
+	 */
+	    public static IQuotaSingleInstance factorySingleInstance(long aValue, String aInstance,
             String aUuid, String aNamesPace, String aQuotaType, String aQuotaIdentifier,
             String aInstanceType, String aActions) {
 
@@ -36,7 +53,11 @@ public class QuotaHelper {
 
     }
 
-    public static FastList<String> ignoredUsers() {
+	/**
+	 *
+	 * @return
+	 */
+	public static FastList<String> ignoredUsers() {
         FastList<String> lIgnoredUsers = new FastList<String>();
         lIgnoredUsers.add("anonymous");
         return lIgnoredUsers;

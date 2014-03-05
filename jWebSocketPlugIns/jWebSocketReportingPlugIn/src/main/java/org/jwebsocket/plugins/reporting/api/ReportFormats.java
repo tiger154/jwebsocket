@@ -24,6 +24,13 @@ package org.jwebsocket.plugins.reporting.api;
  */
 public class ReportFormats {
 
+	/**
+	 *
+	 */
 	public static String PDF = "pdf";
+
+	/**
+	 *
+	 */
 	public static String HTML = "html";
 }

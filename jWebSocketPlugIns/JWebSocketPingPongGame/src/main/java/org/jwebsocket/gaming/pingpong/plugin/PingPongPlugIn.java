@@ -2,7 +2,7 @@
 //	jWebSocket PingPong Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -394,9 +394,9 @@ public class PingPongPlugIn extends TokenPlugIn {
 		if (lAccepted) {
 			mPingpongGame.addMatch(new PingpongMatch(this,
 					mPingpongGame.getPingpongStage(), new PingpongPlayer(
-					lUserName1, "playLeft", 0, mPingpongGame.getPingpongStage()),
+							lUserName1, "playLeft", 0, mPingpongGame.getPingpongStage()),
 					new PingpongPlayer(lUserName2, "playRight", 0,
-					mPingpongGame.getPingpongStage())));
+							mPingpongGame.getPingpongStage())));
 			PingpongMatch lPingpongMatch = mPingpongGame.getMatch(lUserName1);
 			playerUpdate(lPingpongMatch, "playLeftplayRight");
 			scoreUpdate(lPingpongMatch);
@@ -838,10 +838,10 @@ public class PingPongPlugIn extends TokenPlugIn {
 
 			getServer().sendToken(
 					connectorUser(
-					aPingpongMatch.getPingpongPlayer(0).getPlayerName()), lMessage);
+							aPingpongMatch.getPingpongPlayer(0).getPlayerName()), lMessage);
 			getServer().sendToken(
 					connectorUser(
-					aPingpongMatch.getPingpongPlayer(1).getPlayerName()), lMessage);
+							aPingpongMatch.getPingpongPlayer(1).getPlayerName()), lMessage);
 
 		} catch (Exception ex) {
 			if (mLog.isDebugEnabled()) {

@@ -70,6 +70,7 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 	 * {@inheritDoc}
 	 *
 	 * @param aModelMBeanInfo
+	 * @throws javax.management.MBeanException
 	 */
 	@Override
 	public void setModelMBeanInfo(ModelMBeanInfo aModelMBeanInfo) throws MBeanException {
@@ -80,6 +81,8 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@Override
 	public MBeanNotificationInfo[] getNotificationInfo() {
@@ -91,6 +94,9 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 	 *
 	 * @param aManagedBean
 	 * @param aType
+	 * @throws javax.management.MBeanException
+	 * @throws javax.management.InstanceNotFoundException
+	 * @throws javax.management.modelmbean.InvalidTargetObjectTypeException
 	 */
 	@Override
 	public void setManagedResource(Object aManagedBean, String aType) throws MBeanException,
@@ -110,12 +116,12 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 	 */
 	protected void maybeSendMethodNotification(String aType, String aName)
 			throws MBeanException {
-		MBeanNotificationInfo lInfo =
-				mNotificationInfoMap.findNotificationInfo(aType, aName);
+		MBeanNotificationInfo lInfo
+				= mNotificationInfoMap.findNotificationInfo(aType, aName);
 		if (lInfo != null) {
 			long lTimeStamp = System.currentTimeMillis();
-			String lNotificationType =
-					ModelMBeanUtil.matchType(lInfo, "." + aType + "." + aName);
+			String lNotificationType
+					= ModelMBeanUtil.matchType(lInfo, "." + aType + "." + aName);
 			sendNotification(new Notification(
 					lNotificationType, this, lTimeStamp,
 					lInfo.getDescription()));
@@ -136,14 +142,14 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 			throws MBeanException, AttributeNotFoundException,
 			InvalidAttributeValueException, ReflectionException {
 		String lName = aAttribute.getName();
-		MBeanNotificationInfo lInfo =
-				mNotificationInfoMap.findNotificationInfo("set", aAttribute.getName());
+		MBeanNotificationInfo lInfo
+				= mNotificationInfoMap.findNotificationInfo("set", aAttribute.getName());
 		if (lInfo != null) {
 			Object lOldValue = getAttribute(lName);
 			Object lNewValue = aAttribute.getValue();
 			long lTimeStamp = System.currentTimeMillis();
-			String lNotificationType =
-					ModelMBeanUtil.matchType(lInfo, ".set." + lName);
+			String lNotificationType
+					= ModelMBeanUtil.matchType(lInfo, ".set." + lName);
 			sendNotification(new AttributeChangeNotification(
 					this, lTimeStamp, lTimeStamp,
 					lInfo.getDescription(), lInfo.getName(),
@@ -157,6 +163,9 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 	 * @param aName
 	 * @param aSignature
 	 * @param aArgs
+	 * @return
+	 * @throws javax.management.MBeanException
+	 * @throws javax.management.ReflectionException
 	 */
 	@Override
 	public Object invoke(String aName, Object[] aArgs, String[] aSignature)
@@ -171,6 +180,10 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 	 * {@inheritDoc}
 	 *
 	 * @param aName
+	 * @return
+	 * @throws javax.management.MBeanException
+	 * @throws javax.management.AttributeNotFoundException
+	 * @throws javax.management.ReflectionException
 	 */
 	@Override
 	public Object getAttribute(String aName) throws MBeanException,
@@ -195,14 +208,18 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 	 * {@inheritDoc}
 	 *
 	 * @param aAttribute
+	 * @throws javax.management.MBeanException
+	 * @throws javax.management.AttributeNotFoundException
+	 * @throws javax.management.InvalidAttributeValueException
+	 * @throws javax.management.ReflectionException
 	 */
 	@Override
 	public void setAttribute(Attribute aAttribute) throws MBeanException,
 			AttributeNotFoundException, InvalidAttributeValueException,
 			ReflectionException {
 		try {
-			ModelMBeanAttributeInfo lInfo =
-					mModelMBeanInfo.getAttribute(aAttribute.getName());
+			ModelMBeanAttributeInfo lInfo
+					= mModelMBeanInfo.getAttribute(aAttribute.getName());
 			if (lInfo.isWritable()) {
 				Method lMethod = ModelMBeanUtil.findSetMethod(
 						mModelMBeanInfo, mManagedMBean, aAttribute.getName());

@@ -2,7 +2,7 @@
 //	jWebSocket - jQuery User management Demo Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ public class JQueryDemoPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_JQUERYDEMO =
-			JWebSocketServerConstants.NS_BASE + ".plugins.jquerydemo";
+	public static final String NS_JQUERYDEMO
+			= JWebSocketServerConstants.NS_BASE + ".plugins.jquerydemo";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JQueryDemoPlugIn";

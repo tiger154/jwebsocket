@@ -2,7 +2,7 @@
 //	jWebSocket - JmsManager (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ public class JmsManager {
 
 	private JSONObject getJSONObject(Map<String, Object> aSettings, String aOption) {
 		Object lObj = aSettings.get(aOption);
-		JSONObject lJSON = null;
+		JSONObject lJSON;
 		if (lObj instanceof JSONObject) {
 			lJSON = (JSONObject) lObj;
 		} else {
@@ -145,7 +145,7 @@ public class JmsManager {
 	private String getConnectionFactoryName(JSONObject aJson) {
 		try {
 			return aJson.getString(ConfigurationJms.CONNECTION_FACTORY_NAME.getValue());
-		} catch (Exception lEx) {
+		} catch (JSONException lEx) {
 			throw new IllegalArgumentException(
 					"JMSPlugIn configuration error: missing cfName Property", lEx);
 		}
@@ -154,7 +154,7 @@ public class JmsManager {
 	private String getName(JSONObject aJson) {
 		try {
 			return aJson.getString(ConfigurationJms.NAME.getValue());
-		} catch (Exception lEx) {
+		} catch (JSONException lEx) {
 			throw new IllegalArgumentException(
 					"JMSPlugIn configuration error: missing name Property", lEx);
 		}
@@ -163,7 +163,7 @@ public class JmsManager {
 	private Boolean getPubSubDomain(JSONObject aJson) {
 		try {
 			return aJson.getBoolean(ConfigurationJms.PUB_SUB_DOMAIN.getValue());
-		} catch (Exception lEx) {
+		} catch (JSONException lEx) {
 			throw new IllegalArgumentException(
 					"JMSPlugIn configuration error: missing pubSubDomain Property", lEx);
 		}
@@ -172,7 +172,7 @@ public class JmsManager {
 	private Boolean getSessionTransacted(JSONObject aJson) {
 		try {
 			return aJson.getBoolean(ConfigurationJms.SESSION_TRANSACTED.getValue());
-		} catch (Exception lEx) {
+		} catch (JSONException lEx) {
 			return null;
 		}
 	}
@@ -180,7 +180,7 @@ public class JmsManager {
 	private Boolean getDeliveryPersistent(JSONObject aJson) {
 		try {
 			return aJson.getBoolean(ConfigurationJms.DELIVERY_PERSISTENT.getValue());
-		} catch (Exception lEx) {
+		} catch (JSONException lEx) {
 			return null;
 		}
 	}
@@ -188,7 +188,7 @@ public class JmsManager {
 	private Integer getSessionAcknowledgeMode(JSONObject aJson) {
 		try {
 			return aJson.getInt(ConfigurationJms.SESSION_ACKNOWLEDGE_MODE.getValue());
-		} catch (Exception lEx) {
+		} catch (JSONException lEx) {
 			return null;
 		}
 	}
@@ -218,7 +218,7 @@ public class JmsManager {
 		JmsTemplate lSender = new JmsTemplate();
 		lSender.setConnectionFactory(
 				mConnectionFactories.get(
-				aDestinationIdentifier.getConnectionFactoryName()));
+						aDestinationIdentifier.getConnectionFactoryName()));
 		lSender.setDefaultDestination(getDestination(aDestinationIdentifier));
 		lSender.setPubSubDomain(aDestinationIdentifier.isPubSubDomain());
 		setSessionAckModeAndSessionTransacted(lSender, aDestinationIdentifier);
@@ -242,6 +242,7 @@ public class JmsManager {
 	public void sendTextMessage(final ActionInput aInput) {
 		JmsTemplate lSender = getSender(aInput.mDi);
 		lSender.send(lSender.getDefaultDestination(), new MessageCreator() {
+			@Override
 			public Message createMessage(Session aSession) throws JMSException {
 				Message result = aSession.createTextMessage(aInput.mReqToken.getString(FieldJms.MESSSAGE_PAYLOAD
 						.getValue()));
@@ -276,6 +277,7 @@ public class JmsManager {
 	public void sendMapMessage(final ActionInput aInput) {
 		JmsTemplate lSender = getSender(aInput.mDi);
 		lSender.send(lSender.getDefaultDestination(), new MessageCreator() {
+			@Override
 			public Message createMessage(Session session) throws JMSException {
 				Message result = mMsgConverter.toMessage(aInput.mReqToken.getMap(FieldJms.MESSSAGE_PAYLOAD.getValue()),
 						session);
@@ -291,7 +293,7 @@ public class JmsManager {
 
 	private void enrichMessageWithHeaders(Message msg, @SuppressWarnings("rawtypes") Map jmsHeaderProperties)
 			throws JMSException, JSONException {
-		if (null == jmsHeaderProperties || jmsHeaderProperties.size() == 0) {
+		if (null == jmsHeaderProperties || jmsHeaderProperties.isEmpty()) {
 			return;
 		}
 		addHeader(FieldJms.JMS_HEADER_CORRELATION_ID, msg, jmsHeaderProperties);

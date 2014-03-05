@@ -12,19 +12,63 @@ import java.util.List;
  */
 public interface IService {
 
-    Boolean createUser(IUser aUser);
+	/**
+	 *
+	 * @param aUser
+	 * @return
+	 */
+	Boolean createUser(IUser aUser);
 
-    Boolean login(IUser aUser);
-    
-    List<IRecord> listRecords();
-    
-    Boolean sell(String aName,String aCant,String aUserLogin);
-    
-    Boolean buy(String aName,String aCant,String aUserLogin);
-    
-    List<IPurchasing> readBuy(String aUser);
-    
-    List<String> showComb(String aUser);
-    
-    Integer chart(String aUserLogin ,String aName);
+	/**
+	 *
+	 * @param aUser
+	 * @return
+	 */
+	Boolean login(IUser aUser);
+
+	/**
+	 *
+	 * @return
+	 */
+	List<IRecord> listRecords();
+
+	/**
+	 *
+	 * @param aName
+	 * @param aCant
+	 * @param aUserLogin
+	 * @return
+	 */
+	Boolean sell(String aName, String aCant, String aUserLogin);
+
+	/**
+	 *
+	 * @param aName
+	 * @param aCant
+	 * @param aUserLogin
+	 * @return
+	 */
+	Boolean buy(String aName, String aCant, String aUserLogin);
+
+	/**
+	 *
+	 * @param aUser
+	 * @return
+	 */
+	List<IPurchasing> readBuy(String aUser);
+
+	/**
+	 *
+	 * @param aUser
+	 * @return
+	 */
+	List<String> showComb(String aUser);
+
+	/**
+	 *
+	 * @param aUserLogin
+	 * @param aName
+	 * @return
+	 */
+	Integer chart(String aUserLogin, String aName);
 }
