@@ -29,6 +29,7 @@ import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.instance.JWebSocketInstance;
@@ -123,11 +124,11 @@ public class JettyWrapper implements WebSocket,
 		}
 		mConnector = new JettyConnector(mEngine, mRequest, mProtocol, aConnection);
 		mConnector.getSession().setSessionId(mRequest.getSession().getId());
-		mConnector.getSession().setStorage(new HttpSessionStorage(mRequest.getSession()));
+		if (JWebSocketConfig.isWebApp()) {
+			mConnector.getSession().setStorage(new HttpSessionStorage(mRequest.getSession()));
+		}
 
 		mEngine.addConnector(mConnector);
-		// inherited BaseConnector.startConnector
-		// calls mEngine connector started
 
 		// TODO: Check Jetty 8.0.0.M2 for connection issues
 		// need to call startConnector in a separate thread 
@@ -167,9 +168,6 @@ public class JettyWrapper implements WebSocket,
 			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.length()));
 			return;
 		}
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Message (text) from Jetty client...");
-		}
 		if (mConnector != null) {
 			WebSocketPacket lDataPacket = new RawPacket(aMessage);
 			mConnector.processPacket(lDataPacket);
@@ -187,9 +185,6 @@ public class JettyWrapper implements WebSocket,
 		if (aMessage.length > mConnector.getMaxFrameSize()) {
 			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.length));
 			return;
-		}
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Message (binary) from Jetty client...");
 		}
 		if (mConnector != null) {
 			WebSocketPacket lDataPacket = new RawPacket(aMessage);

@@ -40,7 +40,7 @@ public class NioSSLHandler extends SSLHandler {
 	final Map<String, Queue<DataFuture>> mWritesQueue;
 	final DelayedPacketsQueue mDelayedPacketsQueue;
 	final Selector mSelector;
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 *

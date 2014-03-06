@@ -19,7 +19,6 @@
 package org.jwebsocket.jetty;
 
 import java.net.InetSocketAddress;
-import java.util.Date;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
@@ -96,40 +95,20 @@ public class JettyEngine extends BaseEngine {
 			} else {
 				mJettyServer = new Server(lPort);
 			}
-			
-			/*
-			 * SessionIdManager mSessionIdManager = new HashSessionIdManager();
-			 * ((HashSessionIdManager)mSessionIdManager).start();
-			 * mJettyServer.setSessionIdManager(mSessionIdManager);
-			 */
+
 			SslSelectChannelConnector lSSLConnector = new SslSelectChannelConnector();
-			String lWebSocketHome = JWebSocketConfig.getJWebSocketHome();
-			// System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
-			String lKeyStore = lWebSocketHome + "conf/jWebSocket.ks";
+			String lKeyStore = JWebSocketConfig.expandEnvVarsAndProps(getConfiguration().getKeyStore());
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Loading SSL cert from keystore '" + lKeyStore + "'...");
 			}
 			lSSLConnector.setPort(lSSLPort);
 			lSSLConnector.setKeystore(lKeyStore);
-			lSSLConnector.setPassword("jWebSocket");
-			lSSLConnector.setKeyPassword("jWebSocket");
+			lSSLConnector.setPassword(getConfiguration().getKeyStorePassword());
+			lSSLConnector.setKeyPassword(getConfiguration().getKeyStorePassword());
 			mJettyServer.addConnector(lSSLConnector);
 
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Instantiating SelectChannelConnector...");
-			}
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Adding connector to server...");
-			}
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Setting the context w/o sessions...");
-			}
-			ServletContextHandler lServletContext =
-					new ServletContextHandler(ServletContextHandler.SESSIONS);
-			/*
-			 SessionHandler lSessionHandler = new SessionHandler();
-			 lServletContext.setSessionHandler(lSessionHandler);
-			 */
+			ServletContextHandler lServletContext
+					= new ServletContextHandler(ServletContextHandler.SESSIONS);
 
 			lServletContext.setContextPath(lContext);
 			mJettyServer.setHandler(lServletContext);
@@ -144,10 +123,6 @@ public class JettyEngine extends BaseEngine {
 			}
 
 			mJettyServer.start();
-			// if (mLog.isDebugEnabled()) {
-			//	mLog.debug("Joining embedded Jetty server...");
-			// }
-			// mJettyServer.join();
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ "Instantiating Embedded Jetty Server '"
@@ -196,10 +171,6 @@ public class JettyEngine extends BaseEngine {
 
 		// resetting "isRunning" causes engine listener to terminate
 		mIsRunning = false;
-		// inherited method stops all connectors
-
-		long lStarted = new Date().getTime();
-		int lNumConns = getConnectors().size();
 		super.stopEngine(aCloseReason);
 
 		try {
@@ -223,20 +194,6 @@ public class JettyEngine extends BaseEngine {
 					+ Server.getVersion() + "': "
 					+ lEx.getMessage());
 		}
-
-		/*
-		 * // now wait until all connectors have been closed properly // or
-		 * timeout exceeds... try { while (getConnectors().size() > 0 && new
-		 * Date().getTime() - lStarted < 10000) { Thread.sleep(250); } } catch
-		 * (Exception lEx) { mLog.error(lEx.getClass().getSimpleName() + ": " +
-		 * lEx.getMessage()); } if (mLog.isDebugEnabled()) { long lDuration =
-		 * new Date().getTime() - lStarted; int lRemConns =
-		 * getConnectors().size(); if (lRemConns > 0) { mLog.warn(lRemConns + "
-		 * of " + lNumConns + " Jetty connectors '" + getId() + "' did not stop
-		 * after " + lDuration + "ms."); } else { mLog.debug(lNumConns + " Jetty
-		 * connectors '" + getId() + "' stopped after " + lDuration + "ms."); }
-		 * }
-		 */
 
 		// fire the engine stopped event
 		engineStopped();

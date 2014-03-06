@@ -20,6 +20,7 @@ package org.jwebsocket.tomcat.listener;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.jwebsocket.storage.httpsession.HttpSessionStorage;
@@ -46,9 +47,11 @@ public class SessionListener implements HttpSessionListener {
 	 */
 	@Override
 	public void sessionDestroyed(HttpSessionEvent aEvent) {
-		WebSocketSession lSession = new WebSocketSession(aEvent.getSession().getId());
-		lSession.setStorage(new HttpSessionStorage(aEvent.getSession()));
+		if (JWebSocketConfig.isWebApp()) {
+			WebSocketSession lSession = new WebSocketSession(aEvent.getSession().getId());
+			lSession.setStorage(new HttpSessionStorage(aEvent.getSession()));
 
-		SystemPlugIn.stopSession(lSession);
+			SystemPlugIn.stopSession(lSession);
+		}
 	}
 }
