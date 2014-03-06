@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.CloseReason;
@@ -49,7 +50,7 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
  * @author aschulze
  * @author kyberneees
  */
-public class TomcatWrapper extends MessageInbound  {
+public class TomcatWrapper extends MessageInbound {
 
 	private static final Logger mLog = Logging.getLogger();
 	private TomcatConnector mConnector = null;
@@ -195,7 +196,9 @@ public class TomcatWrapper extends MessageInbound  {
 		mConnector = new TomcatConnector(mEngine, mRequest, aOutbound);
 		mConnector.setSSL(mIsSecure);
 		mConnector.getSession().setSessionId(mSession.getId());
-		mConnector.getSession().setStorage(new HttpSessionStorage(mSession));
+		if (JWebSocketConfig.isWebApp()) {
+			mConnector.getSession().setStorage(new HttpSessionStorage(mSession));
+		}
 		mConnector.setHeader(mHeader);
 		mConnector.setSubprot(mHeader.getSubProtocol());
 		mConnector.setRemotePort(mRemotePort);
@@ -230,9 +233,6 @@ public class TomcatWrapper extends MessageInbound  {
 			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.remaining()));
 			return;
 		}
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Message (binary) from Tomcat client...");
-		}
 		if (null != mConnector) {
 			// TODO: implement binary Tomcat messages!
 			WebSocketPacket lDataPacket = new RawPacket(aMessage.array());
@@ -251,9 +251,6 @@ public class TomcatWrapper extends MessageInbound  {
 		if (aMessage.remaining() > mConnector.getMaxFrameSize()) {
 			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.length()));
 			return;
-		}
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Message (text) from Tomcat client...");
 		}
 		if (null != mConnector) {
 			WebSocketPacket lDataPacket = new RawPacket(aMessage.toString());
