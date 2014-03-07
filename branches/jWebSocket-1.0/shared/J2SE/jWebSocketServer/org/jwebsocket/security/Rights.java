@@ -31,7 +31,7 @@ import javolution.util.FastMap;
  */
 public class Rights {
 
-	private Map<String, Right> mRights = new FastMap<String, Right>();
+	private final Map<String, Right> mRights = new FastMap<String, Right>();
 
 	/**
 	 * adds a new right to the FastMap of rights. If there is already a right

@@ -71,7 +71,7 @@ public class SecurityHelper {
 	 * @return
 	 */
 	public static boolean isUserAuthenticated(WebSocketConnector aConnector) {
-		return isUserAuthenticated(aConnector.getSession().getStorage());
+		return aConnector.getSession().isAuthenticated();
 	}
 
 	/**

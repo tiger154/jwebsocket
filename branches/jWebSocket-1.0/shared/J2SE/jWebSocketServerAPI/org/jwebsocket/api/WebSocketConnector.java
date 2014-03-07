@@ -424,12 +424,4 @@ public interface WebSocketConnector {
 	 * instance.
 	 */
 	boolean isInternal();
-
-	/**
-	 *
-	 *
-	 *
-	 * @return
-	 */
-	String getSessionUID();
 }

@@ -52,7 +52,6 @@ import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.security.SecurityFactory;
-import org.jwebsocket.security.User;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.session.SessionManager;
 import org.jwebsocket.token.BaseToken;
@@ -160,7 +159,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String IS_AUTHENTICATED = "$is_authenticated";
+	public static final String IS_AUTHENTICATED = WebSocketSession.IS_AUTHENTICATED;
 	/**
 	 * jWebSocket core spring beans identifiers
 	 */
@@ -281,9 +280,9 @@ public class SystemPlugIn extends TokenPlugIn {
 			} else if (lType.equals(TT_BROADCAST_TO_SHARED_SESSION)) {
 				broadcastToSharedSession(aConnector, aToken);
 			} else if (lType.equals(TT_LOGIN)) {
-				login(aConnector, aToken);
+				logon(aConnector, aToken);
 			} else if (lType.equals(TT_LOGOUT)) {
-				logout(aConnector, aToken);
+				logoff(aConnector, aToken);
 			} else if (lType.equals(TT_LOGON)) {
 				logon(aConnector, aToken);
 			} else if (lType.equals(TT_LOGOFF)) {
@@ -432,18 +431,6 @@ public class SystemPlugIn extends TokenPlugIn {
 		if (false == aConnector instanceof InternalConnector) {
 			broadcastDisconnectEvent(aConnector);
 		}
-	}
-
-	private String getGroup(WebSocketConnector aConnector) {
-		return (String) aConnector.getSession().getStorage().get(VAR_GROUP);
-	}
-
-	private void setGroup(WebSocketConnector aConnector, String aGroup) {
-		aConnector.getSession().getStorage().put(VAR_GROUP, aGroup);
-	}
-
-	private void removeGroup(WebSocketConnector aConnector) {
-		aConnector.getSession().getStorage().remove(VAR_GROUP);
 	}
 
 	private void broadcastEvent(WebSocketConnector aConnector, Token aEvent) {
@@ -680,126 +667,6 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// don't send session-id on good bye, neither required nor desired
 		sendToken(aConnector, aConnector, lGoodBye);
-	}
-
-	private void login(WebSocketConnector aConnector, Token aToken) {
-		Token lResponse = createResponse(aToken);
-
-		String lUsername = aToken.getString("username");
-		// TODO: Add authentication and password check
-		String lPassword = aToken.getString("password");
-		String lEncoding = aToken.getString("encoding");
-
-		String lGroup = aToken.getString("group");
-		Boolean lReturnRoles = aToken.getBoolean("getRoles", Boolean.FALSE);
-		Boolean lReturnRights = aToken.getBoolean("getRights", Boolean.FALSE);
-
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'login' (username='" + lUsername
-					+ "', group='" + lGroup
-					+ "') from '" + aConnector + "'...");
-		}
-
-		if (lUsername != null) {
-
-			// try to get user from security factory
-			User lUser = SecurityFactory.getUser(lUsername);
-			if (null == lUser && ALLOW_AUTO_ANONYMOUS) {
-				// if user not found and auto anonymous user selected, 
-				// try to pick anonymous user
-				lUser = SecurityFactory.getUser(ANONYMOUS_USER);
-			}
-
-			// check if user exists and if password matches
-			if (null != lUser && lUser.checkPassword(lPassword, lEncoding)) {
-				lResponse.setString("username", lUsername);
-				// if previous session id was passed to continue an aborted session
-				// return the session-id to notify client about acceptance
-				lResponse.setString("sourceId", aConnector.getId());
-				// set shared variables
-				setUsername(aConnector, lUsername);
-				setGroup(aConnector, lGroup);
-
-				if (lReturnRoles) {
-					lResponse.setList("roles", new FastList(lUser.getRoleIdSet()));
-				}
-				if (lReturnRights) {
-					lResponse.setList("rights", new FastList(lUser.getRightIdSet()));
-				}
-				if (mLog.isInfoEnabled()) {
-					mLog.info("User '" + lUsername
-							+ "' successfully logged in from "
-							+ aConnector.getRemoteHost() + " ("
-							+ aConnector.getId() + ").");
-				}
-			} else {
-				mLog.warn("Attempt to login with invalid credentials, username '" + lUsername + "'.");
-				lResponse.setInteger("code", -1);
-				lResponse.setString("msg", "Invalid credentials");
-				// reset username to not send login event, see below
-				lUsername = null;
-			}
-		} else {
-			lResponse.setInteger("code", -1);
-			lResponse.setString("msg", "Missing arguments for 'login' command");
-		}
-
-		// send response to client
-		sendToken(aConnector, aConnector, lResponse);
-
-		// if successfully logged in...
-		if (lUsername != null) {
-			// broadcast "login event" to other clients
-			broadcastLoginEvent(aConnector);
-		}
-	}
-
-	private void logout(WebSocketConnector aConnector, Token aToken) {
-		Token lResponse = createResponse(aToken);
-
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'logout' (username='"
-					+ getUsername(aConnector)
-					+ "') from '" + aConnector + "'...");
-		}
-
-		String lUsername = getUsername(aConnector);
-		if (null != lUsername) {
-			// send normal answer token, good bye is for close!
-			// if anoymous user allowed send corresponding flag for 
-			// clarification that auto anonymous may have been applied.
-			if (ALLOW_ANONYMOUS_LOGIN && ALLOW_AUTO_ANONYMOUS) {
-				lResponse.setBoolean(
-						"anonymous",
-						null != ANONYMOUS_USER
-						&& ANONYMOUS_USER.equals(lUsername));
-			}
-			sendToken(aConnector, aConnector, lResponse);
-			// send good bye token as response to client
-			// sendGoodBye(aConnector, CloseReason.CLIENT);
-
-			// and broadcast the logout event
-			broadcastLogoutEvent(aConnector);
-			// resetting the username is the only required signal for logout
-			lResponse.setString("sourceId", aConnector.getId());
-			removeUsername(aConnector);
-			removeGroup(aConnector);
-
-			// cleaning user session
-			aConnector.getSession().getStorage().clear();
-
-			// log successful logout operation
-			if (mLog.isInfoEnabled()) {
-				mLog.info("User '" + lUsername
-						+ "' successfully logged out from "
-						+ aConnector.getRemoteHost() + " ("
-						+ aConnector.getId() + ").");
-			}
-		} else {
-			lResponse.setInteger("code", -1);
-			lResponse.setString("msg", "not logged in");
-			sendToken(aConnector, aConnector, lResponse);
-		}
 	}
 
 	private void send(WebSocketConnector aConnector, Token aToken) {
@@ -1163,10 +1030,9 @@ public class SystemPlugIn extends TokenPlugIn {
 	 */
 	void logon(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
-		if (SecurityHelper.isUserAuthenticated(aConnector)) {
+		if (aConnector.getSession().isAuthenticated()) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(
-					aToken, -1, "Is authenticated already, logoff first!"));
+					lServer.createErrorToken(aToken, -1, "is authenticated"));
 			return;
 		}
 
@@ -1247,18 +1113,35 @@ public class SystemPlugIn extends TokenPlugIn {
 			getServer().sendToken(aConnector, getServer().createNotAuthToken(aToken));
 			return;
 		}
-
-		// cleaning the session
-		aConnector.getSession().getStorage().clear();
-
-		// sending acknowledge response
-		getServer().sendToken(aConnector, createResponse(aToken));
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Logoff process finished successfully!");
+		String lUsername = aConnector.getUsername();
+		Token lResponse = createResponse(aToken);
+		// if anoymous user allowed send corresponding flag for 
+		// clarification that auto anonymous may have been applied.
+		if (ALLOW_ANONYMOUS_LOGIN && ALLOW_AUTO_ANONYMOUS) {
+			lResponse.setBoolean(
+					"anonymous",
+					null != ANONYMOUS_USER
+					&& ANONYMOUS_USER.equals(lUsername));
 		}
+		// broadcasting response to all sharing session connectors
+		getServer().broadcastToSharedSession(aConnector.getId(), 
+				aConnector.getSession().getSessionId(), 
+				lResponse, 
+				true);
 
 		// broadcast the logout event
 		broadcastLogoutEvent(aConnector);
+
+		// clearing the session
+		aConnector.getSession().getStorage().clear();
+
+		// log successful logout operation
+		if (mLog.isInfoEnabled()) {
+			mLog.info("User '" + lUsername
+					+ "' successfully logged out from "
+					+ aConnector.getRemoteHost() + " ("
+					+ aConnector.getId() + ").");
+		}
 	}
 
 	void getAuthorities(WebSocketConnector aConnector, Token aToken) {
@@ -1288,16 +1171,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		aToken.setString("sourceId", aConnector.getId());
 		boolean lSenderIncluded = aToken.getBoolean("senderIncluded", false);
 
-		// getting shared session connectors
-		Collection<WebSocketConnector> lConnectors = getServer().getSharedSessionConnectors(aConnector.getSession()
-				.getSessionId()).values();
-		for (WebSocketConnector lConnector : lConnectors) {
-			if (!lSenderIncluded && aConnector.getId().equals(lConnector.getId())) {
-				continue;
-			}
-
-			sendToken(lConnector, aToken);
-		}
+		getServer().broadcastToSharedSession(aConnector.getId(),
+				aConnector.getSession().getSessionId(),
+				aToken,
+				lSenderIncluded);
 
 		// sending processing confirmation to calling client
 		sendToken(aConnector, createResponse(aToken));

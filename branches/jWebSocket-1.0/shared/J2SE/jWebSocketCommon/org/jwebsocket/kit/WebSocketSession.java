@@ -19,6 +19,7 @@
 package org.jwebsocket.kit;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  *
@@ -29,18 +30,28 @@ public class WebSocketSession {
 
 	private String mSessionId = null;
 	private Map<String, Object> mStorage;
-	/**
-	 *
-	 */
 	public static final String CREATED_AT = "$created_at";
+	public static final String USERNAME = "$username";
+	public static final String IS_AUTHENTICATED = "$is_authenticated";
+	private final String SESSION_UID = "$session_uid";
 
 	/**
-	 *
+	 * Create a new WebSocketSession instance
 	 */
 	public WebSocketSession() {
 	}
 
 	/**
+	 * Clear all session data. The 'createdAt' property gets a new value, the
+	 * sessionId value is kept.
+	 */
+	public synchronized void reset() {
+		getStorage().clear();
+		setCreatedAt();
+	}
+
+	/**
+	 * Get the session creation timestamp.
 	 *
 	 * @return
 	 */
@@ -53,7 +64,41 @@ public class WebSocketSession {
 	}
 
 	/**
+	 * Indicate if the client associated to the session is authenticated.
 	 *
+	 * @return
+	 */
+	public boolean isAuthenticated() {
+		if (null != mStorage) {
+			return mStorage.containsKey(IS_AUTHENTICATED) ? (Boolean) mStorage.get(IS_AUTHENTICATED) : false;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the session UUID value. Different value to the sessionId for security
+	 * reasons.
+	 *
+	 * @return
+	 */
+	public String getUUID() {
+		Map<String, Object> lStorage = getStorage();
+		if (null != lStorage) {
+			if (lStorage.containsKey(SESSION_UID)) {
+				return lStorage.get(SESSION_UID).toString();
+			} else {
+				String lUUID = UUID.randomUUID().toString();
+				lStorage.put(SESSION_UID, lUUID);
+				return lUUID;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Set the session creation timestamp.
 	 */
 	public void setCreatedAt() {
 		if (null == getCreatedAt()) {
@@ -64,8 +109,9 @@ public class WebSocketSession {
 	}
 
 	/**
+	 * Create a new WebSocketSession instance
 	 *
-	 * @param aSessionId a session identifier
+	 * @param aSessionId The session identifier value
 	 */
 	public WebSocketSession(String aSessionId) {
 		mSessionId = aSessionId;
@@ -79,17 +125,32 @@ public class WebSocketSession {
 	}
 
 	/**
+	 * Get the username of the client associated to the session.
+	 *
+	 * @return the session username
+	 */
+	public String getUsername() {
+		Map<String, Object> lStorage = getStorage();
+		return (null != lStorage
+				? (String) lStorage.get(USERNAME)
+				: null);
+	}
+
+	/**
+	 * Set the session identifier.
+	 *
 	 * @param aSessionId the session identifier to set
 	 */
 	public void setSessionId(String aSessionId) {
 		if (null == mSessionId) {
 			this.mSessionId = aSessionId;
 		} else {
-			throw new UnsupportedOperationException("The session identifier property is in read-only state!");
+			throw new UnsupportedOperationException("The 'sessionId' property is in read-only state!");
 		}
 	}
 
 	/**
+	 * Get the session data storage.
 	 *
 	 * @return the session persistent storage instance
 	 */
@@ -98,6 +159,7 @@ public class WebSocketSession {
 	}
 
 	/**
+	 * Set the session data storage
 	 *
 	 * @param aStorage the session persistent storage instance to set
 	 */

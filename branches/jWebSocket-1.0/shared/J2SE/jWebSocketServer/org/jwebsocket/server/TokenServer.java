@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.server;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -213,6 +214,18 @@ public class TokenServer extends BaseServer {
 	public WebSocketPacket tokenToPacket(WebSocketConnector aConnector, Token aToken) {
 		String lFormat = aConnector.getHeader().getFormat();
 		return TokenFactory.tokenToPacket(lFormat, aToken);
+	}
+	
+	public void broadcastToSharedSession(String aSenderId, String aSessionId, Token aToken, boolean aSenderIncluded) {
+		// getting shared session connectors
+		Collection<WebSocketConnector> lConnectors = getSharedSessionConnectors(aSessionId).values();
+		for (WebSocketConnector lConnector : lConnectors) {
+			if (!aSenderIncluded && aSenderId.equals(lConnector.getId())) {
+				continue;
+			}
+
+			sendToken(lConnector, aToken);
+		}
 	}
 
 	/**

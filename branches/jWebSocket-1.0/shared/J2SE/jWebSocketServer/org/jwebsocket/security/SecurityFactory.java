@@ -24,8 +24,6 @@ import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.xml.RightConfig;
 import org.jwebsocket.config.xml.RoleConfig;
 import org.jwebsocket.config.xml.UserConfig;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 
 /**
  * implements the security capabilities of jWebSocket.
@@ -59,52 +57,7 @@ public class SecurityFactory {
 	 */
 	public static String USER_LOCKED = "locked";
 	private static boolean mAutoAnonymous = false;
-	private static final boolean mUseSpring = true;
-	private static AuthenticationProvider mAuthProv;
-	private static ProviderManager mAuthProvMgr;
 
-	/**
-	 * Initializes the security system programmatically to allow to a startup
-	 * without a config file in embedded environments!
-	 */
-	/*
-	 public static void initDefault() {
-	 mRights = new Rights();
-	 // specify rights
-	 Right lRPC = new Right("org.jwebsocket.plugins.rpc", "rpc", "Allow Remote Procedure Calls (RPC) to server");
-	 Right lRRPC = new Right("org.jwebsocket.plugins.rpc", "rrpc", "Allow Reverse Remote Procedure Calls (RRPC) to other clients");
-	 mRights.addRight(lRPC);
-	 mRights.addRight(lRRPC);
-	
-	 // specify roles and assign rights to roles
-	 // TODO: needs to be removed in final release!
-	 Role lGuestRole = new Role("guest", "Guests", lRPC, lRRPC);
-	 Role lUserRole = new Role("regUser", "Registered Users", lRPC, lRRPC);
-	 Role lAdminRole = new Role("admin", "Administrators", lRPC, lRRPC);
-	
-	 // specify role sets for a simpler assignment to the users
-	 Roles lGuestRoles = new Roles(lGuestRole);
-	 Roles lUserRoles = new Roles(lGuestRole, lUserRole);
-	 Roles lAdminRoles = new Roles(lGuestRole, lUserRole, lAdminRole);
-	
-	 User lAnonymous = new User(User.generateUUID(), USER_ANONYMOUS, "anonymous", "", "", lGuestRoles);
-	 User lGuest = new User(User.generateUUID(), USER_GUEST, "guest", "guest", "guest", lGuestRoles);
-	 User lUser = new User(User.generateUUID(), USER_USER, "user", "user", "user", lUserRoles);
-	 User lRoot = new User(User.generateUUID(), USER_ROOT, "root", "root", "root", lAdminRoles);
-	 // add a locked user for test purposes, e.g. to reject token in system filter
-	 User lLockedUser = new User(User.generateUUID(), USER_LOCKED, "locked", "locked", "locked", lGuestRoles);
-	 lLockedUser.setStatus(User.ST_LOCKED);
-	
-	 mUsers = new Users();
-	 mUsers.addUser(lAnonymous);
-	 mUsers.addUser(lGuest);
-	 mUsers.addUser(lUser);
-	 mUsers.addUser(lRoot);
-	 mUsers.addUser(lLockedUser);
-	
-	 // log.info("Default rights, roles and users initialized.");
-	 }
-	 */
 	/**
 	 * initializes the security system with the settings from the
 	 * jWebSocket.xml.
@@ -163,18 +116,13 @@ public class SecurityFactory {
 
 			mUsers.addUser(lUser);
 		}
-
-		// log.info("Rights, roles and users successfully initialized.");
 	}
 
 	/**
 	 *
 	 */
 	public static void init() {
-		// initialize the security factory with some default demo data
-		// to show at least something even with no config
-		// TODO: only temporary, will be removed in the final release!
-		// SecurityFactory.initDefault();
+	
 	}
 
 	/**
