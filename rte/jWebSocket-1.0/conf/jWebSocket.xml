@@ -1465,7 +1465,7 @@
 					 - static: Uses the user static (jWebSocket.xml users definition) authentication
 					   to check for granted authorities (rights)
 					   
-					 Default value is "static"
+					 Default value is "spring"
 					   
 					 Required user authorities for the ItemStorage plug-in:
 					 - org.jwebsocket.plugins.itemstorage.write_collection
@@ -1475,7 +1475,6 @@
 					 - org.jwebsocket.plugins.itemstorage.write_definition
 					 - org.jwebsocket.plugins.itemstorage.read_definition
 				-->
-				<setting key="authentication_method">static</setting>
 				<!-- The fragment size attribute is used on the fragmentation  of outgoing messages -->
 				<setting key="fragmentSize">2000</setting>
 			</settings>
@@ -1776,7 +1775,7 @@
 					 - static: Uses the user static (jWebSocket.xml users definition) authentication
 					   to check for granted authorities (rights)
 					   
-					 Default value is "static"
+					 Default value is "spring"
 					   
 					 Required user authorities for the FileSystem plug-in:
 					 - org.jwebsocket.plugins.filesystem.load
@@ -1788,7 +1787,6 @@
 					 - org.jwebsocket.plugins.filesystem.getFilelist
 					 - org.jwebsocket.plugins.filesystem.observe
 				-->
-				<!-- <setting key="authentication_method">spring</setting> -->
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
@@ -1832,7 +1830,6 @@
 			</jars>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/UserAdminPlugInEE/useradmin.xml</setting>
-				<setting key="authentication_method">spring</setting>
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>

@@ -5,18 +5,23 @@
 	<!-- ####### STATIC authentication ####### -->
 	
 	<bean id="staticAuthProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
-		<property name="userDetailsService" ref="staticAuthUserDetailsService"/>
+		<property name="userDetailsService" ref="staticUserDetailsService"/>
 		<!-- here we configure MD5 encryption of the passwords --> 
 		<!-- Remark the following line to use plain text passwords, NOT RECOMMENDED! --> 
-		<property name="passwordEncoder" ref="authPasswordEncoderMD5"/>
+		<!--<property name="passwordEncoder" ref="authPasswordEncoderMD5"/>-->
 
 		<!-- optional if you intent to use EhCache to cache user repository -->
 		<!--<property name="userCache" ref="authUserCache"/>-->
 	</bean>
 
-	<bean id="staticAuthUserDetailsService" class="org.springframework.security.core.userdetails.memory.InMemoryDaoImpl">
+	<!-- jWebSocket static user details service. See jWebSocket.xml <rights><roles><users> -->
+	<bean id="staticUserDetailsService" class="org.jwebsocket.security.StaticUserDetails"></bean>
+	
+	<!-- Spring based static user details service 
+	format: username=password,grantedAuthority[,grantedAuthority][,enabled|disabled]
+	<bean id="staticAuthUserDetailsService2" class="org.springframework.security.core.userdetails.memory.InMemoryDaoImpl">
 		<property name="userMap">
-			<!-- format: username=password,grantedAuthority[,grantedAuthority][,enabled|disabled] -->
+			
 			<value>
 				guest=084e0343a0486ff05530df6c705c8bb4, ROLE_ADMIN_ROOT, org.jwebsocket.plugins.filesystem.save, enabled
 				user=ee11cbb19052e40b07aac0ca060c23ee, ROLE_EXTERNAL, ROLE_ADMIN_ROOT, org.jwebsocket.plugins.filesystem.save, enabled
@@ -27,6 +32,7 @@
 			</value>
 		</property>	
 	</bean>
+	-->
 
 
 	<!-- ####### LDAP authentication ####### -->
@@ -217,12 +223,12 @@
 	<bean id="storageProviderJDBC" class="org.jwebsocket.storage.ormlite.OrmLiteStorageProvider" init-method="initialize">
 		<constructor-arg index="0">
 			<bean class="com.j256.ormlite.spring.DaoFactory"
-			  factory-method="createDao">
+				  factory-method="createDao">
 				<constructor-arg index="0" >
 					<bean class="com.j256.ormlite.jdbc.JdbcConnectionSource" init-method="initialize">
 						<property name="url">
 							<bean class="org.jwebsocket.config.JWebSocketConfig"
-							  factory-method="expandEnvAndJWebSocketVars">
+								  factory-method="expandEnvAndJWebSocketVars">
 								<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/sessions;create=true" />
 							</bean>
 						</property>
@@ -238,11 +244,11 @@
 
 	<!-- JDBC session -->
 	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
-	  init-method="initialize" destroy-method="shutdown">
+		  init-method="initialize" destroy-method="shutdown">
 		<property name="storageProvider" ref="storageProviderJDBC"/>
 		<property name="reconnectionManager">
 			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
-			  init-method="initialize" destroy-method="shutdown">
+				  init-method="initialize" destroy-method="shutdown">
 				<property name="sessionExpirationTime" value="60" />
 				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
 				<property name="storageProvider" ref="storageProviderJDBC" />
