@@ -23,7 +23,7 @@ jws.tests.JDBC = {
 	title: "JDBC plug-in",
 	description: "jWebSocket JDBC plug-in",
 	category: "Community Edition",
-	enabled: false,
+	enabled: true,
 	
 	TEST_TABLE: "jwebsocket_automated_test",
 	TEST_STRING_1: "This is an automated demo text", 
@@ -465,9 +465,7 @@ jws.tests.JDBC = {
 		this.testInsert();
 		this.testUpdate();
 		this.testSelect();
-		this.testDelete();
-		
-		this.testGetPrimaryKeys();
+		this.testDelete();	
 		
 		// drop the temporary table (test for DDL commands)
 		this.testDropTable();
