@@ -59,6 +59,18 @@
 		<property name="username" value="username"/>
 		<property name="password" value="password"/>
 	</bean>
+	
+	<!-- the Derby DataSource-->
+	<bean id="derbyDataSource"
+		  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
+		<property name="url">
+			<bean class="org.jwebsocket.config.JWebSocketConfig"
+				  factory-method="expandEnvAndJWebSocketVars">
+				<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/jdbc_derby;create=true" />
+			</bean>
+		</property>
+	</bean>
 
 	<bean id="mySQLNativeAccess_jwsSys" class="org.jwebsocket.plugins.jdbc.NativeAccess">
 		<!-- here you can select which datasource to use 
@@ -97,13 +109,28 @@
 		<property name="execFunctionSQL" value="select ${funcname}(${args})"/>
 		<!-- Oracle  command to execute a stored procedure -->
 		<property name="execStoredProcSQL" value="call ${procname}(${args})"/>
+	</bean>	
+	
+	<bean id="derbyNativeAccess" class="org.jwebsocket.plugins.jdbc.NativeAccess">
+		<!-- here you can select which datasource to use 
+		for the native JDBC access component (field "ref") -->
+		<property name="dataSource" ref="derbyDataSource"/>
+		
+		<!-- Oracle  command to call a function -->
+		<property name="execFunctionSQL" value="select ${funcname}(${args})"/>
+		<!-- Oracle  command to execute a stored procedure -->
+		<property name="execStoredProcSQL" value="call ${procname}(${args})"/>
 	</bean>
+
 
 	<bean id="settings" class="org.jwebsocket.plugins.jdbc.Settings">
 		<property name="connections">
 			<map>
-				<entry key="default" value-ref="mySQLNativeAccess_jwsSys"/>
+				<!-- Uncomment for enable mysql to default jdbc connection
+					<entry key="default" value-ref="mySQLNativeAccess_jwsSys"/> 
+				-->
 				<entry key="jwsDemo" value-ref="mySQLNativeAccess_jwsDemo"/>
+				<entry key="default" value-ref="derbyNativeAccess"/>
 			</map>
 		</property>
 	</bean>
