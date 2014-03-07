@@ -65,15 +65,11 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	private final Map<String, Object> mSettings = new FastMap<String, Object>();
 	private PluginConfiguration mConfiguration;
 	// authentication methods support
-	private String mAuthenticationMethod = "static";
+	private String mAuthenticationMethod = AUTHENTICATION_METHOD_SPRING;
 	/**
 	 *
 	 */
 	public static String AUTHENTICATION_METHOD_KEY = "authentication_method";
-	/**
-	 *
-	 */
-	public static String AUTHENTICATION_METHOD_STATIC = "static";
 	/**
 	 *
 	 */
@@ -96,7 +92,7 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 		}
 
 		// setting the authentication method value
-		mAuthenticationMethod = getString(AUTHENTICATION_METHOD_KEY, AUTHENTICATION_METHOD_STATIC);
+		mAuthenticationMethod = getString(AUTHENTICATION_METHOD_KEY, mAuthenticationMethod);
 	}
 
 	@Override

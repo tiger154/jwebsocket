@@ -35,7 +35,6 @@ import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.plugins.system.SecurityHelper;
-import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
@@ -393,9 +392,7 @@ public class TokenPlugIn extends BasePlugIn {
 	public boolean hasAuthority(WebSocketConnector aConnector, String aAuthority) {
 		String lAuthenticationMethod = getAuthenticationMethod();
 
-		if (lAuthenticationMethod.equals(AUTHENTICATION_METHOD_STATIC)) {
-			return SecurityFactory.hasRight(aConnector.getUsername(), aAuthority);
-		} else if (lAuthenticationMethod.equals(AUTHENTICATION_METHOD_SPRING)) {
+		if (lAuthenticationMethod.equals(AUTHENTICATION_METHOD_SPRING)) {
 			return SecurityHelper.userHasAuthority(aConnector, aAuthority);
 		} else if (lAuthenticationMethod.equals(AUTHENTICATION_METHOD_EMBEDDED)) {
 			if (aConnector instanceof IEmbeddedAuthentication) {
@@ -407,11 +404,11 @@ public class TokenPlugIn extends BasePlugIn {
 		}
 		// authentication method not supported
 		throw new UnsupportedOperationException("Unsupported authentication method. "
-				+ "Supported methods are: spring, static or embedded!");
+				+ "Supported methods are: spring or embedded!");
 	}
 
 	/**
-	 * Gets a client configuration parameter for this plug-in.
+	 * Get a client configuration parameter for this plug-in.
 	 *
 	 * @param aConnector
 	 * @param aKey The parameter name
@@ -422,7 +419,7 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	/**
-	 * Gets a client configuration parameter for this plug-in.
+	 * Get a client configuration parameter for this plug-in.
 	 *
 	 * @param aConnector
 	 * @param aKey The parameter name

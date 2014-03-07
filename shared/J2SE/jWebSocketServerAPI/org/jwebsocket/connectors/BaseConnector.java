@@ -22,7 +22,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TimerTask;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -34,7 +33,6 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
-import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
@@ -47,7 +45,7 @@ import org.springframework.util.Assert;
  * Provides the basic implementation of the jWebSocket connectors. The
  * {@literal BaseConnector} is supposed to be used as ancestor for the connector
  * implementations like e.g. the {@literal TCPConnector} or the {@literal TomcatConnector
- }.
+ * }.
  *
  * @author aschulze
  * @author kyberneees
@@ -58,7 +56,7 @@ public class BaseConnector implements WebSocketConnector {
 	/**
 	 * Default reserved name for shared custom variable <tt>username</tt>.
 	 */
-	public final static String VAR_USERNAME = "$username";
+	public final static String VAR_USERNAME = WebSocketSession.USERNAME;
 	/**
 	 * Default reserved name for shared custom variable <tt>subprot</tt>.
 	 */
@@ -96,10 +94,6 @@ public class BaseConnector implements WebSocketConnector {
 	 * Session object for the WebSocket connection.
 	 */
 	private final WebSocketSession mSession = new WebSocketSession();
-	/*
-	 *
-	 */
-	private final String SESSION_UID = "session_uid";
 	/**
 	 * Shared Variables container for this connector.
 	 */
@@ -571,10 +565,7 @@ public class BaseConnector implements WebSocketConnector {
 	// and configured unique node id for clusters (independent from tcp port)
 	@Override
 	public String getUsername() {
-		Map<String, Object> lStorage = getSession().getStorage();
-		return (null != lStorage
-				? (String) lStorage.get(VAR_USERNAME)
-				: null);
+		return getSession().getUsername();
 	}
 
 	@Override
@@ -693,21 +684,5 @@ public class BaseConnector implements WebSocketConnector {
 	protected void checkBeforeSend(WebSocketPacket aPacket) throws Exception {
 		Assert.isTrue(getMaxFrameSize() >= aPacket.size(),
 				"The packet size exceeds the connector supported 'max frame size' value!");
-	}
-
-	@Override
-	public String getSessionUID() {
-		Map<String, Object> lStorage = getSession().getStorage();
-		if (null != lStorage) {
-			if (lStorage.containsKey(SESSION_UID)) {
-				return lStorage.get(SESSION_UID).toString();
-			} else {
-				String lUUID = UUID.randomUUID().toString();
-				lStorage.put(SESSION_UID, lUUID);
-				return lUUID;
-			}
-		} else {
-			return null;
-		}
 	}
 }

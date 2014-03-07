@@ -146,6 +146,10 @@ public class User {
 		this.mUUID = aUUID;
 	}
 
+	public String getPassword() {
+		return mPassword;
+	}
+
 	/**
 	 *
 	 * @return
