@@ -23,7 +23,7 @@ import org.jwebsocket.plugins.events.EventsPlugIn;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IEventModelBuilder {
 

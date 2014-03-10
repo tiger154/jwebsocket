@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
 /**
  * Create MongoDBStorage instances
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MongoDBStorageBuilder implements IInitializable {
 

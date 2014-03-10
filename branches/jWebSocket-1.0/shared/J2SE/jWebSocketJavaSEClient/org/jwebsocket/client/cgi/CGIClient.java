@@ -27,7 +27,7 @@ import org.jwebsocket.kit.WebSocketException;
  * linked application and sends its messages to either the stdOut or stdErr
  * channel to the linked application.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class CGIClient extends BaseWebSocketClient {
 

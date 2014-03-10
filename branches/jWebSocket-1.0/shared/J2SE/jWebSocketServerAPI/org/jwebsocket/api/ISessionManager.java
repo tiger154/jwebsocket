@@ -23,7 +23,7 @@ package org.jwebsocket.api;
  *
  * The session storage is a persistence engine.
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public interface ISessionManager extends IInitializable {
 

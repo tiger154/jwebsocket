@@ -24,7 +24,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JWSResponseTokenListener implements IJMSResponseListener {
 
@@ -60,10 +60,16 @@ public class JWSResponseTokenListener implements IJMSResponseListener {
 		// calling token callbacks
 		onReponse(lResponseToken);
 
-		if (0 == lResponseToken.getCode()) {
-			onSuccess(lResponseToken);
-		} else {
-			onFailure(lResponseToken);
+		if (null != lResponseToken) {
+			if ("event".equals(lResponseToken.getString("type"))
+					&& "progress".equals(lResponseToken.getString("name"))) {
+				onProgress(lResponseToken);
+			} else if ("response".equals(lResponseToken.getString("type"))
+					&& 0 == lResponseToken.getCode()) {
+				onSuccess(lResponseToken);
+			} else {
+				onFailure(lResponseToken);
+			}
 		}
 	}
 
@@ -90,5 +96,13 @@ public class JWSResponseTokenListener implements IJMSResponseListener {
 
 	@Override
 	public void onTimeout() {
+	}
+
+	/**
+	 *
+	 * @param aEvent
+	 */
+	@Override
+	public void onProgress(Token aEvent) {
 	}
 }

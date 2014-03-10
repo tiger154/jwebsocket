@@ -33,7 +33,7 @@ import org.jwebsocket.logging.Logging;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class SystemPlugIn extends EventModelPlugIn {
 

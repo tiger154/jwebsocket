@@ -7,7 +7,7 @@ package org.jwebsocket.plugins.monitoring.util;
 
 /**
  *
- * @author vbarzana
+ * @author Victor Antonio Barzana Crespo
  */
 public class PlugInObjectInMemory {
 

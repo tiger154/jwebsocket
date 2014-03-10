@@ -20,7 +20,7 @@ package org.jwebsocket.exception;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MissingTokenSender extends Exception {
 

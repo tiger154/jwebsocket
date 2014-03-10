@@ -10,7 +10,7 @@ import org.jwebsocket.plugins.quota.utils.Interval;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaIntervalSI extends QuotaBaseInstance {
 

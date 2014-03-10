@@ -25,7 +25,7 @@ import org.jwebsocket.logging.Logging;
 /**
  * Logger Implementation for Log4J
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Log4JLogger extends BaseLogger implements ILogger {
 

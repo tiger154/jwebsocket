@@ -14,7 +14,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author vbarzanacres
+ * @author Victor Antonio Barzana Crespo
  */
 public class JMSSendPayloadDialog extends javax.swing.JFrame {
 

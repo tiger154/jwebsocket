@@ -32,7 +32,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class BenchmarkPlugIn extends TokenPlugIn {
 

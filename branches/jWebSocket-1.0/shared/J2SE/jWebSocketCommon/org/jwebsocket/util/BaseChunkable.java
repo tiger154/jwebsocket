@@ -23,7 +23,7 @@ import org.jwebsocket.api.IChunkable;
 /**
  * The class suppose to be extended by concrete IChunkable implementations
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 abstract public class BaseChunkable implements IChunkable {
 

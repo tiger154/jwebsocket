@@ -22,7 +22,7 @@ package org.jwebsocket.plugins.sms;
  * Provides the base class for the SMS providers. Contains common methods for
  * the providers.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class BaseSMSProvider {
 

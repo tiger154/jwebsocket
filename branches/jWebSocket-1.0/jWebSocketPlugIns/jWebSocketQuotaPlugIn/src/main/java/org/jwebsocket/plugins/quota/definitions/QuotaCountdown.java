@@ -9,7 +9,7 @@ import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaCountdownSI;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaCountdown extends BaseQuota {
 

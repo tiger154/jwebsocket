@@ -25,7 +25,7 @@ import org.jwebsocket.eventmodel.observable.Event;
 /**
  * Fired when the response for a client event is founded in cache
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ResponseFromCache extends Event {
 

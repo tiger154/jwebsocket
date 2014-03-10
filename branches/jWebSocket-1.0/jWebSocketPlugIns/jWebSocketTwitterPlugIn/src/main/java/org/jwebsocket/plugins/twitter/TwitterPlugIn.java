@@ -46,7 +46,7 @@ import twitter4j.auth.RequestToken;
 
 /**
  *
- * @author aschulze logout see:
+ * @author Alexander Schulze logout see:
  * http://stackoverflow.com/questions/1960957/twitter-api-logout
  * http://groups.google.com/group/twitter4j/browse_thread/thread/5957722d596e269c/c2956d43a46b31b5?lnk=gst&q=stateless
  */

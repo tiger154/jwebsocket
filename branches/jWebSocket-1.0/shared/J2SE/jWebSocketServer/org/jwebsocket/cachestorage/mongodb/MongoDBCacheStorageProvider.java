@@ -24,7 +24,7 @@ import org.jwebsocket.storage.mongodb.MongoDBStorageBuilder;
 
 /**
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class MongoDBCacheStorageProvider extends MongoDBCacheStorageBuilder implements ICacheStorageProvider {
 

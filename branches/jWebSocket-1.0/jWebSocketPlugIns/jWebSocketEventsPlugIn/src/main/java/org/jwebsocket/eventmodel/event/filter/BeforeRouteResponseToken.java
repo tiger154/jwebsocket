@@ -25,7 +25,7 @@ import org.jwebsocket.eventmodel.observable.Event;
 /**
  * Fired before send the response token to the client
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class BeforeRouteResponseToken extends Event {
 

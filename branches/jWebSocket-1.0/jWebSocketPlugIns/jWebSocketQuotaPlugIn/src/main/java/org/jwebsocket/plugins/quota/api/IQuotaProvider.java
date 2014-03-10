@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public interface IQuotaProvider {
 

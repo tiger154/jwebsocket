@@ -35,7 +35,7 @@ import org.jwebsocket.logging.Logging;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class TestPlugIn extends JcPlugIn {
 

@@ -36,7 +36,7 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * This plug-in provides all the chat functionality.
  *
- * @author vbarzana
+ * @author Victor Antonio Barzana Crespo
  */
 public class ChatPlugIn extends TokenPlugIn {
 

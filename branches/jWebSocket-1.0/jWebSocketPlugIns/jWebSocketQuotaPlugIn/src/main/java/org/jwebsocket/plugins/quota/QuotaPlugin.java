@@ -1,7 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket - jWebSocket Quota Plug-in (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.quota;
 
 import java.util.List;
@@ -13,7 +27,6 @@ import javax.jms.MessageListener;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.config.JWebSocketCommonConstants;
-import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.logging.Logging;
@@ -29,7 +42,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaPlugin extends ActionPlugIn {
 

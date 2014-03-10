@@ -26,7 +26,7 @@ import org.jwebsocket.token.Token;
 /**
  * S2C event to remove expired cache entries in the client
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class S2CRemoveCacheEntries extends S2CEvent {
 

@@ -37,7 +37,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 @ContextConfiguration(locations = {"classpath:JMSPlugIn.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)

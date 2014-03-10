@@ -32,7 +32,7 @@ import org.springframework.security.authentication.BadCredentialsException;
  * An Exception handler is a component used to handle (uncaught) exceptions
  * during C2S event notification work-flow.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ExceptionHandler implements IExceptionHandler {
 

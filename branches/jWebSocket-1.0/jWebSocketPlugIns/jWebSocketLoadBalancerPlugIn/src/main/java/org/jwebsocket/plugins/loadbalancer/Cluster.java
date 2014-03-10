@@ -29,9 +29,9 @@ import org.jwebsocket.api.WebSocketConnector;
 /**
  * Manages the list of end points per cluster.
  *
- * @author aschulze
- * @author rbetancourt
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Betancourt Toucet
+ * @author Rolando Santamaria Maso
  */
 public class Cluster {
 

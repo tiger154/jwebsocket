@@ -23,7 +23,7 @@ import java.util.TimerTask;
 
 /**
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class PurgeCancelledWriterTasks extends TimerTask {
 

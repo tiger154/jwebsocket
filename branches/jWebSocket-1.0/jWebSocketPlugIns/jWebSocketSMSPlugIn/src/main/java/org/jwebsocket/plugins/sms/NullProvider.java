@@ -26,7 +26,7 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * Null implementation of ISMSProvider interface for testing purposes
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class NullProvider implements ISMSProvider {
 

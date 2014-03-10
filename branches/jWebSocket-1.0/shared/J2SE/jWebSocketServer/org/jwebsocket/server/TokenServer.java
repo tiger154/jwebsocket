@@ -47,9 +47,9 @@ import org.jwebsocket.util.JMSManager;
 import org.springframework.util.Assert;
 
 /**
- * @author aschulze
+ * @author Alexander Schulze
  * @author jang
- * @author rbetancourt
+ * @author Rolando Betancourt Toucet
  */
 public class TokenServer extends BaseServer {
 

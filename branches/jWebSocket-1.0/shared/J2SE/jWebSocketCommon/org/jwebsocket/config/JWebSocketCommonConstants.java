@@ -24,8 +24,8 @@ import org.jwebsocket.kit.WebSocketEncoding;
 
 /**
  *
- * @author aschulze
- * @author rbetancourt
+ * @author Alexander Schulze
+ * @author Rolando Betancourt Toucet
  */
 public class JWebSocketCommonConstants {
 

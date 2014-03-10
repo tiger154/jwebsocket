@@ -34,7 +34,7 @@ import org.jwebsocket.plugins.system.SystemPlugIn;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class SecurityFilter extends EventModelFilter {
 

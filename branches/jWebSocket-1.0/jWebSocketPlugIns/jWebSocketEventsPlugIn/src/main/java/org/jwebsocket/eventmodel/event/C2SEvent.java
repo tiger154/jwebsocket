@@ -25,7 +25,7 @@ import org.jwebsocket.eventmodel.util.Util;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public abstract class C2SEvent extends Event implements IInitializable {
 

@@ -22,7 +22,7 @@ import javolution.util.FastList;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class SharedCanvas extends BaseSharedObject {
 

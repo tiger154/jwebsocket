@@ -27,7 +27,7 @@ import javax.jms.TextMessage;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface MessageDelegate {
 

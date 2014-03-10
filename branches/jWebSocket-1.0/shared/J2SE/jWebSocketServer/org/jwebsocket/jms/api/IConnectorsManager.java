@@ -27,7 +27,7 @@ import org.jwebsocket.jms.JMSEngine;
 /**
  * Component that manages the jWebSocket cluster connectors data.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IConnectorsManager extends IInitializable {
 

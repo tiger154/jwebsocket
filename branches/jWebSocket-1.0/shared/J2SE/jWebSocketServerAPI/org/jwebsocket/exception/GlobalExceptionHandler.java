@@ -23,7 +23,7 @@ import org.jwebsocket.logging.Logging;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class GlobalExceptionHandler implements Thread.UncaughtExceptionHandler {
 

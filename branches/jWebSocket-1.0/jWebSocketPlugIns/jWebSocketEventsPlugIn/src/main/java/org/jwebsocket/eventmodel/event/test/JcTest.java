@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * Test the security checks on an event notification
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JcTest extends C2SEvent {
 }

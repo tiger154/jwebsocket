@@ -20,7 +20,7 @@ package org.jwebsocket.kit;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public enum WebSocketEncoding {
 

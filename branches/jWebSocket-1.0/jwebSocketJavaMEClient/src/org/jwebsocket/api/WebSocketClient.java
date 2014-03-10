@@ -21,7 +21,7 @@ import org.jwebsocket.listener.WebSocketClientEvent;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface WebSocketClient {
 

@@ -32,7 +32,7 @@ import org.jwebsocket.api.ITokenizable;
 /**
  * A token is ...
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JSONToken extends BaseToken implements Token {
 

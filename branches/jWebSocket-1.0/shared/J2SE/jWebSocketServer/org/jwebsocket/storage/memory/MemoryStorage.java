@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  *
  * @param <K>
  * @param <V>
- * @author rbetancourt
+ * @author Rolando Betancourt Toucet
  */
 public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 

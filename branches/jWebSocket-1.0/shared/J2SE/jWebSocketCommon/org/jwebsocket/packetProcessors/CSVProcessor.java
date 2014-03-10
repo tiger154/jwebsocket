@@ -29,7 +29,7 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * converts CSV formatted data packets into tokens and vice versa.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class CSVProcessor {
 

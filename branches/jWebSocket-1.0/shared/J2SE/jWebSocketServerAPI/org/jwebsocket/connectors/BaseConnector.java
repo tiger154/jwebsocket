@@ -47,9 +47,9 @@ import org.springframework.util.Assert;
  * implementations like e.g. the {@literal TCPConnector} or the {@literal TomcatConnector
  * }.
  *
- * @author aschulze
- * @author kyberneees
- * @author rbetancourt
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
+ * @author Rolando Betancourt Toucet
  */
 public class BaseConnector implements WebSocketConnector {
 

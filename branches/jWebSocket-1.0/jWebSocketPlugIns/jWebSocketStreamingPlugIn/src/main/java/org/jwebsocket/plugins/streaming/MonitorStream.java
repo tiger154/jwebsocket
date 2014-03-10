@@ -32,7 +32,7 @@ import org.jwebsocket.token.TokenFactory;
  * certain system parameters in a predefined interval of 1 second and reports it
  * to all registered clients.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class MonitorStream extends TokenStream {
 

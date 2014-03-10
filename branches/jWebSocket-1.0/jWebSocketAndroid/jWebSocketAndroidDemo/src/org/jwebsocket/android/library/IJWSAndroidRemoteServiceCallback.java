@@ -9,7 +9,7 @@ import android.os.RemoteException;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface IJWSAndroidRemoteServiceCallback extends android.os.IInterface {
 

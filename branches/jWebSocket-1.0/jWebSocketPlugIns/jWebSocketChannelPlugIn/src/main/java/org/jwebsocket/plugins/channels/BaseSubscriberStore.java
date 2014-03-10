@@ -25,7 +25,7 @@ import org.jwebsocket.logging.Logging;
 /**
  * Storage based implementation of the <tt>SubscriberStore</tt>
  *
- * @author puran, aschulze, kyberneees
+ * @author Alexander Schulze, Puran Singh, Rolando Santamaria Maso
  */
 public class BaseSubscriberStore implements SubscriberStore {
 

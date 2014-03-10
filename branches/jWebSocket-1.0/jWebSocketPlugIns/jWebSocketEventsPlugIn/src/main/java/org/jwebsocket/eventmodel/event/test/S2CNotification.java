@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * Execute a s2c event notification
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class S2CNotification extends C2SEvent {
 }

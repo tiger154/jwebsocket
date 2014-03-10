@@ -9,7 +9,7 @@ import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaNotFound;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public interface IQuota {
 
@@ -142,8 +142,8 @@ public interface IQuota {
 	 * quota value.
 	 *
 	 * @param aInstance
+	 * @param aNameSpace
 	 * @param aInstanceType
-	 * @param aUuid
 	 * @param aActions
 	 * @param aAmount
 	 * @return
@@ -208,7 +208,6 @@ public interface IQuota {
 	 * log volume or times of access.
 	 *
 	 * @param aInstance
-	 * @param aNameSpace
 	 * @param aUuid
 	 * @param aAmount
 	 * @throws

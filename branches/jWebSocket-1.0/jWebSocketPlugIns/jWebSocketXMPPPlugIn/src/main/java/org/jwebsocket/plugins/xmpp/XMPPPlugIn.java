@@ -44,7 +44,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  *
  * This Plug-In make heavy use of Smack API 3.1.0
  * http://www.igniterealtime.org/projects/smack/

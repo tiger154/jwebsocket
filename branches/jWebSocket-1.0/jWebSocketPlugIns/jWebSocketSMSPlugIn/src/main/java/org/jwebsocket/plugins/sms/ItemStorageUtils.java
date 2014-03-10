@@ -29,7 +29,7 @@ import org.jwebsocket.util.MapAppender;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ItemStorageUtils {
 

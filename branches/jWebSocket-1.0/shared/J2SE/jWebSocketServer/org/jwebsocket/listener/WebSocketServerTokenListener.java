@@ -24,7 +24,7 @@ import org.jwebsocket.token.Token;
 /**
  * Interface for the Token WebSocket listeners based on the low level listeners.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface WebSocketServerTokenListener extends WebSocketServerListener {
 

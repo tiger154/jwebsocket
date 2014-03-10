@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  * plug-ins and core components.
  *
  * @author alexanderschulze
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JWebSocketBeanFactory {
 

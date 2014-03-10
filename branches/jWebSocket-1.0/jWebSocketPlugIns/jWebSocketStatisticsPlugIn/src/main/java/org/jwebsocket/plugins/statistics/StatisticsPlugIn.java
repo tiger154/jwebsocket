@@ -32,7 +32,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class StatisticsPlugIn extends TokenPlugIn {
 

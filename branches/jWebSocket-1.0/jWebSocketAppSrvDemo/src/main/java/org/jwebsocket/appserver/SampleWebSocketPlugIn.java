@@ -28,7 +28,7 @@ import org.jwebsocket.token.Token;
 /**
  * Sample jWebSocket plug-in
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class SampleWebSocketPlugIn extends ActionPlugIn {
 

@@ -63,7 +63,7 @@ import org.jwebsocket.util.Tools;
  * considering the fact that number of traversal for broadcasting data or
  * callback on listeners on events would be more than insertion and removal.
  *
- * @author puran, aschulze
+ * @author Alexander Schulze, Puran Singh
  * @version $Id: Channel.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
  */
 public final class Channel implements ChannelLifeCycle {

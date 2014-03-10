@@ -11,7 +11,7 @@ import org.jwebsocket.plugins.quota.api.IQuotaStorage;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaProvider implements IQuotaProvider {
 

@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * The client order to logoff
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class Logoff extends C2SEvent {
 }

@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * This annotation allows automatic population in custom events fields. Copy or
  * move value from the incoming tokens to the targeted fields in events.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

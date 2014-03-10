@@ -28,7 +28,7 @@ import org.jwebsocket.eventmodel.observable.Event;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 

@@ -22,7 +22,7 @@ import org.jwebsocket.eventmodel.rrpc.FailureReason;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IRRPCOnResponseCallback {
 

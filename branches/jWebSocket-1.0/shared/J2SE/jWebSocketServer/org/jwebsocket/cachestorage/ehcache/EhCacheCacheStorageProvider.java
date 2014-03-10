@@ -25,7 +25,7 @@ import org.jwebsocket.storage.ehcache.EhCacheManager;
 /**
  * Provides a getStorage method to return an EhCache storage with a given name.
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class EhCacheCacheStorageProvider implements ICacheStorageProvider {
 

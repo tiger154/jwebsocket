@@ -27,7 +27,7 @@ import javax.net.ssl.SSLException;
  * Concept:
  * http://www.java-gaming.org/index.php?PHPSESSID=1omilg2ptvh0a138gcfsnjqki1&topic=21984.msg181208#msg181208
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public abstract class SSLHandler {
 

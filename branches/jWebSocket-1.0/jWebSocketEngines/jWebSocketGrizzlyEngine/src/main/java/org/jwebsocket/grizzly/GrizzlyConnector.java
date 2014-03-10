@@ -36,7 +36,7 @@ import org.jwebsocket.logging.Logging;
 
 /**
  *
- * @author ashulze, vbarzana
+ * @author Alexander Schulze, Victor Antonio Barzana Crespo
  */
 public class GrizzlyConnector extends BaseConnector {
 

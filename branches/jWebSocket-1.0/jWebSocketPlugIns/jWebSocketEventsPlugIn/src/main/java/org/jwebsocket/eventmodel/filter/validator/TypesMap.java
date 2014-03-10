@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.exception.InvalidTypeException;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class TypesMap {
 

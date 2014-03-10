@@ -27,7 +27,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class SamplePlugIn extends BaseClientTokenPlugIn {
 

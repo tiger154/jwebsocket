@@ -25,7 +25,7 @@ import javolution.util.FastMap;
  * maintains the internal jWebSocket user FastMap. The users are loaded during
  * the startup process from the jWebSocket.xml file.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Users {
 

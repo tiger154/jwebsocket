@@ -23,7 +23,7 @@ import org.jwebsocket.api.IBasicStorage;
 /**
  * Class that represents the subscriber of a channel
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class Subscriber extends Publisher {
 

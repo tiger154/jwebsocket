@@ -24,7 +24,7 @@ import net.sf.ehcache.event.CacheManagerEventListener;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class EhCacheEventListener implements CacheManagerEventListener {
 

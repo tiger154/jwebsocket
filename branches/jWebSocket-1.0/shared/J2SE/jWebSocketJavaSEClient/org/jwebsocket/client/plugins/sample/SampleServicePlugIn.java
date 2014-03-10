@@ -28,7 +28,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author rbetancourt
+ * @author Rolando Betancourt Toucet
  */
 public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 

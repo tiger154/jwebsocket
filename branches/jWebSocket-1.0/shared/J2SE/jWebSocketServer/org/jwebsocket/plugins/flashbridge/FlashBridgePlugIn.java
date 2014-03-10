@@ -39,7 +39,7 @@ import org.jwebsocket.plugins.TokenPlugIn;
  * This plug-in processes the policy-file-request from the browser side flash
  * plug-in. This makes jWebSocket cross-browser-compatible.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class FlashBridgePlugIn extends TokenPlugIn {
 

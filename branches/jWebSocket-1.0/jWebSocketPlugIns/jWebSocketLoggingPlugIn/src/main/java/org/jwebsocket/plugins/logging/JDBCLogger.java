@@ -21,7 +21,7 @@ package org.jwebsocket.plugins.logging;
 /**
  * Logger Implementation for JDBC Databases
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JDBCLogger extends BaseLogger implements ILogger {
 

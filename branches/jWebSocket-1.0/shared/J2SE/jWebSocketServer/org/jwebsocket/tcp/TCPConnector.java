@@ -41,10 +41,10 @@ import org.jwebsocket.logging.Logging;
 /**
  * Implementation of the jWebSocket TCP socket connector.
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @author jang
- * @author kyberneees
- * @author rbetancourt
+ * @author Rolando Santamaria Maso
+ * @author Rolando Betancourt Toucet
  */
 public class TCPConnector extends BaseConnector {
 

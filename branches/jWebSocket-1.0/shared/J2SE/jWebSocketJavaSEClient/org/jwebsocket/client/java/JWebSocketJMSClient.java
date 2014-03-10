@@ -55,7 +55,7 @@ import org.springframework.util.Assert;
 /**
  * JMS WebSocket client implementation for the server-side JMS Engine
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JWebSocketJMSClient extends BaseClient {
 

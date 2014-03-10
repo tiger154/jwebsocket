@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
  * public void someAction(WebSocketConnector aConnector, Token aToken)
  * throws Exception {}</code>
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ConnectionManager implements IInitializable {
 

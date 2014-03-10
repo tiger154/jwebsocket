@@ -26,7 +26,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class NativeAccess {
 

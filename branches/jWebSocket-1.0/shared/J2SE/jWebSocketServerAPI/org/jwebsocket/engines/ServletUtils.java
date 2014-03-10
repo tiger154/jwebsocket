@@ -23,7 +23,7 @@ import javax.servlet.ServletContext;
 /**
  * Contains utility methods and constants for servlet engines
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ServletUtils {
 

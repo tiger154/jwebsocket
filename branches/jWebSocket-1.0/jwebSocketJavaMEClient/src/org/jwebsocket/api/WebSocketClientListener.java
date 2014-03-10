@@ -19,7 +19,7 @@ import org.jwebsocket.listener.WebSocketClientEvent;
 /**
  * Interface for the low level WebSocket listeners.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface WebSocketClientListener {
 

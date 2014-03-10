@@ -21,7 +21,7 @@ package org.jwebsocket.eventmodel.exception;
 /**
  * The connector identifier does not exists or has expired.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class InvalidConnectorIdentifier extends Exception {
 

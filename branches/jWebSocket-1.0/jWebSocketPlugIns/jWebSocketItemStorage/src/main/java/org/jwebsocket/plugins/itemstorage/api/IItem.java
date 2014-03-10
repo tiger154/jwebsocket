@@ -24,7 +24,7 @@ import org.jwebsocket.api.ITokenizable;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IItem extends ITokenizable, IMappable {
 

@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * Fired before process events from the client
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class BeforeProcessEvent extends C2SEvent {
 

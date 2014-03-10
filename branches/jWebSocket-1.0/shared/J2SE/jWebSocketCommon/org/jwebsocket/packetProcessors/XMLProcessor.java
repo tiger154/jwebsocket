@@ -26,7 +26,7 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * converts XML formatted data packets into tokens and vice versa.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class XMLProcessor {
 

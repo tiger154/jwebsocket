@@ -27,7 +27,7 @@ import org.jwebsocket.config.ConfigHandler;
 /**
  * Handler class that reads the <tt>library</tt> configuration
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class LibraryConfigHandler implements ConfigHandler {
 

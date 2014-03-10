@@ -6,7 +6,7 @@ package org.jwebsocket.plugins.quota.utils.exception;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class ExceptionQuotaAlreadyExist extends Exception {
 

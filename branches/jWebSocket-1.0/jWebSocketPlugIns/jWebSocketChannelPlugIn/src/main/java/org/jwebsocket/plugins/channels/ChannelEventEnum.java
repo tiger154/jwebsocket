@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.channels;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public enum ChannelEventEnum {
 

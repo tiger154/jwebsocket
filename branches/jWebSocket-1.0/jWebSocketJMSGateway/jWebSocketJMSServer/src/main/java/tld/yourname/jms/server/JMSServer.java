@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.jms.JMSException;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -217,6 +218,30 @@ public class JMSServer {
 								0, // return code
 								"Ok", // return message
 								lAdditionalResults,
+								aToken.getString("payload"));
+					}
+				}
+		);
+
+		// on response of the login...
+		lListener.addRequestListener(
+				"org.jwebsocket.plugins.jmsdemo", "testProgress", new JWSMessageListener(lSender) {
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+						int lMax = 3;
+						for (int lIdx = 0; lIdx < lMax; lIdx++) {
+							lSender.sendProgress(aSourceId, aToken, ((lIdx + 1.0) / lMax) * 100, 0, "Iteration #" + lIdx, null);
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException lEx) {
+							}
+						}
+						lSender.respondPayload(
+								aToken.getString("sourceId"),
+								aToken,
+								0, // return code
+								"Ok", // return message
+								null,
 								aToken.getString("payload"));
 					}
 				}

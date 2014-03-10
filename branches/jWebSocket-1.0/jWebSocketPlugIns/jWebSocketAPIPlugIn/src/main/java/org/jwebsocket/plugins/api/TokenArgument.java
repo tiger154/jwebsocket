@@ -24,7 +24,7 @@ import org.jwebsocket.token.Token;
 /**
  * The token argument definition class
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class TokenArgument implements ITokenizable {
 

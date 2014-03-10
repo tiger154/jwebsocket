@@ -30,7 +30,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author rbetancourt
+ * @author Rolando Betancourt Toucet
  */
 public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 

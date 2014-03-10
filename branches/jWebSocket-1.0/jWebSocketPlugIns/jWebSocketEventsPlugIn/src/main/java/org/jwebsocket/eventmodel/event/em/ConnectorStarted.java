@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * A connector gets started
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ConnectorStarted extends C2SEvent {
 }

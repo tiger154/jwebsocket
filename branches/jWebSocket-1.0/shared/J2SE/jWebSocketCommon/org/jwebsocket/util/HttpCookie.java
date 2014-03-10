@@ -24,7 +24,7 @@ import javolution.util.FastList;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class HttpCookie {
 

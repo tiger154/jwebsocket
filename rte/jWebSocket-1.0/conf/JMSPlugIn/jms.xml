@@ -16,8 +16,7 @@
 	<!-- JMS ConnectionFactory to use -->
 	<bean id="amqFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
 		<!-- TCP args reference at: http://activemq.apache.org/tcp-transport-reference.html -->
-		<property name="brokerURL" value="tcp://0.0.0.0:61616?connectionTimeout=10000" />
-		<!-- <property name="brokerURL" value="tcp://172.20.116.68:61616?connectionTimeout=10000" /> -->
+		<property name="brokerURL" value="tcp://0.0.0.0:61616?connectionTimeout=10000" /> 
 		<property name="useAsyncSend" value="true" />
 	</bean>
 
@@ -39,12 +38,12 @@
 	<!-- settings for the JMSGateway -->
 	<bean id="org.jwebsocket.plugins.jms.settings" class="org.jwebsocket.plugins.jms.Settings">
 		<!-- failover args reference at: http://activemq.apache.org/failover-transport-reference.html -->
-		<!-- <property name="brokerURI" value="failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&amp;connectionTimeout=10000"/> -->
-		<!-- <property name="brokerURI" value="tcp://172.20.116.68:61616?connectionTimeout=10000"/> -->
-		<property name="brokerURI" value="tcp://127.0.0.1:61616?connectionTimeout=10000"/>
+		<!-- <property name="brokerURI" value="failover:(tcp://<host1>:61616,tcp://<host2>:61616)?initialReconnectDelay=100&amp;connectionTimeout=10000"/> -->
+		<!-- <property name="brokerURI" value="tcp://<host>:61616?connectionTimeout=10000"/> -->
+		<property name="brokerURI" value="tcp://localhost:61616?connectionTimeout=10000"/>
 		<property name="gatewayTopic" value="org.jwebsocket.jms.gateway"/>
 		<property name="advisoryTopic" value="ActiveMQ.Advisory.Consumer.Topic.org.jwebsocket.jms.gateway"/>
-		<!-- use id for this node in the cluster -->
+		<!-- use id for this node in the cluster, must be unique per node -->
 		<property name="endPointId" value="org.jwebsocket.jms.gateway"/>
 	</bean>
 

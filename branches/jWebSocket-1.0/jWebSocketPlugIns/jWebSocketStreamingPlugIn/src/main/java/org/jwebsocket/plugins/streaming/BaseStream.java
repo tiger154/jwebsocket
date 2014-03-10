@@ -38,7 +38,7 @@ import org.jwebsocket.server.BaseServer;
  * certain client can register at or unregister from the stream. Basically
  * streams send their messages only to clients that are registered at a stream.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class BaseStream implements WebSocketStream {
 

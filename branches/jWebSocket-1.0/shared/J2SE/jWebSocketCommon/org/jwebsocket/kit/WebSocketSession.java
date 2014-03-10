@@ -23,8 +23,8 @@ import java.util.UUID;
 
 /**
  *
- * @author aschulze
- * @author kyberneees (Persistent storage support for each connector session)
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class WebSocketSession {
 

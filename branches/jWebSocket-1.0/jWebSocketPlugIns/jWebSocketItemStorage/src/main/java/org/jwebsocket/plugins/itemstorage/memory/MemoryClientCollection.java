@@ -24,7 +24,7 @@ import org.jwebsocket.plugins.itemstorage.api.IClientCollection;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MemoryClientCollection implements IClientCollection {
 

@@ -27,7 +27,7 @@ import org.jwebsocket.listener.WebSocketClientEvent;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class BaseClientJ2ME extends BaseClient {
 

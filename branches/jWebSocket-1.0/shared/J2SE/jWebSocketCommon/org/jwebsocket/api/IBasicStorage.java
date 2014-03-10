@@ -27,7 +27,7 @@ import java.util.Map;
  * 
  * @param <K> 
  * @param <V> 
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public interface IBasicStorage<K, V> extends Map<K, V>, IInitializable {
 

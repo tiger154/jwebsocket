@@ -22,7 +22,7 @@ package org.jwebsocket.api;
  * These enumeration specifies the supported data types for data exchange
  * between multiple platforms.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public enum WebSocketConnectorStatus {
 

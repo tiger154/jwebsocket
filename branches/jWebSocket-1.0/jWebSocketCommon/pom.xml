@@ -95,7 +95,7 @@
 								<descriptor>src/assembly/one-jar.xml</descriptor>
 							</descriptors>
 						</configuration>
-						<phase>package</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
@@ -175,6 +175,12 @@
 	</dependencies>
 
 	<repositories>
+		<!-- jWebSocket repository -->
+		<repository>
+			<id>jWebSocket</id>
+			<name>jWebSocket Maven Repository</name>
+			<url>http://mvn.jwebsocket.org</url>
+		</repository>
 		<!-- NetBeans repository -->
 		<repository>
 			<id>netbeans</id>

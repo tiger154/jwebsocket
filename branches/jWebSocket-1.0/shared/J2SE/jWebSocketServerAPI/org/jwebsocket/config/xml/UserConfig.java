@@ -25,9 +25,7 @@ import org.jwebsocket.config.Config;
 import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
- * @authors puran, aschulze
- * @version $Id: UserConfig.java 596 2010-06-22 17:09:54Z fivefeetfurther $
- *
+ * @author Alexander Schulze, Puran Singh
  */
 public final class UserConfig implements Config {
 

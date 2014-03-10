@@ -29,7 +29,7 @@ import org.apache.activemq.security.MessageAuthorizationPolicy;
  * Message authorization policy implementation to provide security on replies
  * delivery. Only request owners can receive replies.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy {
 

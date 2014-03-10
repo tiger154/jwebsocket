@@ -24,7 +24,7 @@ import org.jwebsocket.token.Token;
 /**
  * S2C event to plus two variables in the client side (x,y)
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class S2CPlusXYEvent extends S2CEvent {
 

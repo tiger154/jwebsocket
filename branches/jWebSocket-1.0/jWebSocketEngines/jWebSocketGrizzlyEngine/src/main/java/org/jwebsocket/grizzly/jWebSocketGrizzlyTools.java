@@ -25,7 +25,7 @@ import javolution.util.FastMap;
 
 /**
  *
- * @author vbarzana
+ * @author Victor Antonio Barzana Crespo
  */
 public class jWebSocketGrizzlyTools {
 

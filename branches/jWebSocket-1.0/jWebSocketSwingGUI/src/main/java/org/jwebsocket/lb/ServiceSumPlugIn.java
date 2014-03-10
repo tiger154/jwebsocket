@@ -29,7 +29,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author rbetancourt
+ * @author Rolando Betancourt Toucet
  */
 public class ServiceSumPlugIn extends BaseServiceTokenPlugIn {
 

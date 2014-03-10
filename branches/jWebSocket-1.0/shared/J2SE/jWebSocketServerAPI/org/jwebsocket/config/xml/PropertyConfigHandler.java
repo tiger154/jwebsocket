@@ -26,7 +26,7 @@ import org.jwebsocket.config.ConfigHandler;
 /**
  * Handler class that reads the properties configuration
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class PropertyConfigHandler implements ConfigHandler {
 

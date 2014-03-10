@@ -46,7 +46,7 @@ import org.jwebsocket.token.Token;
 /**
  * The EventsPlugIn core component
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class EventModel extends ObservableObject implements IInitializable, IListener {
 

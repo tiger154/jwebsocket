@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * Fired after process events from the client
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class AfterProcessEvent extends C2SEvent {
 

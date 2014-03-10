@@ -34,7 +34,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JDBCTools {
 

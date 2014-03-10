@@ -33,7 +33,7 @@ import org.jwebsocket.eventmodel.util.Util;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public abstract class ObservableObject implements IObservable {
 

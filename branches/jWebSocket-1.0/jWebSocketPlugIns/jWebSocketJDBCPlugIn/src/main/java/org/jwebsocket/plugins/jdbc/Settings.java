@@ -23,7 +23,7 @@ import javolution.util.FastMap;
 
 /**
  *
- * @author rbetancourt
+ * @author Rolando Betancourt Toucet
  */
 public class Settings {
 

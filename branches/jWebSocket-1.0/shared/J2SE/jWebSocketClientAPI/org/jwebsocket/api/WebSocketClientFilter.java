@@ -21,7 +21,7 @@ package org.jwebsocket.api;
 /**
  * The class represents the jWebSocket client filters
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface WebSocketClientFilter {
 

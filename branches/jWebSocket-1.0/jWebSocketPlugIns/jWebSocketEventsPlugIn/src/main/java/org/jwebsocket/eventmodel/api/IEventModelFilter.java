@@ -25,7 +25,7 @@ import org.jwebsocket.eventmodel.core.EventModel;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IEventModelFilter {
 

@@ -60,7 +60,7 @@ import org.springframework.util.Assert;
  * combination with the FileSystem and Channels plug-in guarantee mayor common
  * cloud platforms requirements.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ItemStoragePlugIn extends ActionPlugIn {
 

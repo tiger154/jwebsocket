@@ -21,7 +21,7 @@ import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaNotFound;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public abstract class BaseQuota implements IQuota {
 

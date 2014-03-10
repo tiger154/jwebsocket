@@ -34,9 +34,9 @@ import org.jwebsocket.kit.WebSocketSession;
  * applications. For applications it is recommended to implement them in
  * plug-ins based on the token server.
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @version $Id: WebSocketServer.java 625 2010-07-06 17:33:33Z fivefeetfurther $
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface WebSocketServer extends ISystemLifecycle {
 

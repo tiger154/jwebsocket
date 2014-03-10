@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.observable.Event;
 /**
  * S2C event to notify a user logoff event
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class UserLogoff extends Event {
 

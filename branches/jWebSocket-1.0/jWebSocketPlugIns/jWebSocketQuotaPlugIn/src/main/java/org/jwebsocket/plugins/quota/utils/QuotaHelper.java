@@ -13,7 +13,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaHelper {
 

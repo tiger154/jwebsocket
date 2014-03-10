@@ -2,7 +2,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket JavaScript/Browser Client (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC2 (build 40204)
+	//:const:*:VERSION:String:1.0.0 RC2 (build 40310)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 40204)",
+	VERSION: "1.0.0 RC2 (build 40310)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -49,7 +49,8 @@ var jws = {
 	MSG_WS_NOT_SUPPORTED:
 		"Unfortunately your browser does neither natively support WebSockets\n" +
 		"nor you have the Adobe Flash-PlugIn 10+ installed.\n" +
-		"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer.",
+		"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer, " + 
+		"or use a native WebSocket compliant browser.",
 
 	// some namespace global constants
 	
@@ -113,19 +114,21 @@ var jws = {
 	// Reliability Manager off (Default connection)
 	RO_OFF: {
 		autoReconnect : false,
-		reconnectDelay: -1,
-		reconnectTimeout: -1,
+		reconnectDelay: -1
+		/* ,
 		queueItemLimit: -1,
 		queueSizeLimit: -1
+		*/
 	},
 
 	// Reliability Manager on
 	RO_ON: {
 		autoReconnect: true,
-		reconnectDelay: 2000,
-		reconnectTimeout: 30000,
+		reconnectDelay: 3000
+		/* ,
 		queueItemLimit: 1000,
 		queueSizeLimit: 1024 * 1024 * 10 // 10 MByte
+		*/
 	},
 	
 	//:const:*:WS_SUBPROT_JSON:String:org.jwebsocket.json
@@ -885,22 +888,22 @@ var jws = {
 			if( jws.fIsNetscape ) {
 				jws.fBrowserType = jws.BT_NETSCAPE;
 			} else {
-				jws.fIsFirefox = "Netscape" === navigator.appName;
-				if( jws.fIsFirefox ) {
-					jws.fBrowserType = jws.BT_FIREFOX;
+				jws.fIsOpera = "Opera" === navigator.appName;
+				if( jws.fIsOpera ) {
+					jws.fBrowserType = jws.BT_OPERA;
 				} else {
-					jws.fIsOpera = "Opera" === navigator.appName;
-					if( jws.fIsOpera ) {
-						jws.fBrowserType = jws.BT_OPERA;
+					jws.fIsPocketIE = "Microsoft Pocket Internet Explorer" === navigator.appName;
+					if( jws.fIsPocketIE ) {
+						ws.fBrowserType = jws.BT_IEXPLORER;
 					} else {
-						jws.fIsIExplorer = "Microsoft Internet Explorer" === navigator.appName;
+						jws.fIsIExplorer = "Microsoft Internet Explorer" === navigator.appName || !!lUA.match(/Trident.*rv[ :]./);
 						if( jws.fIsIExplorer ) {
 							jws.fBrowserType = jws.BT_IEXPLORER;
 						} else {
-							jws.fIsPocketIE = "Microsoft Pocket Internet Explorer" === navigator.appName;
-							if( jws.fIsPocketIE ) {
-								jws.fBrowserType = jws.BT_IEXPLORER;
-							}
+							jws.fIsFirefox = "Netscape" === navigator.appName;
+							if( jws.fIsFirefox ) {
+								jws.fBrowserType = jws.BT_FIREFOX;
+							} 
 						}
 					}
 				}
@@ -916,6 +919,7 @@ var jws = {
 	if( jws.fIsIExplorer ) {
 		//:i:de:Beispiel f&uuml;r userAgent bei IE6:
 		//:i:de:"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"
+		//:i:de:"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.3; .NET4.0C; .NET4.0E; rv:11.0) like Gecko"
 		jws.fBrowserName = jws.BROWSER_NAMES[ jws.BT_IEXPLORER ];
 		lVersion = lUA.match( /MSIE.*/i );
 		if ( lVersion ) {
@@ -923,6 +927,22 @@ var jws = {
 			p = lStr.indexOf( ";" );
 			jws.fBrowserVerStr = p > 0 ? lStr.substr( 0, p ) : lStr;
 			jws.fBrowserVerNo = parseFloat( jws.fBrowserVerStr );
+		} else {
+			// if is Internet Explorer 11 or higher
+			lVersion = lUA.match(/Trident.*rv[ :]./);
+			if(lVersion){
+				p = lVersion[ 0 ].indexOf( ";" );
+				if(p > 0){
+					jws.fBrowserVerStr = lVersion[ 0 ].substr(0, p);
+				} else {
+					jws.fBrowserVerStr = "Trident";
+				}
+				lVersion = lUA.match(/rv[ :].*/i);
+				if(lVersion){
+					p = lVersion[0].indexOf(")");
+					jws.fBrowserVerNo = parseFloat( p >= 3?lVersion[0].substr(3,p-3): lVersion[0].substr(3, 4));
+				}
+			}
 		}
 	} else if( jws.fIsFirefox ) {
 		jws.fBrowserName = jws.BROWSER_NAMES[ jws.BT_FIREFOX ];
@@ -1128,6 +1148,32 @@ jws.events = {
 	)
 		
 };
+
+//  <JasobNoObfs>
+/**
+ * Copyright (c) 2012 Florian H., https://github.com/js-coder
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ **/
+!function(document,undefined){var cookie=function(){return cookie.get.apply(cookie,arguments);};var utils=cookie.utils={isArray:Array.isArray||function(value){return Object.prototype.toString.call(value)==='[object Array]';},isPlainObject:function(value){return! !value&&Object.prototype.toString.call(value)==='[object Object]';},toArray:function(value){return Array.prototype.slice.call(value);},getKeys:Object.keys||function(obj){var keys=[],key='';for(key in obj){if(obj.hasOwnProperty(key))keys.push(key);}return keys;},escape:function(value){return String(value).replace(/[,;"\\=\s%]/g,function(character){return encodeURIComponent(character);});},retrieve:function(value,fallback){return value==null?fallback:value;}};cookie.defaults={};cookie.expiresMultiplier=60*60*24;cookie.set=function(key,value,options){if(utils.isPlainObject(key)){for(var k in key){if(key.hasOwnProperty(k))this.set(k,key[k],value);}}else{options=utils.isPlainObject(options)?options:{expires:options};var expires=options.expires!==undefined?options.expires:(this.defaults.expires||''),expiresType=typeof(expires);if(expiresType==='string'&&expires!=='')expires=new Date(expires);else if(expiresType==='number')expires=new Date(+new Date+1000*this.expiresMultiplier*expires);if(expires!==''&&'toGMTString'in expires)expires=';expires='+expires.toGMTString();var path=options.path||this.defaults.path;path=path?';path='+path:'';var domain=options.domain||this.defaults.domain;domain=domain?';domain='+domain:'';var secure=options.secure||this.defaults.secure?';secure':'';document.cookie=utils.escape(key)+'='+utils.escape(value)+expires+path+domain+secure;}return this;};cookie.remove=function(keys){keys=utils.isArray(keys)?keys:utils.toArray(arguments);for(var i=0,l=keys.length;i<l;i++){this.set(keys[i],'',-1);}return this;};cookie.empty=function(){return this.remove(utils.getKeys(this.all()));};cookie.get=function(keys,fallback){fallback=fallback||undefined;var cookies=this.all();if(utils.isArray(keys)){var result={};for(var i=0,l=keys.length;i<l;i++){var value=keys[i];result[value]=utils.retrieve(cookies[value],fallback);}return result;}else return utils.retrieve(cookies[keys],fallback);};cookie.all=function(){if(document.cookie==='')return{};var cookies=document.cookie.split('; '),result={};for(var i=0,l=cookies.length;i<l;i++){var item=cookies[i].split('=');result[decodeURIComponent(item[0])]=decodeURIComponent(item[1]);}return result;};cookie.enabled=function(){if(navigator.cookieEnabled)return true;var ret=cookie.set('_','_').get('_')==='_';cookie.remove('_');return ret;};window.cookie=cookie;}(document);
+//  </JasobNoObfs>
 
 //  <JasobNoObfs>
 /*
@@ -1494,14 +1540,14 @@ jws.tools = {
 		// please refer to http://www.ietf.org/rfc/rfc4122.txt
 		var lSegments = [];
 		var lHexDigits = "0123456789abcdef";
-		for (var lIdx = 0; lIdx < 36; lIdx++) {
-			lSegments[lIdx] = lHexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+		for( var lIdx = 0; lIdx < 36; lIdx++ ) {
+			lSegments[ lIdx ] = lHexDigits.substr( Math.floor( Math.random() * 0x10 ), 1 );
 		}
-		lSegments[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
-		lSegments[19] = lHexDigits.substr((lSegments[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-		lSegments[8] = lSegments[13] = lSegments[18] = lSegments[23] = "-";
+		lSegments[ 14 ] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+		lSegments[ 19 ] = lHexDigits.substr( ( lSegments[ 19 ] & 0x3 ) | 0x8, 1 );  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+		lSegments[  8 ] = lSegments[ 13 ] = lSegments[ 18 ] = lSegments[ 23 ] = "-";
 
-		var lUUID= lSegments.join("");
+		var lUUID = lSegments.join( "" );
 		return lUUID;
 	}	
 	
@@ -1729,9 +1775,19 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	},
 	
 	create: function( aOptions ) {
+		if( aOptions && aOptions.reliabilityOptions ) {
+			this.fReliabilityOptions = aOptions.reliabilityOptions;
+		}
 		// turn off connection reliability by default
 		if( !this.fReliabilityOptions ) {
 			this.fReliabilityOptions = jws.RO_OFF;
+		}
+		
+		// notifying 'not websocket supported' event to the app
+		if ( !jws.browserSupportsWebSockets() ){
+			if ( aOptions.OnWebSocketNotSupported && "function" == typeof aOptions.OnWebSocketNotSupported ){
+				aOptions.OnWebSocketNotSupported();
+			} 
 		}
 	},
 	
@@ -1783,6 +1839,23 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// if browser natively supports WebSockets...
 		// otherwise flash bridge may have embedded WebSocket class
 		if( lWsClass ) {
+			// supporting Flash session management
+			if ( self.WebSocket.__isFlashImplementation ){
+				// override session id with a cookie
+				var lSessionCookieName = "JWSSESSIONID";
+				var lArg = "sessionCookieName=";
+				var lA = aURL.indexOf(lArg);
+				if (lA > -1){
+					var lB = aURL.indexOf(",", lA);
+					if (lB > -1){
+						lSessionCookieName = aURL.substr(lA + lSessionCookieName.length, lB);
+					} else {
+						lSessionCookieName = aURL.substr(lA);
+					}
+				}
+				var lSessionId = cookie.get(lSessionCookieName, jws.tools.createUUID());
+				cookie.set(lSessionCookieName, lSessionId);
+			}
 
 			if( !this.fConn || this.fConn.readyState > 2 ) {
 				var lThis = this;
@@ -2017,10 +2090,10 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				};
 
 			} else {
-				throw new Error( "Already connected" );
+				throw new Error( "Already connected!" );
 			}
 		} else {
-			throw new Error( "WebSockets not supported by browser" );
+			throw new Error( "WebSockets not supported by web browser!" );
 		}
 	},
 
@@ -2301,6 +2374,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		}
 	},
 
+/*
 	//:m:*:setQueueItemLimit
 	//:d:en:Specifies the maximum number of allowed queue items. If a zero or _
 	//:d:en:negative number is passed the number of items is not checked. _
@@ -2328,6 +2402,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			this.fReliabilityOptions.queueSizeLimit = 0;
 		}
 	},
+*/
 
 	//:m:*:setReliabilityOptions
 	//:d:en:Specifies how the connection is management (null = no management) is done.
@@ -2335,7 +2410,6 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:r:*:::void:none
 	setReliabilityOptions: function( aOptions ) {
 		this.fReliabilityOptions = aOptions;
-		// if no auto-reconnect is desired, abort a pending re-connect, if such.
 		// if no auto-reconnect is desired, abort a pending re-connect, if such.
 		if( this.fReliabilityOptions ) {
 			if( this.fReliabilityOptions.autoReconnect ) {
@@ -2708,7 +2782,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	},
 	
 	processOpened: function ( aEvent ){
-		this.fEncodingFormats = ["base64", "zipBase64"];
+		this.fEncodingFormats = [ "base64", "zipBase64" ];
 		
 		// sending client headers to the server 
 		this.sendToken({
@@ -2721,9 +2795,9 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			jwsType: "javascript",
 			jwsVersion: jws.VERSION,
 			jwsInfo: 
-			jws.browserSupportsNativeWebSockets 
-			? "native"
-			: "flash " + jws.flashBridgeVer,
+				jws.browserSupportsNativeWebSockets 
+				? "native"
+				: "flash " + jws.flashBridgeVer,
 			encodingFormats: this.fEncodingFormats
 		});
 	},
@@ -4448,7 +4522,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SystemClientPlugIn );
 //:ancestor:*:jws.jWebSocketTokenClient
 //:d:en:Implementation of the [tt]jws.jWebSocketJSONClient[/tt] class.
 jws.oop.declareClass( "jws", "jWebSocketJSONClient", jws.jWebSocketTokenClient, {
-
+	
 	//:m:*:tokenToStream
 	//:d:en:converts a token to a JSON stream. If the browser provides a _
 	//:d:en:native JSON class this is used, otherwise it use the automatically _
@@ -4690,7 +4764,7 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 //	---------------------------------------------------------------------------
 //	jWebSocket XHRWebSocket class (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -5463,7 +5537,7 @@ if (typeof module !== "undefined") {
 //	(supports multithreading and background processes on browser clients,
 //	 given if they already support the HTML5 WebWorker standard)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -5493,7 +5567,7 @@ onmessage = function( aEvent ) {
 //	---------------------------------------------------------------------------
 //	jWebSocket API PlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -5513,13 +5587,12 @@ onmessage = function( aEvent ) {
 //:author:*:aschulze
 
 //:package:*:jws
-//:class:*:jws.APIPlugInClass
+//:class:*:jws.APIPlugIn
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.APIPlugIn[/tt] instance plug-in. This _
 //:d:en:plug-in provides the methods to register and unregister at certain _
 //:d:en:stream sn the server.
-jws.APIPlugInClass = {
-
+jws.APIPlugIn = {
 	//:const:*:NS:String:org.jwebsocket.plugins.API (jws.NS_BASE + ".plugins.api")
 	//:d:en:Namespace for the [tt]APIPlugIn[/tt] class.
 	// if namespace changed update server plug-in accordingly!
@@ -5527,87 +5600,94 @@ jws.APIPlugInClass = {
 	//:const:*:ID:String:APIPlugIn
 	//:d:en:Id for the [tt]APIPlugIn[/tt] class.
 	ID: "api",
-
-	hasPlugIn: function( aId, aOptions ) {
+	
+	hasPlugIn: function(aId, aOptions) {
 		var lToken = {
-			ns: jws.APIPlugInClass.NS,
+			ns: jws.APIPlugIn.NS,
 			type: "hasPlugIn",
 			plugin_id: aId
 		};
 		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
+		if (aOptions) {
+			if (aOptions.OnResponse) {
 				lOptions.OnResponse = aOptions.OnResponse;
 			}
 		}
-		this.conn.sendToken( lToken, lOptions );
+		this.sendToken(lToken, lOptions);
 	},
-
-	getPlugInAPI: function( aId, aOptions ) {
+	
+	getPlugInAPI: function(aId, aOptions) {
 		var lToken = {
-			ns: jws.APIPlugInClass.NS,
+			ns: jws.APIPlugIn.NS,
 			type: "getPlugInAPI",
 			plugin_id: aId
 		};
 		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
+		if (aOptions) {
+			if (aOptions.OnResponse) {
 				lOptions.OnResponse = aOptions.OnResponse;
 			}
 		}
-		this.conn.sendToken( lToken, lOptions );
+		this.sendToken(lToken, lOptions);
 	},
-
-	supportsToken: function( aId, aOptions ) {
+	
+	supportsToken: function(aId, aOptions) {
 		var lToken = {
-			ns: jws.APIPlugInClass.NS,
+			ns: jws.APIPlugIn.NS,
 			type: "supportsToken",
 			token_type: aId
 		};
 		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
+		if (aOptions) {
+			if (aOptions.OnResponse) {
 				lOptions.OnResponse = aOptions.OnResponse;
 			}
 		}
-		this.conn.sendToken( lToken, lOptions );
+		this.sendToken(lToken, lOptions);
 	},
-
-	getServerAPI: function( aOptions ) {
-		var lToken = {
-			ns: jws.APIPlugInClass.NS,
-			type: "getServerAPI"
-		};
-		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
-				lOptions.OnResponse = aOptions.OnResponse;
-			}
+	
+	getServerAPI: function(aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.APIPlugIn.NS,
+				type: "getServerAPI"
+			};
+			this.sendToken(lToken, aOptions);
 		}
-		this.conn.sendToken( lToken, lOptions );
+		return lRes;
 	},
-
-	getPlugInsIds: function( aOptions ) {
-		var lToken = {
-			ns: jws.APIPlugInClass.NS,
-			type: "getPlugInIds"
+	
+	getPlugInIds: function(aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.APIPlugIn.NS,
+				type: "getPlugInIds"
+			};
+			this.sendToken(lToken, aOptions);
 		}
-		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
-				lOptions.OnResponse = aOptions.OnResponse;
-			}
-		}
-		this.conn.sendToken( lToken, lOptions );
+		return lRes;
 	},
-
-	createSpecFromAPI: function( aConn, aServerPlugIn ) {
+	
+	getPlugInInfo: function(aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.APIPlugIn.NS,
+				type: "getPlugInInfo"
+			};
+			this.sendToken(lToken, aOptions);
+		}
+		return lRes;
+	},
+	createSpecFromAPI: function(aConn, aServerPlugIn) {
 
 		// a plug-in might have more than one feature
-		var lCnt =  aServerPlugIn.supportedTokens.length;
+		var lCnt = aServerPlugIn.supportedTokens.length;
 		var lSpecs = [];
 
-		for( var lIdx = 0; lIdx < lCnt; lIdx++ ) {
+		for (var lIdx = 0; lIdx < lCnt; lIdx++) {
 
 			var lToken = aServerPlugIn.supportedTokens[ lIdx ];
 			lToken.ns = aServerPlugIn.namespace;
@@ -5616,7 +5696,7 @@ jws.APIPlugInClass = {
 
 			// this is the function which has to be executed as a parameter
 			// of the it call within a describe statement (actually the suite).
-			var lItFunc = function () {
+			var lItFunc = function() {
 				var lResponseReceived = false;
 				// create the automated test token
 				var lTestToken = {
@@ -5625,34 +5705,34 @@ jws.APIPlugInClass = {
 				};
 				// add all arguments
 				var lInArgs = lToken.inArguments;
-				for( var lInArgIdx = 0, lInArgCnt = lInArgs.length; lInArgIdx < lInArgCnt; lInArgIdx++ ) {
+				for (var lInArgIdx = 0, lInArgCnt = lInArgs.length; lInArgIdx < lInArgCnt; lInArgIdx++) {
 					var lInArg = lInArgs[ lInArgIdx ];
-					lTestToken[ lInArg.name ]  = lInArg.testValue;
+					lTestToken[ lInArg.name ] = lInArg.testValue;
 				}
-				console.log( "Automatically sending " + JSON.stringify( lTestToken ) );
-				aConn.sendToken( lTestToken, {
-					OnResponse: function( aToken ) {
-						console.log( "Received auto response: " + JSON.stringify( aToken ) );
+				console.log("Automatically sending " + JSON.stringify(lTestToken));
+				aConn.sendToken(lTestToken, {
+					OnResponse: function(aToken) {
+						console.log("Received auto response: " + JSON.stringify(aToken));
 						lResponseReceived = true;
 					}
 				});
 
 				waitsFor(
-					function() {
-						return lResponseReceived == true;
-					},
-					"test",
-					20000
-				);
+						function() {
+							return lResponseReceived == true;
+						},
+						"test",
+						20000
+						);
 
-				runs( function() {
-					expect( lResponseReceived ).toEqual( true );
+				runs(function() {
+					expect(lResponseReceived).toEqual(true);
 					// stop watch for this spec
 					// jws.StopWatchPlugIn.stopWatch( "defAPIspec" );
 				});
 			};
 
-			lSpecs.push( lItFunc );
+			lSpecs.push(lItFunc);
 		}
 		// here the spec function are created and returned only
 		// but not yet executed!
@@ -5661,18 +5741,13 @@ jws.APIPlugInClass = {
 
 };
 
-jws.APIPlugIn = function() {
-	// do NOT use this.conn = aConn; here!
-	// Add the plug-in via conn.addPlugin instead!
 
-	// here you can add optonal instance fields
-	}
-
-jws.APIPlugIn.prototype = jws.APIPlugInClass;
+// add the JWebSocket ExtProcess PlugIn into the TokenClient class
+jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.APIPlugIn);
 //	---------------------------------------------------------------------------
 //	jWebSocket Canvas Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //	
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -5992,7 +6067,7 @@ if( jws.isIE ) {
 }//	---------------------------------------------------------------------------
 //	jWebSocket Canvas Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //	
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -6312,7 +6387,7 @@ if( jws.isIE ) {
 }//	---------------------------------------------------------------------------
 //	jWebSocket Channel Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -6544,11 +6619,11 @@ jws.ChannelPlugIn = {
 			if (aOptions["name"]) {
 				lToken.name = aOptions.name;
 			}
-			if (aOptions["newSecretKey"]) {
-				lToken.newSecretKey = aOptions.newSecretKey;
+			if ("string" == typeof(aOptions.newSecretKey) && "" != aOptions.newSecretKey) {
+				lToken.newSecretKey = jws.tools.calcMD5(aOptions.newSecretKey);
 			}
-			if (aOptions["accessKey"]) {
-				lToken.accessKey = aOptions.accessKey;
+			if ("string" == typeof(aOptions.accessKey) && "" != aOptions.accessKey) {
+				lToken.accessKey = jws.tools.calcMD5(aOptions.accessKey);
 			}
 			if (aOptions["owner"]) {
 				lToken.owner = aOptions.owner;
@@ -6581,7 +6656,6 @@ jws.ChannelPlugIn = {
 			var lAccessKey = null;
 			var lSecretKey = null;
 			var lOwner = null;
-			var lPassword = null;
 			if (aOptions) {
 				if (aOptions.isPrivate != undefined) {
 					lIsPrivate = aOptions.isPrivate;
@@ -6589,17 +6663,14 @@ jws.ChannelPlugIn = {
 				if (aOptions.isSystem != undefined) {
 					lIsSystem = aOptions.isSystem;
 				}
-				if (aOptions.accessKey != undefined) {
-					lAccessKey = aOptions.accessKey;
+				if ("string" == typeof(aOptions.accessKey) && "" != aOptions.accessKey) {
+					lAccessKey = jws.tools.calcMD5(aOptions.accessKey);
 				}
-				if (aOptions.secretKey != undefined) {
-					lSecretKey = aOptions.secretKey;
+				if ("string" == typeof(aOptions.secretKey) && "" != aOptions.secretKey) {
+					lSecretKey = jws.tools.calcMD5(aOptions.secretKey);
 				}
 				if (aOptions.owner != undefined) {
 					lOwner = aOptions.owner;
-				}
-				if (aOptions.password != undefined) {
-					lPassword = aOptions.password;
 				}
 			}
 			this.sendToken({
@@ -6611,8 +6682,7 @@ jws.ChannelPlugIn = {
 				isSystem: lIsSystem,
 				accessKey: lAccessKey,
 				secretKey: lSecretKey,
-				owner: lOwner,
-				password: lPassword
+				owner: lOwner
 			}, aOptions);
 		}
 		return lRes;
@@ -6630,19 +6700,12 @@ jws.ChannelPlugIn = {
 			var lAccessKey = null;
 			var lSecretKey = null;
 			var lOwner = null;
-			var lPassword = null;
 			if (aOptions) {
-				if (aOptions.accessKey != undefined) {
-					lAccessKey = aOptions.accessKey;
-				}
 				if (aOptions.secretKey != undefined) {
 					lSecretKey = aOptions.secretKey;
 				}
 				if (aOptions.owner != undefined) {
 					lOwner = aOptions.owner;
-				}
-				if (aOptions.password != undefined) {
-					lPassword = aOptions.password;
 				}
 			}
 			this.sendToken({
@@ -6651,8 +6714,7 @@ jws.ChannelPlugIn = {
 				channel: aId,
 				accessKey: lAccessKey,
 				secretKey: lSecretKey,
-				owner: lOwner,
-				password: lPassword
+				owner: lOwner
 			}, aOptions);
 		}
 		return lRes;
@@ -6802,7 +6864,7 @@ jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.ChannelPlugIn);
 //	---------------------------------------------------------------------------
 //	jWebSocket Chat Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -6890,7 +6952,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ChatPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Client Gaming Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -7092,7 +7154,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ClientGamingPlugIn );
 //  ---------------------------------------------------------------------------
 //  jWebSocket - Events Plug-in  (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //  Author: Rolando Santamaria Maso
 //
@@ -7748,7 +7810,7 @@ jws.oop.declareClass('jws', 'ValidatorFilter', jws.EventsBaseFilter, {
 //	---------------------------------------------------------------------------
 //	jWebSocket External Processes Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -7833,7 +7895,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ExtProcessPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Filesystem plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -8410,7 +8472,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.FileSystemPlugIn );
 //  ---------------------------------------------------------------------------
 //  jWebSocket - Dependency Injection Container (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -9179,7 +9241,7 @@ jws.sc = new jws.ioc.ServiceContainerBuilder({
 //	---------------------------------------------------------------------------
 //	jWebSocket ItemStorage Client Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //	
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -9260,6 +9322,13 @@ jws.ItemStoragePlugIn = {
 	createCollection: function(aCollectionName, aItemType, aSecretPwd, aAccessPwd, aIsPrivate, aOptions){
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
+			if ("string" == typeof(aSecretPwd) && "" != aSecretPwd) {
+				aSecretPwd = jws.tools.calcMD5(aSecretPwd);
+			}
+			if ("string" == typeof(aAccessPwd) && "" != aAccessPwd) {
+				aAccessPwd = jws.tools.calcMD5(aAccessPwd);
+			}
+			
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "createCollection",
@@ -9415,11 +9484,11 @@ jws.ItemStoragePlugIn = {
 				collectionName: aCollectionName,
 				secretPassword: aSecretPwd
 			};
-			if (aOptions.newSecretPassword){
-				lToken.newSecretPassword = aOptions.newSecretPassword;
+			if ("string" == typeof(aOptions.newSecretPassword) && "" != aOptions.newSecretPassword) {
+				lToken.newSecretPassword = jws.tools.calcMD5(aOptions.newSecretPassword);
 			}
-			if (aOptions.accessPassword){
-				lToken.accessPassword = aOptions.accessPassword;
+			if ("string" == typeof(aOptions.accessPassword) && "" != aOptions.accessPassword) {
+				lToken.accessPassword = jws.tools.calcMD5(aOptions.accessPassword);
 			}
 			if (aOptions["private"]){
 				lToken["private"] = aOptions["private"];
@@ -9714,7 +9783,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ItemStoragePlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket JDBC Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -10028,7 +10097,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.JDBCPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket JMS Plug-in  (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -10305,7 +10374,7 @@ jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.JMSPlugIn);
 //	---------------------------------------------------------------------------
 //	jWebSocket Logging Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -10457,7 +10526,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.LoggingPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Mail Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -10679,7 +10748,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.MailPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Reporting Client Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -10789,7 +10858,7 @@ jws.ReportingPlugIn = {
 jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.ReportingPlugIn);//	---------------------------------------------------------------------------
 //	jWebSocket Mail RPC/RRPC Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -10994,7 +11063,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.RPCClientPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket RTC Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -11078,7 +11147,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.RTCPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Sample Client PlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -11148,7 +11217,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SamplesPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Scripting Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the 'License');
@@ -11349,7 +11418,7 @@ jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.ScriptingPlugIn);
 //	---------------------------------------------------------------------------
 //	jWebSocket Shared Objects Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -11527,7 +11596,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SharedObjectsPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Streaming Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -11614,7 +11683,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.StreamingPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Test Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -11788,7 +11857,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.StopWatchPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Twitter Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -12027,7 +12096,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.TwitterPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket XMPP Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.

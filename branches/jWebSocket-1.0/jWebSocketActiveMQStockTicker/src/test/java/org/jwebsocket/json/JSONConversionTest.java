@@ -20,7 +20,7 @@ package org.jwebsocket.json;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JSONConversionTest {
 

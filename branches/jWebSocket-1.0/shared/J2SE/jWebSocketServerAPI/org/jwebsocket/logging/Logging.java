@@ -28,7 +28,7 @@ import org.jwebsocket.token.Token;
 /**
  * Provides the common used jWebSocket logging support based on Apache's log4j.
  *
- * @author Alexander Schulze (aschulze, Innotrade GmbH, jWebSocket.org)
+ * @author Alexander Schulze
  */
 public class Logging {
 

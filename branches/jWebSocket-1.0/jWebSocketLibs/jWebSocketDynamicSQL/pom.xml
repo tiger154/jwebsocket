@@ -8,6 +8,7 @@
 	<description>jWebSocket Dynamic SQL Library</description>
 	<packaging>jar</packaging>
 	<properties>
+		<project.distVer>1.0</project.distVer>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -19,7 +20,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
+					<outputDirectory>../../../../rte/jWebSocket-${project.distVer}/libs</outputDirectory>
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
@@ -69,7 +70,7 @@
 						<id>Bundle</id>
 						<configuration>
 							<finalName>jWebSocketDynamicSQL</finalName>
-							<outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
+							<outputDirectory>../../../../rte/jWebSocket-${project.distVer}/libs</outputDirectory>
 							<descriptors>
 								<descriptor>src/assembly/one-jar.xml</descriptor>
 							</descriptors>
@@ -81,8 +82,15 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
+		<extensions>
+			<!-- Enabling the use of FTP -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>2.6</version>
+			</extension>
+		</extensions>
 	</build>
 
 	<!--  define all the dependencies here -->
@@ -115,12 +123,22 @@
 	</repositories>
 
 	<distributionManagement>
-		<!-- use the following if you're not using a snapshot version. -->
+		<!--
 		<repository>
-			<id>jWebSocketLocalRepo</id>
-			<name>jWebSocketLocalRepo</name>
+			<id>jWebSocketSVNRepo</id>
+			<name>jWebSocketSVNRepo</name>
 			<url>file:///${basedir}/../../../../repo</url>
 		</repository>
+		-->
+		<!-- use the following if you're not using a snapshot version. -->
+		
+		<repository>
+			<id>jWebSocketMavenRepo</id>
+			<name>jWebSocketMavenRepo</name>
+			<url>ftp://mvn.jwebsocket.org</url>
+			<uniqueVersion>${project.version}</uniqueVersion>
+		</repository>
+		
 	</distributionManagement>
 	
 </project>

@@ -7,7 +7,7 @@ package org.jwebsocket.client.me;
 /**
  * Code taken from http://forums.sun.com/thread.jspa?forumID=76&threadID=665487
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Tools {
 

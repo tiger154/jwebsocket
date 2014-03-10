@@ -68,7 +68,7 @@ import tld.yourname.jms.server.JMSServer;
 /**
  * Java Swing client for jWebSocket
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @version $Id:$
  */
 public class TestDialog extends javax.swing.JFrame implements WebSocketClientTokenListener {

@@ -9,7 +9,7 @@ import javax.microedition.midlet.*;
 import javax.microedition.lcdui.*;
 
 /**
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class HelloMIDlet extends MIDlet implements CommandListener {
 

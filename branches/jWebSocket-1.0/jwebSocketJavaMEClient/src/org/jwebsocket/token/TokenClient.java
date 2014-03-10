@@ -26,7 +26,7 @@ import org.jwebsocket.packetProcessors.JSONProcessor;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class TokenClient {
 

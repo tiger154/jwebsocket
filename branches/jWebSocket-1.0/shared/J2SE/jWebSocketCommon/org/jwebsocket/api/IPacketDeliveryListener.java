@@ -20,7 +20,7 @@ package org.jwebsocket.api;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IPacketDeliveryListener {
 

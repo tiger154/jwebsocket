@@ -47,7 +47,7 @@ import org.jwebsocket.tcp.nio.Util;
 
 /**
  *
- * @author vbarzana, aschulze
+ * @author Victor Antonio Barzana Crespo, Alexander Schulze
  */
 public class GrizzlyEngine extends BaseEngine {
 

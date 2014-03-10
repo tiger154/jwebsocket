@@ -24,7 +24,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * An engine gets stopped
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class EngineStopped extends C2SEvent {
 

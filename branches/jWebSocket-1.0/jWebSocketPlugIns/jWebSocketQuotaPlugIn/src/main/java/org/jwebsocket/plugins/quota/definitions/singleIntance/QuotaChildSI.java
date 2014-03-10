@@ -9,7 +9,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaChildSI implements ITokenizable {
 

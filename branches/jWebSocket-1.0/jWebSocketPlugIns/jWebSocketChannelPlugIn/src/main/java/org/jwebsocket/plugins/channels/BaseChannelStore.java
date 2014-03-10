@@ -33,7 +33,7 @@ import org.jwebsocket.server.TokenServer;
 /**
  * Base JDBC based implementation of the <tt>ChannelStore</tt>
  *
- * @author puran, aschulze
+ * @author Alexander Schulze, Puran Singh
  * @version $Id: BaseChannelStore.java 1101 2010-10-19 12:36:12Z
  * fivefeetfurther$
  */

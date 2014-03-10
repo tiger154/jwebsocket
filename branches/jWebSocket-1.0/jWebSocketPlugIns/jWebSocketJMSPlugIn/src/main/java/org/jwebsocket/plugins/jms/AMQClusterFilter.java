@@ -36,7 +36,7 @@ import org.apache.activemq.command.ConsumerInfo;
  * Store consumer connection data into a MongoDB database collection, to be used
  * by the jWebSocket Cluster Load Balancer component.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class AMQClusterFilter extends BrokerFilter {
 

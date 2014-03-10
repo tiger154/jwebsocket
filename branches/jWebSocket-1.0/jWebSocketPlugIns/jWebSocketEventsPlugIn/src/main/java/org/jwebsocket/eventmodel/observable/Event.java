@@ -23,7 +23,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class Event {
 

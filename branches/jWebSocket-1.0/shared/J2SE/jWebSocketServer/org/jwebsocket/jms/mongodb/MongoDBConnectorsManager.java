@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
 /**
  * MongoDB based implementation of connectors manager component.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MongoDBConnectorsManager extends BaseConnectorsManager {
 

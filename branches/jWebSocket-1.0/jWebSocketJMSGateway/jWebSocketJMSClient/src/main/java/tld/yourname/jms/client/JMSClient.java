@@ -77,8 +77,8 @@ public class JMSClient {
 		JMSLogging.setFullTextLogging(false);
 
 		// String lBrokerURL = "failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false";
-		String lBrokerURL = "tcp://hqdvalsap01:61616";
-		// the name of the JMD Gateway topic
+		String lBrokerURL = "tcp://127.0.0.1:61616";
+		// the name of the JMS Gateway topic
 		String lGatewayTopic = "org.jwebsocket.jms.gateway"; // topic name of JMS Gateway
 		String lGatewayId = "org.jwebsocket.jms.gateway"; // endpoint id of JMS Gateway
 		String lEndPointId = UUID.randomUUID().toString();
@@ -105,6 +105,9 @@ public class JMSClient {
 			System.exit(1);
 		}
 
+		// 
+		JMSLogging.setFullTextLogging(true);
+		
 		// instantiate a new jWebSocket JMS Gateway Client
 		JMSEndPoint lJMSEndPoint = new JMSEndPoint(
 				lBrokerURL,
@@ -120,10 +123,11 @@ public class JMSClient {
 		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
 
 		// integrate OAuth library
-		// final OAuth lOAuth = new OAuth("https://hqdvpngpoc01.nvidia.com/as/token.oauth2", "2Federate");
+		// final OAuth lOAuth = new OAuth("https://<host>/as/token.oauth2", "<password>");
 		// lOAuth.setBaseURL("https://localhost/as/token.oauth2");
-		// lOAuth.authDirect("aschulze@nvidia.com", "Yami#2812");
+		// lOAuth.authDirect("<username>", "<password>");
 		// on welcome message from jWebSocket, authenticate against jWebSocket
+		
 		lListener.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
@@ -211,12 +215,59 @@ public class JMSClient {
 //						"getLibraryPart", lArgs, "{}");
 //			}
 //		});
+		
+		
+		
 		// process response of the JMS Gateway login...
 		lListener.addResponseListener("org.jwebsocket.plugins.system", "login",
 				new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 
+						// common declarations
+						Map<String, Object> lArgs = new FastMap<String, Object>();
+						
+						// test progress events on login
+						lSender.sendPayload(
+								// target
+								"jWebSocketJMSService",
+								"org.jwebsocket.plugins.jmsdemo", // ns
+								"testProgress", // type
+								lArgs,
+								null, // no payload
+								new JWSResponseTokenListener(JWSResponseTokenListener.RESP_TIME_FIELD) {
+
+									@Override
+									public void onTimeout() {
+										mLog.info("Test progress timed out!");
+									}
+
+									@Override
+									public void onProgress(Token aEvent) {
+										mLog.info("Progress: "  + aEvent.getDouble("percent")) ;
+									}
+
+									@Override
+									public void onFailure(Token aReponse) {
+										mLog.error("Test progress failed!");
+									}
+
+									@Override
+									public void onSuccess(Token aReponse) {
+										if (mLog.isInfoEnabled()) {
+											mLog.info("Test progress succeeded (response received in "
+													+ aReponse.getLong(JWSResponseTokenListener.RESP_TIME_FIELD) + "ms).");
+										}
+									}
+
+								}, 5000);
+
+						if (true) {
+							return;
+						}
+						
+						
+						// echo on login
 						int lCode = aToken.getInteger("code", -1);
 						if (0 == lCode) {
 							if (mLog.isInfoEnabled()) {
@@ -226,7 +277,6 @@ public class JMSClient {
 							mLog.error("Authentication against jWebSocket JMS Gateway failed!");
 						}
 
-						Map<String, Object> lArgs = new FastMap<String, Object>();
 						lArgs.put("echo", "This is the echo message");
 						lSender.sendPayload(
 								"jWebSocketJMSService",
@@ -255,7 +305,7 @@ public class JMSClient {
 										}
 									}
 
-								}, 1000);
+								}, 10000);
 
 						if (true) {
 							return;

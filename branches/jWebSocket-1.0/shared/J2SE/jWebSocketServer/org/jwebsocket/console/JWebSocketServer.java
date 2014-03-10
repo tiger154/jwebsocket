@@ -24,7 +24,7 @@ import org.jwebsocket.factory.JWebSocketFactory;
 /**
  * Main entry point for stand alone jWebSocket server system
  *
- * @author aschulze, puran
+ * @author Alexander Schulze, puran
  */
 public class JWebSocketServer {
 

@@ -24,7 +24,7 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * Utility class to control message packaging for transmission and fragmentation
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MessagingControl {
 

@@ -30,7 +30,7 @@ import org.jwebsocket.instance.JWebSocketInstance;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ContextListener implements ServletContextListener {
 

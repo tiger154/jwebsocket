@@ -30,7 +30,7 @@ import org.jwebsocket.util.MapAppender;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class ItemStorageQuota implements IQuotaStorage {
 

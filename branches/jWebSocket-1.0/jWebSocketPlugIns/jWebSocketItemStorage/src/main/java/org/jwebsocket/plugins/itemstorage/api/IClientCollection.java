@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IClientCollection {
 

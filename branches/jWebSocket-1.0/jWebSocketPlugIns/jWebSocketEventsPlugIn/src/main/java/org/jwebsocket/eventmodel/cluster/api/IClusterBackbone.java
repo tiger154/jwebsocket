@@ -24,7 +24,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IClusterBackbone {
 

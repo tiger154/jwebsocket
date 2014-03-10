@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JMSEndPoint {
 

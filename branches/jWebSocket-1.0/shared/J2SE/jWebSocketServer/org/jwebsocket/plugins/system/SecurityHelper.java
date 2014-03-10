@@ -23,7 +23,7 @@ import org.jwebsocket.api.WebSocketConnector;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class SecurityHelper {
 

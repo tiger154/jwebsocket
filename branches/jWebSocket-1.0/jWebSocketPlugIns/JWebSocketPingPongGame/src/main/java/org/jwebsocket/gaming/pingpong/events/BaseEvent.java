@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.observable.Event;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public abstract class BaseEvent extends Event {
 

@@ -19,7 +19,7 @@ package org.jwebsocket.eventmodel.observable;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ThreadLocalContainer {
 

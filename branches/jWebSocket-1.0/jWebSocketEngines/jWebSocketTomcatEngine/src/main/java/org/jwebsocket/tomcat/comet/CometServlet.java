@@ -49,8 +49,8 @@ import org.jwebsocket.tomcat.TomcatEngine;
 import org.jwebsocket.util.Tools;
 
 /**
- * @author Osvaldo Aguilar Lauzurique <osvaldo2627@gmail.com>
- * @author kyberneees
+ * @author Osvaldo Aguilar Lauzurique Lauzurique
+ * @author Rolando Santamaria Maso
  */
 public class CometServlet extends HttpServlet implements CometProcessor {
 

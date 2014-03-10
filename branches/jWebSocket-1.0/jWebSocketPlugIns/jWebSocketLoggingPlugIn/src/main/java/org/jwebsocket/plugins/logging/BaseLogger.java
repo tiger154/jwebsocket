@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.logging;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class BaseLogger implements ILogger {
 

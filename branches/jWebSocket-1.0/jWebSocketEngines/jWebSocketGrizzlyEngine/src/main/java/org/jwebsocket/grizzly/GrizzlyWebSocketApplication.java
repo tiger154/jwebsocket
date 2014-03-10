@@ -38,8 +38,8 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author vbarzana
- * @author kyberneees
+ * @author Victor Antonio Barzana Crespo
+ * @author Rolando Santamaria Maso
  */
 public class GrizzlyWebSocketApplication extends WebSocketApplication {
 

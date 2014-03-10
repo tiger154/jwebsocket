@@ -25,7 +25,7 @@ import org.jwebsocket.logging.Logging;
 /**
  * Storage based implementation of the <tt>PublisherStore</tt>
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class BasePublisherStore implements PublisherStore {
 

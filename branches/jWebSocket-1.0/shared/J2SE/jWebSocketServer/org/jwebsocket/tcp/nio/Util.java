@@ -34,7 +34,7 @@ import org.jwebsocket.config.JWebSocketConfig;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class Util {
 

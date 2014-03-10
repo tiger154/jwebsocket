@@ -30,7 +30,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class StressTests implements WebSocketClientTokenListener {
 

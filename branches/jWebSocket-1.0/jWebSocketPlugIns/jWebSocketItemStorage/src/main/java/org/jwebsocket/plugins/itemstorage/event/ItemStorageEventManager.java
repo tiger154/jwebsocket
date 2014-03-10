@@ -33,7 +33,7 @@ import org.jwebsocket.plugins.itemstorage.collection.ItemCollection;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ItemStorageEventManager {
 

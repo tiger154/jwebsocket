@@ -28,7 +28,7 @@ import org.jwebsocket.eventmodel.observable.ResponseEvent;
  * <br>
  * <tt>local</tt>: Events from the system or others components
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IListener {
 

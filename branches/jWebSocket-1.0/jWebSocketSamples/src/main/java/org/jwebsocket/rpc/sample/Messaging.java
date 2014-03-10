@@ -27,7 +27,7 @@ import org.jwebsocket.plugins.rpc.rrpc.Rrpc;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Messaging extends BaseConnectorRPCCallable {
 

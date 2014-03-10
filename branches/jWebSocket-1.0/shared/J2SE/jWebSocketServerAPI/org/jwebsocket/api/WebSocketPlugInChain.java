@@ -30,9 +30,9 @@ import org.jwebsocket.kit.WebSocketSession;
  * until the first plug-in aborts or breaks the chain by returning the
  * corresponding PlugInResponse.
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @author Marcos Antonio González Huerta (markos0886, UCI)
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface WebSocketPlugInChain extends ISystemLifecycle {
 

@@ -31,7 +31,7 @@ import org.jwebsocket.api.IBasicCacheStorage;
  *
  * @param <K>
  * @param <V>
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 

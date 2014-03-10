@@ -20,7 +20,7 @@ package org.jwebsocket.eventmodel.rrpc;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public enum FailureReason {
 

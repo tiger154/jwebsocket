@@ -24,7 +24,7 @@ package org.jwebsocket.kit;
  * plug-in can either process or ignore the packet. If the packet was
  * successfully processed the plug-in can abort the chain.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class PlugInResponse {
 

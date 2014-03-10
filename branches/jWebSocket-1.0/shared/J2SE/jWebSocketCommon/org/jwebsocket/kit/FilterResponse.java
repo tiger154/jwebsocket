@@ -22,7 +22,7 @@ package org.jwebsocket.kit;
  * Implements the response class to return results from the filter chain to the
  * server.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class FilterResponse {
 

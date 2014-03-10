@@ -24,7 +24,7 @@ import org.jwebsocket.eventmodel.observable.ResponseEvent;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IObservable {
 

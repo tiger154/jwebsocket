@@ -22,7 +22,7 @@ import org.jwebsocket.tcp.nio.IDelayedPacketNotifier;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IDelayedSSLPacketNotifier extends IDelayedPacketNotifier {
 }

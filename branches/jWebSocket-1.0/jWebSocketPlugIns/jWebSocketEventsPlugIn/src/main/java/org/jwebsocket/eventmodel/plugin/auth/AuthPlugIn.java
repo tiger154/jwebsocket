@@ -38,7 +38,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class AuthPlugIn extends EventModelPlugIn {
 

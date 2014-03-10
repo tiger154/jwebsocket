@@ -28,7 +28,7 @@ import android.widget.Toast;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ConfigActivity extends Activity {
 

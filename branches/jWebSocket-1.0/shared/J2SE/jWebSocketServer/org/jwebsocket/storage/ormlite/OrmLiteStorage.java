@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class OrmLiteStorage extends BaseStorage<String, Object> {
 

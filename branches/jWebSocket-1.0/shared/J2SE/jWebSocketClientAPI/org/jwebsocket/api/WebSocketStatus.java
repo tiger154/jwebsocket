@@ -22,7 +22,7 @@ package org.jwebsocket.api;
  * WebSocket connection status. These status values are based on HTML5 WebSocket
  * API specification {@linkplain http://dev.w3.org/html5/websockets/#websocket}
  *
- * @author puran, aschulze
+ * @author Alexander Schulze, Puran Singh
  */
 public enum WebSocketStatus {
 

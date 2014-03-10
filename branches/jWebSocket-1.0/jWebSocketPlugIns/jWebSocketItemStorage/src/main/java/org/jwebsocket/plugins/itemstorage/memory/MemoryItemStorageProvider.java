@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
 /**
  * IItemStorageProvider implementation for RAM Memory
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MemoryItemStorageProvider implements IItemStorageProvider {
 

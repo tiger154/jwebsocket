@@ -27,7 +27,7 @@ import javolution.util.FastMap;
 /**
  * Dispatch incoming packets for the NIO workers
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class DelayedPacketsQueue {
 

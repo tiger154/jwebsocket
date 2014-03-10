@@ -28,7 +28,7 @@ import org.jwebsocket.storage.ehcache.EhCacheStorage;
  *
  * @param <K>
  * @param <V>
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class EhCacheCacheStorage<K, V> extends EhCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 

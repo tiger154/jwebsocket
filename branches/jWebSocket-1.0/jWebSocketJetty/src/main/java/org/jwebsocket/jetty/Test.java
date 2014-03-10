@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Test extends HttpServlet {
 

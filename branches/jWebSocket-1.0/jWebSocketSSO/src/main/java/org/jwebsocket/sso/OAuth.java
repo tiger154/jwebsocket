@@ -41,7 +41,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class OAuth {
 

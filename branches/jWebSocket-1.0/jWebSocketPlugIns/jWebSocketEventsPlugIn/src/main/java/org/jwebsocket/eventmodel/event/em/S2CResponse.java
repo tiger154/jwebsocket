@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * The s2c event response from the client
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class S2CResponse extends C2SEvent {
 

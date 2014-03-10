@@ -30,7 +30,7 @@ import org.jwebsocket.kit.WebSocketSession;
  * accessed up to the application. Each connector provides a Map for shared
  * custom variables (public) which can be used in all overlying tiers.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface WebSocketConnector {
 

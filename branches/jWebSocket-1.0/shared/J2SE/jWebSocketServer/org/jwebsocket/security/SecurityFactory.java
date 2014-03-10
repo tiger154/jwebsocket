@@ -28,7 +28,7 @@ import org.jwebsocket.config.xml.UserConfig;
 /**
  * implements the security capabilities of jWebSocket.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class SecurityFactory {
 

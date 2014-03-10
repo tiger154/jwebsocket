@@ -36,7 +36,7 @@ import org.springframework.validation.MapBindingResult;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ValidatorFilter extends EventModelFilter {
 

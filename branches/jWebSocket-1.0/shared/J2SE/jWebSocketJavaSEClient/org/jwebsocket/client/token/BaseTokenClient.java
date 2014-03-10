@@ -48,10 +48,10 @@ import org.jwebsocket.util.Tools;
 /**
  * Token based implementation of {@code WebSocketClient}
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @author puran
  * @author jang
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  * @version $Id:$
  */
 @Deprecated
@@ -342,7 +342,7 @@ public class BaseTokenClient implements WebSocketTokenClient {
 	 * WebSocketClient listener implementation that receives the data packet and
 	 * creates <tt>token</tt> objects
 	 *
-	 * @author aschulze
+	 * @author Alexander Schulze
 	 */
 	class TokenClientListener implements WebSocketClientListener {
 

@@ -21,7 +21,7 @@ package org.jwebsocket.api;
 /**
  * Interface for the jWebSocket client listeners
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface WebSocketClientListener {
 

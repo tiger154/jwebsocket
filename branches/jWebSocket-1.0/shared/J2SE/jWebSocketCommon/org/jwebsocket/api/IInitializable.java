@@ -20,7 +20,7 @@ package org.jwebsocket.api;
 
 /**
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public interface IInitializable {
 

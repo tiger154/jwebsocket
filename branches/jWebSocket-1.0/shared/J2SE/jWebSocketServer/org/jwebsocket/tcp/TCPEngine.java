@@ -46,9 +46,9 @@ import org.jwebsocket.tcp.nio.Util;
  * Implementation of the jWebSocket TCP engine. The TCP engine provide a Java
  * Socket implementation of the WebSocket protocol. It contains the handshake
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @author jang
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class TCPEngine extends BaseEngine {
 

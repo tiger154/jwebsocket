@@ -23,7 +23,7 @@ import net.sf.ehcache.event.CacheManagerEventListenerFactory;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class EhCacheEventListenerFactory extends CacheManagerEventListenerFactory {
 

@@ -5,12 +5,12 @@ import java.io.OutputStream;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 /*
- * @author vbarzanacres
+ * @author Victor Antonio Barzana Crespo
  */
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class OutputStreamConsole extends OutputStream {
 

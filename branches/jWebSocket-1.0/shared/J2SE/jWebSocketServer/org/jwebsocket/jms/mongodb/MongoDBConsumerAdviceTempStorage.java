@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
 /**
  * MongoDB based implementation for IConsumerAdviceTempStorage interface.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MongoDBConsumerAdviceTempStorage implements IConsumerAdviceTempStorage, IInitializable {
 

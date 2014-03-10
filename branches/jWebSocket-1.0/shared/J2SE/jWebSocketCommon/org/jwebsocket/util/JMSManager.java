@@ -37,7 +37,7 @@ import org.jwebsocket.jms.Attributes;
 /**
  * JMS based message hub
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JMSManager {
 

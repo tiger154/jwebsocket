@@ -98,7 +98,7 @@ import org.jwebsocket.token.Token;
  *       mBoundService.open();
  *    }
  * </pre>
- * @author aschulze
+ * @author Alexander Schulze
  * @author <a href="http://www.purans.net/">Puran Singh</a>
  */
 public class JWSLocalAndroidService extends Service {

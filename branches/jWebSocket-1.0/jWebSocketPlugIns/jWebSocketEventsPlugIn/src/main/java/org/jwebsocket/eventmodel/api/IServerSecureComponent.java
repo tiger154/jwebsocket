@@ -22,7 +22,7 @@ import java.util.Set;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IServerSecureComponent {
 

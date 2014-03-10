@@ -23,7 +23,7 @@ import org.jwebsocket.api.ICacheStorageProvider;
 
 /**
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class MemoryCacheStorageProvider implements ICacheStorageProvider {
 

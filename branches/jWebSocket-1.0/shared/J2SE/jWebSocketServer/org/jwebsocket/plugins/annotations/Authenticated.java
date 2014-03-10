@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * The annotation allows to developers to control the security access to certain
  * plug-in actions
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

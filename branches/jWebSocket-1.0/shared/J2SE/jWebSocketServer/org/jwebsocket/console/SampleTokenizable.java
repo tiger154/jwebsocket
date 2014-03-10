@@ -23,7 +23,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class SampleTokenizable implements ITokenizable {
 

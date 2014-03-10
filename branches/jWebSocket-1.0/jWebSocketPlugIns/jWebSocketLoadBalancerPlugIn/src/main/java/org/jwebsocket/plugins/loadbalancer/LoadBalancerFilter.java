@@ -31,8 +31,8 @@ import org.springframework.util.Assert;
  * Load balancer filter captures the packets and forwards them to the load
  * balancer plug-in.
  *
- * @author rbetancourt
- * @author kyberneees
+ * @author Rolando Betancourt Toucet
+ * @author Rolando Santamaria Maso
  */
 public class LoadBalancerFilter extends TokenFilter {
 

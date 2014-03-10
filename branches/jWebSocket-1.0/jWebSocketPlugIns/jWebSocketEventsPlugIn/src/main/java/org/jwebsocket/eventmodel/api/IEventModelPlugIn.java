@@ -29,7 +29,7 @@ import org.jwebsocket.eventmodel.s2c.S2CEventNotification;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IEventModelPlugIn extends IListener, IInitializable, ITokenizable {
 

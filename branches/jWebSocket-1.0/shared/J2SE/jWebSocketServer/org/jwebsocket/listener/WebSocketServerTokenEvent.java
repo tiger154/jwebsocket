@@ -27,7 +27,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 

@@ -25,7 +25,7 @@ package org.jwebsocket.sso;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class SSOException extends Exception {
 

@@ -20,7 +20,7 @@ package org.jwebsocket.eventmodel.s2c;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class OnResponse {
 

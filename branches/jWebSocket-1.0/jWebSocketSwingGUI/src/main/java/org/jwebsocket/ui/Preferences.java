@@ -27,7 +27,7 @@ package org.jwebsocket.ui;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Preferences extends javax.swing.JFrame {
 

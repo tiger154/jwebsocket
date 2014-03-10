@@ -41,7 +41,7 @@ import org.jwebsocket.token.Token;
  * streaming plug-in. The streaming plug-in only can control streams but not
  * instantiate new streams.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class StreamingPlugIn extends TokenPlugIn {
 

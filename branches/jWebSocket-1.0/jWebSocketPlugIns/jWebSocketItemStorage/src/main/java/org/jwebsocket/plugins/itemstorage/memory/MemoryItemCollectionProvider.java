@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 

@@ -21,7 +21,7 @@ package org.jwebsocket.security;
 /**
  * implements a right as part of a FastMap of rights for a certain role.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Right {
 

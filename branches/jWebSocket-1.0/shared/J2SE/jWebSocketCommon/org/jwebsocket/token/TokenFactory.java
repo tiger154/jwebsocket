@@ -27,7 +27,7 @@ import org.jwebsocket.packetProcessors.XMLProcessor;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @author jang
  */
 public class TokenFactory {

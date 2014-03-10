@@ -24,7 +24,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * An engine gets started
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class EngineStarted extends C2SEvent {
 

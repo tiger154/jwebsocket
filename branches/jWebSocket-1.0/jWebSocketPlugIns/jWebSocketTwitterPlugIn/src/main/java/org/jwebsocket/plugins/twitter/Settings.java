@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.twitter;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Settings {
 

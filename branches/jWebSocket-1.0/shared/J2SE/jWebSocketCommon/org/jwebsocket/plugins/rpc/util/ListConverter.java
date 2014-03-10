@@ -25,7 +25,7 @@ import javolution.util.FastList;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @param <E>
  */
 @SuppressWarnings("rawtypes")

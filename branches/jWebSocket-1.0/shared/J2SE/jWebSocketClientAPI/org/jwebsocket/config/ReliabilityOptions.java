@@ -16,7 +16,7 @@ package org.jwebsocket.config;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ReliabilityOptions {
 

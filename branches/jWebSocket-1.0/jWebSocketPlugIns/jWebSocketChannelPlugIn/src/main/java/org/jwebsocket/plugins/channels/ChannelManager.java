@@ -35,7 +35,7 @@ import org.jwebsocket.token.Token;
  * Manager class responsible for all the channel operations within the
  * jWebSocket server system.
  *
- * @author puran, aschulze
+ * @author Alexander Schulze, Puran Singh
  * @version $Id: ChannelManager.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
  */
 public class ChannelManager implements IInitializable {

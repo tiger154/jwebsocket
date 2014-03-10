@@ -29,7 +29,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface SenderStore {
 

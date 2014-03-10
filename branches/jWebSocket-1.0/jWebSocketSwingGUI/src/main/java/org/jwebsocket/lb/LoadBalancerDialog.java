@@ -32,7 +32,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author rbetancourt
+ * @author Rolando Betancourt Toucet
  */
 public class LoadBalancerDialog extends javax.swing.JFrame {
 
