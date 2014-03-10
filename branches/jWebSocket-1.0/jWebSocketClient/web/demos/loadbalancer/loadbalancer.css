@@ -6,8 +6,8 @@
 	width: 120px;
 }
 
-#sbtnRegisterServiceEndPoint{
-	width: 200px;
+#sbtnCreateServiceEndPoint{
+	width: 225px;
 }
 
 #sbtnDeregisterServiceEndPoint{
@@ -15,11 +15,15 @@
 }
 
 #sbtnShutdownEndpoint{
-	width: 150px;
+	width: 170px;
 }
 
 #stdDlg{
-	width: 100px;
+	width: 90px;
+}
+
+#stdCluster{
+	width: 140px;
 }
 
 #stdDlgx{
@@ -27,7 +31,11 @@
 }
 
 #stdSelect{
-	width: 100px;
+	width: 90px;
+}
+
+#stdService{
+	width: 90px;
 }
 
 #sbtnSum{
@@ -42,8 +50,25 @@
 	width: 80px;
 }
 
-#sbtnCha{
-	width: 150px;
+#sbtnChoAlg{
+	width: 90px;
 }
+
+#stdPass{
+	width: 85px;
+}
+
+#stdAlg{
+	width: 140px;
+}
+
+#sbtnTest{
+	width: 130px;
+}
+
+#sbtnLoad{
+	width: 130px;
+}
+
 
 
