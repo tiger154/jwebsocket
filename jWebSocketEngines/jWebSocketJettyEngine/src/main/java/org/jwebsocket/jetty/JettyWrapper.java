@@ -61,13 +61,12 @@ public class JettyWrapper implements WebSocket,
 	 * @param aRequest
 	 * @param aProtocol
 	 */
-	public JettyWrapper(HttpServletRequest aRequest, String aProtocol) {
+	public JettyWrapper(JettyEngine aEngine, HttpServletRequest aRequest, String aProtocol) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating Jetty Wrapper with subprotocol '"
 					+ aProtocol + "'...");
 		}
-		// TODO: we need to fix this hardcoded solution
-		mEngine = JWebSocketFactory.getEngine("jetty0");
+		mEngine = aEngine;
 		mRequest = aRequest;
 		mProtocol = aProtocol;
 	}
