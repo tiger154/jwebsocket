@@ -102,18 +102,15 @@ public class JettyEngine extends BaseEngine {
 				mLog.debug("Loading SSL cert from keystore '" + lKeyStore + "'...");
 			}
 			lSSLConnector.setPort(lSSLPort);
-			lSSLConnector.setKeystore(lKeyStore);
-			lSSLConnector.setPassword(getConfiguration().getKeyStorePassword());
-			lSSLConnector.setKeyPassword(getConfiguration().getKeyStorePassword());
+			lSSLConnector.getSslContextFactory().setKeyStorePath(lKeyStore);
+			lSSLConnector.getSslContextFactory().setKeyStorePassword(getConfiguration().getKeyStorePassword());
 			mJettyServer.addConnector(lSSLConnector);
 
-			ServletContextHandler lServletContext
-					= new ServletContextHandler(ServletContextHandler.SESSIONS);
-
+			ServletContextHandler lServletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
 			lServletContext.setContextPath(lContext);
 			mJettyServer.setHandler(lServletContext);
 
-			ServletHolder lServletHolder = new ServletHolder(new JettyServlet());
+			ServletHolder lServletHolder = new ServletHolder(new JettyServlet(this));
 			lServletContext.addServlet(lServletHolder, lServlet);
 
 			mJettyServer.setStopAtShutdown(true);
@@ -121,42 +118,50 @@ public class JettyEngine extends BaseEngine {
 				mLog.debug("Starting embedded Jetty Server '"
 						+ Server.getVersion() + "'...");
 			}
-
-			mJettyServer.start();
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
-					+ "Instantiating Embedded Jetty Server '"
+					+ " Instantiating Embedded Jetty Server '"
 					+ Server.getVersion() + "': "
 					+ lEx.getMessage());
-		}
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Jetty Server '" + Server.getVersion()
-					+ "' sucessfully instantiated at port "
-					+ lPort + ", SSL port " + lSSLPort + "...");
 		}
 	}
 
 	@Override
-	public void startEngine()
-			throws WebSocketException {
+	public void startEngine() throws WebSocketException {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting Jetty '" + Server.getVersion() + "' engine '"
 					+ getId()
 					+ "...");
 		}
 
-		super.startEngine();
+		try {
+			mJettyServer.start();
 
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Jetty '"
-					+ Server.getVersion()
-					+ "' engine '"
-					+ getId()
-					+ "' started.");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Jetty Server '" + Server.getVersion()
+						+ "' sucessfully instantiated at port "
+						+ getConfiguration().getPort() + ", SSL port "
+						+ getConfiguration().getSSLPort() + "...");
+			}
+
+			super.startEngine();
+
+			if (mLog.isInfoEnabled()) {
+				mLog.info("Jetty '"
+						+ Server.getVersion()
+						+ "' engine '"
+						+ getId()
+						+ "' started.");
+			}
+
+			// fire the engine start event
+			engineStarted();
+		} catch (Exception lEx) {
+			mLog.error(lEx.getClass().getSimpleName()
+					+ " Starting Embedded Jetty Server '"
+					+ Server.getVersion() + "': "
+					+ lEx.getMessage());
 		}
-
-		// fire the engine start event
-		engineStarted();
 	}
 
 	@Override

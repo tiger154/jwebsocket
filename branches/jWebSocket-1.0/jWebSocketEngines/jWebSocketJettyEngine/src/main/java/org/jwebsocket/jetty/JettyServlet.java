@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.tcp.EngineUtils;
 
 /**
  *
@@ -34,6 +35,14 @@ import org.jwebsocket.logging.Logging;
 public class JettyServlet extends WebSocketServlet {
 
 	private static final Logger mLog = Logging.getLogger();
+	private JettyEngine mEngine;
+
+	public JettyServlet() {
+	}
+
+	public JettyServlet(JettyEngine aEngine) {
+		mEngine = aEngine;
+	}
 
 	/**
 	 *
@@ -90,9 +99,7 @@ public class JettyServlet extends WebSocketServlet {
 	 */
 	@Override
 	public boolean checkOrigin(HttpServletRequest aRequest, String aOrigin) {
-		boolean lOk = super.checkOrigin(aRequest, aOrigin);
-		lOk = true;
-		return lOk;
+		return EngineUtils.isOriginValid(aOrigin, mEngine.getConfiguration().getDomains());
 	}
 
 	/**

@@ -15,7 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<org.eclipse.jetty.version>8.1.0.RC5</org.eclipse.jetty.version>
+		<org.eclipse.jetty.version>8.1.14.v20131031</org.eclipse.jetty.version>
 	</properties>
 	<build>
 		<plugins>
