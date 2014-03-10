@@ -169,7 +169,7 @@ jws.LoadBalancerPlugIn = {
 	//:d:en:Create token response with all necessary data to send to remote client.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	lbCreateResponse: function(aToken){
+	lbCreateResponse: function( aToken ){
 		var lResponse =  {
 			ns: jws.LoadBalancerPlugIn.NS,
 			type: 'response',
@@ -179,6 +179,42 @@ jws.LoadBalancerPlugIn = {
 		}
 		
 		return lResponse;
+	},
+	
+	//:m:*:lbSampleService
+	//:d:en:Create a new sample service endpoint.
+	//:a:en::aPassword:String:Password to verify privileges.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	lbSampleService: function( aPassword, aOptions ){
+		var lServiceEndPoint = new jws.jWebSocketJSONClient();				
+		lServiceEndPoint.open( "ws://localhost:8787/jWebSocket/jWebSocket", {	
+			OnWelcome: function (){
+				lServiceEndPoint.lbRegisterServiceEndPoint( aPassword, {
+					clusterAlias: aOptions.clusterAlias
+				});		
+				
+				lServiceEndPoint.addPlugIn({
+					processToken: function( aToken ){
+						if (aToken.ns == aOptions.nameSpace){
+							if ('test' == aToken.type){
+								var lResponse = lServiceEndPoint.lbCreateResponse( aToken );
+								lServiceEndPoint.sendToken(lResponse);
+							} 
+						} 
+								
+						if ( aToken.ns == jws.LoadBalancerPlugIn.NS ){
+							if ('shutdown' == aToken.type){
+								lServiceEndPoint.close();
+							} 
+						} 
+					}
+				});			
+			},
+			OnMessage: function(aMessage){
+				log('Message "' + aMessage.data + '" received on endpoint: ' + (lServiceEndPoint.getId() == null ? aMessage.data.split('"')[11] : lServiceEndPoint.getId()));
+			}
+		});		
 	}
 };
 
