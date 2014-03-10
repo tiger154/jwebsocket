@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketServlet;
+import org.jwebsocket.engines.ServletUtils;
+import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.tcp.EngineUtils;
 
@@ -37,11 +39,22 @@ public class JettyServlet extends WebSocketServlet {
 	private static final Logger mLog = Logging.getLogger();
 	private JettyEngine mEngine;
 
+	public JettyServlet(JettyEngine aEngine) {
+		mEngine = aEngine;
+	}
+
 	public JettyServlet() {
 	}
 
-	public JettyServlet(JettyEngine aEngine) {
-		mEngine = aEngine;
+	@Override
+	public void init() throws ServletException {
+		if (null == mEngine) {
+			String lEngineId = getInitParameter(ServletUtils.SERVLET_ENGINE_CONFIG_KEY);
+			if (null == lEngineId) {
+				lEngineId = "jetty0";
+			}
+			mEngine = (JettyEngine) JWebSocketFactory.getEngine(lEngineId);
+		}
 	}
 
 	/**
@@ -88,7 +101,7 @@ public class JettyServlet extends WebSocketServlet {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing incoming WebSocket connection...");
 		}
-		return new JettyWrapper(aRequest, aProtocol);
+		return new JettyWrapper(mEngine, aRequest, aProtocol);
 	}
 
 	/**
