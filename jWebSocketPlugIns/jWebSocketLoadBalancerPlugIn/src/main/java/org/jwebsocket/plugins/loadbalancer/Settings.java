@@ -30,58 +30,78 @@ import javolution.util.FastMap;
  */
 public class Settings {
 
-	/**
-	 * List of (service) clusters.
-	 */
-	private Map<String, Cluster> mClusters = new FastMap<String, Cluster>();
-	/**
-	 * Default message delivery timeout, default value '5000 milliseconds '.
-	 */
-	private long mMessageTimeout = 5000;
-	/**
-	 * Load balancer algorithm, default value '1 = round robin '.
-	 */
-	private int mBalancerAlgorithm = 1;
+        /**
+         * List of (services) clusters.
+         */
+        private Map<String, Cluster> mClusters = new FastMap<String, Cluster>();
+        /**
+         * Default message delivery timeout, default value '5000 milliseconds '.
+         */
+        private long mMessageTimeout = 5000;
+        /**
+         * Load balancer algorithm, default value '1 = round robin '.
+         */
+        private int mBalancerAlgorithm = 1;
+        /**
+         * Delay time for stop the connector when the client can't stop it,
+         * default value '10000 milliseconds '.
+         */
+        private long mConnectorStopDelay = 10000;
 
-	/**
-	 * @return the clusters
-	 */
-	public Map<String, Cluster> getClusters() {
-		return mClusters;
-	}
+        /**
+         * @return the clusters.
+         */
+        public Map<String, Cluster> getClusters() {
+                return mClusters;
+        }
 
-	/**
-	 * @param aClusters clusters to set.
-	 */
-	public void setClusters(Map aClusters) {
-		mClusters = aClusters;
-	}
+        /**
+         * @param aClusters clusters to set.
+         */
+        public void setClusters(Map aClusters) {
+                mClusters = aClusters;
+        }
 
-	/**
-	 * @return the message timeout.
-	 */
-	public long getMessageTimeout() {
-		return mMessageTimeout;
-	}
+        /**
+         * @return the message timeout.
+         */
+        public long getMessageTimeout() {
+                return mMessageTimeout;
+        }
 
-	/**
-	 * @param aMessageTimeout
-	 */
-	public void setMessageTimeout(long aMessageTimeout) {
-		this.mMessageTimeout = aMessageTimeout;
-	}
+        /**
+         * @param mMessageTimeout the message timeout to set.
+         */
+        public void setMessageTimeout(long aMessageTimeout) {
+                this.mMessageTimeout = aMessageTimeout;
+        }
 
-	/**
-	 * @return the load balancer algorithm (1,2 or 3).
-	 */
-	public int getBalancerAlgorithm() {
-		return mBalancerAlgorithm;
-	}
+        /**
+         * @return the load balancer algorithm (1,2 or 3).
+         */
+        public int getBalancerAlgorithm() {
+                return mBalancerAlgorithm;
+        }
 
-	/**
-	 * @param aBalancerAlgorithm
-	 */
-	public void setBalancerAlgorithm(int aBalancerAlgorithm) {
-		this.mBalancerAlgorithm = aBalancerAlgorithm;
-	}
+        /**
+         * @param mBalancerAlgorithm the load balancer algorithm to set.
+         */
+        public void setBalancerAlgorithm(int aBalancerAlgorithm) {
+                this.mBalancerAlgorithm = aBalancerAlgorithm;
+        }
+
+        /**
+         * @return the delay time for stop the connector.
+         */
+        public long getConnectorStopDelay() {
+                return mConnectorStopDelay;
+        }
+
+        /**
+         * @param aConnectorStopDelay the delay time for stop the connector to
+         * set.
+         */
+        public void setConnectorStopDelay(long aConnectorStopDelay) {
+                this.mConnectorStopDelay = aConnectorStopDelay;
+        }
 }
