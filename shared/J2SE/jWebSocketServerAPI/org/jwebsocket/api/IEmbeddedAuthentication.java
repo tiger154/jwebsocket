@@ -22,7 +22,7 @@ import java.net.InetAddress;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IEmbeddedAuthentication {
 

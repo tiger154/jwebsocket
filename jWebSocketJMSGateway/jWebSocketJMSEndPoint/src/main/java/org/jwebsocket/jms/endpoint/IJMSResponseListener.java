@@ -19,10 +19,11 @@
 package org.jwebsocket.jms.endpoint;
 
 import javax.jms.Message;
+import org.jwebsocket.token.Token;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IJMSResponseListener {
 
@@ -35,8 +36,16 @@ public interface IJMSResponseListener {
 	void onReponse(String aReponse, Message aMessage);
 
 	/**
-	 * Called when the sent token processing has timeout on the remote endpoint
+	 * Called when the sent token processing has timed out on the remote
+	 * endpoint
 	 *
 	 */
 	void onTimeout();
+
+	/**
+	 * Called when the sent token processing has timeout on the remote endpoint
+	 *
+	 * @param aToken
+	 */
+	void onProgress(Token aToken);
 }

@@ -31,7 +31,7 @@ import org.jwebsocket.token.Token;
 /**
  * This shows an example of a simple WebSocket listener
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JWebSocketTokenListenerSample implements WebSocketServerTokenListener {
 

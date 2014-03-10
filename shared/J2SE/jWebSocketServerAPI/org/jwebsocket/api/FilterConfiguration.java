@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Base interface for filter configuration
  *
- * @author puran, aschulze
+ * @author Alexander Schulze, Puran Singh
  */
 public interface FilterConfiguration extends Configuration {
 

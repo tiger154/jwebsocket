@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.scripting.app;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public enum ClusterMessageTypes {
 

@@ -2,8 +2,7 @@
 <assembly>
 	<!-- jWebSocketCommon -->
 	<!-- this id is appended to filename given in pom.xml -->
-	<!-- <id>packaged</id> -->
-	<id>${project.version}</id>
+	<id>${project.version}-Bundle</id>
 	<formats>
 		<format>jar</format>
 	</formats>

@@ -36,7 +36,7 @@ import org.jwebsocket.plugins.BasePlugInChain;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @author jang
  */
 public class CustomServer extends BaseServer {

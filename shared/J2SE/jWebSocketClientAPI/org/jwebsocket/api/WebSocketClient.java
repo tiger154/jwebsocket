@@ -35,10 +35,10 @@ import org.jwebsocket.kit.WebSocketSubProtocol;
  * client protocols and delegates the events and the data to different listeners
  * for further processing.
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @author puran
- * @author kyberneees
- * @author rbetancourt
+ * @author Rolando Santamaria Maso
+ * @author Rolando Betancourt Toucet
  * @version $Id: WebSocketClient.java 701 2010-07-18 17:53:06Z
  * mailtopuran@gmail.com $
  */

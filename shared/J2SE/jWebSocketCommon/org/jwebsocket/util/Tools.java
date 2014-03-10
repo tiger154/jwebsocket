@@ -69,7 +69,7 @@ import org.springframework.util.Assert;
 /**
  * Provides some convenience methods to support the web socket development.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Tools {
 

@@ -33,7 +33,7 @@ import org.jwebsocket.tcp.nio.ssl.SSLHandler;
 /**
  *
  * @author jang
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class NioTcpConnector extends BaseConnector {
 

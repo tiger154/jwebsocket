@@ -30,7 +30,7 @@ import org.jwebsocket.config.ConfigHandler;
  * Config handler for reading plugins configuration
  *
  * @author puran
- * @author kyberneees (fixes and <jars> tag support)
+ * @author Rolando Santamaria Maso
  * @version $Id: PluginConfigHandler.java 596 2010-06-22 17:09:54Z
  * fivefeetfurther $
  *

@@ -21,7 +21,7 @@ import javolution.util.FastSet;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class SharedSets {
 

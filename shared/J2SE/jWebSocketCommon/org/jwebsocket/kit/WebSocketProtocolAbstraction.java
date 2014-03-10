@@ -54,8 +54,8 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
  * </pre>
  *
  * @author jang
- * @author aschulze
- * @author rbetancourt
+ * @author Alexander Schulze
+ * @author Rolando Betancourt Toucet
  */
 public class WebSocketProtocolAbstraction {
 	// web socket protocol packet types

@@ -26,7 +26,7 @@ package org.jwebsocket.ui;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class AdminDialog extends javax.swing.JFrame {
 

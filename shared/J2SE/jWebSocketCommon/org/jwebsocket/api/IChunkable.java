@@ -27,7 +27,7 @@ import org.jwebsocket.token.Token;
  * interface is the only way to transmit messages that exceeds the connection
  * MAX_FRAME_SIZE attribute.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IChunkable {
 

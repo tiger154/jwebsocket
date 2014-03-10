@@ -26,7 +26,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public abstract class AbstractRpc {
 

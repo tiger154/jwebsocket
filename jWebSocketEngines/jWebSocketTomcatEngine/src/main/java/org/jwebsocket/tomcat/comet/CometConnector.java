@@ -43,8 +43,8 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author Osvaldo Aguilar Lauzurique <osvaldo2627@hab.uci.cu>
- * @author kyberneees
+ * @author Osvaldo Aguilar Lauzurique Lauzurique
+ * @author Rolando Santamaria Maso
  */
 public class CometConnector extends BaseConnector {
 

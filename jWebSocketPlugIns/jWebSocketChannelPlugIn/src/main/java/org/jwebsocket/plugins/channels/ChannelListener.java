@@ -24,7 +24,7 @@ import org.jwebsocket.token.Token;
 /**
  * Listener interface for the <tt>Channel</tt>.
  *
- * @author puran, aschulze, kyberneees
+ * @author Alexander Schulze, Puran Singh, Rolando Santamaria Maso
  * @version $Id: ChannelListener.java 1592 2011-02-20 00:49:48Z fivefeetfurther
  * $
  */

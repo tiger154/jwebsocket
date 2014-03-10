@@ -41,7 +41,7 @@ import org.springframework.beans.factory.BeanFactory;
 /**
  * Factory to initialize and start the jWebSocket components
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @version $Id:$
  */
 public class JWebSocketFactory {

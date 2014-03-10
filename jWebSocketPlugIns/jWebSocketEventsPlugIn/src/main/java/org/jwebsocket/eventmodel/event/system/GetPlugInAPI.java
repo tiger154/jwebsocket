@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * Get a plug-in API information
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class GetPlugInAPI extends C2SEvent {
 

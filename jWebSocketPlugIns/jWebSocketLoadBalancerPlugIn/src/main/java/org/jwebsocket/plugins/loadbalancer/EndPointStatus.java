@@ -21,7 +21,7 @@ package org.jwebsocket.plugins.loadbalancer;
 /**
  * Provide the allowed options for the status of an end point within a cluster.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public enum EndPointStatus {
 

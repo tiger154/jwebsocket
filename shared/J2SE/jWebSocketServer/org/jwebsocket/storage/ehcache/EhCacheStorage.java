@@ -31,7 +31,7 @@ import org.jwebsocket.storage.BaseStorage;
  *
  * @param <K>
  * @param <V>
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 

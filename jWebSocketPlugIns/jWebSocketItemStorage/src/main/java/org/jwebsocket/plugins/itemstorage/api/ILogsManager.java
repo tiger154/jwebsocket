@@ -24,7 +24,7 @@ import org.jwebsocket.api.IInitializable;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface ILogsManager extends IInitializable {
 

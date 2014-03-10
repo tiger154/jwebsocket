@@ -20,7 +20,7 @@ package org.jwebsocket.api;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class WebSocketBaseClientEvent implements WebSocketClientEvent {
 

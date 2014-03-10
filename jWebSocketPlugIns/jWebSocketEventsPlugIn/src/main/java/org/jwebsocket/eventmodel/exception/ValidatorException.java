@@ -21,7 +21,7 @@ package org.jwebsocket.eventmodel.exception;
 /**
  * Thrown when the validation process fail for a custom C2S event notification
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ValidatorException extends Exception {
 

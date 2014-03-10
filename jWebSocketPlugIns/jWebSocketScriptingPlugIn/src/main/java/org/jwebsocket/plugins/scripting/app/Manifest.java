@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * The class contains utility methods and properties to process the script app
  * manifest file "manifest.json".
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class Manifest {
 

@@ -25,7 +25,7 @@ import org.jwebsocket.util.Tools;
 /**
  * implements a user with all its data fields and roles.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class User {
 

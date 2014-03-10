@@ -20,7 +20,7 @@ package org.jwebsocket.eventmodel.cluster.backbone;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class CentralizedRoutingServerBackbone {
 }

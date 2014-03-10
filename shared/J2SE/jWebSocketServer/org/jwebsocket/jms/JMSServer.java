@@ -38,7 +38,7 @@ import org.jwebsocket.util.JMSManager;
 /**
  * JMS Token server implementation.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JMSServer extends TokenServer {
 

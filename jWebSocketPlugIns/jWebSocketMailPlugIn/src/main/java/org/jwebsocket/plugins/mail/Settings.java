@@ -24,7 +24,7 @@ import org.jwebsocket.storage.BaseStorage;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Settings {
 

@@ -10,7 +10,7 @@ import org.jwebsocket.config.JWebSocketServerConstants;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaDiskSpaceSI extends QuotaBaseInstance {
 

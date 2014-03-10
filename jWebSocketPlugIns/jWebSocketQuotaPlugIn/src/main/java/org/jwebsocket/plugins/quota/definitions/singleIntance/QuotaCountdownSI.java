@@ -6,7 +6,7 @@ package org.jwebsocket.plugins.quota.definitions.singleIntance;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaCountdownSI extends QuotaBaseInstance {
 

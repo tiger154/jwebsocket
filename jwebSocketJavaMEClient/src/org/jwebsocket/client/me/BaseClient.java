@@ -25,7 +25,7 @@ import org.jwebsocket.listener.WebSocketClientEvent;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public abstract class BaseClient implements WebSocketClient {
 

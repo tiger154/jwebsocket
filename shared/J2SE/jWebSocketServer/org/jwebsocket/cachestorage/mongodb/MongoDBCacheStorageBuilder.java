@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
 /**
  * Create MongoDBCacheStorage instances
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MongoDBCacheStorageBuilder implements IInitializable {
 

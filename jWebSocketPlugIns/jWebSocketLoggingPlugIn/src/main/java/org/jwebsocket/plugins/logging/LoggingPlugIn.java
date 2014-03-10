@@ -38,7 +38,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class LoggingPlugIn extends TokenPlugIn {
 

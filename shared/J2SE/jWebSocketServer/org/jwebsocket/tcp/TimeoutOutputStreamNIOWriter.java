@@ -38,8 +38,8 @@ import org.jwebsocket.util.Tools;
  * Advises: - Notify the connector stopped event in a thread pool instead of the
  * same thread - Check the connection state before send a packet
  *
- * @author kyberneees
- * @author aschulze
+ * @author Rolando Santamaria Maso
+ * @author Alexander Schulze
  */
 public class TimeoutOutputStreamNIOWriter {
 

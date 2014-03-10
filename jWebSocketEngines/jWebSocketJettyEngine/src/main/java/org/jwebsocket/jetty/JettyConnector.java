@@ -38,7 +38,7 @@ import org.jwebsocket.logging.Logging;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JettyConnector extends BaseConnector {
 

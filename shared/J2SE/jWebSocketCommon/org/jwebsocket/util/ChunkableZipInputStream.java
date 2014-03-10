@@ -29,7 +29,7 @@ import org.jwebsocket.token.TokenFactory;
  * The class implements the IChunkable interface to support the transmission of
  * data from a InputStream zipped to the client.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ChunkableZipInputStream extends BaseChunkable {
 

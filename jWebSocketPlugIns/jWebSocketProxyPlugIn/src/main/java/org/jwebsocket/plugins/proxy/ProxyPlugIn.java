@@ -32,7 +32,7 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.util.Tools;
 
 /**
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 

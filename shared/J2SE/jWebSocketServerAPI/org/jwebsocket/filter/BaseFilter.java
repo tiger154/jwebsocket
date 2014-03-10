@@ -29,7 +29,7 @@ import org.jwebsocket.kit.FilterResponse;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class BaseFilter implements WebSocketFilter {
 	// every filter has a backward reference to its filter chain

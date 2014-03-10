@@ -16,7 +16,7 @@ package org.jwebsocket.listener;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class WebSocketClientTokenEvent extends WebSocketClientEvent {
 }

@@ -23,7 +23,7 @@ import org.jwebsocket.config.ReliabilityOptions;
 /**
  * Default WebSocket based implementation for the interface WebSocketClient
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JWebSocketWSClient extends BaseWebSocketClient {
 

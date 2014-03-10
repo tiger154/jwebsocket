@@ -50,7 +50,7 @@ import org.springframework.jms.support.converter.SimpleMessageConverter;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class DefaultMessageDelegate implements MessageDelegate, MessageConsumerRegistry {
 

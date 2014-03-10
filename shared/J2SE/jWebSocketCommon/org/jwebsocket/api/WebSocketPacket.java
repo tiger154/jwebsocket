@@ -27,7 +27,7 @@ import org.jwebsocket.kit.WebSocketFrameType;
  * client and server. Data packets do not have a special format at this
  * communication level.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface WebSocketPacket {
 

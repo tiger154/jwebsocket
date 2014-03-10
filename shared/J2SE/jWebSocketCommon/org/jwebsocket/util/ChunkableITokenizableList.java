@@ -28,7 +28,7 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * The class implements the IChunkable interface to support the transmission of ITokenizable lists.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ChunkableITokenizableList extends BaseChunkable {
 

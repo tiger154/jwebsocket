@@ -28,7 +28,7 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
  * Manages the jWebSocket sessions. It uses a cache implementation, which can be
  * configured by Spring.
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class SessionManager implements ISessionManager {
 

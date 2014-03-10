@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 /**
  * The annotation allows to developers to require certain plug-in in runtime.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

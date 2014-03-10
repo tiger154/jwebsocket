@@ -19,7 +19,9 @@
 package org.jwebsocket.plugins.api;
 
 import java.util.List;
+import java.util.Map;
 import javolution.util.FastList;
+import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -31,13 +33,14 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
  * Plug-in to export the server API
  *
- * @author kyberneees
- * @author aschulze
+ * @author Rolando Santamaria Maso
+ * @author Alexander Schulze
  */
 public class APIPlugIn extends TokenPlugIn {
 
@@ -45,22 +48,23 @@ public class APIPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_API =
-			JWebSocketServerConstants.NS_BASE + ".plugins.api";
+	public static final String NS_API
+			= JWebSocketServerConstants.NS_BASE + ".plugins.api";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket APIPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket API Plug-in - Community Edition";
-	private String GET_SERVER_API = "getServerAPI";
-	private String GET_PLUGIN_API = "getPlugInAPI";
-	private String GET_PLUGIN_IDS = "getPlugInIds";
-	private String SUPPORTS_TOKEN = "supportsToken";
-	private String HAS_PLUGIN = "hasPlugin";
+	private final static String GET_PLUG_IN_INFO = "getPlugInInfo";
+	private final static String GET_SERVER_API = "getServerAPI";
+	private final static String GET_PLUGIN_API = "getPlugInAPI";
+	private final static String GET_PLUGIN_IDS = "getPlugInIds";
+	private final static String SUPPORTS_TOKEN = "supportsToken";
+	private final static String HAS_PLUGIN = "hasPlugin";
+	private static final String NS_INTERFACE
+			= JWebSocketServerConstants.NS_BASE + ".plugins.api";
 	private BeanFactory mBeanFactory;
-	private static final String NS_INTERFACE =
-			JWebSocketServerConstants.NS_BASE + ".plugins.api";
 
 	/**
 	 *
@@ -132,7 +136,9 @@ public class APIPlugIn extends TokenPlugIn {
 	public void processToken(PlugInResponse aResponse,
 			WebSocketConnector aConnector, Token aToken) {
 		if (getNamespace().equals(aToken.getNS())) {
-			if (GET_SERVER_API.equals(aToken.getType())) {
+			if (GET_PLUG_IN_INFO.equals(aToken.getType())) {
+				getPlugInInfo(aConnector, aToken);
+			} else if (GET_SERVER_API.equals(aToken.getType())) {
 				getServerAPI(aConnector, aToken);
 			} else if (GET_PLUGIN_API.equals(aToken.getType())) {
 				getPlugInAPI(aConnector, aToken);
@@ -192,7 +198,7 @@ public class APIPlugIn extends TokenPlugIn {
 			try {
 				PlugInDefinition lPlugInDef = (PlugInDefinition) mBeanFactory.getBean(lPlugInId);
 				lPlugInDef.writeToToken(lResponse);
-			} catch (Exception lEx) {
+			} catch (BeansException lEx) {
 				lResponse.setInteger("code", -1);
 				lResponse.setString("msg", lEx.getClass().getSimpleName() + ":" + lEx.getMessage());
 			}
@@ -220,6 +226,38 @@ public class APIPlugIn extends TokenPlugIn {
 		lResponse.setList("identifiers", lIdentifiers);
 
 		//Sending the response
+		sendToken(aConnector, aConnector, lResponse);
+	}
+
+	/**
+	 * Export the plug-ins information record
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	public void getPlugInInfo(WebSocketConnector aConnector, Token aToken) {
+		List<Map<String, Object>> lPlugInInfo = new FastList<Map<String, Object>>();
+		Map<String, Object> lInfo;
+		for (WebSocketPlugIn lPlugIn : getPlugInChain().getPlugIns()) {
+			lInfo = new FastMap<String, Object>();
+			lInfo.put("version", lPlugIn.getVersion());
+			lInfo.put("copyright", lPlugIn.getCopyright());
+			lInfo.put("copyright", lPlugIn.getCopyright());
+			lInfo.put("description", lPlugIn.getDescription());
+			lInfo.put("enabled", lPlugIn.getEnabled());
+			lInfo.put("label", lPlugIn.getLabel());
+			lInfo.put("license", lPlugIn.getLicense());
+			lInfo.put("name", lPlugIn.getName());
+			lInfo.put("namespace", lPlugIn.getNamespace());
+			lInfo.put("id", lPlugIn.getId());
+			lInfo.put("vendor", lPlugIn.getVendor());
+			lPlugInInfo.add(lInfo);
+		}
+
+		Token lResponse = createResponse(aToken);
+		lResponse.setList("pluginInfo", lPlugInInfo);
+
+		// Sending the response
 		sendToken(aConnector, aConnector, lResponse);
 	}
 

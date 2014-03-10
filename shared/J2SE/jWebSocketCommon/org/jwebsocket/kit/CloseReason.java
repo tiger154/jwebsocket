@@ -21,7 +21,7 @@ package org.jwebsocket.kit;
 /**
  * Enumeration to handle reasons for connection close.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 
 /*

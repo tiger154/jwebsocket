@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 abstract public class BaseItemStorage implements IItemStorage {
 

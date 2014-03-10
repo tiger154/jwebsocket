@@ -21,7 +21,7 @@ package org.jwebsocket.plugins.channels;
 /**
  * Base interface that defines the store operations for subscribers
  *
- * @author puran, kyberneees
+ * @author Rolando Santamaria Maso, Puran Singh
  */
 public interface SubscriberStore {
 

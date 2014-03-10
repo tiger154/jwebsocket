@@ -24,7 +24,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * The target event to notify on the client-side is not supported
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class S2CEventNotSupportedOnClient extends C2SEvent {
 

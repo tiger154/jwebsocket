@@ -24,7 +24,7 @@ import org.jwebsocket.config.xml.ThreadPoolConfig;
 /**
  * Server Configuration
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface ServerConfiguration extends Configuration {
 

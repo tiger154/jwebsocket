@@ -32,7 +32,7 @@ import org.jwebsocket.kit.WebSocketException;
  * @author Alexander Schulze
  * @author Puran Singh
  * @version $Id: WebSocketEngine.java 2010-03-03
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface WebSocketEngine extends ISystemLifecycle {
 

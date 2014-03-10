@@ -33,7 +33,7 @@ import org.springframework.validation.Validator;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class C2SEventDefinition implements IInitializable, IServerSecureComponent, ITokenizable {
 

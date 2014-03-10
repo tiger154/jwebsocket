@@ -25,7 +25,7 @@ import org.jwebsocket.api.ITokenizable;
 /**
  * The class wraps the item storage mechanism to published via WebSocket API
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IItemCollection extends ITokenizable, IMappable {
 

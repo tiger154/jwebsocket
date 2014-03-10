@@ -23,7 +23,7 @@ import org.jwebsocket.config.JWebSocketConfig;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Settings {
 

@@ -35,8 +35,8 @@ import org.jwebsocket.logging.Logging;
 
 /**
  *
- * @author aschulze
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class TomcatEngine extends BaseEngine {
 

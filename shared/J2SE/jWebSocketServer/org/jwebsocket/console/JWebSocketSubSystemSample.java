@@ -47,7 +47,7 @@ import org.jwebsocket.tcp.TCPEngine;
 /**
  * Example of a pure programmatic embedded jWebSocket server.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JWebSocketSubSystemSample {
 

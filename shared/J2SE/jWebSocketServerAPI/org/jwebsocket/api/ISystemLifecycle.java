@@ -20,8 +20,8 @@ package org.jwebsocket.api;
 
 /**
  *
- * @author kyberneees
- * @author aschulze
+ * @author Rolando Santamaria Maso
+ * @author Alexander Schulze
  */
 public interface ISystemLifecycle {
 

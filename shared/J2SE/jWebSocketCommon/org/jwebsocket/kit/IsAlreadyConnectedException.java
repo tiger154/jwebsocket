@@ -20,7 +20,7 @@ package org.jwebsocket.kit;
 
 /**
  *
- * @author rbetancourt
+ * @author Rolando Betancourt Toucet
  */
 public class IsAlreadyConnectedException extends WebSocketException {
 

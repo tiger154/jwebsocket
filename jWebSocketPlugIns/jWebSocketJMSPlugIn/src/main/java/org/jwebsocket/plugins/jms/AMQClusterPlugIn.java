@@ -25,7 +25,7 @@ import org.apache.activemq.broker.BrokerPlugin;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class AMQClusterPlugIn implements BrokerPlugin {
 

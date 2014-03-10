@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JcTerminalReady extends C2SEvent {
 

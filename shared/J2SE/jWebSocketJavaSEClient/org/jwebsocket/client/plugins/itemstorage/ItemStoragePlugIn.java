@@ -29,7 +29,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ItemStoragePlugIn extends BaseClientTokenPlugIn {
 

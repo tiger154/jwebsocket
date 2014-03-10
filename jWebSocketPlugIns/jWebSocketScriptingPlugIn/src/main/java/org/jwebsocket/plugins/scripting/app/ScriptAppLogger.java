@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 /**
  * The JavaScript application logger abstraction class.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ScriptAppLogger {
 

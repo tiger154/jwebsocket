@@ -21,7 +21,7 @@ import java.util.Date;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class SharedObject {
 

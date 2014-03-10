@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.jms.util;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public enum EventJms {
 

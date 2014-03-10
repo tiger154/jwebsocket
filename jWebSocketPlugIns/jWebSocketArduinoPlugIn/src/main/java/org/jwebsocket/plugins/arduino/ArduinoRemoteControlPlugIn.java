@@ -41,7 +41,7 @@ import org.jwebsocket.plugins.arduino.util.LedsProgram;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 

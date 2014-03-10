@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Utility class to append entries in chain on a Map instance
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MapAppender {
 

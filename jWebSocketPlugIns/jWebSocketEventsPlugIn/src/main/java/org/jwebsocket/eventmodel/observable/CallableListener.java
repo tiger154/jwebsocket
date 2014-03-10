@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.api.IListener;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class CallableListener implements Callable<Object> {
 

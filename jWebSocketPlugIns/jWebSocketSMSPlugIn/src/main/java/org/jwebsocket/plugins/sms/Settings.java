@@ -23,7 +23,7 @@ import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
 /**
  * Contains the SMS plug-in settings.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Settings {
 

@@ -22,7 +22,7 @@ import org.jwebsocket.plugins.jc.api.APDU;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class Select implements APDU {
 

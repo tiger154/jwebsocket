@@ -81,6 +81,7 @@ public class JMSEndPointSender {
 			@Override
 			public void onTextMessage(final TextMessage aMessage) {
 				try {
+					boolean isProgressEvent = false;
 					// getting the correlation ID
 					String lKey = aMessage.getJMSCorrelationID();
 
@@ -91,10 +92,24 @@ public class JMSEndPointSender {
 							lKey = String.valueOf(lToken.getInteger("utid"));
 						}
 					}
+					
+					mLog.debug("### KEY ###: " + lKey + ", " + aMessage.getText());
+					
+					// in case of progress events the utid is negative
+					if (null != lKey && lKey.startsWith("-")) {
+						isProgressEvent = true;
+						// cut leading "-"
+						lKey = lKey.substring(1);
+					}
 
 					if (null != lKey) {
 						// trying to get available response listener
-						final IJMSResponseListener lRespListener = mResponseListeners.remove(lKey);
+						final IJMSResponseListener lRespListener;
+						if (isProgressEvent) {
+							lRespListener = mResponseListeners.get(lKey);
+						} else {
+							lRespListener = mResponseListeners.remove(lKey);
+						}
 
 						// if listener exists
 						if (null != lRespListener) {

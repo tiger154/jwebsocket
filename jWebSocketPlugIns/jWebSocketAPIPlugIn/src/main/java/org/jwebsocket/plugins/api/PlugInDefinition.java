@@ -29,7 +29,7 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * The plug-in definition class
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class PlugInDefinition implements ITokenizable {
 

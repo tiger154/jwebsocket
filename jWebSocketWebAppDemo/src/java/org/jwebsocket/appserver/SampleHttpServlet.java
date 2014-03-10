@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Sample HttpServlet
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class SampleHttpServlet extends HttpServlet {
 

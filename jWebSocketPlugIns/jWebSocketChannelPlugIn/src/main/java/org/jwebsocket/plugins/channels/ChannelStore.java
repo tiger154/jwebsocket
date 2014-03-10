@@ -24,8 +24,7 @@ import java.util.Map;
  * Channel store interface that defines the operation for store/retrieval of
  * channel data.
  *
- * @author puran, kyberneees
- * @version $Id: ChannelStore.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
+ * @author Rolando Santamaria Maso, Puran Singh
  */
 public interface ChannelStore {
 

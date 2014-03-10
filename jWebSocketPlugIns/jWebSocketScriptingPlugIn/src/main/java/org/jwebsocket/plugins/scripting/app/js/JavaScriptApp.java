@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  * Contains specific JavaScript implementation for abstract methods of the
  * BaseScriptApp class.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JavaScriptApp extends BaseScriptApp {
 

@@ -22,7 +22,7 @@ import org.jwebsocket.eventmodel.api.IRRPCOnResponseCallback;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class OnResponseCallback implements IRRPCOnResponseCallback {
 

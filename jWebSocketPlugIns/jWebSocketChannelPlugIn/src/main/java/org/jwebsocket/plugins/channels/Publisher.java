@@ -27,7 +27,7 @@ import org.jwebsocket.factory.JWebSocketFactory;
 /**
  * Represents the single publisher connected to a particular channel
  *
- * @author puran, aschulze, kyberneees
+ * @author Alexander Schulze, Puran Singh, Rolando Santamaria Maso
  * @version $Id: Publisher.java 1120 2010-10-24 06:03:08Z mailtopuran@gmail.com$
  */
 public class Publisher {

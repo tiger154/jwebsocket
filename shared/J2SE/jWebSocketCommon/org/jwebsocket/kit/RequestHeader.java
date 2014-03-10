@@ -29,7 +29,7 @@ import org.jwebsocket.util.Tools;
  * server. The RequestHeader internally maintains a FastMap to store key/values
  * pairs.
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @author jang
  * @version $Id: RequestHeader.java 596 2010-06-22 17:09:54Z fivefeetfurther $
  */

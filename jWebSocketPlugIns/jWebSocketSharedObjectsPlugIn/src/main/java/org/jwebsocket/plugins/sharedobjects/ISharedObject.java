@@ -22,7 +22,7 @@ import org.jwebsocket.token.Token;
 /**
  * Interface for shared objects in the SharedObjects Plug-In of jWebSocket
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface ISharedObject {
 

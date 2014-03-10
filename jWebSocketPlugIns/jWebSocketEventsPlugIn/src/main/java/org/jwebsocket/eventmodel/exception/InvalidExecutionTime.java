@@ -22,7 +22,7 @@ package org.jwebsocket.eventmodel.exception;
  * Thrown when the listeners take more time than allowed for execution in
  * threads
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class InvalidExecutionTime extends Exception {
 

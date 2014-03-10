@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * The annotation allows to developers to introduce valid connection
  * restrictions
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

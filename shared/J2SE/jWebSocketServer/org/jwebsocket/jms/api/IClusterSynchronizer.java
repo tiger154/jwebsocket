@@ -24,7 +24,7 @@ import org.jwebsocket.api.IInitializable;
  * Load balancer instances require to be synchronized in order to allow only one
  * load balancer instance to process client messages.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IClusterSynchronizer extends IInitializable {
 

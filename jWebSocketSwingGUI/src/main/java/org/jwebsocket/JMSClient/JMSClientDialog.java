@@ -21,7 +21,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author vbarzanacres
+ * @author Victor Antonio Barzana Crespo
  */
 public class JMSClientDialog extends javax.swing.JFrame {
 

@@ -24,9 +24,9 @@ import javolution.util.FastMap;
 /**
  * Load balancer settings.
  *
- * @author aschulze
- * @author kyberneees
- * @author rbetancourt
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
+ * @author Rolando Betancourt Toucet
  */
 public class Settings {
 

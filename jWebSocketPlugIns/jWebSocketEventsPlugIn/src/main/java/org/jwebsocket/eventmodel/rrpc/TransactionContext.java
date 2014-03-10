@@ -28,7 +28,7 @@ import org.jwebsocket.token.Token;
  * The Transaction context is a collection of resources used to success back to
  * the target client the response on a S2C call
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class TransactionContext {
 

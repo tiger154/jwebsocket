@@ -48,7 +48,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  *
- * @author aschulze EhChache
+ * @author Alexander Schulze EhChache
  */
 public class JDBCPlugIn extends TokenPlugIn {
 

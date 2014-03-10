@@ -36,7 +36,7 @@ import org.jwebsocket.plugins.system.SystemPlugIn;
  * JMS Connector
  *
  * @author Alexander Schulze
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JMSConnector extends BaseConnector {
 

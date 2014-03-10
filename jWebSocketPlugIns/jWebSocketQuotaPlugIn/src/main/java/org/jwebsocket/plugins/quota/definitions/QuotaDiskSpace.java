@@ -14,7 +14,7 @@ import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaDiskSpaceSI;
 
 /**
  *
- * @author osvaldo
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaDiskSpace extends BaseQuota {
 

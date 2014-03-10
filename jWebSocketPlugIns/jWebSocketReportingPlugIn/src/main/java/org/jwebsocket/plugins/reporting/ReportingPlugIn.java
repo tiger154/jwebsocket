@@ -46,7 +46,7 @@ import org.springframework.util.Assert;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ReportingPlugIn extends ActionPlugIn {
 

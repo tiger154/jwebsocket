@@ -26,7 +26,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  * This event must to be fired at the beginning of the connection, is used to
  * keep updated the client cache if the server cache change
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ClientCacheAspectStatus extends C2SEvent {
 

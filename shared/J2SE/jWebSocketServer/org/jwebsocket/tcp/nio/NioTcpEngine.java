@@ -64,8 +64,7 @@ import org.jwebsocket.tcp.nio.ssl.NioSSLHandler;
  * depending on actual scenario). </p>
  *
  * @author jang
- * @author kyberneees (bug fixes, session identifier cookie support, SSL and
- * performance improvements)
+ * @author Rolando Santamaria Maso
  */
 public class NioTcpEngine extends BaseEngine {
 

@@ -2,7 +2,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket JavaScript/Browser Client (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,88 +17,113 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC2 (build 40204)",NS_BASE:"org.jwebsocket",
+if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC2 (build 40310)",NS_BASE:"org.jwebsocket",
 NS_SYSTEM:"org.jwebsocket.plugins.system",MSG_WS_NOT_SUPPORTED:
 "Unfortunately your browser does neither natively support WebSockets\n"+"nor you have the Adobe Flash-PlugIn 10+ installed.\n"+
-"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer.",CUR_TOKEN_ID:0,JWS_SERVER_SCHEMA:"ws",
-JWS_SERVER_SSL_SCHEMA:"wss",JWS_SERVER_HOST:(self.location.hostname?self.location.hostname:"127.0.0.1"),JWS_SERVER_PORT:8787,
-JWS_SERVER_SSL_PORT:9797,JWS_SERVER_CONTEXT:"/jWebSocket",JWS_SERVER_SERVLET:"/jWebSocket",JWS_SERVER_URL:"ws://"+(
-self.location.hostname?self.location.hostname:"127.0.0.1")+":8787/jWebSocket/jWebSocket",CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3,
-RECONNECTING:1000,OPEN_TIMED_OUT:1001,RO_OFF:{autoReconnect:false,reconnectDelay: -1,reconnectTimeout: -1,queueItemLimit: -1,
-queueSizeLimit: -1},RO_ON:{autoReconnect:true,reconnectDelay:2000,reconnectTimeout:30000,queueItemLimit:1000,queueSizeLimit:1024*
-1024*10},WS_SUBPROT_JSON:"org.jwebsocket.json",WS_SUBPROT_XML:"org.jwebsocket.xml",WS_SUBPROT_CSV:"org.jwebsocket.csv",
-WS_SUBPROT_CUSTOM:"org.jwebsocket.text",WS_SUBPROT_TEXT:"org.jwebsocket.text",WS_SUBPROT_BINARY:"org.jwebsocket.binary",
-SCOPE_PRIVATE:"private",SCOPE_PUBLIC:"public",DEF_RESP_TIMEOUT:30000,BT_UNKNOWN:0,BT_FIREFOX:1,BT_NETSCAPE:2,BT_OPERA:3,
-BT_IEXPLORER:4,BT_SAFARI:5,BT_CHROME:6,BROWSER_NAMES:["Unknown","Firefox","Netscape","Opera","Internet Explorer","Safari","Chrome"],
-GUEST_USER_LOGINNAME:"guest",GUEST_USER_PASSWORD:"guest",DEMO_ROOT_LOGINNAME:"root",DEMO_ROOT_PASSWORD:"root",$:function(aT){
-return document.getElementById(aT);},getServerURL:function(fm,bM,bv,dL,dc){var el=fm+"://"+bM+(bv?":"+bv:"");if(dL&&dL.length>0){
-el+=dL;if(dc&&dc.length>0){el+=dc;}}return el;},getWebAppURL:function(dL,dc){var is=dL||self.location.pathname;var jF=dc||
-jws.JWS_SERVER_SERVLET;return jws.getServerURL("https"===self.location.protocol?"wss":"ws",self.location.hostname,
-self.location.port,is,jF);},getDefaultServerURL:function(){return(this.getServerURL(jws.JWS_SERVER_SCHEMA,jws.JWS_SERVER_HOST,
-jws.JWS_SERVER_PORT,jws.JWS_SERVER_CONTEXT,jws.JWS_SERVER_SERVLET));},getDefaultServerCometURL:function(){
-return this.getDefaultServerURL()+"Comet";},getDefaultSSLServerURL:function(){return(this.getServerURL(jws.JWS_SERVER_SSL_SCHEMA,
-jws.JWS_SERVER_HOST,jws.JWS_SERVER_SSL_PORT,jws.JWS_SERVER_CONTEXT,jws.JWS_SERVER_SERVLET));},getDefaultSSLServerCometURL:function()
-{return this.getDefaultSSLServerURL()+"Comet";},getAutoServerURL:function(){var iL=location.protocol&&location.protocol.indexOf(
-"https")>=0;return(this.getServerURL((iL?jws.JWS_SERVER_SSL_SCHEMA:jws.JWS_SERVER_SCHEMA),jws.JWS_SERVER_HOST,(iL?
-jws.JWS_SERVER_SSL_PORT:jws.JWS_SERVER_PORT),jws.JWS_SERVER_CONTEXT,jws.JWS_SERVER_SERVLET));},browserSupportsWebSockets:function(){
-return(window.WebSocket!==null&&window.WebSocket!==undefined);},enableCometSupportForWebSockets:function(){window.WebSocket=
-XHRWebSocket;},browserSupportsNativeWebSockets:(function(){if(window.he){return false;}return(window.WebSocket!==null&&
-window.WebSocket!==undefined);})(),browserSupportsJSON:function(){return(window.JSON!==null&&window.JSON!==undefined);},
-browserSupportsNativeJSON:(function(){return(window.JSON!==null&&window.JSON!==undefined);})(),browserSupportsWebWorkers:(function()
-{return(window.Worker!==null&&window.Worker!==undefined);})(),getOptions:function(ax,gx){ax=(ax?ax:{});if(gx){for(var dR in gx){if(
-undefined===ax[dR]){ax[dR]=gx[dR];}}}return ax;},loadScript:function(dr,ax){if(!ax){ax={};}var gp=document.getElementsByTagName(
-"head")[0];bi=document.createElement("script");bi.type="text/javascript";if(ax.id){bi.id=ax.id;}gp.appendChild(bi);if(ax.OnSuccess){
-bi.onload=ax.OnSuccess;}if(ax.OnFailure){bi.onerror=ax.OnFailure;}bi.src=dr;},runAsThread:function(ax){if(!
-this.browserSupportsWebWorkers){return{code: -1,msg:"Browser does not (yet) support WebWorkers."};}if(!ax){ax={};}var dv=null;
-var dG=null;var dw=jws.SCRIPT_PATH+"jwsWorker.js";var bu=null;var bC=[];if(ax.OnMessage&&"function"===typeof ax.OnMessage){dv=
-ax.OnMessage;}if(ax.OnError&&"function"===typeof ax.OnError){dG=ax.OnError;}if(ax.file&&"String"===typeof ax.file){dw=ax.file;}if(
-ax.method&&"function"===typeof ax.method){bu=ax.method;}if(ax.args){bC=ax.args;}var dJ=this;if(!jws.worker){jws.worker=new Worker(
-dw);jws.worker.onmessage=function(cz){if(null!==dv){dv.call(dJ,{data:cz.data});}};jws.worker.onerror=function(cz){if(null!==dG){
-dG.call(dJ,{message:cz.message});}};}jws.worker.postMessage({method:bu.toString(),args:bC});return{code:0,msg:"ok",worker:
-jws.worker};},SCRIPT_PATH:(function(){var bf=document.getElementsByTagName("script");for(var db=0,dB=bf.length;db<dB;db++){var bi=
-bf[db];var ad=bi.src;if(!ad){ad=bi.getAttribute("src");}if(ad){var bg=ad.lastIndexOf("jWebSocket");if(bg>0){return ad.substr(0,bg);}
-}}return null;})(),isIE:(function(){var aS=navigator.userAgent;var bJ=aS.indexOf("MSIE");return(bJ>=0);})(),getBrowserName:function(
-){return this.eJ;},getBrowserVersion:function(){return this.fd;},getBrowserVersionString:function(){return this.dO;},isFirefox:
-function(){return this.fh;},isOpera:function(){return this.eg;},isChrome:function(){return this.fL;},isIExplorer:function(){
-return this.dZ;},isIE_LE6:function(){return(this.isIExplorer()&&this.getBrowserVersion()<7);},isIE_LE7:function(){return(
-this.isIExplorer()&&this.getBrowserVersion()<8);},isIE_GE8:function(){return(this.isIExplorer()&&this.getBrowserVersion()>=8);},
-isSafari:function(){return this.eo;},isNetscape:function(){return this.fj;},isPocketIE:function(){return this.hw;},console:{eZ:
-false,fy:2,iY:512,ALL:0,DEBUG:1,INFO:2,WARN:3,ERROR:4,FATAL:5,isDebugEnabled:function(){return(window.console&&jws.console.eZ&&
-jws.console.fy<=jws.console.DEBUG);},isInfoEnabled:function(){return(window.console&&jws.console.eZ&&jws.console.fy<=
-jws.console.INFO);},log:function(cW){if(window.console&&jws.console.eZ){console.log(cW);}},debug:function(cW){if(window.console&&
-jws.console.eZ&&jws.console.fy<=jws.console.DEBUG){if(console.debug){console.debug(cW);}else{console.log("[debug]: "+cW);}}},info:
-function(cW){if(window.console&&jws.console.eZ&&jws.console.fy<=jws.console.INFO){if(console.info){console.info(cW);}else{
-console.log("[info]: "+cW);}}},warn:function(cW){if(window.console&&jws.console.eZ&&jws.console.fy<=jws.console.WARN){if(
-console.warn){console.warn(cW);}else{console.log("[warn]: "+cW);}}},error:function(cW){if(window.console&&jws.console.eZ&&
-jws.console.fy<=jws.console.ERROR){if(console.error){console.error(cW);}else{console.log("[error]: "+cW);}}},fatal:function(cW){if(
-window.console&&jws.console.eZ&&jws.console.fy<=jws.console.FATAL){if(console.fatal){console.fatal(cW);}else{console.log(
-"[fatal]: "+cW);}}},getMaxLogLineLen:function(){return jws.console.iY;},getLevel:function(){return jws.console.fy;},setLevel:
-function(fo){jws.console.fy=fo;},isActive:function(){return jws.console.eZ;},setActive:function(eq){jws.console.eZ=eq;}}};(function(
-){jws.eJ="unknown";jws.eT=jws.BT_UNKNOWN;jws.fd=undefined;jws.dZ=false;jws.fh=false;jws.fj=false;jws.eg=false;jws.eo=false;jws.fL=
-false;var fN=navigator.userAgent;jws.fL=fN.indexOf("Chrome")>=0;if(jws.fL){jws.eT=jws.BT_CHROME;}else{jws.eo=fN.indexOf("Safari")>=
-0;if(jws.eo){jws.eT=jws.BT_SAFARI;}else{jws.fj=fN.indexOf("Netscape")>=0;if(jws.fj){jws.eT=jws.BT_NETSCAPE;}else{jws.fh=
-"Netscape"===navigator.appName;if(jws.fh){jws.eT=jws.BT_FIREFOX;}else{jws.eg="Opera"===navigator.appName;if(jws.eg){jws.eT=
-jws.BT_OPERA;}else{jws.dZ="Microsoft Internet Explorer"===navigator.appName;if(jws.dZ){jws.eT=jws.BT_IEXPLORER;}else{jws.hw=
-"Microsoft Pocket Internet Explorer"===navigator.appName;if(jws.hw){jws.eT=jws.BT_IEXPLORER;}}}}}}}var p,db;var aK;var fi;var cf;if(
-jws.dZ){jws.eJ=jws.BROWSER_NAMES[jws.BT_IEXPLORER];cf=fN.match(/MSIE.*/i);if(cf){aK=cf[0].substr(5);p=aK.indexOf(";");jws.dO=p>0?
-aK.substr(0,p):aK;jws.fd=parseFloat(jws.dO);}}else if(jws.fh){jws.eJ=jws.BROWSER_NAMES[jws.BT_FIREFOX];cf=fN.match(/Firefox\/.*/i);
-if(cf){aK=cf[0].substr(8);p=aK.indexOf(" ");if(p>0){jws.dO=aK.substring(0,p);}else{jws.dO=aK;}fi=0;db=0;while(db<aK.length){if(
-'.'===aK.charAt(db)){fi++;}if(fi>=2){break;}db++;}aK=aK.substring(0,db);jws.fd=parseFloat(aK);}}else if(jws.fj){jws.eJ=
-jws.BROWSER_NAMES[jws.BT_NETSCAPE];cf=fN.match(/Netscape\/.*/i);if(cf){aK=cf[0].substr(9);p=aK.indexOf(" ");if(p>0){jws.dO=
-aK.substring(0,p);}else{jws.dO=aK;}fi=0;db=0;while(db<aK.length){if('.'===aK.charAt(db)){fi++;}if(fi>=2){break;}db++;}aK=
-aK.substring(0,db);jws.fd=parseFloat(aK);}}else if(jws.eg){jws.eJ=jws.BROWSER_NAMES[jws.BT_OPERA];cf=fN.match(/Opera\/.*/i);if(cf){
-aK=cf[0].substr(6);p=aK.indexOf(" ");jws.dO=p>0?aK.substr(0,p):aK;jws.fd=parseFloat(aK);cf=fN.match(/Version\/.*/i);aK=cf[0].substr(
-8);if(cf){p=aK.indexOf(" ");jws.dO=(p>0?aK.substr(0,p):aK)+"/"+jws.dO;jws.fd=parseFloat(aK);}}}else if(jws.fL){jws.eJ=
-jws.BROWSER_NAMES[jws.BT_CHROME];cf=fN.match(/Chrome\/.*/i);if(cf){aK=cf[0].substr(7);p=aK.indexOf(" ");jws.dO=p>0?aK.substr(0,p):
-aK;jws.fd=parseFloat(aK);}}else if(jws.eo){jws.eJ=jws.BROWSER_NAMES[jws.BT_SAFARI];cf=fN.match(/Version\/.*/i);if(cf){aK=
-cf[0].substr(8);p=aK.indexOf(" ");jws.dO=p>0?aK.substr(0,p):aK;fi=0;db=0;while(db<aK.length){if('.'===aK.charAt(db)){fi++;}if(fi>=2)
-{break;}db++;}aK=aK.substring(0,db);jws.fd=parseFloat(aK);cf=fN.match(/Safari\/.*/i);if(cf){aK="."+cf[0].substr(7);p=aK.indexOf(" ")
-;jws.dO+=p>0?aK.substr(0,p):aK;}}}}());jws.events={addEventListener:(jws.isIE?function(as,cz,aA){as.attachEvent("on"+cz,aA);}:
-function(as,cz,aA){as.addEventListener(cz,aA,false);}),removeEventListener:(jws.isIE?function(as,cz,aA){as.detachEvent("on"+cz,aA);}
-:function(as,cz,aA){as.removeEventListener(cz,aA,false);}),getTarget:(jws.isIE?function(cz){return cz.srcElement;}:function(cz){
-return cz.target;}),preventDefault:(jws.isIE?function(cz){cz=window.event;if(cz){cz.returnValue=false;}}:function(cz){
-return cz.preventDefault();}),stopEvent:(jws.isIE?function(cz){if(cz&&cz.preventDefault){return cz.preventDefault();}}:function(cz){
-return cz.stopPropagation();})};
+"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer, "+
+"or use a native WebSocket compliant browser.",CUR_TOKEN_ID:0,JWS_SERVER_SCHEMA:"iW",JWS_SERVER_SSL_SCHEMA:"wss",JWS_SERVER_HOST:(
+self.location.hostname?self.location.hostname:"127.0.0.1"),JWS_SERVER_PORT:8787,JWS_SERVER_SSL_PORT:9797,JWS_SERVER_CONTEXT:
+"/jWebSocket",JWS_SERVER_SERVLET:"/jWebSocket",JWS_SERVER_URL:"iW://"+(self.location.hostname?self.location.hostname:"127.0.0.1")+
+":8787/jWebSocket/jWebSocket",CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3,RECONNECTING:1000,OPEN_TIMED_OUT:1001,RO_OFF:{autoReconnect:
+false,reconnectDelay: -1},RO_ON:{autoReconnect:true,reconnectDelay:3000},WS_SUBPROT_JSON:"org.jwebsocket.json",WS_SUBPROT_XML:
+"org.jwebsocket.xml",WS_SUBPROT_CSV:"org.jwebsocket.csv",WS_SUBPROT_CUSTOM:"org.jwebsocket.text",WS_SUBPROT_TEXT:
+"org.jwebsocket.text",WS_SUBPROT_BINARY:"org.jwebsocket.binary",SCOPE_PRIVATE:"private",SCOPE_PUBLIC:"public",DEF_RESP_TIMEOUT:
+30000,BT_UNKNOWN:0,BT_FIREFOX:1,BT_NETSCAPE:2,BT_OPERA:3,BT_IEXPLORER:4,BT_SAFARI:5,BT_CHROME:6,BROWSER_NAMES:["Unknown","Firefox",
+"Netscape","Opera","Internet Explorer","Safari","Chrome"],GUEST_USER_LOGINNAME:"guest",GUEST_USER_PASSWORD:"guest",
+DEMO_ROOT_LOGINNAME:"root",DEMO_ROOT_PASSWORD:"root",$:function(aT){return document.getElementById(aT);},getServerURL:function(fm,
+bM,bv,dL,dc){var el=fm+"://"+bM+(bv?":"+bv:"");if(dL&&dL.length>0){el+=dL;if(dc&&dc.length>0){el+=dc;}}return el;},getWebAppURL:
+function(dL,dc){var is=dL||self.location.pathname;var jF=dc||jws.JWS_SERVER_SERVLET;return jws.getServerURL("https"===
+self.location.protocol?"wss":"iW",self.location.hostname,self.location.port,is,jF);},getDefaultServerURL:function(){return(
+this.getServerURL(jws.JWS_SERVER_SCHEMA,jws.JWS_SERVER_HOST,jws.JWS_SERVER_PORT,jws.JWS_SERVER_CONTEXT,jws.JWS_SERVER_SERVLET));},
+getDefaultServerCometURL:function(){return this.getDefaultServerURL()+"Comet";},getDefaultSSLServerURL:function(){return(
+this.getServerURL(jws.JWS_SERVER_SSL_SCHEMA,jws.JWS_SERVER_HOST,jws.JWS_SERVER_SSL_PORT,jws.JWS_SERVER_CONTEXT,
+jws.JWS_SERVER_SERVLET));},getDefaultSSLServerCometURL:function(){return this.getDefaultSSLServerURL()+"Comet";},getAutoServerURL:
+function(){var iL=location.protocol&&location.protocol.indexOf("https")>=0;return(this.getServerURL((iL?jws.JWS_SERVER_SSL_SCHEMA:
+jws.JWS_SERVER_SCHEMA),jws.JWS_SERVER_HOST,(iL?jws.JWS_SERVER_SSL_PORT:jws.JWS_SERVER_PORT),jws.JWS_SERVER_CONTEXT,
+jws.JWS_SERVER_SERVLET));},browserSupportsWebSockets:function(){return(window.WebSocket!==null&&window.WebSocket!==undefined);},
+enableCometSupportForWebSockets:function(){window.WebSocket=XHRWebSocket;},browserSupportsNativeWebSockets:(function(){if(window.ip)
+{return false;}return(window.WebSocket!==null&&window.WebSocket!==undefined);})(),browserSupportsJSON:function(){return(
+window.JSON!==null&&window.JSON!==undefined);},browserSupportsNativeJSON:(function(){return(window.JSON!==null&&window.JSON!==
+undefined);})(),browserSupportsWebWorkers:(function(){return(window.Worker!==null&&window.Worker!==undefined);})(),getOptions:
+function(ax,gx){ax=(ax?ax:{});if(gx){for(var dR in gx){if(undefined===ax[dR]){ax[dR]=gx[dR];}}}return ax;},loadScript:function(dr,
+ax){if(!ax){ax={};}var gp=document.getElementsByTagName("head")[0];bi=document.createElement("script");bi.type="text/javascript";if(
+ax.id){bi.id=ax.id;}gp.appendChild(bi);if(ax.OnSuccess){bi.onload=ax.OnSuccess;}if(ax.OnFailure){bi.onerror=ax.OnFailure;}bi.src=dr;
+},runAsThread:function(ax){if(!this.browserSupportsWebWorkers){return{code: -1,msg:"Browser does not (yet) support WebWorkers."};}
+if(!ax){ax={};}var dv=null;var dG=null;var dw=jws.SCRIPT_PATH+"jwsWorker.js";var bu=null;var bC=[];if(ax.OnMessage&&"function"===
+typeof ax.OnMessage){dv=ax.OnMessage;}if(ax.OnError&&"function"===typeof ax.OnError){dG=ax.OnError;}if(ax.file&&"String"===
+typeof ax.file){dw=ax.file;}if(ax.method&&"function"===typeof ax.method){bu=ax.method;}if(ax.args){bC=ax.args;}var dJ=this;if(!
+jws.worker){jws.worker=new Worker(dw);jws.worker.onmessage=function(cz){if(null!==dv){dv.call(dJ,{data:cz.data});}};
+jws.worker.onerror=function(cz){if(null!==dG){dG.call(dJ,{message:cz.message});}};}jws.worker.postMessage({method:bu.toString(),
+args:bC});return{code:0,msg:"ok",worker:jws.worker};},SCRIPT_PATH:(function(){var bf=document.getElementsByTagName("script");for(
+var db=0,dB=bf.length;db<dB;db++){var bi=bf[db];var ad=bi.src;if(!ad){ad=bi.getAttribute("src");}if(ad){var bg=ad.lastIndexOf(
+"jWebSocket");if(bg>0){return ad.substr(0,bg);}}}return null;})(),isIE:(function(){var aS=navigator.userAgent;var bJ=aS.indexOf(
+"MSIE");return(bJ>=0);})(),getBrowserName:function(){return this.eJ;},getBrowserVersion:function(){return this.fd;},
+getBrowserVersionString:function(){return this.dO;},isFirefox:function(){return this.fh;},isOpera:function(){return this.eg;},
+isChrome:function(){return this.fL;},isIExplorer:function(){return this.dZ;},isIE_LE6:function(){return(this.isIExplorer()&&
+this.getBrowserVersion()<7);},isIE_LE7:function(){return(this.isIExplorer()&&this.getBrowserVersion()<8);},isIE_GE8:function(){
+return(this.isIExplorer()&&this.getBrowserVersion()>=8);},isSafari:function(){return this.eo;},isNetscape:function(){return this.fj;
+},isPocketIE:function(){return this.hw;},console:{eZ:false,fy:2,iY:512,ALL:0,DEBUG:1,INFO:2,WARN:3,ERROR:4,FATAL:5,isDebugEnabled:
+function(){return(window.console&&jws.console.eZ&&jws.console.fy<=jws.console.DEBUG);},isInfoEnabled:function(){return(
+window.console&&jws.console.eZ&&jws.console.fy<=jws.console.INFO);},log:function(cW){if(window.console&&jws.console.eZ){console.log(
+cW);}},debug:function(cW){if(window.console&&jws.console.eZ&&jws.console.fy<=jws.console.DEBUG){if(console.debug){console.debug(cW);
+}else{console.log("[debug]: "+cW);}}},info:function(cW){if(window.console&&jws.console.eZ&&jws.console.fy<=jws.console.INFO){if(
+console.info){console.info(cW);}else{console.log("[info]: "+cW);}}},warn:function(cW){if(window.console&&jws.console.eZ&&
+jws.console.fy<=jws.console.WARN){if(console.warn){console.warn(cW);}else{console.log("[warn]: "+cW);}}},error:function(cW){if(
+window.console&&jws.console.eZ&&jws.console.fy<=jws.console.ERROR){if(console.error){console.error(cW);}else{console.log(
+"[error]: "+cW);}}},fatal:function(cW){if(window.console&&jws.console.eZ&&jws.console.fy<=jws.console.FATAL){if(console.fatal){
+console.fatal(cW);}else{console.log("[fatal]: "+cW);}}},getMaxLogLineLen:function(){return jws.console.iY;},getLevel:function(){
+return jws.console.fy;},setLevel:function(fo){jws.console.fy=fo;},isActive:function(){return jws.console.eZ;},setActive:function(eq)
+{jws.console.eZ=eq;}}};(function(){jws.eJ="unknown";jws.eT=jws.BT_UNKNOWN;jws.fd=undefined;jws.dZ=false;jws.fh=false;jws.fj=false;
+jws.eg=false;jws.eo=false;jws.fL=false;var fN=navigator.userAgent;jws.fL=fN.indexOf("Chrome")>=0;if(jws.fL){jws.eT=jws.BT_CHROME;}
+else{jws.eo=fN.indexOf("Safari")>=0;if(jws.eo){jws.eT=jws.BT_SAFARI;}else{jws.fj=fN.indexOf("Netscape")>=0;if(jws.fj){jws.eT=
+jws.BT_NETSCAPE;}else{jws.eg="Opera"===navigator.appName;if(jws.eg){jws.eT=jws.BT_OPERA;}else{jws.hw=
+"Microsoft Pocket Internet Explorer"===navigator.appName;if(jws.hw){iW.eT=jws.BT_IEXPLORER;}else{jws.dZ=
+"Microsoft Internet Explorer"===navigator.appName|| ! !fN.match(/Trident.*rv[ :]./);if(jws.dZ){jws.eT=jws.BT_IEXPLORER;}else{jws.fh=
+"Netscape"===navigator.appName;if(jws.fh){jws.eT=jws.BT_FIREFOX;}}}}}}}var p,db;var aK;var fi;var cf;if(jws.dZ){jws.eJ=
+jws.BROWSER_NAMES[jws.BT_IEXPLORER];cf=fN.match(/MSIE.*/i);if(cf){aK=cf[0].substr(5);p=aK.indexOf(";");jws.dO=p>0?aK.substr(0,p):aK;
+jws.fd=parseFloat(jws.dO);}else{cf=fN.match(/Trident.*rv[ :]./);if(cf){p=cf[0].indexOf(";");if(p>0){jws.dO=cf[0].substr(0,p);}else{
+jws.dO="Trident";}cf=fN.match(/rv[ :].*/i);if(cf){p=cf[0].indexOf(")");jws.fd=parseFloat(p>=3?cf[0].substr(3,p-3):cf[0].substr(3,4))
+;}}}}else if(jws.fh){jws.eJ=jws.BROWSER_NAMES[jws.BT_FIREFOX];cf=fN.match(/Firefox\/.*/i);if(cf){aK=cf[0].substr(8);p=aK.indexOf(
+" ");if(p>0){jws.dO=aK.substring(0,p);}else{jws.dO=aK;}fi=0;db=0;while(db<aK.length){if('.'===aK.charAt(db)){fi++;}if(fi>=2){break;}
+db++;}aK=aK.substring(0,db);jws.fd=parseFloat(aK);}}else if(jws.fj){jws.eJ=jws.BROWSER_NAMES[jws.BT_NETSCAPE];cf=fN.match(
+/Netscape\/.*/i);if(cf){aK=cf[0].substr(9);p=aK.indexOf(" ");if(p>0){jws.dO=aK.substring(0,p);}else{jws.dO=aK;}fi=0;db=0;while(db<
+aK.length){if('.'===aK.charAt(db)){fi++;}if(fi>=2){break;}db++;}aK=aK.substring(0,db);jws.fd=parseFloat(aK);}}else if(jws.eg){
+jws.eJ=jws.BROWSER_NAMES[jws.BT_OPERA];cf=fN.match(/Opera\/.*/i);if(cf){aK=cf[0].substr(6);p=aK.indexOf(" ");jws.dO=p>0?aK.substr(0,
+p):aK;jws.fd=parseFloat(aK);cf=fN.match(/Version\/.*/i);aK=cf[0].substr(8);if(cf){p=aK.indexOf(" ");jws.dO=(p>0?aK.substr(0,p):aK)+
+"/"+jws.dO;jws.fd=parseFloat(aK);}}}else if(jws.fL){jws.eJ=jws.BROWSER_NAMES[jws.BT_CHROME];cf=fN.match(/Chrome\/.*/i);if(cf){aK=
+cf[0].substr(7);p=aK.indexOf(" ");jws.dO=p>0?aK.substr(0,p):aK;jws.fd=parseFloat(aK);}}else if(jws.eo){jws.eJ=
+jws.BROWSER_NAMES[jws.BT_SAFARI];cf=fN.match(/Version\/.*/i);if(cf){aK=cf[0].substr(8);p=aK.indexOf(" ");jws.dO=p>0?aK.substr(0,p):
+aK;fi=0;db=0;while(db<aK.length){if('.'===aK.charAt(db)){fi++;}if(fi>=2){break;}db++;}aK=aK.substring(0,db);jws.fd=parseFloat(aK);
+cf=fN.match(/Safari\/.*/i);if(cf){aK="."+cf[0].substr(7);p=aK.indexOf(" ");jws.dO+=p>0?aK.substr(0,p):aK;}}}}());jws.events={
+addEventListener:(jws.isIE?function(as,cz,aA){as.attachEvent("on"+cz,aA);}:function(as,cz,aA){as.addEventListener(cz,aA,false);}),
+removeEventListener:(jws.isIE?function(as,cz,aA){as.detachEvent("on"+cz,aA);}:function(as,cz,aA){as.removeEventListener(cz,aA,false)
+;}),getTarget:(jws.isIE?function(cz){return cz.srcElement;}:function(cz){return cz.target;}),preventDefault:(jws.isIE?function(cz){
+cz=window.event;if(cz){cz.returnValue=false;}}:function(cz){return cz.preventDefault();}),stopEvent:(jws.isIE?function(cz){if(cz&&
+cz.preventDefault){return cz.preventDefault();}}:function(cz){return cz.stopPropagation();})};
+/**
+ * Copyright (c) 2012 Florian H., https://github.com/js-coder
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ **/
+!function(document,undefined){var cookie=function(){return cookie.get.apply(cookie,arguments);};var utils=cookie.utils={isArray:Array.isArray||function(value){return Object.prototype.toString.call(value)==='[object Array]';},isPlainObject:function(value){return! !value&&Object.prototype.toString.call(value)==='[object Object]';},toArray:function(value){return Array.prototype.slice.call(value);},getKeys:Object.keys||function(obj){var keys=[],key='';for(key in obj){if(obj.hasOwnProperty(key))keys.push(key);}return keys;},escape:function(value){return String(value).replace(/[,;"\\=\s%]/g,function(character){return encodeURIComponent(character);});},retrieve:function(value,fallback){return value==null?fallback:value;}};cookie.defaults={};cookie.expiresMultiplier=60*60*24;cookie.set=function(key,value,options){if(utils.isPlainObject(key)){for(var k in key){if(key.hasOwnProperty(k))this.set(k,key[k],value);}}else{options=utils.isPlainObject(options)?options:{expires:options};var expires=options.expires!==undefined?options.expires:(this.defaults.expires||''),expiresType=typeof(expires);if(expiresType==='string'&&expires!=='')expires=new Date(expires);else if(expiresType==='number')expires=new Date(+new Date+1000*this.expiresMultiplier*expires);if(expires!==''&&'toGMTString'in expires)expires=';expires='+expires.toGMTString();var path=options.path||this.defaults.path;path=path?';path='+path:'';var domain=options.domain||this.defaults.domain;domain=domain?';domain='+domain:'';var secure=options.secure||this.defaults.secure?';secure':'';document.cookie=utils.escape(key)+'='+utils.escape(value)+expires+path+domain+secure;}return this;};cookie.remove=function(keys){keys=utils.isArray(keys)?keys:utils.toArray(arguments);for(var i=0,l=keys.length;i<l;i++){this.set(keys[i],'',-1);}return this;};cookie.empty=function(){return this.remove(utils.getKeys(this.all()));};cookie.get=function(keys,fallback){fallback=fallback||undefined;var cookies=this.all();if(utils.isArray(keys)){var result={};for(var i=0,l=keys.length;i<l;i++){var value=keys[i];result[value]=utils.retrieve(cookies[value],fallback);}return result;}else return utils.retrieve(cookies[keys],fallback);};cookie.all=function(){if(document.cookie==='')return{};var cookies=document.cookie.split('; '),result={};for(var i=0,l=cookies.length;i<l;i++){var item=cookies[i].split('=');result[decodeURIComponent(item[0])]=decodeURIComponent(item[1]);}return result;};cookie.enabled=function(){if(navigator.cookieEnabled)return true;var ret=cookie.set('_','_').get('_')==='_';cookie.remove('_');return ret;};window.cookie=cookie;}(document);
+
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
@@ -178,15 +203,18 @@ bc in ab.prototype){var au=ab.prototype[bc];if(typeof au==="function"){if(dH.pro
 dH.prototype[bc]=au;}dH.prototype[bc].superClass=ab;}}}};jws.oop.addPlugIn=function(dz,ap,ax){var bc;if(!dz.cx){dz.cx=[];}
 dz.cx.push(ap);for(bc in ap){if(!dz.prototype[bc]){dz.prototype[bc]=ap[bc];}}if(dz.descendants){for(var db=0,dB=
 dz.descendants.length;db<dB;db++){jws.oop.addPlugIn(dz.descendants[db],ap,ax);}}};jws.oop.declareClass("jws","jWebSocketBaseClient",
-null,{registerFilters:function(){},create:function(ax){if(!this.ac){this.ac=jws.RO_OFF;}},processOpened:function(cz){},
-processPacket:function(cz){return cz;},processClosed:function(cz){},open:function(dr,ax){if(!ax){ax={};}var iV=ax['wsClass']||
-self.WebSocket;if(iV){if(!this.dD||this.dD.readyState>2){var dJ=this;var dM=null;var dI=jws.WS_SUBPROT_JSON;if(ax.subProtocol){dI=
-ax.subProtocol;}if(ax.reliabilityOptions){this.ac=ax.reliabilityOptions;}if(this.ac){this.ac.isExplicitClose=false;}if(
-jws.RECONNECTING!==this.fI){this.fI=jws.CONNECTING;}if(ax.OnOpenTimeout&&"function"===typeof ax.OnOpenTimeout&&ax.openTimeout){
-this.hF=ax.openTimeout;this.eW=setTimeout(function(){dJ.hF=null;var aR={};ax.OnOpenTimeout(aR);},this.hF);}this.dD=new iV(dr,dI);
-this.hp=dr;this.gQ=dI;this.dD.onopen=function(cz){if(jws.console.isDebugEnabled()){jws.console.debug("[onopen]: "+JSON.stringify(cz)
-);}dJ.fInFragments={};dJ.en={};dJ.fB={};if(dJ.eW){clearTimeout(dJ.eW);dJ.eW=null;}dJ.fI=jws.OPEN;dJ.ho=cz;};this.dD.onmessage=
-function(cz){if(("undefined"!==typeof Blob&&cz.data instanceof Blob)||("undefined"!==typeof ArrayBuffer&&
+null,{registerFilters:function(){},create:function(ax){if(ax&&ax.reliabilityOptions){this.ac=ax.reliabilityOptions;}if(!this.ac){
+this.ac=jws.RO_OFF;}if(!jws.browserSupportsWebSockets()){if(ax.jp&&"function"==typeof ax.jp){ax.jp();}}},processOpened:function(cz){
+},processPacket:function(cz){return cz;},processClosed:function(cz){},open:function(dr,ax){if(!ax){ax={};}var iV=ax['wsClass']||
+self.WebSocket;if(iV){if(self.WebSocket.ke){var dP="JWSSESSIONID";var ih="sessionCookieName=";var he=dr.indexOf(ih);if(he> -1){
+var hN=dr.indexOf(",",he);if(hN> -1){dP=dr.substr(he+dP.length,hN);}else{dP=dr.substr(he);}}var iQ=cookie.get(dP,
+jws.tools.createUUID());cookie.set(dP,iQ);}if(!this.dD||this.dD.readyState>2){var dJ=this;var dM=null;var dI=jws.WS_SUBPROT_JSON;if(
+ax.subProtocol){dI=ax.subProtocol;}if(ax.reliabilityOptions){this.ac=ax.reliabilityOptions;}if(this.ac){this.ac.isExplicitClose=
+false;}if(jws.RECONNECTING!==this.fI){this.fI=jws.CONNECTING;}if(ax.OnOpenTimeout&&"function"===typeof ax.OnOpenTimeout&&
+ax.openTimeout){this.hF=ax.openTimeout;this.eW=setTimeout(function(){dJ.hF=null;var aR={};ax.OnOpenTimeout(aR);},this.hF);}this.dD=
+new iV(dr,dI);this.hp=dr;this.gQ=dI;this.dD.onopen=function(cz){if(jws.console.isDebugEnabled()){jws.console.debug("[onopen]: "+
+JSON.stringify(cz));}dJ.fInFragments={};dJ.en={};dJ.fB={};if(dJ.eW){clearTimeout(dJ.eW);dJ.eW=null;}dJ.fI=jws.OPEN;dJ.ho=cz;};
+this.dD.onmessage=function(cz){if(("undefined"!==typeof Blob&&cz.data instanceof Blob)||("undefined"!==typeof ArrayBuffer&&
 cz.data instanceof ArrayBuffer)){if(ax.OnMessage){ax.OnMessage(cz,dM,dJ);}return;}var dg=cz.data;try{var ij=JSON.parse(dg);if(
 ij["jwsWrappedMsg"]){if("message"===ij.type){var aJ=ij.msgId;if(ij.isAckRequired){dJ.sendStream(JSON.stringify({"jwsWrappedMsg":
 true,name:"ack",data:aJ,type:"info"}));}if(ij.isFragment){if(undefined===dJ.fInFragments[ij.fragmentationId]){
@@ -203,16 +231,16 @@ catch(dQ){jws.console.error("[onmessage]: Exception: "+dQ.message);}};this.dD.on
 jws.console.debug("[onclose]: "+JSON.stringify(cz));}if(dJ.eW){clearTimeout(dJ.eW);dJ.eW=null;}dJ.fI=jws.CLOSED;delete dJ.ee;if(
 dJ.az){clearTimeout(dJ.az);delete dJ.az;}dM=dJ.processClosed(cz);if(ax.OnClose){ax.OnClose(cz,dM,dJ);}dJ.dD=null;if(dJ.ac&&
 dJ.ac.autoReconnect&& !dJ.ac.isExplicitClose){dJ.fI=jws.RECONNECTING;dJ.fu=setTimeout(function(){if(ax.OnReconnecting){
-ax.OnReconnecting(cz,dM,dJ);}dJ.open(dJ.hp,ax);},dJ.ac.reconnectDelay);}};}else{throw new Error("Already connected");}}else{
-throw new Error("WebSockets not supported by browser");}},connect:function(dr,ax){return this.open(dr,ax);},processQueue:function(){
-if(this.ej){var bj=this.checkConnected();if(0===bj.code){var cE;while(this.ej.length>0){cE=this.ej.shift();this.dD.send(cE.packet);}
-}}},queuePacket:function(fW,ax){if(!this.ej){this.ej=[];}this.ej.push({packet:fW,options:ax});},sendStream:function(aw){if(
-aw.length>this.ee){throw new Error("Data packet discarded. The packet size "+"exceeds the max frame size supported by the client!");
-}if(this.isOpened()){try{if(this.iX){for(var db=0,cF=this.iX.length;db<cF;db++){if("function"===
-typeof this.iX[db]["filterStreamOut"]){this.iX[db]["filterStreamOut"](aw);}}}this.dD.send(aw);}catch(dQ){jws.console.error(
-"[sendStream]: Exception on send: "+dQ.message);}}else{if(this.isWriteable()){this.queuePacket(aw,null);}else{throw new Error(
-"Not connected");}}},sendStreamInTransaction:function(aw,aA,eu){var aJ=""+jws.tools.getUniqueInteger();var dJ=this;try{if(
-undefined===eu){eu=this.ee;}else if(eu<0||eu>this.ee){throw new Error("Invalid 'fragment size' argument. "+
+ax.OnReconnecting(cz,dM,dJ);}dJ.open(dJ.hp,ax);},dJ.ac.reconnectDelay);}};}else{throw new Error("Already connected!");}}else{
+throw new Error("WebSockets not supported by web browser!");}},connect:function(dr,ax){return this.open(dr,ax);},processQueue:
+function(){if(this.ej){var bj=this.checkConnected();if(0===bj.code){var cE;while(this.ej.length>0){cE=this.ej.shift();this.dD.send(
+cE.packet);}}}},queuePacket:function(fW,ax){if(!this.ej){this.ej=[];}this.ej.push({packet:fW,options:ax});},sendStream:function(aw){
+if(aw.length>this.ee){throw new Error("Data packet discarded. The packet size "+
+"exceeds the max frame size supported by the client!");}if(this.isOpened()){try{if(this.iX){for(var db=0,cF=this.iX.length;db<cF;
+db++){if("function"===typeof this.iX[db]["filterStreamOut"]){this.iX[db]["filterStreamOut"](aw);}}}this.dD.send(aw);}catch(dQ){
+jws.console.error("[sendStream]: Exception on send: "+dQ.message);}}else{if(this.isWriteable()){this.queuePacket(aw,null);}else{
+throw new Error("Not connected");}}},sendStreamInTransaction:function(aw,aA,eu){var aJ=""+jws.tools.getUniqueInteger();var dJ=this;
+try{if(undefined===eu){eu=this.ee;}else if(eu<0||eu>this.ee){throw new Error("Invalid 'fragment size' argument. "+
 "Expected value: fragment_size > 0 && fragment_size <= max_frame_size");}if(typeof(aw)!=="string"||aw.length===0){throw new Error(
 "Invalid value for argument 'data'!");}if(typeof(aA)!=="object"){throw new Error("Invalid value for argument 'listener'!");}if(
 typeof(aA["getTimeout"])!=="function"){throw new Error("Missing 'getTimeout' method on argument 'listener'!");}if(typeof(
@@ -231,24 +259,22 @@ delete dJ.en[aJ];delete dJ.fB[aJ];}},aA.getTimeout());this.fB[aJ]=fO;}this.sendS
 delete this.en[aJ];clearTimeout(this.fB[aJ]);delete this.fB[aJ];aA.OnFailure(dQ);}},abortReconnect:function(){if(this.fu){
 clearTimeout(this.fu);this.fu=null;return true;}return false;},setAutoReconnect:function(hB){if(hB&&"boolean"===typeof(eb)){
 this.ac.autoReconnect=hB;}else{this.ac.autoReconnect=false;}if(!(this.ac&&this.ac.autoReconnect)){abortReconnect();}},
-setQueueItemLimit:function(eb){if(eb&&"number"===typeof(eb)&&eb>0){this.ac.queueItemLimit=parseInt(eb);}else{this.ac.queueItemLimit=
-0;}},setQueueSizeLimit:function(eb){if(eb&&"number"===typeof(eb)&&eb>0){this.ac.queueSizeLimit=parseInt(eb);}else{
-this.ac.queueSizeLimit=0;}},setReliabilityOptions:function(ax){this.ac=ax;if(this.ac){if(this.ac.autoReconnect){}else{
-this.abortReconnect();}}},getReliabilityOptions:function(){return this.ac;},getOutQueue:function(){return this.ej;},resetSendQueue:
-function(){delete this.ej;},isOpened:function(){return(undefined!==this.dD&&null!==this.dD&&jws.OPEN===this.dD.readyState);},getURL:
-function(){return this.hp;},getSubProt:function(){return this.gQ;},isConnected:function(){return(this.isOpened());},forceClose:
-function(ax){var aZ=false;if(this.ac){this.ac.isExplicitClose=true;}if(ax){if(ax.fireClose&&this.dD.onclose){var aW={};
-this.dD.onclose(aW);}}if(this.dD){this.dD.onopen=null;this.dD.onmessage=null;this.dD.onclose=null;if(this.dD.readyState===jws.OPEN||
-this.dD.readyState===jws.CONNECTING){this.dD.close();}this.processClosed();}this.dD=null;},close:function(ax){var aj=0;if(ax){if(
-ax.timeout){aj=ax.timeout;}}if(this.dD&&1===this.dD.readyState){if(aj<=0){this.forceClose(ax);}else{var dJ=this;this.az=setTimeout(
-function(){dJ.forceClose(ax);},aj);}}else{this.dD=null;throw new Error("Not connected");}},disconnect:function(ax){
-return this.close(ax);},addListener:function(cX){if(!this.cO){this.cO=[];}this.cO.push(cX);},removeListener:function(cX){if(this.cO)
-{for(var db=0,dB=this.cO;db<dB;db++){if(cX===this.cO[db]){this.cO.splice(db,1);}}}},addFilter:function(jn){if(!this.iX){this.iX=[];}
-this.iX.push(jn);},removeFilter:function(jn){if(this.iX){for(var db=0,dB=this.iX;db<dB;db++){if(jn===this.iX[db]){this.iX.splice(db,
-1);}}}},addPlugIn:function(ap,aT){if(!this.cx){this.cx=[];}this.cx.push(ap);if(!aT){aT=ap.ID;}if(aT){ap.conn=this;}},setParam:
-function(ae,ck){if(!this.dS){this.dS={};}var gf=this.getParam(ae);this.dS[ae]=ck;return gf;},getParam:function(ae){if(!this.dS){
-return null;}var bj=this.dS[ae];if(bj===undefined){return null;}return bj;},setParamNS:function(fC,ae,ck){return this.setParam(fC+
-"."+ae,ck);},getParamNS:function(fC,ae){return this.getParam(fC+"."+ae);},clearParams:function(){if(this.dS){delete this.dS;}}});
+setReliabilityOptions:function(ax){this.ac=ax;if(this.ac){if(this.ac.autoReconnect){}else{this.abortReconnect();}}},
+getReliabilityOptions:function(){return this.ac;},getOutQueue:function(){return this.ej;},resetSendQueue:function(){delete this.ej;}
+,isOpened:function(){return(undefined!==this.dD&&null!==this.dD&&jws.OPEN===this.dD.readyState);},getURL:function(){return this.hp;}
+,getSubProt:function(){return this.gQ;},isConnected:function(){return(this.isOpened());},forceClose:function(ax){var aZ=false;if(
+this.ac){this.ac.isExplicitClose=true;}if(ax){if(ax.fireClose&&this.dD.onclose){var aW={};this.dD.onclose(aW);}}if(this.dD){
+this.dD.onopen=null;this.dD.onmessage=null;this.dD.onclose=null;if(this.dD.readyState===jws.OPEN||this.dD.readyState===
+jws.CONNECTING){this.dD.close();}this.processClosed();}this.dD=null;},close:function(ax){var aj=0;if(ax){if(ax.timeout){aj=
+ax.timeout;}}if(this.dD&&1===this.dD.readyState){if(aj<=0){this.forceClose(ax);}else{var dJ=this;this.az=setTimeout(function(){
+dJ.forceClose(ax);},aj);}}else{this.dD=null;throw new Error("Not connected");}},disconnect:function(ax){return this.close(ax);},
+addListener:function(cX){if(!this.cO){this.cO=[];}this.cO.push(cX);},removeListener:function(cX){if(this.cO){for(var db=0,dB=
+this.cO;db<dB;db++){if(cX===this.cO[db]){this.cO.splice(db,1);}}}},addFilter:function(jn){if(!this.iX){this.iX=[];}this.iX.push(jn);
+},removeFilter:function(jn){if(this.iX){for(var db=0,dB=this.iX;db<dB;db++){if(jn===this.iX[db]){this.iX.splice(db,1);}}}},
+addPlugIn:function(ap,aT){if(!this.cx){this.cx=[];}this.cx.push(ap);if(!aT){aT=ap.ID;}if(aT){ap.conn=this;}},setParam:function(ae,
+ck){if(!this.dS){this.dS={};}var gf=this.getParam(ae);this.dS[ae]=ck;return gf;},getParam:function(ae){if(!this.dS){return null;}
+var bj=this.dS[ae];if(bj===undefined){return null;}return bj;},setParamNS:function(fC,ae,ck){return this.setParam(fC+"."+ae,ck);},
+getParamNS:function(fC,ae){return this.getParam(fC+"."+ae);},clearParams:function(){if(this.dS){delete this.dS;}}});
 jws.oop.declareClass("jws","jWebSocketTokenClient",jws.jWebSocketBaseClient,{registerFilters:function(){var self=this;
 this.addFilter({filterTokenOut:function(aR){var ji=aR.enc;if(!ji){return;}for(var hT in ji){var hS=ji[hT];var dM=aR[hT];if(0>
 self.iR.lastIndexOf(hS)){jws.console.error("[process encoding]: Invalid encoding format '"+hS+" 'received. Token cannot be sent!");

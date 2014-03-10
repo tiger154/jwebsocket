@@ -24,7 +24,7 @@ package org.jwebsocket.eventmodel.api;
  * Useful to offer clean exceptions treatments or notify system's administrators
  * about runtime exceptions using various sources like mail, chat, phone, etc...
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IExceptionNotifier {
 

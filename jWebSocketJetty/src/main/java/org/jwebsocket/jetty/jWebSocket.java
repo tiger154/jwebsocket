@@ -27,7 +27,7 @@ import org.eclipse.jetty.websocket.WebSocketServlet;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class jWebSocket extends WebSocketServlet {
 

@@ -18,7 +18,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ReliabilityManager {
 

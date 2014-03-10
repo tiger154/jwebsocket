@@ -25,7 +25,7 @@ import org.jwebsocket.token.Token;
  * This class implements the IJWSMessage listener interface, this listeners
  * listen on particular messages in the jWebSocket conventions only.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JWSMessageListener implements IJWSMessageListener {
 

@@ -30,8 +30,8 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * The token definition class
  *
- * @author kyberneees
- * @author aschulze
+ * @author Rolando Santamaria Maso
+ * @author Alexander Schulze
  */
 public class TokenDefinition implements ITokenizable {
 
@@ -74,7 +74,7 @@ public class TokenDefinition implements ITokenizable {
 	}
 
 	/**
-	 * @return The input arguments 
+	 * @return The input arguments
 	 */
 	public Set<TokenArgument> getInArguments() {
 		if (mInArgs != null) {
@@ -110,7 +110,7 @@ public class TokenDefinition implements ITokenizable {
 	}
 
 	/**
-	 * @return The comment 
+	 * @return The comment
 	 */
 	public String getComment() {
 		return mComment;

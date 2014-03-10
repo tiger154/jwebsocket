@@ -23,7 +23,7 @@ import org.jwebsocket.api.IInitializable;
 /**
  * Component for nodes status management
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface INodesManager extends IInitializable {
 

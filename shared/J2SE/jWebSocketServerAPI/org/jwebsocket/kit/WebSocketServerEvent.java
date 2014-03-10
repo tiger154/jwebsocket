@@ -24,7 +24,7 @@ import org.jwebsocket.api.WebSocketServer;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class WebSocketServerEvent {
 

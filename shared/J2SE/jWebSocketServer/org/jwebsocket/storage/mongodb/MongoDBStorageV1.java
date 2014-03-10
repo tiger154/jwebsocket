@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  *
  * @param <K>
  * @param <V>
- * @author rbetancourt
+ * @author Rolando Betancourt Toucet
  */
 public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 

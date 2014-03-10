@@ -25,7 +25,7 @@ import javolution.util.FastMap;
 /**
  * maintains a group of channels, which e.g. can be used watch lists or similar.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ChannelGroup {
 

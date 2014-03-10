@@ -24,7 +24,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * Get the hash code for a giving "text" parameter
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class GetHashCode extends C2SEvent {
 

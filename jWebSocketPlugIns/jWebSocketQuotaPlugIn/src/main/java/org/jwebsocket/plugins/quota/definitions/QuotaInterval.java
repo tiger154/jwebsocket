@@ -16,7 +16,7 @@ import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaAlreadyExist;
 
 /**
  *
- * @author Osvaldo Aguilar
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class QuotaInterval extends BaseQuota {
 

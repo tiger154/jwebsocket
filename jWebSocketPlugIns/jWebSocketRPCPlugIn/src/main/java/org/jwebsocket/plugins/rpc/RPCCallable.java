@@ -22,7 +22,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.kit.CloseReason;
 
 /**
- * @author aschulze
+ * @author Alexander Schulze
  * @author Quentin Ambard
  */
 public interface RPCCallable {

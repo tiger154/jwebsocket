@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.rpc.util;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class MethodMatcherConversionException extends Exception {
 

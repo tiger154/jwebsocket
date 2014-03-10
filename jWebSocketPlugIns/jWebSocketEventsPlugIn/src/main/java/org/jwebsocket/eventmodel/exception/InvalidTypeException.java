@@ -21,7 +21,7 @@ package org.jwebsocket.eventmodel.exception;
 /**
  * Thrown when trying to convert an invalid abstract type into a Java class
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class InvalidTypeException extends Exception {
 

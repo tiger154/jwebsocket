@@ -24,7 +24,7 @@ import org.jwebsocket.token.Token;
 /**
  * S2C event to update the site visitor counter
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class UpdateSiteCounterEvent extends S2CEvent {
 

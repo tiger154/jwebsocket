@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 /**
  * The client event representing the Logon operation
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class Logon extends C2SEvent {
 

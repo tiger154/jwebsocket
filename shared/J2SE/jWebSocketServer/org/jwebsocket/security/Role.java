@@ -23,7 +23,7 @@ import java.util.Collection;
 /**
  * implements a role which contains a set of rights.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Role {
 

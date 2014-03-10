@@ -32,7 +32,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ArduinoActivity extends Activity implements WebSocketClientTokenListener {
 

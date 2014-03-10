@@ -23,7 +23,7 @@ import java.util.UUID;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Settings {
 

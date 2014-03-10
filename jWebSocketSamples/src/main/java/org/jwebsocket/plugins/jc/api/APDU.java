@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.jc.api;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface APDU {
 

@@ -28,7 +28,7 @@ import java.net.URLClassLoader;
  * all configured via jWebSocket.xml file is loaded using this class.
  *
  * @author puran
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  */
 public class JWebSocketJarClassLoader {

@@ -55,6 +55,7 @@ import org.jwebsocket.factory.JWebSocketLoader;
 import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.filter.TokenFilterChain;
 import org.jwebsocket.kit.ChangeType;
+import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.TokenPlugInChain;
@@ -78,7 +79,7 @@ public class AdminPlugInService {
 	private static JWebSocketConfig mJWebSocketConfig = null;
 	private static AdminConfig mAdminConfig = null;
 	private static TokenServer mServer;
-	private static String JWS_MGMT_DESK_PATH = "AdminPlugIn"
+	private static final String JWS_MGMT_DESK_PATH = "AdminPlugIn"
 			+ System.getProperty("file.separator") + "jwsMgmtDesk.xml";
 
 	/**
@@ -166,7 +167,7 @@ public class AdminPlugInService {
 				traceLog(aConnector, "Refresh the configuration", "Error",
 						"The settings don't refresh.");
 			}
-		} catch (Exception ex) {
+		} catch (WebSocketException ex) {
 			traceLog(aConnector, "Refresh the configuration", "Error",
 					ex.getClass().getSimpleName() + " on refreshJWebSocketConfig: "
 					+ ex.getMessage());
@@ -178,14 +179,14 @@ public class AdminPlugInService {
 	 *
 	 */
 	private void loadMgmtDeskConfig() {
-		AdminConfig lConfig = null;
+		AdminConfig lConfig;
 		String lConfigFilePath = JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH);
 		AdminConfigHandler lConfigHandler = new AdminConfigHandler();
 		try {
 			File lFile = new File(lConfigFilePath);
 			FileInputStream lFIS = new FileInputStream(lFile);
 			XMLInputFactory lFactory = XMLInputFactory.newInstance();
-			XMLStreamReader lStreamReader = null;
+			XMLStreamReader lStreamReader;
 			lStreamReader = lFactory.createXMLStreamReader(lFIS);
 			lConfig = lConfigHandler.processConfig(lStreamReader);
 			mAdminConfig = lConfig;
@@ -213,7 +214,7 @@ public class AdminPlugInService {
 			Long lDeadline = DateHandler.substractDays(new Date(), mNumberOfDays).getTime();
 			DateFormat lFormatter = new SimpleDateFormat("yyyy-MM-ddHH:mm:ss");
 
-			String lLog = null;
+			String lLog;
 			while ((lLog = lBufferedReader.readLine()) != null) {
 				String[] lLogSplit = lLog.split("\\|");
 				if (5 == lLogSplit.length) {
@@ -368,7 +369,7 @@ public class AdminPlugInService {
 			lResponse.setString("msg", "Was obtained the java libraries.");
 			traceLog(aConnector, "Read Jar", "Successful", "Was obtained the java libraries.");
 
-		} catch (Exception ex) {
+		} catch (IllegalArgumentException ex) {
 			lResponse.setInteger("code", -1);
 			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Read Jar", "Error", this.getClass().getSimpleName()
@@ -427,8 +428,6 @@ public class AdminPlugInService {
 			if (lIdPlugIn.isEmpty()) {
 				throw new Exception("Can't found any plugin in the jar '" + lJar + "'.");
 			}
-
-
 
 			lResponse.setList("plugInsByJar", lIdPlugIn);
 			lResponse.setInteger("totalCount", lIdPlugIn.size());
@@ -594,7 +593,7 @@ public class AdminPlugInService {
 	}
 
 	/**
-	 * Change the order of plugin in the PluginChain. (Up or Down <N> step)
+	 * Change the order of plug-in in the PluginChain. (Up or Down <N> step)
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -822,7 +821,6 @@ public class AdminPlugInService {
 				mServer.broadcastToken(lReasonOfChange);
 			}
 
-
 			lResponse.setString("msg", "The Filter is already working.");
 			traceLog(aConnector, "Enable Filter", "Successful",
 					"The Filter is already working.");
@@ -883,7 +881,6 @@ public class AdminPlugInService {
 						ChangeType.DISABLED, lVersion, lReason);
 				mServer.broadcastToken(lReasonOfChange);
 			}
-
 
 			lResponse.setString("msg", "The plugin has been stopped.");
 			traceLog(aConnector, "Disable PlugIn", "Successful",
@@ -1019,10 +1016,10 @@ public class AdminPlugInService {
 
 			// if class found try to create an instance
 			if (lPlugInClass != null) {
-				WebSocketPlugIn lPlugIn = null;
+				WebSocketPlugIn lPlugIn;
 
-				Constructor<WebSocketPlugIn> lPlugInConstructor = null;
-				lPlugInConstructor = lPlugInClass.getConstructor(PluginConfiguration.class);
+				Constructor<WebSocketPlugIn> lPlugInConstructor
+						= lPlugInClass.getConstructor(PluginConfiguration.class);
 
 				if (lPlugInConstructor != null) {
 					lPlugInConstructor.setAccessible(true);
@@ -1038,8 +1035,8 @@ public class AdminPlugInService {
 
 						//Try add the settings if they were loaded with the temp
 						if (lLoadOfTemp) {
-							JWebSocketConfigHandler lJWSConfig =
-									new JWebSocketConfigHandler();
+							JWebSocketConfigHandler lJWSConfig
+									= new JWebSocketConfigHandler();
 							lJWSConfig.addPlugInConfig(lId);
 						}
 
@@ -1050,13 +1047,13 @@ public class AdminPlugInService {
 
 						// now add the plugin to plugin chain on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {
-							WebSocketServer lServerTemp =
-									JWebSocketFactory.getServer(lServerId);
+							WebSocketServer lServerTemp
+									= JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
 
 								if (false == lLoadOfTemp) {
-									Integer lPosition =
-											mJWebSocketConfig.getPlugins().indexOf(lPlugInConfig);
+									Integer lPosition
+											= mJWebSocketConfig.getPlugins().indexOf(lPlugInConfig);
 									lServerTemp.getPlugInChain().addPlugIn(lPosition, lPlugIn);
 								} else {
 									lServerTemp.getPlugInChain().addPlugIn(lPlugIn);
@@ -1150,10 +1147,10 @@ public class AdminPlugInService {
 
 			// if class found try to create an instance
 			if (lFilterClass != null) {
-				WebSocketFilter lFilter = null;
+				WebSocketFilter lFilter;
 
-				Constructor<WebSocketFilter> lFilterConstructor = null;
-				lFilterConstructor = lFilterClass.getConstructor(FilterConfiguration.class);
+				Constructor<WebSocketFilter> lFilterConstructor
+						= lFilterClass.getConstructor(FilterConfiguration.class);
 
 				if (lFilterConstructor != null) {
 					lFilterConstructor.setAccessible(true);
@@ -1180,13 +1177,13 @@ public class AdminPlugInService {
 
 						// now add the plugin to plugin chain on server ids
 						for (String lServerId : lFilterConfig.getServers()) {
-							WebSocketServer lServerTemp =
-									JWebSocketFactory.getServer(lServerId);
+							WebSocketServer lServerTemp
+									= JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
 
 								if (false == lLoadOfTemp) {
-									Integer lPosition =
-											mJWebSocketConfig.getFilters().indexOf(lFilterConfig);
+									Integer lPosition
+											= mJWebSocketConfig.getFilters().indexOf(lFilterConfig);
 									lServerTemp.getFilterChain().addFilter(lPosition, lFilter);
 								} else {
 									lServerTemp.getFilterChain().addFilter(lFilter);
@@ -1411,10 +1408,10 @@ public class AdminPlugInService {
 
 			//if class found try to create an instance
 			if (lPlugInClass != null) {
-				WebSocketPlugIn lPlugIn = null;
+				WebSocketPlugIn lPlugIn;
 
-				Constructor<WebSocketPlugIn> lPlugInConstructor = null;
-				lPlugInConstructor = lPlugInClass.getConstructor(PluginConfiguration.class);
+				Constructor<WebSocketPlugIn> lPlugInConstructor
+						= lPlugInClass.getConstructor(PluginConfiguration.class);
 
 				if (lPlugInConstructor != null) {
 					lPlugInConstructor.setAccessible(true);
@@ -1430,11 +1427,11 @@ public class AdminPlugInService {
 
 						//now add the plugin to plugin chain on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {
-							WebSocketServer lServerTemp =
-									JWebSocketFactory.getServer(lServerId);
+							WebSocketServer lServerTemp
+									= JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
-								TokenPlugInChain lPlugInChain =
-										(TokenPlugInChain) lServerTemp.getPlugInChain();
+								TokenPlugInChain lPlugInChain
+										= (TokenPlugInChain) lServerTemp.getPlugInChain();
 								//Create reason of change for the jWebSocket Client
 								Token lReasonOfChange = new MapToken();
 								if (lPlugInChain.reloadPlugIn(lPlugIn,
@@ -1459,7 +1456,6 @@ public class AdminPlugInService {
 				throw new ClassNotFoundException("Couldn't loading plug-in '"
 						+ lPlugInConfig.getName() + "' from '" + lJarFilePath);
 			}
-
 
 			lResponse.setString("msg", "The plugin has been reload.");
 			traceLog(aConnector, "Reload PlugIn", "Successful", "The plugin has been reload.");
@@ -1548,11 +1544,11 @@ public class AdminPlugInService {
 
 						// now add the filter to filter chain on server ids
 						for (String lServerId : lFilterConfig.getServers()) {
-							WebSocketServer lServerTemp =
-									JWebSocketFactory.getServer(lServerId);
+							WebSocketServer lServerTemp
+									= JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
-								TokenFilterChain lFilterChain =
-										(TokenFilterChain) lServerTemp.getFilterChain();
+								TokenFilterChain lFilterChain
+										= (TokenFilterChain) lServerTemp.getFilterChain();
 								//Create reason of change for the jWebSocket Client 
 								Token lReasonOfChange = new MapToken();
 								if (lFilterChain.reloadFilter(lFilter,

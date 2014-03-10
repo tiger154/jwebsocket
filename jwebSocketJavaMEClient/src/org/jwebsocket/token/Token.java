@@ -22,7 +22,7 @@ import javolution.util.FastMap;
 /**
  * A token is ...
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Token {
 

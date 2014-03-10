@@ -36,7 +36,7 @@ import org.jwebsocket.token.Token;
  * JSON, CSV or XML. Thus application streams usually are descend from
  * <tt>TokenStream</tt>.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class TokenStream extends BaseStream {
 

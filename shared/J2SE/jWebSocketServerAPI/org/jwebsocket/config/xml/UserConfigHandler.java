@@ -29,7 +29,7 @@ import org.jwebsocket.config.ConfigHandler;
 /**
  * The config handler for user config
  *
- * @author puran, aschulze
+ * @author Alexander Schulze, Puran Singh
  * @version $Id: UserConfigHandler.java 596 2010-06-22 17:09:54Z fivefeetfurther
  * $
  */

@@ -27,7 +27,7 @@ import org.jwebsocket.util.JMSManager;
 /**
  * JMS based messaging abstraction for Script applications
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JMSManagerAbstraction extends JMSManager {
 

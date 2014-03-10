@@ -31,7 +31,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class AMQClusterTest {
 

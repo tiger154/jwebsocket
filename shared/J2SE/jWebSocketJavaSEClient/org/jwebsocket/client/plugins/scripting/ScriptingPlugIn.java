@@ -29,7 +29,7 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ScriptingPlugIn extends BaseClientTokenPlugIn {
 

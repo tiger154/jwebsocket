@@ -30,7 +30,7 @@ import org.jwebsocket.kit.WebSocketException;
  * {@code BaseEngine} is supposed to be used as ancestor for the engine
  * implementations like e.g. the {@code TCPEngine} or the {@code NettyEngine}.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public abstract class BaseEngine implements WebSocketEngine {
 

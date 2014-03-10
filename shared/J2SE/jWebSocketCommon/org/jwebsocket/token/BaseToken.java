@@ -25,7 +25,7 @@ import org.jwebsocket.api.ITokenizable;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public abstract class BaseToken implements Token {
 

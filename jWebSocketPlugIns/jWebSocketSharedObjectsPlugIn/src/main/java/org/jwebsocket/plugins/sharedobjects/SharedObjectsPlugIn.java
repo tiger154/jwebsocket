@@ -38,7 +38,7 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * Pending...
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class SharedObjectsPlugIn extends TokenPlugIn {
 

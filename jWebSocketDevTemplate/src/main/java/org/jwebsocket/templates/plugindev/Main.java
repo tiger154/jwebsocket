@@ -29,7 +29,7 @@ import org.jwebsocket.server.TokenServer;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Main {
 

@@ -30,7 +30,7 @@ import org.jwebsocket.storage.BaseStorage;
  * to use this storage when running jWebSocket in embedded mode inside a Servlet
  * container.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class HttpSessionStorage extends BaseStorage<String, Object> {
 

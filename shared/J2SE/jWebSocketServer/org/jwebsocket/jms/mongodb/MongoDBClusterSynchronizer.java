@@ -27,7 +27,7 @@ import org.jwebsocket.jms.api.IClusterSynchronizer;
 /**
  * Implementation based on MongoDB primary key duplication restriction exception
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MongoDBClusterSynchronizer implements IClusterSynchronizer {
 

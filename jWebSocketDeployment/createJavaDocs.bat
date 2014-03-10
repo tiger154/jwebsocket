@@ -59,7 +59,7 @@ rem goto others
 
 :jWebSocketDynamicSQL
 echo ------------------------------------------------------------------------
-echo jWebSocketLibs/jWebSocketDynamicSQL
+echo Libraries/jWebSocketDynamicSQL
 echo ------------------------------------------------------------------------
 cd %libs%jWebSocketDynamicSQL
 if exist %javadocs%jWebSocketDynamicSQL rd %javadocs%jWebSocketDynamicSQL /s/q
@@ -69,7 +69,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketCommon
 echo ------------------------------------------------------------------------
-echo jWebSocketCore/jWebSocketCommon
+echo Core/jWebSocketCommon
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketCommon
 if exist %javadocs%jWebSocketCommon rd %javadocs%jWebSocketCommon /s/q
@@ -79,7 +79,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketServerAPI
 echo ------------------------------------------------------------------------
-echo jWebSocketCore/jWebSocketServerAPI
+echo Core/jWebSocketServerAPI
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketServerAPI
 if exist %javadocs%jWebSocketServerAPI rd %javadocs%jWebSocketServerAPI /s/q
@@ -89,7 +89,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketServer
 echo ------------------------------------------------------------------------
-echo jWebSocketCore/jWebSocketServer
+echo Core/jWebSocketServer
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketServer
 if exist %javadocs%jWebSocketServer rd %javadocs%jWebSocketServer /s/q
@@ -99,7 +99,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketClientAPI
 echo ------------------------------------------------------------------------
-echo jWebSocketCore/jWebSocketClientAPI
+echo Core/jWebSocketClientAPI
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketClientAPI
 if exist %javadocs%jWebSocketClientAPI rd %javadocs%jWebSocketClientAPI /s/q
@@ -109,7 +109,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJavaSEClient
 echo ------------------------------------------------------------------------
-echo jWebSocketCore/jWebSocketJavaSEClient
+echo Core/jWebSocketJavaSEClient
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketJavaSEClient
 if exist %javadocs%jWebSocketJavaSEClient rd %javadocs%jWebSocketJavaSEClient /s/q
@@ -119,7 +119,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketSwingGUI
 echo ------------------------------------------------------------------------
-echo jWebSocketCore/jWebSocketSwingGUI
+echo Core/jWebSocketSwingGUI
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketSwingGUI
 if exist %javadocs%jWebSocketSwingGUI rd %javadocs%jWebSocketSwingGUI /s/q
@@ -131,7 +131,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketGrizzlyEngine
 echo ------------------------------------------------------------------------
-echo jWebSocketEngines/jWebSocketGrizzlyEngine
+echo Engines/jWebSocketGrizzlyEngine
 echo ------------------------------------------------------------------------
 cd %engines%jWebSocketGrizzlyEngine
 if exist %javadocs%jWebSocketGrizzlyEngine rd %javadocs%jWebSocketGrizzlyEngine /s/q
@@ -141,7 +141,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJettyEngine
 echo ------------------------------------------------------------------------
-echo jWebSocketEngines/jWebSocketJettyEngine
+echo Engines/jWebSocketJettyEngine
 echo ------------------------------------------------------------------------
 cd %engines%jWebSocketJettyEngine
 if exist %javadocs%jWebSocketJettyEngine rd %javadocs%jWebSocketJettyEngine /s/q
@@ -151,7 +151,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketNettyEngine
 echo ------------------------------------------------------------------------
-echo jWebSocketEngines/jWebSocketNettyEngine
+echo Engines/jWebSocketNettyEngine
 echo ------------------------------------------------------------------------
 cd %engines%jWebSocketNettyEngine
 if exist %javadocs%jWebSocketNettyEngine rd %javadocs%jWebSocketNettyEngine /s/q
@@ -161,7 +161,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketTomcatEngine
 echo ------------------------------------------------------------------------
-echo jWebSocketEngines/jWebSocketTomcatEngine
+echo Engines/jWebSocketTomcatEngine
 echo ------------------------------------------------------------------------
 cd %engines%jWebSocketTomcatEngine
 if exist %javadocs%jWebSocketTomcatEngine rd %javadocs%jWebSocketTomcatEngine /s/q
@@ -173,7 +173,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJMSClient
 echo ------------------------------------------------------------------------
-echo jWebSocketJMSGateway/jWebSocketJMSClient
+echo JMS Gateway/jWebSocketJMSClient
 echo ------------------------------------------------------------------------
 cd %jmsgw%jWebSocketJMSClient
 if exist %javadocs%jWebSocketJMSClient rd %javadocs%jWebSocketJMSClient /s/q
@@ -183,7 +183,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJMSDemoPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketJMSGateway/jWebSocketJMSDemoPlugIn
+echo JMS Gateway/jWebSocketJMSDemoPlugIn
 echo ------------------------------------------------------------------------
 cd %jmsgw%jWebSocketJMSDemoPlugIn
 if exist %javadocs%jWebSocketJMSDemoPlugIn rd %javadocs%jWebSocketJMSDemoPlugIn /s/q
@@ -193,7 +193,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJMSEndPoint
 echo ------------------------------------------------------------------------
-echo jWebSocketJMSGateway/jWebSocketJMSEndPoint
+echo JMS Gateway/jWebSocketJMSEndPoint
 echo ------------------------------------------------------------------------
 cd %jmsgw%jWebSocketJMSEndPoint
 if exist %javadocs%jWebSocketJMSEndPoint rd %javadocs%jWebSocketJMSEndPoint /s/q
@@ -203,7 +203,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJMSServer
 echo ------------------------------------------------------------------------
-echo jWebSocketJMSGateway/jWebSocketJMSServer
+echo JMS Gateway/jWebSocketJMSServer
 echo ------------------------------------------------------------------------
 cd %jmsgw%jWebSocketJMSServer
 if exist %javadocs%jWebSocketJMSServer rd %javadocs%jWebSocketJMSServer /s/q
@@ -215,7 +215,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketAdminPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketAdminPlugIn
+echo Plug-ins/jWebSocketAdminPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketAdminPlugIn
 if exist %javadocs%jWebSocketAdminPlugIn rd %javadocs%jWebSocketAdminPlugIn /s/q
@@ -225,7 +225,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketAPIPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketAPIPlugIn
+echo Plug-ins/jWebSocketAPIPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketAPIPlugIn
 if exist %javadocs%jWebSocketAPIPlugIn rd %javadocs%jWebSocketAPIPlugIn /s/q
@@ -235,7 +235,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketArduinoPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketArduinoPlugIn
+echo Plug-ins/jWebSocketArduinoPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketArduinoPlugIn
 if exist %javadocs%jWebSocketArduinoPlugIn rd %javadocs%jWebSocketArduinoPlugIn /s/q
@@ -245,7 +245,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketBenchmarkPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketBenchmarkPlugIn
+echo Plug-ins/jWebSocketBenchmarkPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketBenchmarkPlugIn
 if exist %javadocs%jWebSocketBenchmarkPlugIn rd %javadocs%jWebSocketBenchmarkPlugIn /s/q
@@ -255,7 +255,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketChannelPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketChannelPlugIn
+echo Plug-ins/jWebSocketChannelPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketChannelPlugIn
 if exist %javadocs%jWebSocketChannelPlugIn rd %javadocs%jWebSocketChannelPlugIn /s/q
@@ -265,7 +265,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketChatPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketChatPlugIn
+echo Plug-ins/jWebSocketChatPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketChatPlugIn
 if exist %javadocs%jWebSocketChatPlugIn rd %javadocs%jWebSocketChatPlugIn /s/q
@@ -275,9 +275,9 @@ call mvn source:jar >> %log%
 
 :jWebSocketClusterPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketClusterPlugIn
+echo Plug-ins/jWebSocketClusterPlugIn
 echo ------------------------------------------------------------------------
-cd %plugins%jWebSocketBenchmarkPlugIn
+cd %plugins%jWebSocketClusterPlugIn
 if exist %javadocs%jWebSocketClusterPlugIn rd %javadocs%jWebSocketClusterPlugIn /s/q
 call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
@@ -285,7 +285,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketEventsPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketEventsPlugIn
+echo Plug-ins/jWebSocketEventsPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketEventsPlugIn
 if exist %javadocs%jWebSocketEventsPlugIn rd %javadocs%jWebSocketEventsPlugIn /s/q
@@ -295,7 +295,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketExtProcessPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketExtProcessPlugIn
+echo Plug-ins/jWebSocketExtProcessPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketExtProcessPlugIn
 if exist %javadocs%jWebSocketExtProcessPlugIn rd %javadocs%jWebSocketExtProcessPlugIn /s/q
@@ -305,7 +305,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketFileSystemPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketFileSystemPlugIn
+echo Plug-ins/jWebSocketFileSystemPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketFileSystemPlugIn
 if exist %javadocs%jWebSocketFileSystemPlugIn rd %javadocs%jWebSocketFileSystemPlugIn /s/q
@@ -315,7 +315,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketItemStorage
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketItemStorage
+echo Plug-ins/jWebSocketItemStorage
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketItemStorage
 if exist %javadocs%jWebSocketItemStorage rd %javadocs%jWebSocketItemStorage /s/q
@@ -325,7 +325,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJCaptchaPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketJCaptchaPlugIn
+echo Plug-ins/jWebSocketJCaptchaPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketJCaptchaPlugIn
 if exist %javadocs%jWebSocketJCaptchaPlugIn rd %javadocs%jWebSocketJCaptchaPlugIn /s/q
@@ -333,19 +333,19 @@ call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
 
-rem :jWebSocketJCRPlugIn
-rem echo ------------------------------------------------------------------------
-rem echo jWebSocketPlugIns/jWebSocketJCRPlugIn
-rem echo ------------------------------------------------------------------------
-rem cd %plugins%jWebSocketJCRPlugIn
-rem if exist %javadocs%jWebSocketJCRPlugIn rd %javadocs%jWebSocketJCRPlugIn /s/q
-rem call mvn generate-sources javadoc:javadoc >> %log%
-rem call mvn generate-sources javadoc:jar >> %log%
-rem call mvn source:jar >> %log%
+:jWebSocketJCRPlugIn
+echo ------------------------------------------------------------------------
+echo Plug-ins/jWebSocketJCRPlugIn
+echo ------------------------------------------------------------------------
+cd %plugins%jWebSocketJCRPlugIn
+if exist %javadocs%jWebSocketJCRPlugIn rd %javadocs%jWebSocketJCRPlugIn /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
 
 :jWebSocketJDBCPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketJDBCPlugIn
+echo Plug-ins/jWebSocketJDBCPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketJDBCPlugIn
 if exist %javadocs%jWebSocketJDBCPlugIn rd %javadocs%jWebSocketJDBCPlugIn /s/q
@@ -355,7 +355,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJMSPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketJMSPlugIn
+echo Plug-ins/jWebSocketJMSPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketJMSPlugIn
 if exist %javadocs%jWebSocketJMSPlugIn rd %javadocs%jWebSocketJMSPlugIn /s/q
@@ -365,7 +365,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJMXPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketJMXPlugIn
+echo Plug-ins/jWebSocketJMXPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketJMXPlugIn
 if exist %javadocs%jWebSocketJMXPlugIn rd %javadocs%jWebSocketJMXPlugIn /s/q
@@ -375,7 +375,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJQueryPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketJQueryPlugIn
+echo Plug-ins/jWebSocketJQueryPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketJQueryPlugIn
 if exist %javadocs%jWebSocketJQueryPlugIn rd %javadocs%jWebSocketJQueryPlugIn /s/q
@@ -385,7 +385,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketLoadBalancerPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketLoadBalancerPlugIn
+echo Plug-ins/jWebSocketLoadBalancerPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketLoadBalancerPlugIn
 if exist %javadocs%jWebSocketLoadBalancerPlugIn rd %javadocs%jWebSocketLoadBalancerPlugIn /s/q
@@ -395,7 +395,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketLoggingPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketLoggingPlugIn
+echo Plug-ins/jWebSocketLoggingPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketLoggingPlugIn
 if exist %javadocs%jWebSocketLoggingPlugIn rd %javadocs%jWebSocketLoggingPlugIn /s/q
@@ -405,7 +405,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketMailPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketMailPlugIn
+echo Plug-ins/jWebSocketMailPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketMailPlugIn
 if exist %javadocs%jWebSocketMailPlugIn rd %javadocs%jWebSocketMailPlugIn /s/q
@@ -415,7 +415,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketMonitoringPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketMonitoringPlugIn
+echo Plug-ins/jWebSocketMonitoringPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketMonitoringPlugIn
 if exist %javadocs%jWebSocketMonitoringPlugIn rd %javadocs%jWebSocketMonitoringPlugIn /s/q
@@ -425,7 +425,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketPingPongGame
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketPingPongGame
+echo Plug-ins/jWebSocketPingPongGame
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketPingPongGame
 if exist %javadocs%jWebSocketPingPongGame rd %javadocs%jWebSocketPingPongGame /s/q
@@ -435,7 +435,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketProxyPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketProxyPlugIn
+echo Plug-ins/jWebSocketProxyPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketProxyPlugIn
 if exist %javadocs%jWebSocketProxyPlugIn rd %javadocs%jWebSocketProxyPlugIn /s/q
@@ -445,7 +445,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketQuotaPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketQuotaPlugIn
+echo Plug-ins/jWebSocketQuotaPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketQuotaPlugIn
 if exist %javadocs%jWebSocketQuotaPlugIn rd %javadocs%jWebSocketQuotaPlugIn /s/q
@@ -455,7 +455,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketReportingPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketReportingPlugIn
+echo Plug-ins/jWebSocketReportingPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketReportingPlugIn
 if exist %javadocs%jWebSocketReportingPlugIn rd %javadocs%jWebSocketReportingPlugIn /s/q
@@ -465,7 +465,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketRPCPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketRPCPlugIn
+echo Plug-ins/jWebSocketRPCPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketRPCPlugIn
 if exist %javadocs%jWebSocketRPCPlugIn rd %javadocs%jWebSocketRPCPlugIn /s/q
@@ -475,7 +475,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketRTCPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketRTCPlugIn
+echo Plug-ins/jWebSocketRTCPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketRTCPlugIn
 if exist %javadocs%jWebSocketRTCPlugIn rd %javadocs%jWebSocketRTCPlugIn /s/q
@@ -485,7 +485,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketScriptingPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketScriptingPlugIn
+echo Plug-ins/jWebSocketScriptingPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketScriptingPlugIn
 if exist %javadocs%jWebSocketScriptingPlugIn rd %javadocs%jWebSocketScriptingPlugIn /s/q
@@ -495,7 +495,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketSenchaPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketSenchaPlugIn
+echo Plug-ins/jWebSocketSenchaPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketSenchaPlugIn
 if exist %javadocs%jWebSocketSenchaPlugIn rd %javadocs%jWebSocketSenchaPlugIn /s/q
@@ -505,7 +505,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketSharedObjectsPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketSharedObjectsPlugIn
+echo Plug-ins/jWebSocketSharedObjectsPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketSharedObjectsPlugIn
 if exist %javadocs%jWebSocketSharedObjectsPlugIn rd %javadocs%jWebSocketSharedObjectsPlugIn /s/q
@@ -515,7 +515,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketSMSPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketSMSPlugIn
+echo Plug-ins/jWebSocketSMSPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketSMSPlugIn
 if exist %javadocs%jWebSocketSMSPlugIn rd %javadocs%jWebSocketSMSPlugIn /s/q
@@ -525,7 +525,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketStatisticsPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketStatisticsPlugIn
+echo Plug-ins/jWebSocketStatisticsPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketStatisticsPlugIn
 if exist %javadocs%jWebSocketStatisticsPlugIn rd %javadocs%jWebSocketStatisticsPlugIn /s/q
@@ -535,7 +535,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketStockTickerPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketStockTickerPlugIn
+echo Plug-ins/jWebSocketStockTickerPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketStockTickerPlugIn
 if exist %javadocs%jWebSocketStockTickerPlugIn rd %javadocs%jWebSocketStockTickerPlugIn /s/q
@@ -545,7 +545,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketStreamingPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketStreamingPlugIn
+echo Plug-ins/jWebSocketStreamingPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketStreamingPlugIn
 if exist %javadocs%jWebSocketStreamingPlugIn rd %javadocs%jWebSocketStreamingPlugIn /s/q
@@ -555,7 +555,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketTestPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketTestPlugIn
+echo Plug-ins/jWebSocketTestPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketTestPlugIn
 if exist %javadocs%jWebSocketTestPlugIn rd %javadocs%jWebSocketTestPlugIn /s/q
@@ -565,7 +565,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketTwitterPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketTwitterPlugIn
+echo Plug-ins/jWebSocketTwitterPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketTwitterPlugIn
 if exist %javadocs%jWebSocketTwitterPlugIn rd %javadocs%jWebSocketTwitterPlugIn /s/q
@@ -575,7 +575,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketValidatorPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketValidatorPlugIn
+echo Plug-ins/jWebSocketValidatorPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketValidatorPlugIn
 if exist %javadocs%jWebSocketValidatorPlugIn rd %javadocs%jWebSocketValidatorPlugIn /s/q
@@ -585,7 +585,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketXMPPPlugIn
 echo ------------------------------------------------------------------------
-echo jWebSocketPlugIns/jWebSocketXMPPPlugIn
+echo Plug-ins/jWebSocketXMPPPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketXMPPPlugIn
 if exist %javadocs%jWebSocketXMPPPlugIn rd %javadocs%jWebSocketXMPPPlugIn /s/q
@@ -597,7 +597,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketAppSrvDemo
 echo ------------------------------------------------------------------------
-echo jWebSocketAppServer/jWebSocketAppSrvDemo
+echo AppServer/jWebSocketAppSrvDemo
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketAppSrvDemo
 if exist %javadocs%jWebSocketAppSrvDemo rd %javadocs%jWebSocketAppSrvDemo /s/q
@@ -607,7 +607,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketWebAppDemo
 echo ------------------------------------------------------------------------
-echo jWebSocketAppServer/jWebSocketWebAppDemo
+echo AppServer/jWebSocketWebAppDemo
 echo ------------------------------------------------------------------------
 rem ### THE WEBAPP DEMO IS ANT BASED! ###
 cd %base%jWebSocketWebAppDemo
@@ -620,7 +620,7 @@ xcopy %base%jWebSocketWebAppDemo\dist\javadoc\*.* %javadocs%jWebSocketWebAppDemo
 
 :jWebSocketActiveMQStockTicker
 echo ------------------------------------------------------------------------
-echo jWebSocketActiveMQStockTicker
+echo Others/jWebSocketActiveMQStockTicker
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketActiveMQStockTicker
 if exist %javadocs%jWebSocketActiveMQStockTicker rd %javadocs%jWebSocketActiveMQStockTicker /s/q
@@ -630,7 +630,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketSamples
 echo ------------------------------------------------------------------------
-echo jWebSocketSamples
+echo Others/jWebSocketSamples
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketSamples
 if exist %javadocs%jWebSocketSamples rd %javadocs%jWebSocketSamples /s/q

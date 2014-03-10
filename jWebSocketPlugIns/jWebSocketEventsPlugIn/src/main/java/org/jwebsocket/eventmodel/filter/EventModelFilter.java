@@ -33,7 +33,7 @@ import org.jwebsocket.eventmodel.observable.ResponseEvent;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public abstract class EventModelFilter extends ObservableObject implements IEventModelFilter, IInitializable, IListener {
 

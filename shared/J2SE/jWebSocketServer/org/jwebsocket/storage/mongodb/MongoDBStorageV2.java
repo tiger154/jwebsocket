@@ -32,7 +32,7 @@ import org.jwebsocket.storage.BaseStorage;
  *
  * @param <K>
  * @param <V>
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 

@@ -113,7 +113,7 @@
 								<descriptor>src/assembly/bundle.xml</descriptor>
 							</descriptors>
 						</configuration>
-						<phase>package</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
@@ -133,7 +133,7 @@
 								<descriptor>src/assembly/one-jar.xml</descriptor>
 							</descriptors>
 						</configuration>
-						<phase>package</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>

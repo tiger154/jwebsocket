@@ -26,7 +26,7 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenClient;
 
 /**
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, WebSocketClientTokenListener {
 

@@ -23,7 +23,7 @@ import org.jwebsocket.api.IStorageProvider;
 
 /**
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class MemoryStorageProvider implements IStorageProvider {
 

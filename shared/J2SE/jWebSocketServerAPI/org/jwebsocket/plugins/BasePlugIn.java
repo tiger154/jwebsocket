@@ -31,7 +31,7 @@ import org.jwebsocket.util.Tools;
 /**
  * Abstract implementation of WebSocketPlugin
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @version $Id:$
  */
 public abstract class BasePlugIn implements WebSocketPlugIn {

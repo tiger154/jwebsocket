@@ -26,7 +26,7 @@ import org.jwebsocket.eventmodel.observable.Event;
 /**
  * Allows to store c2s event definitions in multiple storage sources
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IC2SEventDefinitionManager extends IInitializable {
 

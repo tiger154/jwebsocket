@@ -39,8 +39,7 @@ import org.jwebsocket.token.TokenFactory;
  * @author Alexander Schulze, Roderick Baier (improvements regarding JSON
  * array), Quentin Ambard (add support for Map and List for PacketToToken and
  * tokeToPacket).
- * @author kyberneees (improvements performance converting Object to JSON
- * string)
+ * @author Rolando Santamaria Maso
  */
 @SuppressWarnings("rawtypes")
 public class JSONProcessor {

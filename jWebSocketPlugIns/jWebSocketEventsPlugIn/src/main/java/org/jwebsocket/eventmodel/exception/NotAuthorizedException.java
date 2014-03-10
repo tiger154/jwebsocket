@@ -21,7 +21,7 @@ package org.jwebsocket.eventmodel.exception;
 /**
  * Thrown when the access to an ISecureComponent is not authorized
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class NotAuthorizedException extends Exception {
 

@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  *
- * @author Osvaldo Aguilar Lauzurique, Alexander Rojas Hernandez
+ * @author Osvaldo Aguilar Lauzurique Lauzurique, Alexander Rojas Hernandez
  */
 public class Users {
 

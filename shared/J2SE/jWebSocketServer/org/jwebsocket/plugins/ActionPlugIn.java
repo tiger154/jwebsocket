@@ -37,7 +37,7 @@ import org.jwebsocket.util.ConnectionManager;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ActionPlugIn extends TokenPlugIn {
 

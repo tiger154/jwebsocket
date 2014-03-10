@@ -35,7 +35,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class VideoActivity extends Activity implements WebSocketClientTokenListener, SurfaceHolder.Callback {
 

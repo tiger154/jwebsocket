@@ -56,7 +56,9 @@
 			}
 
 			function authSession() {
+				
 				log("Calling authentication via SSO Session-ID...");
+				log("document.cookie: " + document.cookie);
 
 				if (!lWSC.sso) {
 					lWSC.sso = {};
@@ -94,7 +96,7 @@
 					OnTimeout: function(aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					},
-					URL: "https://aschulze-dt/use-token"
+					URL: "https://aschulze-dt.nvidia.com/use-token"
 				});
 			}
 
@@ -112,7 +114,7 @@
 					OnTimeout: function(aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					},
-					URL: "https://aschulze-dt/auth/oauth/v2/token"
+					URL: "https://aschulze-dt.nvidia.com/auth/oauth/v2/token"
 							// URL: "https://aschulze-dt/refresh-token/"
 				});
 			}
@@ -150,7 +152,7 @@
 					OnFailure: function(aToken) {
 						log("Value: " + JSON.stringify(aToken));
 					},
-					URL: "https://aschulze-dt/get-smsession"
+					URL: "https://aschulze-dt.nvidia.com/get-smsession"
 				});
 			}
 
@@ -163,7 +165,7 @@
 					OnFailure: function(aToken) {
 						log("Failure: " + JSON.stringify(aToken));
 					},
-					URL: "https://aschulze-dt/getcookie/getcookie.txt"
+					URL: "https://aschulze-dt.nvdia.com/getcookie/getcookie.txt"
 				});
 			}
 
@@ -203,7 +205,6 @@
 				log("JSON: " + JSON.stringify( lJSON ) );
 
 				log("Loading cookie from Iframe: " + lJSON.cookie + "...");
-				document.cookie = lJSON.cookie;
 				// debugger;
 				lWSC.ssoLoadOAuthData({
 					// pass external cookie
@@ -213,6 +214,8 @@
 					},
 					OnFailure: function(aToken) {
 						log("Failure: " + JSON.stringify(aToken) + ", " + lWSC.sso.smsession);
+						// debugger;
+						// document.cookie = "SMSESSION=\"" + lWSC.sso.smsession + "\"";
 					}
 				});
 			}
@@ -236,8 +239,8 @@
 				log("Adding event handler...");
 				window.addEventListener("message", receiveMessage, false);
 				
-				var o = document.getElementsByTagName('iframe')[0];
-				o.contentWindow.postMessage( "Trigger from host to iframe", "*");				
+				// var o = document.getElementsByTagName('iframe')[0];
+				// o.contentWindow.postMessage( "Trigger from host to iframe", "*");				
 			}
 
 			function exitPage() {
@@ -263,8 +266,19 @@
 		<!-- id="ifrConnector" style="position:absolute; left:10px; top:10px; width:150px; height:80px; background-color: #fefefe" -->
 		<!-- <iframe src="https://localhost/jwcDev/demos/sso/sso_connector.htm" > -->
 		<!-- <iframe src="https://localhost/getcookie/index.html" > -->
-		<iframe src="https://alsius.dev.nvidia.com/getcookie/index.html" >
+		<!-- <iframe src="https://alsius.dev.nvidia.com/getcookie/index.html" > -->
+		<!-- <iframe src="https://aschulze-dt.nvidia.com/jwcDev/demos/sso/sso_xhostlink.htm" > -->
+		<!-- <iframe src="https://alsius.dev.nvidia.com/getcookie/index.html" > -->
+		<!-- <iframe src="https:/aschulze-dt/getcookie/index.html" > -->
+
+		<iframe src="https://aschulze-dt.nvidia.com/getcookie/index.html"  width="99%" height="150" >
 		</iframe>
+		
+		<!-- <iframe src="https://aschulze-dt.nvidia.com/jwcDev/demos/sso/sso_test.htm" > -->
+		<!--
+		<iframe src="https://aschulze-dt/jwcDev/demos/sso/sso_test.htm" >
+		</iframe>
+  -->
 
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >

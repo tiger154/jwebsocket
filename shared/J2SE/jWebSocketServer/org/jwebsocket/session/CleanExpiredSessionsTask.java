@@ -30,7 +30,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class CleanExpiredSessionsTask extends TimerTask {
 

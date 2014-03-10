@@ -24,7 +24,7 @@ import org.jwebsocket.kit.WebSocketEncoding;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JWebSocketTokenClient extends BaseTokenClient {
 

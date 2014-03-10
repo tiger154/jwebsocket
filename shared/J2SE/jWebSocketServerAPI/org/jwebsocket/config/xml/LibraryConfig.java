@@ -24,7 +24,7 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
 /**
  * immutable class that represents the <tt>library</tt> configuration
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public final class LibraryConfig implements Config {
 

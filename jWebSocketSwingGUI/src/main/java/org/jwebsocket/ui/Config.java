@@ -20,7 +20,7 @@ package org.jwebsocket.ui;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Config {
 }

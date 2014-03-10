@@ -30,7 +30,7 @@ import org.jwebsocket.storage.BaseStorage;
  *
  * @param <K>
  * @param <V>
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MemcachedStorage<K, V> extends BaseStorage<K, V> {
 

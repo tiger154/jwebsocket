@@ -22,7 +22,7 @@ import org.jwebsocket.kit.WebSocketSession;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface ISessionReconnectionManager {
 

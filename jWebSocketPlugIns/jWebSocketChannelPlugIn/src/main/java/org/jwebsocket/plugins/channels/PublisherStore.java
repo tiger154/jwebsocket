@@ -21,8 +21,7 @@ package org.jwebsocket.plugins.channels;
 /**
  * Base interface that defines the store operations for publishers
  *
- * @author puran, kyberneees
- * @version $Id: PublisherStore.java 1270 2010-12-23 08:53:06Z fivefeetfurther $
+ * @author Rolando Santamaria Maso, Puran Singh
  */
 public interface PublisherStore {
 

@@ -25,7 +25,7 @@ import org.jwebsocket.kit.WebSocketException;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class CGITokenClient extends BaseTokenClient {
 

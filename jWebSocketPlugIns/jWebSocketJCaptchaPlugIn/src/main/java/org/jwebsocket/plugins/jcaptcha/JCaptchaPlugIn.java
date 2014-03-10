@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.jcaptcha;
 
 /**
  *
- * @author mayra, vbarzana, aschulze, kyberneees
+ * @author mayra, Victor Antonio Barzana Crespo, Alexander Schulze, Rolando Santamaria Maso
  */
 import com.octo.captcha.service.CaptchaServiceException;
 import java.awt.image.BufferedImage;
@@ -40,7 +40,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JCaptchaPlugIn extends TokenPlugIn {
 

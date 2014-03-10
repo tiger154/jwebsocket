@@ -22,7 +22,7 @@ import javolution.util.FastMap;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class SharedMaps {
 

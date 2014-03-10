@@ -47,8 +47,8 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 
 /**
  *
- * @author aschulze
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class TomcatWrapper extends MessageInbound {
 

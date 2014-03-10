@@ -22,7 +22,7 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class WebSocketSubProtocol {
 

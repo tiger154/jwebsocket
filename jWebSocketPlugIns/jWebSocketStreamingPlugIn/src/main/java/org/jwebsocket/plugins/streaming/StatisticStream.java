@@ -28,7 +28,7 @@ import org.jwebsocket.server.TokenServer;
  * internal thread which broadcasts the current system time of the server to the
  * registered clients once per second.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class StatisticStream extends TokenStream {
 

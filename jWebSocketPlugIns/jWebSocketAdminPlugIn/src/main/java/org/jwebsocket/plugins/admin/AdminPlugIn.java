@@ -75,7 +75,7 @@ public class AdminPlugIn extends TokenPlugIn {
 		String lNumberOfDays = aConfiguration.getString("numberOfDays");
 		try {
 			mNumberOfDays = Integer.parseInt(lNumberOfDays);
-		} catch (Exception lEx) {
+		} catch (NumberFormatException lEx) {
 			mLog.warn("Number of day value invalid or not defined in config file, defaulted to " + DEF_NUMBER_OF_DAYS + ".");
 			mNumberOfDays = DEF_NUMBER_OF_DAYS;
 		}

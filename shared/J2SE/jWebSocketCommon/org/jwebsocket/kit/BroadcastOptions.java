@@ -26,7 +26,7 @@ package org.jwebsocket.kit;
  * be a broadcast target or not - which might be required for certain business
  * logic.
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @author puran
  * @version $Id:$
  */

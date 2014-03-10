@@ -15,7 +15,7 @@ import org.jwebsocket.util.Tools;
 /**
  * Massive tests client
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class StressTest {
 

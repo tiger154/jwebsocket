@@ -28,7 +28,7 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 /**
  * Listener for the context HTTP session events
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class SessionListener implements HttpSessionListener {
 

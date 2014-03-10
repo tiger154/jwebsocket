@@ -21,13 +21,12 @@
 //:author:*:aschulze
 
 //:package:*:jws
-//:class:*:jws.APIPlugInClass
+//:class:*:jws.APIPlugIn
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.APIPlugIn[/tt] instance plug-in. This _
 //:d:en:plug-in provides the methods to register and unregister at certain _
 //:d:en:stream sn the server.
-jws.APIPlugInClass = {
-
+jws.APIPlugIn = {
 	//:const:*:NS:String:org.jwebsocket.plugins.API (jws.NS_BASE + ".plugins.api")
 	//:d:en:Namespace for the [tt]APIPlugIn[/tt] class.
 	// if namespace changed update server plug-in accordingly!
@@ -35,87 +34,94 @@ jws.APIPlugInClass = {
 	//:const:*:ID:String:APIPlugIn
 	//:d:en:Id for the [tt]APIPlugIn[/tt] class.
 	ID: "api",
-
-	hasPlugIn: function( aId, aOptions ) {
+	
+	hasPlugIn: function(aId, aOptions) {
 		var lToken = {
-			ns: jws.APIPlugInClass.NS,
+			ns: jws.APIPlugIn.NS,
 			type: "hasPlugIn",
 			plugin_id: aId
 		};
 		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
+		if (aOptions) {
+			if (aOptions.OnResponse) {
 				lOptions.OnResponse = aOptions.OnResponse;
 			}
 		}
-		this.conn.sendToken( lToken, lOptions );
+		this.sendToken(lToken, lOptions);
 	},
-
-	getPlugInAPI: function( aId, aOptions ) {
+	
+	getPlugInAPI: function(aId, aOptions) {
 		var lToken = {
-			ns: jws.APIPlugInClass.NS,
+			ns: jws.APIPlugIn.NS,
 			type: "getPlugInAPI",
 			plugin_id: aId
 		};
 		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
+		if (aOptions) {
+			if (aOptions.OnResponse) {
 				lOptions.OnResponse = aOptions.OnResponse;
 			}
 		}
-		this.conn.sendToken( lToken, lOptions );
+		this.sendToken(lToken, lOptions);
 	},
-
-	supportsToken: function( aId, aOptions ) {
+	
+	supportsToken: function(aId, aOptions) {
 		var lToken = {
-			ns: jws.APIPlugInClass.NS,
+			ns: jws.APIPlugIn.NS,
 			type: "supportsToken",
 			token_type: aId
 		};
 		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
+		if (aOptions) {
+			if (aOptions.OnResponse) {
 				lOptions.OnResponse = aOptions.OnResponse;
 			}
 		}
-		this.conn.sendToken( lToken, lOptions );
+		this.sendToken(lToken, lOptions);
 	},
-
-	getServerAPI: function( aOptions ) {
-		var lToken = {
-			ns: jws.APIPlugInClass.NS,
-			type: "getServerAPI"
-		};
-		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
-				lOptions.OnResponse = aOptions.OnResponse;
-			}
+	
+	getServerAPI: function(aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.APIPlugIn.NS,
+				type: "getServerAPI"
+			};
+			this.sendToken(lToken, aOptions);
 		}
-		this.conn.sendToken( lToken, lOptions );
+		return lRes;
 	},
-
-	getPlugInsIds: function( aOptions ) {
-		var lToken = {
-			ns: jws.APIPlugInClass.NS,
-			type: "getPlugInIds"
+	
+	getPlugInIds: function(aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.APIPlugIn.NS,
+				type: "getPlugInIds"
+			};
+			this.sendToken(lToken, aOptions);
 		}
-		var lOptions = {};
-		if( aOptions ) {
-			if( aOptions.OnResponse ) {
-				lOptions.OnResponse = aOptions.OnResponse;
-			}
-		}
-		this.conn.sendToken( lToken, lOptions );
+		return lRes;
 	},
-
-	createSpecFromAPI: function( aConn, aServerPlugIn ) {
+	
+	getPlugInInfo: function(aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.APIPlugIn.NS,
+				type: "getPlugInInfo"
+			};
+			this.sendToken(lToken, aOptions);
+		}
+		return lRes;
+	},
+	createSpecFromAPI: function(aConn, aServerPlugIn) {
 
 		// a plug-in might have more than one feature
-		var lCnt =  aServerPlugIn.supportedTokens.length;
+		var lCnt = aServerPlugIn.supportedTokens.length;
 		var lSpecs = [];
 
-		for( var lIdx = 0; lIdx < lCnt; lIdx++ ) {
+		for (var lIdx = 0; lIdx < lCnt; lIdx++) {
 
 			var lToken = aServerPlugIn.supportedTokens[ lIdx ];
 			lToken.ns = aServerPlugIn.namespace;
@@ -124,7 +130,7 @@ jws.APIPlugInClass = {
 
 			// this is the function which has to be executed as a parameter
 			// of the it call within a describe statement (actually the suite).
-			var lItFunc = function () {
+			var lItFunc = function() {
 				var lResponseReceived = false;
 				// create the automated test token
 				var lTestToken = {
@@ -133,34 +139,34 @@ jws.APIPlugInClass = {
 				};
 				// add all arguments
 				var lInArgs = lToken.inArguments;
-				for( var lInArgIdx = 0, lInArgCnt = lInArgs.length; lInArgIdx < lInArgCnt; lInArgIdx++ ) {
+				for (var lInArgIdx = 0, lInArgCnt = lInArgs.length; lInArgIdx < lInArgCnt; lInArgIdx++) {
 					var lInArg = lInArgs[ lInArgIdx ];
-					lTestToken[ lInArg.name ]  = lInArg.testValue;
+					lTestToken[ lInArg.name ] = lInArg.testValue;
 				}
-				console.log( "Automatically sending " + JSON.stringify( lTestToken ) );
-				aConn.sendToken( lTestToken, {
-					OnResponse: function( aToken ) {
-						console.log( "Received auto response: " + JSON.stringify( aToken ) );
+				console.log("Automatically sending " + JSON.stringify(lTestToken));
+				aConn.sendToken(lTestToken, {
+					OnResponse: function(aToken) {
+						console.log("Received auto response: " + JSON.stringify(aToken));
 						lResponseReceived = true;
 					}
 				});
 
 				waitsFor(
-					function() {
-						return lResponseReceived == true;
-					},
-					"test",
-					20000
-				);
+						function() {
+							return lResponseReceived == true;
+						},
+						"test",
+						20000
+						);
 
-				runs( function() {
-					expect( lResponseReceived ).toEqual( true );
+				runs(function() {
+					expect(lResponseReceived).toEqual(true);
 					// stop watch for this spec
 					// jws.StopWatchPlugIn.stopWatch( "defAPIspec" );
 				});
 			};
 
-			lSpecs.push( lItFunc );
+			lSpecs.push(lItFunc);
 		}
 		// here the spec function are created and returned only
 		// but not yet executed!
@@ -169,11 +175,6 @@ jws.APIPlugInClass = {
 
 };
 
-jws.APIPlugIn = function() {
-	// do NOT use this.conn = aConn; here!
-	// Add the plug-in via conn.addPlugin instead!
 
-	// here you can add optonal instance fields
-	}
-
-jws.APIPlugIn.prototype = jws.APIPlugInClass;
+// add the JWebSocket ExtProcess PlugIn into the TokenClient class
+jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.APIPlugIn);

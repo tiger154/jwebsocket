@@ -22,7 +22,7 @@ package org.jwebsocket.api;
  * Provides the getStorage method to obtain a persistence storage with a given
  * name.
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public interface ICacheStorageProvider {
 

@@ -20,7 +20,7 @@ package org.jwebsocket.token;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface WebSocketResponseTokenListener {
 

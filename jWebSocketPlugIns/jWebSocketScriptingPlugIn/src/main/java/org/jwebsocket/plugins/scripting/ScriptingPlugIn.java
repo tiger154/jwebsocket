@@ -73,8 +73,8 @@ import org.springframework.util.Assert;
  * http://docs.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html
  * http://download.java.net/jdk8/docs/technotes/guides/scripting/programmer_guide/index.html
  *
- * @author aschulze
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class ScriptingPlugIn extends ActionPlugIn {
 

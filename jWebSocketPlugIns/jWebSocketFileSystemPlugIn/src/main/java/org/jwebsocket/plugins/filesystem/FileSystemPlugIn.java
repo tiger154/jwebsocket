@@ -60,8 +60,8 @@ import org.springframework.context.ApplicationContext;
  * framework to provide support for the basic file system management operations
  * in WebSocket applications.
  *
- * @author aschulze
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class FileSystemPlugIn extends TokenPlugIn {
 

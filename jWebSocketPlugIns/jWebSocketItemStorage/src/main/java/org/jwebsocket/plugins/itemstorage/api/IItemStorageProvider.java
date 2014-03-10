@@ -22,7 +22,7 @@ import org.jwebsocket.api.IInitializable;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IItemStorageProvider extends IInitializable {
 

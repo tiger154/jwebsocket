@@ -21,7 +21,7 @@ package org.jwebsocket.config;
 /**
  * Provides a global shared container for the jWebSocket configuration settings.
  *
- * @author aschulze
+ * @author Alexander Schulze
  * @version $Id: JWebSocketServerConstants.java 624 2010-07-06 12:28:44Z
  * fivefeetfurther $
  */
@@ -30,7 +30,7 @@ public final class JWebSocketClientConstants {
 	/**
 	 * Current version string of the jWebSocket package.
 	 */
-	public static final String VERSION_STR = "1.0 RC2 (build 40303)";
+	public static final String VERSION_STR = "1.0 RC2 (build 40310)";
 	/**
 	 * Name space base for tokens and plug-ins.
 	 */

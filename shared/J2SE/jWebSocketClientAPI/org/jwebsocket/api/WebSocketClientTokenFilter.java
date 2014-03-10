@@ -23,7 +23,7 @@ import org.jwebsocket.token.Token;
 /**
  * The class represents the jWebSocket token client filters
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface WebSocketClientTokenFilter extends WebSocketClientFilter {
 

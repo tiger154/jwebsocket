@@ -45,9 +45,9 @@ import org.springframework.util.Assert;
  * Provides all functionalities to load balancer for create, remove and manage
  * services endpoints.
  *
- * @author aschulze
- * @author rbetancourt
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Betancourt Toucet
+ * @author Rolando Santamaria Maso
  */
 public class LoadBalancerPlugIn extends ActionPlugIn {
 

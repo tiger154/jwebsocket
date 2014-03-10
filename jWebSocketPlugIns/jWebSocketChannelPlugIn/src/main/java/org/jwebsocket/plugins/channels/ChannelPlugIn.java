@@ -118,7 +118,7 @@ import org.springframework.util.Assert;
  * <tt>Token Request Includes:</tt> Token Key : <tt>channel<tt> Token Value :
  * <tt>channel id to unsubscribe</tt>
  *
- * @author puran, aschulze, kyberneees
+ * @author Alexander Schulze, Puran Singh, Rolando Santamaria Maso
  * @version $Id: ChannelPlugIn.java 1603 2011-02-28 16:48:50Z fivefeetfurther $
  */
 public class ChannelPlugIn extends ActionPlugIn {

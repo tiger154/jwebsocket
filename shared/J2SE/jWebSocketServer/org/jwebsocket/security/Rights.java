@@ -27,7 +27,7 @@ import javolution.util.FastMap;
 /**
  * implements a FastMap of rights to act as a role.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Rights {
 

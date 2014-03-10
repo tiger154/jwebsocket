@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.jmsdemo;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Settings {
 

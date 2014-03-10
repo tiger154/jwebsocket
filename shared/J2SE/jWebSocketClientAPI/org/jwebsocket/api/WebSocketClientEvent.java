@@ -22,7 +22,7 @@ package org.jwebsocket.api;
  * Base interface jWebSocket events
  *
  * @author puran
- * @author aschulze
+ * @author Alexander Schulze
  * @version $Id: WebSocketClientEvent.java 702 2010-07-18 17:54:17Z
  * mailtopuran@gmail.com $
  */

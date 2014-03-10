@@ -41,7 +41,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ClusterPlugIn extends TokenPlugIn {
 

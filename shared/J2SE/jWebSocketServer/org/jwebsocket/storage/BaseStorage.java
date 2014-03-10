@@ -30,7 +30,7 @@ import org.jwebsocket.api.IBasicStorage;
  *
  * @param <K>
  * @param <V>
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public abstract class BaseStorage<K, V> implements IBasicStorage<K, V> {
 

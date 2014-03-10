@@ -28,7 +28,7 @@ import org.jwebsocket.logging.Logging;
 /**
  * This shows an example of a simple WebSocket listener
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JWebSocketCustomListenerSample implements WebSocketServerListener {
 

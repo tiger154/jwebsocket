@@ -20,7 +20,7 @@ package org.jwebsocket.api;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface WebSocketStream {
 

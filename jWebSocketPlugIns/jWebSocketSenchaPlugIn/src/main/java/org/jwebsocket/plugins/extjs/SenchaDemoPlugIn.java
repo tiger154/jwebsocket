@@ -44,9 +44,7 @@ import org.jwebsocket.token.TokenFactory;
  * own clients list, so, when something happen in the server side, a
  * notification message will only be sent to the registered users.
  *
- * @author Osvaldo Aguilar Lauzurique, (oaguilar, La Habana), Alexander Rojas
- * Hernandez (arojas, Pinar del Rio), Victor Antonio Barzana Crespo (vbarzana,
- * Münster Westfalen)
+ * @author Osvaldo Aguilar Lauzurique Lauzurique, Alexander Rojas Hernandez, Victor Antonio Barzana Crespo
  *
  */
 public class SenchaDemoPlugIn extends TokenPlugIn {

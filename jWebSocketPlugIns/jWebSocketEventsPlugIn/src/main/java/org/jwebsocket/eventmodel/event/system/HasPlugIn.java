@@ -24,7 +24,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  * Giving a custom plug-in identifier generate a response event indicating if it
  * exists or not
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class HasPlugIn extends C2SEvent {
 

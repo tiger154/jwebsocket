@@ -24,7 +24,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public abstract class JcResponseCallback extends OnResponse {
 

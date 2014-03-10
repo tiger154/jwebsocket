@@ -37,7 +37,7 @@ import org.jwebsocket.util.Tools;
 /**
  * Facade of org.jwebsocket.server.InternalClient for ScriptingPlugIn.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ServerClient {
 

@@ -20,7 +20,7 @@ package org.jwebsocket.tcp.nio;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ReadBean {
 

@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.rtc;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Settings {
 

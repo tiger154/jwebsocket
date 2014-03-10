@@ -23,7 +23,7 @@ package org.jwebsocket.eventmodel.exception;
  * <p>
  * This exception is thrown by the CacheFilter
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class CachedResponseException extends Exception {
 }

@@ -30,7 +30,7 @@ import org.jwebsocket.api.ITokenizable;
 /**
  * A token is ...
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class MapToken extends BaseToken implements Token {
 

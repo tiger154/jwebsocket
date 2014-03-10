@@ -25,7 +25,7 @@ import org.jwebsocket.token.TokenClient;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class Camera implements CommandListener {
 

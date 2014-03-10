@@ -23,7 +23,7 @@ package org.jwebsocket.api;
  *
  * @param <K>
  * @param <V>
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IBasicCacheStorage<K, V> extends IBasicStorage<K, V> {
 

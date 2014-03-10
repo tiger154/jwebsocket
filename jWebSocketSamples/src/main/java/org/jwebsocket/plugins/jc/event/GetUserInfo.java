@@ -22,7 +22,7 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class GetUserInfo extends C2SEvent {
 }

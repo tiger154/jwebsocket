@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 /**
  * Utility class for Mongo DB generic helper methods
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MongoDBUtils {
 

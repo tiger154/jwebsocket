@@ -23,7 +23,7 @@ import org.jwebsocket.kit.WebSocketServerEvent;
 /**
  * Interface for the low level WebSocket listeners.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public interface WebSocketServerListener {
 

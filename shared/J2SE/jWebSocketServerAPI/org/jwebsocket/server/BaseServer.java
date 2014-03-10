@@ -51,8 +51,8 @@ import org.jwebsocket.kit.WebSocketSession;
  * underlying engines. An application can instantiate multiple servers to
  * process different kinds of data packets.
  *
- * @author aschulze
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class BaseServer implements WebSocketServer {
 

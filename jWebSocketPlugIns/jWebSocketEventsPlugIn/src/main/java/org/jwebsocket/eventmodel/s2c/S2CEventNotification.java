@@ -24,7 +24,7 @@ import org.jwebsocket.eventmodel.exception.InvalidConnectorIdentifier;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class S2CEventNotification {
 

@@ -30,7 +30,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class FileSystemPlugIn extends BaseClientTokenPlugIn {
 

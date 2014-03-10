@@ -29,7 +29,7 @@ import android.widget.ListView;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class MainActivity extends ListActivity {
 

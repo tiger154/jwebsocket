@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.rpc;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class CommonRpcPlugin {
 	//RpcPlugin namespace

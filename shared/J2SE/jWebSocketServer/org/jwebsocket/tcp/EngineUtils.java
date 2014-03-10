@@ -32,7 +32,7 @@ import org.jwebsocket.kit.WebSocketProtocolAbstraction;
  * Utility methods for TCP and NIO engines.
  *
  * @author jang
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class EngineUtils {
 

@@ -24,7 +24,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class ParcelableToken implements Parcelable {
 

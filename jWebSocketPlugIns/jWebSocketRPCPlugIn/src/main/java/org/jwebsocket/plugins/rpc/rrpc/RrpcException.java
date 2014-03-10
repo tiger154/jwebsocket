@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.rpc.rrpc;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public abstract class RrpcException extends Exception {
 }

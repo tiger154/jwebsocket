@@ -49,9 +49,9 @@ import org.jwebsocket.util.Tools;
  * @author agali
  * @author puran
  * @author jang
- * @author aschulze
- * @author kyberneees
- * @author rbetancourt
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
+ * @author Rolando Betancourt Toucet
  */
 @Deprecated
 public class BaseWebSocketClient extends BaseClient {

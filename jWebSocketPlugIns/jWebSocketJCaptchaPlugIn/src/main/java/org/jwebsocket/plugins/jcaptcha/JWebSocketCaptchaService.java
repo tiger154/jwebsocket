@@ -20,14 +20,14 @@ package org.jwebsocket.plugins.jcaptcha;
 
 /**
  *
- * @author mayra, vbarzana, aschulze
+ * @author mayra, Victor Antonio Barzana Crespo, Alexander Schulze
  */
 import com.octo.captcha.service.image.DefaultManageableImageCaptchaService;
 import com.octo.captcha.service.image.ImageCaptchaService;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JWebSocketCaptchaService {
 

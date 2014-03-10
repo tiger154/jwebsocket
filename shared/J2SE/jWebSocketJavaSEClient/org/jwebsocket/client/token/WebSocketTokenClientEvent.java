@@ -19,7 +19,7 @@ import org.jwebsocket.api.WebSocketClient;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class WebSocketTokenClientEvent extends WebSocketBaseClientEvent {
 

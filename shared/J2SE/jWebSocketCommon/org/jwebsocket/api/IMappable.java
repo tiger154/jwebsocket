@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Allows data structures conversion to and from Maps
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IMappable {
 

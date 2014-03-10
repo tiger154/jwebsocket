@@ -78,7 +78,7 @@
                                 <descriptor>src/assembly/one-jar.xml</descriptor>
                             </descriptors>
                         </configuration>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>attached</goal>
                         </goals>

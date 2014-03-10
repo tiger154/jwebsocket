@@ -31,7 +31,7 @@ import org.jwebsocket.token.Token;
 /**
  * instantiates the chain of token plug-ins.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class TokenPlugInChain extends BasePlugInChain {
 

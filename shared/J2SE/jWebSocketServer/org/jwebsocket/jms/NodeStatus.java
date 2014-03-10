@@ -20,7 +20,7 @@ package org.jwebsocket.jms;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class NodeStatus {
 

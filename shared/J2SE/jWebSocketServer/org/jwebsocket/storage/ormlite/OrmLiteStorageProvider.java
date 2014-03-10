@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class OrmLiteStorageProvider implements IStorageProvider, IInitializable {
 

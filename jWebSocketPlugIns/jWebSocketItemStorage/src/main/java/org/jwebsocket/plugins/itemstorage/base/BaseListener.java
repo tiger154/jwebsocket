@@ -32,7 +32,7 @@ import org.jwebsocket.spring.JWebSocketBeanFactory;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class BaseListener implements IItemStorageListener {
 

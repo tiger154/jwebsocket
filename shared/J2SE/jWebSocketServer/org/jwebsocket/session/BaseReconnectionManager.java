@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 
 /**
  *
- * @author kyberneees, aschulze
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public abstract class BaseReconnectionManager implements ISessionReconnectionManager, IInitializable {
 

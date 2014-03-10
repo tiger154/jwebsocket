@@ -28,7 +28,7 @@ import org.jwebsocket.util.Tools;
 /**
  * Build the EventModel instance by using the Spring IoC Container
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class SpringEventModelBuilder implements IEventModelBuilder {
 

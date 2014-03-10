@@ -26,7 +26,7 @@ import org.jwebsocket.config.ConfigHandler;
 /**
  * Handler for the logging configuration
  *
- * @author puran, aschulze
+ * @author Alexander Schulze, Puran Singh
  * @version $Id: LoggingConfigHandler.java 616 2010-07-01 08:04:51Z
  * fivefeetfurther $
  */

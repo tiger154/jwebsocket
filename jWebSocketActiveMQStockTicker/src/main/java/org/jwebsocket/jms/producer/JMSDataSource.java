@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 @Service
 public class JMSDataSource implements Runnable {

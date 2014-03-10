@@ -21,7 +21,7 @@ package org.jwebsocket.eventmodel.exception;
 /**
  * Thrown when a custom listener is not found
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ListenerNotFoundException extends Exception {
 

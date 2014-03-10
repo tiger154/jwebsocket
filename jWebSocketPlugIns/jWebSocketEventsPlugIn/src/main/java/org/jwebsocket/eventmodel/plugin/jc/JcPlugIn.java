@@ -34,7 +34,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  *
  * Usage: ----------------------- byte[] lApdu = {(byte) 0x00, (byte) 0xA4,
  * (byte) 0x04, (byte) 0x00, (byte) 0x08, //	(byte) 0xA0, (byte) 0x00, (byte)

@@ -26,7 +26,7 @@ import org.jwebsocket.storage.memcached.MemcachedStorage;
  *
  * @param <K>
  * @param <V>
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MemcachedCacheStorage<K extends String, V> extends MemcachedStorage<K, V> implements IBasicCacheStorage<K, V> {
 

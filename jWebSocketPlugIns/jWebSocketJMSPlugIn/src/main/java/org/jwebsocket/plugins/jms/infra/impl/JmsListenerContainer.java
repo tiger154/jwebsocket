@@ -31,7 +31,7 @@ import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JmsListenerContainer extends DefaultMessageListenerContainer {
 

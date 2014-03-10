@@ -20,7 +20,7 @@ package org.jwebsocket.eventmodel.cluster.api;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IClusterEvent {
 	//Node disconected, ClusterLoadNotification, Node connected

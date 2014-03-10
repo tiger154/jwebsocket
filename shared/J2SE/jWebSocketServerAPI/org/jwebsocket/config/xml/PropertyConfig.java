@@ -24,7 +24,7 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
 /**
  * immutable class that represents the <tt>property</tt> configuration
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public final class PropertyConfig implements Config {
 

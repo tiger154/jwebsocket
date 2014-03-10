@@ -31,7 +31,7 @@ import org.jwebsocket.storage.BaseStorage;
  *
  * @param <K>
  * @param <V>
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IBasicCacheStorage<K, V> {
 

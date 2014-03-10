@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * This utility class wraps collection operations that are supposed to be called
  * out of the WebSocket API
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ItemCollectionUtils {
 

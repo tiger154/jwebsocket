@@ -28,7 +28,7 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * Mail store based extension of EhCacheStorage.
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class MailStore {
 

@@ -33,7 +33,7 @@ import org.jwebsocket.token.TokenFactory;
  * Provides the base implementation to send SMS text message through the
  * &quot;smstrade.de&quot; provider.
  *
- * @author mayra, aschulze
+ * @author mayra, Alexander Schulze
  */
 public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 

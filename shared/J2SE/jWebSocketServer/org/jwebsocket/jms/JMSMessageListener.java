@@ -32,7 +32,7 @@ import org.jwebsocket.util.Tools;
 /**
  * JMS Engine message consumer (listener)
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JMSMessageListener implements MessageListener, IInitializable {
 

@@ -24,7 +24,7 @@ import org.jwebsocket.eventmodel.rrpc.RRPC;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IRRPCManager {
 

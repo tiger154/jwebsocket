@@ -43,7 +43,7 @@ import org.jwebsocket.util.Tools;
  * jWebSocket cluster server node load balancer component. Redirect the requests
  * to the less loaded node in the cluster.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class JMSLoadBalancer implements IInitializable {
 

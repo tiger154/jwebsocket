@@ -45,7 +45,7 @@ import org.springframework.util.Assert;
  * Allows to clients and internal applications send SMS text messages to mobile
  * phones through WebSocket protocol.
  *
- * @author mayra, aschulze
+ * @author mayra, Alexander Schulze
  */
 public class SMSPlugIn extends ActionPlugIn {
 

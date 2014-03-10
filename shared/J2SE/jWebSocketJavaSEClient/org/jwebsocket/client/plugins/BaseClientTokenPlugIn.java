@@ -25,8 +25,8 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author aschulze
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class BaseClientTokenPlugIn implements WebSocketClientTokenPlugIn {
 

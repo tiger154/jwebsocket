@@ -24,7 +24,7 @@ import org.jwebsocket.kit.CloseReason;
 /**
  * A connector gets stopped
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class ConnectorStopped extends C2SEvent {
 

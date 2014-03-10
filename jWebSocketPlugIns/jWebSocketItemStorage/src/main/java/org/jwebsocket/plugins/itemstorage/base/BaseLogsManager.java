@@ -25,7 +25,7 @@ import org.jwebsocket.plugins.itemstorage.api.ILogsManager;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class BaseLogsManager implements ILogsManager {
 

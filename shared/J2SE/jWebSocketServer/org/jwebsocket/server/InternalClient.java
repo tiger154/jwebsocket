@@ -42,7 +42,7 @@ import org.jwebsocket.util.Tools;
 /**
  * This class represents an internal jWebSocket server client
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public class InternalClient {
 

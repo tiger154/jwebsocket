@@ -24,7 +24,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 /**
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 @DatabaseTable(tableName = "jws_storages")
 public class EntryEntity {

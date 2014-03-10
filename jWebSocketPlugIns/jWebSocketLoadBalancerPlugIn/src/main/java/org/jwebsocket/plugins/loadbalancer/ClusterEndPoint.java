@@ -26,9 +26,9 @@ import org.jwebsocket.token.Token;
 /**
  * Specifies one single endpoint of a certain cluster.
  *
- * @author aschulze
- * @author rbetancourt
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Betancourt Toucet
+ * @author Rolando Santamaria Maso
  */
 public class ClusterEndPoint implements ITokenizable {
 

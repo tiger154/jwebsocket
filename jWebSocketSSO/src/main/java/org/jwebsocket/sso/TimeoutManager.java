@@ -23,7 +23,7 @@ import java.util.TimerTask;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class TimeoutManager {
 

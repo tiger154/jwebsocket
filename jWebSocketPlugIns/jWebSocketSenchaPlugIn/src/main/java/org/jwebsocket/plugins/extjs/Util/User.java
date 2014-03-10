@@ -23,7 +23,7 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author Osvaldo Aguilar Lauzurique, Alexander Rojas Hernandez
+ * @author Osvaldo Aguilar Lauzurique Lauzurique, Alexander Rojas Hernandez
  */
 public class User implements ITokenizable {
 

@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.rpc.rrpc;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class RrpcConnectorNotFoundException extends RrpcException {
 }

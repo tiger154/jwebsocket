@@ -54,7 +54,7 @@ import org.springframework.util.Assert;
  * Contains abstract methods to be extended by concrete implementations for
  * custom languages like JavaScript or Groovy.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 abstract public class BaseScriptApp {
 

@@ -25,7 +25,7 @@ import java.util.Map;
  * to be used by the jWebSocket Cluster LoadBalancers during the connector
  * starting process.
  *
- * @author kyberneees
+ * @author Rolando Santamaria Maso
  */
 public interface IConsumerAdviceTempStorage {
 

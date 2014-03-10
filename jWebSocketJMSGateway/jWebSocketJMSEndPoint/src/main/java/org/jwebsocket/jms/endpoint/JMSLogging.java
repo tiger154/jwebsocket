@@ -20,7 +20,7 @@ package org.jwebsocket.jms.endpoint;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
 public class JMSLogging {
 
