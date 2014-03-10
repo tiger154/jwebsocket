@@ -6,6 +6,25 @@
 	<artifactId>jWebSocketCommon</artifactId>
 	<name>jWebSocketCommon</name>
 	<description>jWebSocket Common Module</description>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>aschulze</id>
+			<name>Alexander Schulze</name>
+			<email>aschulze@jwebsocket.org</email>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:svn:http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/jWebSocketCommon/</connection>
+		<developerConnection>scm:svn:http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/jWebSocketCommon/</developerConnection>
+		<url>http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/jWebSocketCommon/</url>
+	</scm>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -147,7 +166,7 @@
 			<artifactId>activemq-all</artifactId> 
 			<version>5.8.0</version> 
 		</dependency>
-        <!-- Required for management of relational database systems and ItemStorage PlugIn. -->
+		<!-- Required for management of relational database systems and ItemStorage PlugIn. -->
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketDynamicSQL</artifactId>
