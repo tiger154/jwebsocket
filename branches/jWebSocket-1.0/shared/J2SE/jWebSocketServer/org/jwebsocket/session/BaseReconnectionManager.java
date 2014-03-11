@@ -29,9 +29,9 @@ import org.springframework.util.Assert;
  */
 public abstract class BaseReconnectionManager implements ISessionReconnectionManager, IInitializable {
 
-	private Integer mSessionExpirationTime = 60; //One minute by default
+	private Integer mSessionExpirationTime = 60; // value is given in seconds
 	private IBasicStorage<String, Object> mSessionIdsTrash;
-	private String mTrashStorageName;
+	private String mTrashStorageName = "__session_ids_trash_storage_ns__";
 	private IStorageProvider mStorageProvider;
 	private ICacheStorageProvider mCacheStorageProvider;
 
