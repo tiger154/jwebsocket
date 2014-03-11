@@ -54,7 +54,7 @@ jws.tests.JDBC = {
 					return( lResponse.msg !== undefined );
 				},
 				lSpec,
-				1500
+				5000 * 5
 			);
 
 			// check result if ok
