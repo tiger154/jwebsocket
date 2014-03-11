@@ -201,7 +201,8 @@ public class JMSEngine extends BaseEngine {
 			if (null == lHostname) {
 				lHostname = JWebSocketServerConstants.DEFAULT_HOSTNAME;
 			}
-			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSessionForClients, mSessionForServer, mNodesManager, lHostname) {
+			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSessionForClients, 
+					mSessionForServer, mNodesManager, lHostname) {
 				@Override
 				public void shutdown() throws Exception {
 					// close clients if all nodes are down
@@ -256,7 +257,7 @@ public class JMSEngine extends BaseEngine {
 	public void broadcastPacket(WebSocketConnector aSource, WebSocketPacket aDataPacket) {
 		try {
 			ActiveMQTextMessage lMessage = new ActiveMQTextMessage();
-			lMessage.setBooleanProperty(Attributes.IP_BROADCAST, true);
+			lMessage.setBooleanProperty(Attributes.IS_BROADCAST, true);
 			lMessage.setText(aDataPacket.getString());
 
 			mReplyProducer.send(lMessage);
