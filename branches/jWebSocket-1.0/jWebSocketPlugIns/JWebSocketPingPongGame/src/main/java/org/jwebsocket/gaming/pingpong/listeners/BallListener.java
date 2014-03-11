@@ -52,7 +52,6 @@ public class BallListener implements IListener {
 
 	@Override
 	public void processEvent(Event aEvent, ResponseEvent aResponseEvent) {
-		//throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	/**

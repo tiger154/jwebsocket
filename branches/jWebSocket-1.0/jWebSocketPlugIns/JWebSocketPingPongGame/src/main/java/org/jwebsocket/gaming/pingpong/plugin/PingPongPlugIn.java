@@ -189,7 +189,6 @@ public class PingPongPlugIn extends TokenPlugIn {
 				mLog.error("processToken. " + ex.getMessage());
 			}
 		}
-
 	}
 
 	@Override
