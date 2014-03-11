@@ -29,7 +29,7 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
 
 /**
  *
- * @author javier alejandro
+ * @author Javier Alejandro Puentes Serrano
  */
 public class ReportingPlugIn extends BaseClientTokenPlugIn {
 

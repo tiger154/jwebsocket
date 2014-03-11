@@ -26,7 +26,7 @@ import org.jwebsocket.plugins.reporting.Settings;
 
 /**
  *
- * @author javier alejandro
+ * @author Javier Alejandro Puentes Serrano
  */
 public interface IJasperReportService extends IInitializable {
 

@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.reporting.api;
 
 /**
  *
- * @author javier alejandro
+ * @author Javier Alejandro Puentes Serrano
  */
 public class ReportFormats {
 
