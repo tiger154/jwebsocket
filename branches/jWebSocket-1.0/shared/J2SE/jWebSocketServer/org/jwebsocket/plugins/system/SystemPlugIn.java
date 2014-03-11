@@ -67,12 +67,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * implements the jWebSocket system tokens like login, logout, send, broadcast
+ * Implements the jWebSocket system core features like login, logout, send, broadcast
  * etc...
  *
  * @author Alexander Schulze
- * @author kybernees {Support for client-side session management and Spring
- * authentication}
+ * @author kybernees
  */
 public class SystemPlugIn extends TokenPlugIn {
 
