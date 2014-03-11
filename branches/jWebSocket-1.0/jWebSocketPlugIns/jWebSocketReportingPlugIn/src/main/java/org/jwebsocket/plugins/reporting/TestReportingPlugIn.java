@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
 
 /**
  *
- * @author javier alejandro
+ * @author Javier Alejandro Puentes Serrano
  */
 public class TestReportingPlugIn extends ActionPlugIn {
 

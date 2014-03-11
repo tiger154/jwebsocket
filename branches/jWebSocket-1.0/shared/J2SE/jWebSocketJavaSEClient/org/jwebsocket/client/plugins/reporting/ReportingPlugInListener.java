@@ -24,7 +24,7 @@ import org.jwebsocket.token.Token;
 /**
  * The ReportingPlugIn listener
  *
- * @author javier alejandro
+ * @author Javier Alejandro Puentes Serrano
  */
 public class ReportingPlugInListener implements WebSocketClientTokenPlugInListener {
 
