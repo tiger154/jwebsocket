@@ -172,31 +172,6 @@
 		<property name="eraseCredentialsAfterAuthentication" value="false" />
 	</bean>
 
-	<!-- ####### Setting up the global CacheManager ####### -->
-
-	<!--  EhCache Storage provider -->
-	<bean id="storageProviderEhCache" class="org.jwebsocket.storage.ehcache.EhCacheStorageProvider">
-	</bean>
-	
-	<!--  EhCache Cache Storage provider -->
-	<bean id="cacheStorageProviderEhCache" class="org.jwebsocket.cachestorage.ehcache.EhCacheCacheStorageProvider">
-	</bean>
-	
-	<!-- EhCache session 
-	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
-			init-method="initialize" destroy-method="shutdown">
-		<property name="storageProvider" ref="storageProviderEhCache"/>
-		<property name="reconnectionManager">
-			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
-			init-method="initialize" destroy-method="shutdown">
-				<property name="sessionExpirationTime" value="60" />
-				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
-				<property name="storageProvider" ref="storageProviderEhCache" />
-			</bean>
-		</property>
-	</bean>
-	-->
-
 	<!-- 
 		 SessionManager component for sessions management 
 	     ************************************************
@@ -215,6 +190,10 @@
 				<property name="storageProvider" ref="storageProviderJDBC" />
 			</bean>
 		</property>
+	</bean>
+	
+	<!--  EhCache Storage provider -->
+	<bean id="storageProviderEhCache" class="org.jwebsocket.storage.ehcache.EhCacheStorageProvider">
 	</bean>
 	
 	<!-- JDBC Storage provider -->
