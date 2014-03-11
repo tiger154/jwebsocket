@@ -77,7 +77,6 @@
 	<!-- ####### JDBC authentication ####### -->
 	<!-- http://static.springsource.org/spring-security/site/docs/3.0.x/reference/core-services.html -->
 	<!-- http://grepcode.com/file/repo1.maven.org/maven2/org.springframework.security/spring-security-core/3.0.5.RELEASE/org/springframework/security/core/userdetails/jdbc/JdbcDaoImpl.java -->
-	
 	<bean id="jdbcAuthProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
 		<property name="userDetailsService" ref="jdbcAuthUserDetailsServicePermissions"/>
 		<!-- optional if you intent to use EhCache to cache user repository -->
@@ -132,7 +131,6 @@
 	</bean>	
    
 	<!-- ####### optional caching with ehcache ####### -->
-	
 	<bean id="authUserCache" class="org.springframework.security.core.userdetails.cache.EhCacheBasedUserCache">	
 		<!-- use this one if running separate ehcache config -->
 		<!-- <property name="cache" ref="authCacheFactory"/> -->
@@ -159,11 +157,9 @@
 	</bean>
 	
 	<!-- ####### optional password hashing with MD5 hashs ####### -->
-	
 	<bean id="authPasswordEncoderMD5" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
 
 	<!-- ####### initialization of authentication provider ####### -->
-	
 	<bean id="authManager" class="org.springframework.security.authentication.ProviderManager">
 		<property name="providers">
 			<list>
@@ -201,6 +197,26 @@
 	</bean>
 	-->
 
+	<!-- 
+		 SessionManager component for sessions management 
+	     ************************************************
+		 Uses JDBC (derby) by default, to switch the persistent storage
+		 modify the storageProvider properties.
+	-->
+	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
+		  init-method="initialize" destroy-method="shutdown">
+		<!-- storage provider for client sessions-->
+		<property name="storageProvider" ref="storageProviderJDBC"/>
+		<property name="reconnectionManager">
+			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
+				  init-method="initialize" destroy-method="shutdown">
+				<!-- session expiration time in seconds -->
+				<property name="sessionExpirationTime" value="60" />
+				<property name="storageProvider" ref="storageProviderJDBC" />
+			</bean>
+		</property>
+	</bean>
+	
 	<!-- JDBC Storage provider -->
 	<bean id="storageProviderJDBC" class="org.jwebsocket.storage.ormlite.OrmLiteStorageProvider" init-method="initialize">
 		<constructor-arg index="0">
@@ -223,41 +239,12 @@
 			</bean>
 		</constructor-arg>
 	</bean>
-
-	<!-- JDBC session -->
-	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
-		  init-method="initialize" destroy-method="shutdown">
-		<property name="storageProvider" ref="storageProviderJDBC"/>
-		<property name="reconnectionManager">
-			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
-				  init-method="initialize" destroy-method="shutdown">
-				<property name="sessionExpirationTime" value="60" />
-				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
-				<property name="storageProvider" ref="storageProviderJDBC" />
-			</bean>
-		</property>
-	</bean>
 	
-	<!--  Memory Storage provider (here for the sessions) -->
+	<!--  Memory Storage provider -->
 	<bean id="storageProviderMemory" class="org.jwebsocket.storage.memory.MemoryStorageProvider">
 	</bean>
 
-	<!-- RAM Memory session
-	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
-		  init-method="initialize" destroy-method="shutdown">
-		<property name="storageProvider" ref="storageProviderMemory"/>
-		<property name="reconnectionManager">
-			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
-				  init-method="initialize" destroy-method="shutdown">
-				<property name="sessionExpirationTime" value="60" />
-				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
-				<property name="storageProvider" ref="storageProviderMemory"/>
-			</bean>
-		</property>
-	</bean>
-	--> 
-	
-	<!-- MongoDB Storage provider (here for the sessions) -->
+	<!-- MongoDB Storage provider -->
 	<bean id="storageProviderMongoDB" class="org.jwebsocket.storage.mongodb.MongoDBStorageProvider"
 		  init-method="initialize" destroy-method="shutdown">
 		<property name="connection" ref="mongodbConnection0" />
@@ -265,22 +252,7 @@
 		<property name="collectionName" value="__storages_collection__" />
 	</bean>
 	
-	<!-- MongoDB session 
-	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
-		  init-method="initialize" destroy-method="shutdown">
-		<property name="storageProvider" ref="storageProviderMongoDB"/>
-		<property name="reconnectionManager">
-			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
-				  init-method="initialize" destroy-method="shutdown">
-				<property name="sessionExpirationTime" value="60" />
-				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
-				<property name="storageProvider" ref="storageProviderMongoDB" />
-			</bean>
-		</property>
-	</bean>
-	-->
-	
-	<!-- JMS Manager -->
+	<!-- JMS Manager for internal/external messaging -->
 	<bean id="jmsManager" class="org.jwebsocket.util.JMSManager" destroy-method="shutdown">
 		<constructor-arg index="0" value="false"/>
 		<constructor-arg index="1" ref="jmsConnection0"/>
