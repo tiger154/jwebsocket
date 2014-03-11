@@ -67,7 +67,6 @@ public class User implements IMongoDocument {
 
 	@Override
 	public DBObject asDocument() {
-		//throw new UnsupportedOperationException("Not supported yet.");
 		BasicDBObject doc = new BasicDBObject();
 		doc.put("user", mUserName);
 		doc.put("pwd", mPwdName);
