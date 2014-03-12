@@ -17,7 +17,7 @@ import org.jwebsocket.dynamicsql.query.DynaSelectQuery;
 
 /**
  *
- * @author markos
+ * @author Marcos Antonio González Huerta
  */
 public class DynaDAO implements IDAO {
 

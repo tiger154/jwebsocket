@@ -66,7 +66,7 @@ import org.jwebsocket.util.DateHandler;
 
 /**
  *
- * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author Marcos Antonio González Huerta
  * @author Alexander Schulze
  */
 public class AdminPlugInService {

@@ -45,7 +45,7 @@ import org.springframework.util.Assert;
  * Represents the jWebSocket configuration. This class is immutable and should
  * not be overridden.
  *
- * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author Marcos Antonio González Huerta
  * @author puran
  */
 public class JWebSocketConfig implements Config {

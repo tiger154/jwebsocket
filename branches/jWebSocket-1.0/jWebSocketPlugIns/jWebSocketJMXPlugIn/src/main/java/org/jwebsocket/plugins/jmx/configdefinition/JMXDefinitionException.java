@@ -26,7 +26,7 @@ import javax.management.modelmbean.ModelMBeanInfoSupport;
  * that will be exported. Thus if an exception is thrown when trying to create a
  * plugin or class will be show an object of this type.
  *
- * @author Lisdey Pérez Hernández(lisdey89, UCI)
+ * @author Lisdey Pérez Hernández
  */
 public class JMXDefinitionException extends JMXDefinition {
 

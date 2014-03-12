@@ -39,7 +39,7 @@ import org.jwebsocket.token.Token;
 
 /**
  * @author Alexander Schulze
- * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author Marcos Antonio González Huerta
  */
 public class AdminPlugIn extends TokenPlugIn {
 

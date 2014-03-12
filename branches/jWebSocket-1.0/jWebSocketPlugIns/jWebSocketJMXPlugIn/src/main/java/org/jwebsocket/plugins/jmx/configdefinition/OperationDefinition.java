@@ -26,7 +26,7 @@ import javax.management.modelmbean.ModelMBeanOperationInfo;
  * Class that allows to define the operations of the plugins or classes to
  * export and their metadata.
  *
- * @author Lisdey Pérez Hernández(lisdey89, UCI)
+ * @author Lisdey Pérez Hernández
  */
 public class OperationDefinition extends FeatureDefinition {
 

@@ -43,7 +43,7 @@ import org.springframework.context.ApplicationContext;
  * Main class of the mechanism that allows integrate plugins and classes to JMX
  * infrastructure of the module.
  *
- * @author Lisdey Pérez Hernández(lisdey89, UCI)
+ * @author Lisdey Pérez Hernández
  */
 public class JMXPlugInsExporter {
 

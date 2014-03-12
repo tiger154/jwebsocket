@@ -26,7 +26,7 @@ import org.apache.ddlutils.util.Jdbc3Utils;
 
 /**
  *
- * @author markos
+ * @author Marcos Antonio González Huerta
  */
 public class Derby107Builder extends DerbyBuilder {
 

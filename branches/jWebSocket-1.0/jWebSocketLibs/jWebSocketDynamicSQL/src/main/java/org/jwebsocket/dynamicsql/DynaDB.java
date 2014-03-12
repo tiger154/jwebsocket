@@ -37,7 +37,7 @@ import org.jwebsocket.dynamicsql.query.DynaDeleteQuery;
 
 /**
  *
- * @author markos
+ * @author Marcos Antonio González Huerta
  */
 public class DynaDB implements IDatabase {
 

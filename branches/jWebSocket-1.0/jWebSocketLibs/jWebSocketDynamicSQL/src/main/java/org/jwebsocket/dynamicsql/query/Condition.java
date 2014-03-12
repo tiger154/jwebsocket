@@ -23,7 +23,7 @@ import org.jwebsocket.dynamicsql.api.ICondition;
 
 /**
  *
- * @author markos
+ * @author Marcos Antonio González Huerta
  */
 public class Condition implements ICondition {
 

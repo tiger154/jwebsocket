@@ -20,7 +20,7 @@ package org.jwebsocket.dynamicsql.api;
 
 /**
  *
- * @author markos
+ * @author Marcos Antonio González Huerta
  */
 public interface IDeleteQuery {
 

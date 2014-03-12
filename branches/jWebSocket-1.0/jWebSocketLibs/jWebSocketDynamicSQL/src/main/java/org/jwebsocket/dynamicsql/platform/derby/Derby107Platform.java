@@ -24,7 +24,7 @@ import org.apache.ddlutils.platform.derby.DerbyPlatform;
 
 /**
  *
- * @author markos
+ * @author Marcos Antonio González Huerta
  */
 public class Derby107Platform extends DerbyPlatform {
 

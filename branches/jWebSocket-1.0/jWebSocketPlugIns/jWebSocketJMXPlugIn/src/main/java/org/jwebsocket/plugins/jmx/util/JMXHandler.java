@@ -30,7 +30,7 @@ import org.jwebsocket.token.Token;
  * Class that dynamically converts the Map data type to the CompositeData data
  * type.
  *
- * @author Lisdey Pérez Hernández(lisdey89, UCI)
+ * @author Lisdey Pérez Hernández
  */
 public class JMXHandler {
 

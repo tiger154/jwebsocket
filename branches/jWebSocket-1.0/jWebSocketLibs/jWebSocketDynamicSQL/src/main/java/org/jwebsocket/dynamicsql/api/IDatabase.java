@@ -25,7 +25,7 @@ import org.apache.commons.beanutils.DynaBean;
 
 /**
  *
- * @author markos
+ * @author Marcos Antonio González Huerta
  */
 public interface IDatabase {
 

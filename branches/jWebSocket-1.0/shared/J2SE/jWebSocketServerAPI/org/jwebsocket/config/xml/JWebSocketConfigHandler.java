@@ -45,7 +45,7 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
  * handler, to read the whole config file.
  *
  * @author puran
- * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author Marcos Antonio González Huerta
  * @version $Id: JWebSocketConfigHandler.java 596 2010-06-22 17:09:54Z
  fivefeetfurther $
  */

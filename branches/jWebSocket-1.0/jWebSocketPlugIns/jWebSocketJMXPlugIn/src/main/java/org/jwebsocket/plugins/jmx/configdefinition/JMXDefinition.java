@@ -24,7 +24,7 @@ import javax.management.modelmbean.*;
  * The main class that contains all the elements necessary to conform the class
  * or plugin object to export and its metadata.
  *
- * @author Lisdey Pérez Hernández(lisdey89, UCI)
+ * @author Lisdey Pérez Hernández
  */
 public class JMXDefinition {
 

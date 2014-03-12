@@ -87,9 +87,7 @@ public class SampleFilter extends TokenFilter {
 			WebSocketConnector aSource, WebSocketConnector aTarget,
 			Token aToken) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Checking outgoing token from "
-					+ (aSource != null ? aSource.getId() : "[not given]")
-					+ " to "
+			mLog.debug("Checking outgoing token to "
 					+ (aTarget != null ? aTarget.getId() : "[not given]")
 					+ ": " + Logging.getTokenStr(aToken) + "...");
 		}
