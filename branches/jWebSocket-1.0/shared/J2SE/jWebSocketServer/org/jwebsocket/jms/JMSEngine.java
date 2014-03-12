@@ -257,7 +257,7 @@ public class JMSEngine extends BaseEngine {
 	public void broadcastPacket(WebSocketConnector aSource, WebSocketPacket aDataPacket) {
 		try {
 			ActiveMQTextMessage lMessage = new ActiveMQTextMessage();
-			lMessage.setBooleanProperty(Attributes.IS_BROADCAST, true);
+			lMessage.setBooleanProperty(Attributes.IP_BROADCAST, true);
 			lMessage.setText(aDataPacket.getString());
 
 			mReplyProducer.send(lMessage);
