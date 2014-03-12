@@ -53,31 +53,33 @@ public class JWSMessageListener implements IJWSMessageListener {
 	}
 
 	@Override
-	public void sendToken(String aTargetId, Token aToken, JWSResponseTokenListener aResponseListener, long aTimeOut) {
+	public void sendToken(String aTargetId, Token aToken,
+			JWSResponseTokenListener aResponseListener, long aTimeOut) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Sending token with explicit timeout listener (" + aTimeOut + " ms): '" 
+			mLog.debug("Sending token with explicit timeout listener (" + aTimeOut + " ms): '"
 					+ (JMSLogging.isFullTextLogging()
 					? aToken.toString()
 					: aToken.getLogString()));
 		}
 		mSender.sendToken(aTargetId, aToken, aResponseListener, aTimeOut);
 	}
-	
+
 	@Override
-	public void sendToken(String aTargetId, Token aToken, JWSResponseTokenListener aResponseListener) {
+	public void sendToken(String aTargetId, Token aToken,
+			JWSResponseTokenListener aResponseListener) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Sending token with default timeout listener: '" 
+			mLog.debug("Sending token with default timeout listener: '"
 					+ (JMSLogging.isFullTextLogging()
 					? aToken.toString()
 					: aToken.getLogString()));
 		}
 		mSender.sendToken(aTargetId, aToken, aResponseListener);
 	}
-	
+
 	@Override
 	public void sendToken(String aTargetId, Token aToken) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Sending token w/o timeout listener: '" 
+			mLog.debug("Sending token w/o timeout listener: '"
 					+ (JMSLogging.isFullTextLogging()
 					? aToken.toString()
 					: aToken.getLogString()));

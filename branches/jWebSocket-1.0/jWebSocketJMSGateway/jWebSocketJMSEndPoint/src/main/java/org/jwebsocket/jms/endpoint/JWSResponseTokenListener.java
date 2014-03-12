@@ -19,6 +19,7 @@
 package org.jwebsocket.jms.endpoint;
 
 import javax.jms.Message;
+import org.apache.log4j.Logger;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 
@@ -26,8 +27,9 @@ import org.jwebsocket.token.Token;
  *
  * @author Rolando Santamaria Maso
  */
-public class JWSResponseTokenListener implements IJMSResponseListener {
+public class JWSResponseTokenListener implements IJWSResponseListener {
 
+	static final Logger mLog = Logger.getLogger(JWSResponseTokenListener.class);
 	/**
 	 *
 	 */
@@ -59,6 +61,7 @@ public class JWSResponseTokenListener implements IJMSResponseListener {
 		}
 		// calling token callbacks
 		onReponse(lResponseToken);
+		mLog.warn("#### Response ####: " + lResponseToken.toString());
 
 		if (null != lResponseToken) {
 			if ("event".equals(lResponseToken.getString("type"))

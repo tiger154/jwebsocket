@@ -32,11 +32,10 @@ import org.jwebsocket.token.TokenFactory;
 public class JWSEndPointSender extends JMSEndPointSender {
 	
 	private static final Logger mLog = Logger.getLogger(JWSEndPointSender.class);
-	private static final AtomicInteger mUTID = new AtomicInteger(0);
+	private static final AtomicInteger mUTID = new AtomicInteger(1);
 	
 	private int getUTID() {
-		mUTID.compareAndSet(Integer.MAX_VALUE, 0);
-		
+		mUTID.compareAndSet(Integer.MAX_VALUE, 1);
 		return mUTID.getAndIncrement();
 	}
 
@@ -394,9 +393,8 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		// now start to set the actual values
 		lResponse.setNS(aRequest.getNS());
 		lResponse.setType("event");
-		lResponse.setInteger("utid", -aRequest.getInteger("utid", 0));
 		lResponse.setString("name", "progress");
-		lResponse.setInteger("utid", aRequest.getInteger("utid"));
+		lResponse.setInteger("utid", -aRequest.getInteger("utid", 0));
 		lResponse.setDouble("percent", aPercent);
 		lResponse.setString("msg", aMessage);
 		lResponse.setInteger("code", aCode);

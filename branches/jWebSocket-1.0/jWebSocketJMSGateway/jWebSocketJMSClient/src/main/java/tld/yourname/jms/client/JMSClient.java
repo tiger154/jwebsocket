@@ -105,7 +105,7 @@ public class JMSClient {
 			System.exit(1);
 		}
 
-		// 
+		// todo: Comment that for production purposes
 		JMSLogging.setFullTextLogging(true);
 		
 		// instantiate a new jWebSocket JMS Gateway Client
@@ -244,7 +244,7 @@ public class JMSClient {
 
 									@Override
 									public void onProgress(Token aEvent) {
-										mLog.info("Progress: "  + aEvent.getDouble("percent")) ;
+										mLog.info("Progress: "  + String.format("%.2f", aEvent.getDouble("percent")));
 									}
 
 									@Override
