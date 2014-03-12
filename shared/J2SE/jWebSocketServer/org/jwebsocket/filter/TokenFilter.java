@@ -29,7 +29,7 @@ import org.jwebsocket.token.Token;
 /**
  *
  * @author Alexander Schulze
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public class TokenFilter extends BaseFilter {
 

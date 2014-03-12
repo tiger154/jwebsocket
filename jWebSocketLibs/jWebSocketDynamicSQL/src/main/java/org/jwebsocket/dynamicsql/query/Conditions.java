@@ -25,7 +25,7 @@ import org.jwebsocket.dynamicsql.api.ICondition;
 
 /**
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public class Conditions {
 

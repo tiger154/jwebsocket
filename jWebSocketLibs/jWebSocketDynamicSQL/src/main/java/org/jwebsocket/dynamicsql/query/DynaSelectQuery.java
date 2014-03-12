@@ -31,7 +31,7 @@ import org.jwebsocket.dynamicsql.api.IDatabase;
 
 /**
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public class DynaSelectQuery implements ISelectQuery {
 

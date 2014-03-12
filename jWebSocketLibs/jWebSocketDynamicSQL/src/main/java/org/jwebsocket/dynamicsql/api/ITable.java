@@ -22,7 +22,7 @@ import org.apache.ddlutils.model.Table;
 
 /**
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public interface ITable {
 

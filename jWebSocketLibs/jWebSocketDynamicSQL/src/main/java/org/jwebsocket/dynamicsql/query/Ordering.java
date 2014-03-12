@@ -3,7 +3,7 @@ package org.jwebsocket.dynamicsql.query;
 /**
  * Enumeration representing the direction of an ordering clause.
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public enum Ordering {
 

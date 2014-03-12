@@ -30,7 +30,7 @@ import org.springframework.jmx.export.MBeanExporter;
  * Class that redefines certain features of Spring MBeanExporter taking into
  * account the characteristics of the module.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public class MBeanEnabledExporter extends MBeanExporter {
 

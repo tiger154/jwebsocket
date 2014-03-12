@@ -45,7 +45,7 @@ import org.springframework.util.Assert;
 /**
  *
  * @author Alexander Schulze
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  * @author Rolando Santamaria Maso
  */
 public class TokenPlugIn extends BasePlugIn {

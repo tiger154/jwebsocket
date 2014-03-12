@@ -25,7 +25,7 @@ import javax.management.modelmbean.ModelMBeanConstructorInfo;
  * Class that allows to define the constructor of the classes to export and
  * their metadata.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public class ConstructorDefinition extends FeatureDefinition {
 

@@ -30,7 +30,7 @@ import org.apache.ddlutils.platform.mysql.MySqlPlatform;
 
 /**
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public class SupportUtils {
 

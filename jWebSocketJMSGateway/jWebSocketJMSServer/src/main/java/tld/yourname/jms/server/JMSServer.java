@@ -19,10 +19,10 @@
 package tld.yourname.jms.server;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.jms.JMSException;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -106,17 +106,9 @@ public class JMSServer {
 			System.exit(1);
 		}
 
-		// instantiate a new jWebSocket JMS Gateway Client
-		/*
-		 lJMSEndPoint = new JMSEndPoint(
-		 lBrokerURL,
-		 lGatewayTopic, // gateway topic
-		 lGatewayId, // gateway endpoint id
-		 lEndPointId, // unique node id
-		 5, // thread pool size, messages being processed concurrently
-		 JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
-		 );
-		 */
+		// todo: Comment that for production purposes
+		JMSLogging.setFullTextLogging(true);
+
 		// instantiate a new jWebSocket JMS Gateway Client
 		try {
 			lJMSEndPoint = JMSEndPoint.getInstance(
@@ -228,9 +220,12 @@ public class JMSServer {
 				"org.jwebsocket.plugins.jmsdemo", "testProgress", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
-						int lMax = 3;
+						int lMax = 1;
 						for (int lIdx = 0; lIdx < lMax; lIdx++) {
-							lSender.sendProgress(aSourceId, aToken, ((lIdx + 1.0) / lMax) * 100, 0, "Iteration #" + lIdx, null);
+							lSender.sendProgress(
+									aSourceId, aToken,
+									((lIdx + 1.0) / lMax) * 100, 0,
+									"Iteration #" + lIdx, null);
 							try {
 								Thread.sleep(1000);
 							} catch (InterruptedException lEx) {
