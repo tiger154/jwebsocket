@@ -42,10 +42,4 @@ public interface IJMSResponseListener {
 	 */
 	void onTimeout();
 
-	/**
-	 * Called when the sent token processing has timeout on the remote endpoint
-	 *
-	 * @param aToken
-	 */
-	void onProgress(Token aToken);
 }

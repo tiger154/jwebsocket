@@ -307,4 +307,16 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	public void addMessageListener(IJWSMessageListener aListener) {
 		mMessageListeners.add(aListener);
 	}
+
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aToken
+	 */
+	public void sendToken(String aTargetId, Token aToken) {
+		getSender().sendText(aTargetId, JSONProcessor.tokenToPacket(aToken).getUTF8());
+	}
+
+
+
 }
