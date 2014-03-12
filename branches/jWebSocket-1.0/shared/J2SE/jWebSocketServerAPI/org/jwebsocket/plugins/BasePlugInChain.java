@@ -34,7 +34,7 @@ import org.jwebsocket.logging.Logging;
  * can be processed by the plug-ins.
  *
  * @author Alexander Schulze
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  * @author Rolando Santamaria Maso
  */
 public class BasePlugInChain implements WebSocketPlugInChain {

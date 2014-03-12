@@ -30,7 +30,7 @@ import org.jwebsocket.dynamicsql.api.IDeleteQuery;
 
 /**
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public class DynaDeleteQuery implements IDeleteQuery {
 

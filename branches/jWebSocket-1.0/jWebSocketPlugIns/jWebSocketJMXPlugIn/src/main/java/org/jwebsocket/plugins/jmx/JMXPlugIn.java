@@ -37,7 +37,7 @@ import org.springframework.context.ApplicationContext;
  * Main class of the module which takes care of creating the JMX infrastructure
  * to use. Initializes all other components within the module.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public class JMXPlugIn extends TokenPlugIn {
 

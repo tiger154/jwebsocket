@@ -20,7 +20,7 @@ package org.jwebsocket.kit;
 
 /**
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public enum ChangeType {
 

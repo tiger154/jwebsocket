@@ -29,7 +29,7 @@ import java.net.URLClassLoader;
  *
  * @author puran
  * @author Rolando Santamaria Maso
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public class JWebSocketJarClassLoader {
 

@@ -30,7 +30,7 @@ import javax.management.modelmbean.RequiredModelMBean;
 /**
  * Class that implements a specific ModelMBean for the module.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public class ModelMBeanExtension extends RequiredModelMBean {
 

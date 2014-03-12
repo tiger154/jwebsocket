@@ -24,7 +24,7 @@ import javax.management.modelmbean.ModelMBeanNotificationInfo;
  * Class that allows to define an event notifications for the plugins and
  * classes to export and their metadata.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public class NotificationDefinition extends FeatureDefinition {
 

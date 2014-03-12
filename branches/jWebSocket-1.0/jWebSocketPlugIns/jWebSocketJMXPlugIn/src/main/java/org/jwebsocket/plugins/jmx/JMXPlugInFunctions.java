@@ -38,7 +38,7 @@ import org.jwebsocket.token.Token;
  * server. It also provides information about the plugins that are loaded and
  * the functionalities that can be invoked.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public class JMXPlugInFunctions {
 

@@ -28,7 +28,7 @@ import javax.management.modelmbean.ModelMBeanInfo;
 /**
  * Class containing helper methods for creating the ModelMBean.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public class ModelMBeanUtil {
 

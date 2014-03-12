@@ -22,7 +22,7 @@ package org.jwebsocket.plugins.jmx.configdefinition;
  * Generic class that allows to define the name and description of all elements
  * of the plugins or classes to export.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public abstract class FeatureDefinition {
 

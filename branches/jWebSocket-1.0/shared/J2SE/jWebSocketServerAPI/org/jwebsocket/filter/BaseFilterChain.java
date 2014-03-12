@@ -28,7 +28,7 @@ import org.jwebsocket.logging.Logging;
 /**
  *
  * @author Alexander Schulze
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public class BaseFilterChain implements WebSocketFilterChain {
 

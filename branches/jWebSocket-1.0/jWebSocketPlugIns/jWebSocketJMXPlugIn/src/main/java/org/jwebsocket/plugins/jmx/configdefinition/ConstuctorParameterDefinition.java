@@ -24,7 +24,7 @@ import javax.management.MBeanParameterInfo;
  * Class that allows to define the constructor parameters of the classes to
  * export and their metadata.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public class ConstuctorParameterDefinition extends FeatureDefinition {
 

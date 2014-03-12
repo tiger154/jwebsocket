@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public interface ICondition {
 

@@ -27,7 +27,7 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public class AdminConfigHandler extends JWebSocketConfigHandler implements ConfigHandler {
 

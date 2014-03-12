@@ -24,7 +24,7 @@ import javax.management.MBeanParameterInfo;
  * Class that allows to define the operations parameters of the plugins or
  * classes to export and their metadata.
  *
- * @author Lisdey Pérez Hernández
+ * @author Lisdey Perez Hernandez
  */
 public class ParameterDefinition extends FeatureDefinition {
 

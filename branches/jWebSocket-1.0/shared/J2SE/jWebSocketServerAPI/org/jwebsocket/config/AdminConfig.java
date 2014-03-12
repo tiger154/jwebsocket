@@ -25,7 +25,7 @@ import org.jwebsocket.config.xml.PluginConfig;
 
 /**
  *
- * @author Marcos Antonio González Huerta
+ * @author Marcos Antonio Gonzalez Huerta
  */
 public class AdminConfig implements Config {
 
