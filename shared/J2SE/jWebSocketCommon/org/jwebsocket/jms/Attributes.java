@@ -42,7 +42,7 @@ public class Attributes {
 	/**
 	 *
 	 */
-	public static final String IP_BROADCAST = "isBroadcast";
+	public static final String IS_BROADCAST = "isBroadcast";
 
 	/**
 	 *

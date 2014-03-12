@@ -173,30 +173,30 @@ public abstract class BaseQuota implements IQuota {
 
 		List<IQuotaSingleInstance> lQResult = new FastList<IQuotaSingleInstance>();
 
-		IQuotaSingleInstance lQtmp = null;
-		for (Iterator<IQuotaSingleInstance> it = aQuotas.iterator(); it.hasNext();) {
-			IQuotaSingleInstance lQuotaSingle = it.next();
-			QuotaChildSI lChild;
-			lChild = lQuotaSingle.getChildQuota(aInstance);
-			if (null != lChild) {
-				if (lQuotaSingle.getInstanceType().equals("Group")) {
+		if (null != aQuotas) {
+			IQuotaSingleInstance lQtmp = null;
+			for (Iterator<IQuotaSingleInstance> it = aQuotas.iterator(); it.hasNext();) {
+				IQuotaSingleInstance lQuotaSingle = it.next();
+				QuotaChildSI lChild;
+				lChild = lQuotaSingle.getChildQuota(aInstance);
+				if (null != lChild) {
+					if (lQuotaSingle.getInstanceType().equals("Group")) {
 
-					lQtmp
-							= QuotaHelper.factorySingleInstance(lChild.getValue(), lChild.getInstance(),
-									lChild.getUuid(), lQuotaSingle.getNamespace(), lQuotaSingle.getQuotaType(),
-									lQuotaSingle.getQuotaIdentifier(), lChild.getInstanceType(), lQuotaSingle.getActions());
-				}
+						lQtmp = QuotaHelper.factorySingleInstance(lChild.getValue(), lChild.getInstance(),
+								lChild.getUuid(), lQuotaSingle.getNamespace(), lQuotaSingle.getQuotaType(),
+								lQuotaSingle.getQuotaIdentifier(), lChild.getInstanceType(), lQuotaSingle.getActions());
+					}
 
-				if (lQuotaSingle.getInstanceType().equals("User")) {
+					if (lQuotaSingle.getInstanceType().equals("User")) {
 
-					lQtmp
-							= QuotaHelper.factorySingleInstance(lQuotaSingle.getvalue(), lChild.getInstance(),
-									lChild.getUuid(), lQuotaSingle.getNamespace(), lQuotaSingle.getQuotaType(),
-									lQuotaSingle.getQuotaIdentifier(), lChild.getInstanceType(), lQuotaSingle.getActions());
-				}
+						lQtmp = QuotaHelper.factorySingleInstance(lQuotaSingle.getvalue(), lChild.getInstance(),
+								lChild.getUuid(), lQuotaSingle.getNamespace(), lQuotaSingle.getQuotaType(),
+								lQuotaSingle.getQuotaIdentifier(), lChild.getInstanceType(), lQuotaSingle.getActions());
+					}
 
-				if (lQtmp != null) {
-					lQResult.add(lQtmp);
+					if (lQtmp != null) {
+						lQResult.add(lQtmp);
+					}
 				}
 			}
 		}
