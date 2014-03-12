@@ -34,7 +34,7 @@ import org.springframework.security.core.userdetails.memory.InMemoryDaoImpl;
  * Class that implements the security mechanism for the remote access to the
  * module via the RMI protocol.
  *
- * @author Lisdey Pérez Hernández(lisdey89, UCI)
+ * @author Lisdey Pérez Hernández
  */
 public class JMXPlugInAuthenticator implements JMXAuthenticator {
 

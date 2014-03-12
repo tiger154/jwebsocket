@@ -22,7 +22,7 @@ import org.jwebsocket.dynamicsql.query.Ordering;
 
 /**
  *
- * @author markos
+ * @author Marcos Antonio González Huerta
  */
 public interface ISelectQuery {
 

@@ -30,7 +30,7 @@ import org.xeustechnologies.jcl.ClasspathResources;
  * ClassLoader that reloads locally the classes from the jars. Plugins and
  * Filters all configured via jWebSocket.xml file is loaded using this class.
  *
- * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author Marcos Antonio González Huerta
  */
 public class LocalLoader extends ClassLoader {
 

@@ -22,7 +22,7 @@ package org.jwebsocket.plugins.jmx.configdefinition;
  * Class that contains the specific elements to create the plugin object to
  * export.
  *
- * @author Lisdey Pérez Hernández(lisdey89, UCI)
+ * @author Lisdey Pérez Hernández
  */
 public class JMXPluginDefinition extends JMXDefinition {
 

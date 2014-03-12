@@ -26,7 +26,7 @@ import java.util.GregorianCalendar;
 /**
  * Provides some convenience methods to support the web socket development.
  *
- * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author Marcos Antonio González Huerta
  */
 public class DateHandler {
 

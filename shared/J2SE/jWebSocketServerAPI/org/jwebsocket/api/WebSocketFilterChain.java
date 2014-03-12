@@ -24,7 +24,7 @@ import org.jwebsocket.kit.FilterResponse;
 /**
  *
  * @author Alexander Schulze
- * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author Marcos Antonio González Huerta
  * @author Rolando Santamaria Maso
  */
 public interface WebSocketFilterChain extends ISystemLifecycle {

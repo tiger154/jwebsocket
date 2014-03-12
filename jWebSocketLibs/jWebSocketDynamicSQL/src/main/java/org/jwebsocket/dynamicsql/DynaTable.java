@@ -27,7 +27,7 @@ import org.jwebsocket.dynamicsql.api.ITable;
 
 /**
  *
- * @author markos
+ * @author Marcos Antonio González Huerta
  */
 public class DynaTable implements ITable {
 

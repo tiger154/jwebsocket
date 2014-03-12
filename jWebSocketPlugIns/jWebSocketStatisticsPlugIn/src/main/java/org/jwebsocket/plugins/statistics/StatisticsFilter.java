@@ -90,10 +90,7 @@ public class StatisticsFilter extends TokenFilter {
 	public void processTokenOut(FilterResponse aResponse,
 			WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Analyzing incoming token from "
-					+ (aSource != null
-					? aSource.getId()
-					: "[not given]") + " to "
+			mLog.debug("Analyzing outgoing token to "
 					+ (aTarget != null ? aTarget.getId() : "[not given]")
 					+ ": " + Logging.getTokenStr(aToken.getLogString()) + "...");
 		}

@@ -38,7 +38,7 @@ import org.jwebsocket.plugins.jmx.util.JMXHandler;
 /**
  * Class that allows to manage certain functions of jWebSocket server .
  *
- * @author Lisdey Pérez Hernández(lisdey89, UCI)
+ * @author Lisdey Pérez Hernández
  */
 public class JMXServerFunctions {
 

@@ -31,7 +31,7 @@ import org.jwebsocket.kit.WebSocketSession;
  * corresponding PlugInResponse.
  *
  * @author Alexander Schulze
- * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author Marcos Antonio González Huerta
  * @author Rolando Santamaria Maso
  */
 public interface WebSocketPlugInChain extends ISystemLifecycle {

@@ -26,7 +26,7 @@ import javax.management.modelmbean.ModelMBeanInfo;
  * Class that defines a map of events notifications to be created for a specific
  * ModelMBean.
  *
- * @author Lisdey Pérez Hernández(lisdey89, UCI)
+ * @author Lisdey Pérez Hernández
  */
 public class NotificationInfoMap extends HashMap<String, MBeanNotificationInfo> {
 
