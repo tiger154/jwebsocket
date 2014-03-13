@@ -41,9 +41,9 @@ import org.jwebsocket.dynamicsql.query.DynaDeleteQuery;
  */
 public class DynaDB implements IDatabase {
 
-	private Platform mPlatform;
+	private final Platform mPlatform;
 	private Database mDB;
-	private Map<String, String> mOptions;
+	private final Map<String, String> mOptions;
 
 	/**
 	 * Constructor
@@ -120,10 +120,7 @@ public class DynaDB implements IDatabase {
 	 */
 	@Override
 	public Boolean existsTable(String aTableName) {
-		if (mDB.findTable(aTableName) == null) {
-			return false;
-		}
-		return true;
+		return (mDB.findTable(aTableName) != null);
 	}
 
 	/**
