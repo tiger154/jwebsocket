@@ -26,14 +26,21 @@ jws.SSOPlugIn = {
 	// namespace for SSO plugin
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.sso",
-	BASE_URL: null,
 	APP_URL: null,
-	CLIENT_SECRET: null,
+	OAUTH_APP_ID: null, // global (static) application id (not instance app_id)!
+	OAUTH_APP_SECRET: null, // global (static) application secret (not instance app_secret)!
 	JWS_SSO_COOKIE: "JWSSSO",
-	SMSESSION_COOKIE: "SMSESSION",
+	SSO_SESSION_COOKIE_NAME: "SSOSESSION",
 	DEFAULT_TIMEOUT: 10000,
 	XHR_ASYNCHRONOUS: true,
 	XHR_SYNCHRONOUS: false,
+	OAUTH_HOST: "https://localhost",
+	OAUTH_GETSESSION_URL: "/get-smsession",
+	OAUTH_AUTHSESSION_URL: "/auth/oauth/v2/token",
+	OAUTH_GETUSER_URL: "/use-token",
+	OAUTH_REFRESHTOKEN_URL: "/auth/oauth/v2/token",
+	OAUTH_INVALIDATETOKEN_URL: "/delete-token",
+	//
 	processToken: function(aToken) {
 		// check if namespace matches
 		if (aToken.ns === jws.SSOPlugIn.NS) {
@@ -49,6 +56,7 @@ jws.SSOPlugIn = {
 //			}
 		}
 	},
+	//
 	mGetXHR: function( ) {
 		var lXHR;
 
@@ -76,31 +84,117 @@ jws.SSOPlugIn = {
 		}
 		return lXHR;
 	},
-	ssoSetDefaultTimeout: function(aDefTimeout) {
-		// just set the base_url property
-		jws.SSOPlugIn.DEFAULT_TIMEOUT = aDefTimeout;
+	//
+	// checks if there is already a local SSO store 
+	// for this instance and creates one if not.
+	ssoCheckStore: function() {
+		if (!this.sso) {
+			this.sso = {};
+		}
 	},
-	ssoSetHost: function(aURL) {
+	//
+	ssoSetSessionCookieName: function(aSessionCookie) {
+		jws.SSOPlugIn.SSO_SESSION_COOKIE_NAME = aSessionCookie;
+	},
+	//
+	ssoGetSessionCookieName: function() {
+		return jws.SSOPlugIn.SSO_SESSION_COOKIE_NAME;
+	},
+	ssoSetOAuthHost: function(aHost) {
 		// just set the base_url property
-		jws.SSOPlugIn.BASE_URL = aURL;
+		jws.SSOPlugIn.OAUTH_HOST = aHost;
 	},
 	ssoSetAppURL: function(aURL) {
 		// just set the application property to get the SM session cookie
 		jws.SSOPlugIn.APP_URL = aURL;
 	},
-	ssoSetSecret: function(aSecret) {
-		// just set the client_secret property
-		jws.SSOPlugIn.CLIENT_SECRET = aSecret;
+	//
+	// sets the default timeout for all requests
+	ssoSetDefaultTimeout: function(aDefTimeout) {
+		// just set the default timeout property
+		jws.SSOPlugIn.DEFAULT_TIMEOUT = aDefTimeout;
 	},
+	//
+	// returns the default timeout for all requests
+	ssoGetDefaultTimeout: function() {
+		return jws.SSOPlugIn.DEFAULT_TIMEOUT;
+	},
+	//
+	// sets the global (static) OAuth application Id
+	ssoSetOAuthAppId: function(aAppId) {
+		// just set the static app id property
+		jws.SSOPlugIn.OAUTH_APP_ID = aAppId;
+	},
+	//
+	// returns the global (static) OAuth application Id
+	ssoGetOAuthAppId: function() {
+		return jws.SSOPlugIn.OAUTH_APP_ID;
+	},
+	//
+	// sets the global (static) OAuth application secret
+	ssoSetOAuthAppSecret: function(aAppSecret) {
+		// just set the static app secret property
+		jws.SSOPlugIn.OAUTH_APP_SECRET = aAppSecret;
+	},
+	//
+	// returns the global (static) OAuth application secret
+	ssoGetOAuthAppSecret: function() {
+		return jws.SSOPlugIn.OAUTH_APP_SECRET;
+	},
+	//
+	// returns the current sso user name, if such already exists
 	ssoGetUsername: function() {
 		return (this.sso && this.sso.username ? this.sso.username : null);
 	},
+	//
+	// returns the current sso access token, if such already exists
 	ssoGetAccessToken: function() {
 		return (this.sso && this.sso.accessToken ? this.sso.accessToken : null);
 	},
+	//
+	// returns the current sso refresh token, if such already exists
 	ssoGetRefreshToken: function() {
 		return (this.sso && this.sso.refreshToken ? this.sso.refreshToken : null);
 	},
+	ssoSetSessionId: function(aSessionId) {
+		this.ssoCheckStore();
+		this.sso.sessionId = aSessionId;
+	},
+	ssoSetInstanceId: function(aInstanceId) {
+		this.ssoCheckStore();
+		this.sso.instanceId = aInstanceId;
+	},
+	ssoSetInstanceSecret: function(aInstanceSecret) {
+		this.ssoCheckStore();
+		this.sso.instanceSecret = aInstanceSecret;
+	},
+	ssoGetSessionId: function() {
+		return(
+				this.sso ? this.sso.sessionId : null
+				);
+	},
+	//
+	// if instance app id is set this will be returned,
+	// otherwise the global (static) app id will be returned
+	ssoGetAppId: function() {
+		return(
+				this.sso && this.sso.instanceId
+				? this.sso.instanceId
+				: jws.SSOPlugIn.OAUTH_APP_ID
+				);
+	},
+	//
+	// if instance app secret is set this will be returned,
+	// otherwise the global (static) app secret will be returned
+	ssoGetAppSecret: function() {
+		return(
+				this.sso && this.sso.instanceSecret
+				? this.sso.instanceSecret
+				: jws.SSOPlugIn.OAUTH_APP_SECRET
+				);
+	},
+	//
+	// loads the OAuth data from the local OAuth store (the jWS cookie)
 	ssoLoadOAuthData: function(aOptions) {
 		// set default options for OAuth call
 		aOptions = jws.getOptions(aOptions, {
@@ -115,11 +209,9 @@ jws.SSOPlugIn = {
 		// if cookie(s) found...
 		if (lCookies) {
 			// iterate through them to find the SSO JWS_SSO_COOKIE
-			// as well as the SMSESSION cookie as far as exist
-			if (!this.sso) {
-				this.sso = {};
-			}
-			delete this.sso.smsession;
+			// as well as the session cookie as far as exists
+			this.ssoCheckStore();
+			// delete this.sso.sessionId;
 			for (var lIdx = 0; lIdx < lCookies.length; lIdx++) {
 				var lSplitPos = lCookies[ lIdx ].indexOf("=");
 				if (lSplitPos > 0) {
@@ -130,18 +222,19 @@ jws.SSOPlugIn = {
 						var lJSON;
 						try {
 							lJSON = JSON.parse(lValue);
+							// the cookie contains both the access and refresh token 
+							this.sso.refreshToken = lJSON.refreshToken;
+							this.sso.accessToken = lJSON.accessToken;
+							this.sso.expiration = lJSON.expiration;
+							this.sso.expires = new Date(lJSON.expires);
+							lFound = true;
 						} catch (lEx) {
 							break;
 						}
-						// the cookie contains both the access and refresh token 
-						this.sso.refreshToken = lJSON.refreshToken;
-						this.sso.accessToken = lJSON.accessToken;
-						this.sso.expiration = lJSON.expiration;
-						this.sso.expires = new Date(lJSON.expires);
+					} else if (!this.sso.sessionId
+							&& jws.SSOPlugIn.SSO_SESSION_COOKIE_NAME === lKey) {
+						this.sso.sessionId = lValue;
 						lFound = true;
-					} else if (!this.sso.smsession
-							&& jws.SSOPlugIn.SMSESSION_COOKIE === lKey) {
-						this.sso.smsession = lValue;
 					}
 				}
 			}
@@ -164,28 +257,28 @@ jws.SSOPlugIn = {
 						lToken.expiration = 0;
 					}
 					lToken.expires = this.sso.expires;
-				} else {
-					lToken.expiration = 0;
-					lToken.expires = new Date();
+					lToken.expired = (lToken.expires.getTime() - new Date().getTime()) <= 0;
 				}
-				lToken.expired = (lToken.expires.getTime() - new Date().getTime()) <= 0;
 				if (this.sso.username) {
 					lToken.username = this.sso.username;
 				}
-				if (this.sso.smsession) {
-					lToken.smsession = this.sso.smsession;
+				if (this.sso.sessionId) {
+					lToken.sessionId = this.sso.sessionId;
 				}
 				aOptions.OnSuccess(lToken);
 			}
 		} else {
 			if (aOptions.OnFailure) {
-				aOptions.OnFailure({
+				var lToken = {
 					code: -1,
-					msg: "No valid OAuth cookie found."
-				});
+					msg: "No valid SSO/OAuth cookie found."
+				};
+				aOptions.OnFailure(lToken);
 			}
 		}
 	},
+	//
+	// saves the OAuth data to the local OAuth store (the jWS cookie)
 	ssoSaveOAuthData: function(aOptions) {
 		// set default options for OAuth call
 		aOptions = jws.getOptions(aOptions, {
@@ -198,6 +291,8 @@ jws.SSOPlugIn = {
 		try {
 			lCookie = JSON.parse(document.cookie);
 		} catch (lEx) {
+			// if existing cookie for whatever reason cannot be parsed
+			// just create an empty new one.
 			lCookie = {};
 		}
 		if (this.sso && this.sso.refreshToken) {
@@ -206,7 +301,8 @@ jws.SSOPlugIn = {
 			lCookie.expiration = this.sso.expiration;
 			lCookie.expires = this.sso.expires;
 			lCookie.username = this.sso.username;
-			lCookie.smsession = this.sso.smsession;
+			lCookie.email = this.sso.email;
+			lCookie.sessionId = this.sso.sessionId;
 			var lExpires = new Date();
 			lExpires.setTime(new Date().getTime() + 86400 * 1000);
 			var lExpValue = lExpires.toGMTString();
@@ -228,10 +324,14 @@ jws.SSOPlugIn = {
 			}
 		}
 	},
+	//
+	//
 	ssoResetOAuthData: function(aOptions) {
 		// pending
 	},
-	ssoGetSSOSession: function(aOptions) {
+	//
+	//
+	ssoGetSSOSession: function(aUsername, aPassword, aOptions) {
 
 		// set default options for OAuth call
 		aOptions = jws.getOptions(aOptions, {
@@ -239,7 +339,7 @@ jws.SSOPlugIn = {
 			OnSuccess: null,
 			OnFailure: null,
 			OnTimeout: null,
-			URL: jws.SSOPlugIn.BASE_URL
+			URL: jws.SSOPlugIn.OAUTH_HOST + OAUTH_GETSESSION_URL
 		});
 
 		// get browser's XHR object
@@ -250,8 +350,8 @@ jws.SSOPlugIn = {
 		var lInstance = this;
 		var hTimeout = null;
 
-		lXHR.open("POST", aOptions.URL, jws.SSOPlugIn.XHR_ASYNCHRONOUS);
-		var lCredentials = Base64.encode("aschulze:Div#2014");
+		lXHR.open("GET", aOptions.URL, jws.SSOPlugIn.XHR_ASYNCHRONOUS);
+		var lCredentials = Base64.encode(aUsername + ":" + aPassword);
 		lXHR.setRequestHeader("Authorization", "Basic " + lCredentials);
 		lXHR.setRequestHeader("Cache-Control", "no-cache");
 
@@ -267,23 +367,64 @@ jws.SSOPlugIn = {
 			}
 			if (lXHR.readyState >= 4) {
 				clearTimeout(hTimeout);
-				if (lXHR.status === 200 || lResponseText) {
+				if (lXHR.status === 200) {
 					if (lXHR.responseText) {
 						lResponseText = lXHR.responseText;
 					}
-					if (lResponseText) {
-						lInstance.ssoLoadOAuthData();
-						if (lInstance.sso.smsession) {
-							lInstance.ssoSaveOAuthData();
+					lInstance.ssoCheckStore();
+					var lJSON;
+					try {
+						lJSON = JSON.parse(lResponseText);
+						if (0 === lJSON.code) {
+							if (aOptions.OnSuccess) {
+								lInstance.sso.sessionId = lJSON.smsession;
+								// getting a new session id invalidates the old one
+								lInstance.sso.email = null;
+								lInstance.sso.username = null;
+								lInstance.sso.accessToken = null;
+								lInstance.sso.refreshToken = null;
+								lInstance.sso.expiration = null;
+								lInstance.sso.expires = null;
+								aOptions.OnSuccess({
+									code: lJSON.code,
+									sessionId: lJSON.smsession,
+									msg: "ok"
+								});
+							}
+						} else {
+							if (aOptions.OnFailure) {
+								aOptions.OnFailure({
+									code: lJSON.code,
+									sessionId: lJSON.smsession,
+									msg: lJSON.smsession
+								});
+							}
 						}
-						if (aOptions.OnSuccess) {
-							aOptions.OnSuccess({
-								code: 0,
-								smsession: lInstance.sso.smsession,
-								msg: "ok"
+					} catch (lEx) {
+						if (aOptions.OnFailure) {
+							aOptions.OnFailure({
+								code: -1,
+								msg: "JSON parse error"
 							});
 						}
 					}
+					/*
+					 if (lResponseText) {
+					 lInstance.ssoLoadOAuthData({
+					 cookie: lJSON.cookie,
+					 });
+					 if (lInstance.sso.sessionId) {
+					 lInstance.ssoSaveOAuthData();
+					 }
+					 if (aOptions.OnSuccess) {
+					 aOptions.OnSuccess({
+					 code: 0,
+					 sessionId: lInstance.sso.sessionId,
+					 msg: "ok"
+					 });
+					 }
+					 }
+					 */
 				} else {
 					if (aOptions.OnFailure) {
 						aOptions.OnFailure({
@@ -312,7 +453,9 @@ jws.SSOPlugIn = {
 
 		lXHR.send(lPostBody);
 	},
-	ssoAuthSession: function(aSession, aClientID, aClientSecret, aOptions) {
+	//
+	//
+	ssoAuthSession: function(aSessionId, aOptions) {
 
 		// set default options for OAuth call
 		aOptions = jws.getOptions(aOptions, {
@@ -320,32 +463,24 @@ jws.SSOPlugIn = {
 			OnSuccess: null,
 			OnFailure: null,
 			OnTimeout: null,
-			URL: jws.SSOPlugIn.BASE_URL
+			URL: jws.SSOPlugIn.OAUTH_HOST + jws.SSOPlugIn.OAUTH_AUTHSESSION_URL
 		});
+		this.ssoCheckStore();
 
 		// get browser's XHR object
 		var lXHR = jws.SSOPlugIn.mGetXHR();
 
-		// aSession = "Otsfjic0ksk9sdCkbO2OdEj7K4T2s5ExiKcuia8yxL8f1AHKoURsGAD4rOAWENdfv20Z39lBDq1ULlTnvFYqFEMFglPD+8V1nb9eTRg7gkZRnYJPopTfjFb1Ytvfc57HsRaH4eWxDu8AiVQkvoyiq0M1gcp3MsVCOddvhhZ5ZCRNvtrEymHBIPszvOmG6QX3Y9TMC7aZIZPR6yhMuSuSE4g/RFa/nuwxuNvlyBWRNBpAEmO9Id37W8B4zVBVf1TfcpvnF++CXKChiC8CX28FlgLVv60gr/TZqiMndvPznuB3G3FV24OMNLKxCzExo1vLdRT0R30xWU6D3QFURqrulW8GcC4mOX9MS0qpnuZt+ZDmJ4tKC1NqX9v2VjY45aXf/HeHs6dzg3+AQCRzaKAzkZtLgi2YwDbwq0KosubUO8mCYJMEuIDjQp+CEGA7NWuVJBnq2KxVZGD6ajoQ7E0SkwSH2AlxnXBlasjWypIE22o2RrS5mhsQ2AuID8QA4h/y5hYAZJg9knXIYWJ8Cpf0PnuMfDmuOJtUChK5Tlnheq284btO3VKGRD2yFY7DwsrAx8XuXJ/NgGBTkOCpr0GXgccEudlLkNhCNb+6i2EUBUa7+NTAEmyA85YEPjJ2YlmO1mf7uZxmL3LFbE2xG0UIjSSzp7LEA3R31/eTJUu0TwjfXRhYIeqQE/QjoJAheoLwCLsgn1savHTs9bh+AQUQlO0a8EJaIUzugwJDOS5/tNt/8xqwJSIbFZD59IRKc9ymI+H5AkIDknkp/JL1ePy24REzrn9/rOIe5kYOLu4epS29OoyqGWE0/53rCAwv4WBf9dITWy19Q3ARfl7857WxvLw/ZNwYMn0cgDl/f1jvfw2O+gaZhdc/b4Q624TM+yV/1zyY4Mk1MZ7Dusw3SzzVJ4Bc/KCCdoN/bOW9IBug5lzohjin12meML1ZvM1L3KPW";
-		aSession = encodeURIComponent(aSession);
-		
-		var lURL = aOptions.URL; // + "?grant_type=password" + "&SMSESSION=" + aSession;
+		aSessionId = encodeURIComponent(aSessionId);
+
+		var lURL = aOptions.URL;
 		lXHR.open("POST", lURL, jws.SSOPlugIn.XHR_ASYNCHRONOUS);
 
-		// aSession = "Otsfjic0ksk9sdCkbO2OdEj7K4T2s5ExiKcuia8yxL8f1AHKoURsGAD4rOAWENdfv20Z39lBDq1ULlTnvFYqFEMFglPD+8V1nb9eTRg7gkZRnYJPopTfjFb1Ytvfc57HsRaH4eWxDu8AiVQkvoyiq0M1gcp3MsVCOddvhhZ5ZCRNvtrEymHBIPszvOmG6QX3Y9TMC7aZIZPR6yhMuSuSE4g/RFa/nuwxuNvlyBWRNBpAEmO9Id37W8B4zVBVf1TfcpvnF++CXKChiC8CX28FlgLVv60gr/TZqiMndvPznuB3G3FV24OMNLKxCzExo1vLdRT0R30xWU6D3QFURqrulW8GcC4mOX9MS0qpnuZt+ZDmJ4tKC1NqX9v2VjY45aXf/HeHs6dzg3+AQCRzaKAzkZtLgi2YwDbwq0KosubUO8mCYJMEuIDjQp+CEGA7NWuVJBnq2KxVZGD6ajoQ7E0SkwSH2AlxnXBlasjWypIE22o2RrS5mhsQ2AuID8QA4h/y5hYAZJg9knXIYWJ8Cpf0PnuMfDmuOJtUChK5Tlnheq284btO3VKGRD2yFY7DwsrAx8XuXJ/NgGBTkOCpr0GXgccEudlLkNhCNb+6i2EUBUa7+NTAEmyA85YEPjJ2YlmO1mf7uZxmL3LFbE2xG0UIjSSzp7LEA3R31/eTJUu0TwjfXRhYIeqQE/QjoJAheoLwCLsgn1savHTs9bh+AQUQlO0a8EJaIUzugwJDOS5/tNt/8xqwJSIbFZD59IRKc9ymI+H5AkIDknkp/JL1ePy24REzrn9/rOIe5kYOLu4epS29OoyqGWE0/53rCAwv4WBf9dITWy19Q3ARfl7857WxvLw/ZNwYMn0cgDl/f1jvfw2O+gaZhdc/b4Q624TM+yV/1zyY4Mk1MZ7Dusw3SzzVJ4Bc/KCCdoN/bOW9IBug5lzohjin12meML1ZvM1L3KPW";
-		// aSession = "\"" +  + encodeURIComponent(aSession) + "\""; // .replace('%20','+').replace('%3D','=');
-		// aSession = encodeURIComponent(aSession); // .replace('%20','+').replace('%3D','=');
-
-		// for PI servers:
 		lXHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		// lXHR.setRequestHeader('Content-Length', aSession.length);
-		// for CA servers:
 		// lXHR.setRequestHeader("Content-Type", "application/xml");
 		// lXHR.setRequestHeader("Cache-Control", "no-cache");
-		lXHR.setRequestHeader("Authorization", "Basic " + Base64.encode(aClientID + ":" + aClientSecret));
-		// debugger;
-		// lXHR.setDisableHeaderCheck(true);
-		// lXHR.setRequestHeader("Cookie", "SMSESSION=" + aSession);
+		lXHR.setRequestHeader("Authorization",
+				"Basic " + Base64.encode(this.ssoGetAppId()
+						+ ":" + this.ssoGetAppSecret()));
 
 		// save instance of WebSocket client to
 		// save OAuth data (access and refresh tokens)
@@ -425,17 +560,9 @@ jws.SSOPlugIn = {
 		// set POST body according to OAuth settings 
 		// for direct authentication, also refer to 
 		// http://tools.ietf.org/html/rfc6750
-		// console.log("Session: " + aSession);
-		// console.log("base64: " + Base64.encode(aSession));
-		console.log("aSession: " + aSession);
-		
-		var lPostBody = // null;
-				"grant_type=password&" + 
-				// "smsession=" + aSession;
-				"SMSESSION=" + aSession;
-				// "smsession=" + "\"" + encodeURIComponent(aSession) + "\"";
-				// "smsession=" + Base64.encode(aSession);
-		// "client_id=ro_client"
+		var lPostBody =
+				"grant_type=password&" +
+				jws.SSOPlugIn.SSO_SESSION_COOKIE_NAME + "=" + aSessionId;
 
 		hTimeout = setTimeout(function( ) {
 			hTimeout = null;
@@ -450,6 +577,8 @@ jws.SSOPlugIn = {
 
 		lXHR.send(lPostBody);
 	},
+	//
+	//
 	ssoAuthDirect: function(aUsername, aPassword, aOptions) {
 
 		// set default options for OAuth call
@@ -564,6 +693,8 @@ jws.SSOPlugIn = {
 
 		lXHR.send(lPostBody);
 	},
+	//
+	//
 	ssoGetUser: function(aOptions) {
 
 		// set default options for OAuth call
@@ -572,7 +703,7 @@ jws.SSOPlugIn = {
 			OnSuccess: null,
 			OnFailure: null,
 			OnTimeout: null,
-			URL: jws.SSOPlugIn.BASE_URL
+			URL: jws.SSOPlugIn.OAUTH_HOST + jws.SSOPlugIn.OAUTH_GETUSER_URL
 		});
 
 		if (!(this.sso && this.sso.accessToken)) {
@@ -593,12 +724,8 @@ jws.SSOPlugIn = {
 		var lInstance = this;
 		var hTimeout = null;
 
-		// for PI server:
-		// lXHR.open("POST", jws.SSOPlugIn.BASE_URL, jws.SSOPlugIn.XHR_ASYNCHRONOUS);
-		// for CA server:
-		var lURL = aOptions.URL; // + "?access_token=" + encodeURIComponent(this.sso.accessToken);
+		var lURL = aOptions.URL;
 		lXHR.open("POST", lURL, jws.SSOPlugIn.XHR_ASYNCHRONOUS);
-		// lXHR.setRequestHeader("Content-Type", "application/json");
 		lXHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
 		lXHR.setRequestHeader("Cache-Control", "no-cache");
 
@@ -639,13 +766,13 @@ jws.SSOPlugIn = {
 							lInstance.sso.email = lJSON.email;
 							lInstance.sso.dn = lJSON.dn;
 							/*
-							// lInstance.sso.orgname = lJSON.OrgName;
-							lInstance.sso.expiration = lJSON.expires_in;
-							var lNow = new Date().getTime();
-							var lLater = new Date();
-							lLater.setTime(lNow + (lJSON.expires_in * 1000));
-							lInstance.sso.expires = lLater;
-							*/
+							 // lInstance.sso.orgname = lJSON.OrgName;
+							 lInstance.sso.expiration = lJSON.expires_in;
+							 var lNow = new Date().getTime();
+							 var lLater = new Date();
+							 lLater.setTime(lNow + (lJSON.expires_in * 1000));
+							 lInstance.sso.expires = lLater;
+							 */
 							aOptions.OnSuccess({
 								username: lInstance.sso.username,
 								fullname: lInstance.sso.fullname,
@@ -668,16 +795,8 @@ jws.SSOPlugIn = {
 
 		// set POST body according to OAuth settings 
 		// to obtain user name and organziation from access_token
-		// for PI server:
-		 var lPostBody =
-			"access_token=" + encodeURIComponent(this.sso.accessToken);
-		 // "client_id=rs_client"
-		 // + "&client_secret=" + jws.SSOPlugIn.CLIENT_SECRET
-		 // + "&grant_type=" + "urn:pingidentity.com:oauth2:grant_type:validate_bearer"
-		 // + "&token=" + this.sso.accessToken;
-		 
-		// for CA server:
-		// var lPostBody = null;
+		var lPostBody =
+				"access_token=" + encodeURIComponent(this.sso.accessToken);
 
 		hTimeout = setTimeout(function( ) {
 			hTimeout = null;
@@ -692,6 +811,8 @@ jws.SSOPlugIn = {
 
 		lXHR.send(lPostBody);
 	},
+	//
+	//
 	ssoRefreshAccessToken: function(aOptions) {
 
 		// set default options for OAuth call
@@ -700,10 +821,11 @@ jws.SSOPlugIn = {
 			OnSuccess: null,
 			OnFailure: null,
 			OnTimeout: null,
-			URL: jws.SSOPlugIn.BASE_URL
+			URL: jws.SSOPlugIn.OAUTH_HOST + jws.SSOPlugIn.OAUTH_REFRESHTOKEN_URL
 		});
 
-		if (!(this.sso && this.sso.refreshToken)) {
+		this.ssoCheckStore();
+		if (!(this.sso.refreshToken)) {
 			if (aOptions.OnFailure) {
 				aOptions.OnFailure({
 					code: -1,
@@ -718,15 +840,17 @@ jws.SSOPlugIn = {
 
 		// for PI server:
 		// lXHR.open("POST", aOptions.URL, jws.SSOPlugIn.XHR_ASYNCHRONOUS);
-		// lXHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
 		// for CA server
-		var lURL = aOptions.URL
-				+ "?grant_type=refresh_token"
-				+ "&refresh_token=" + encodeURIComponent(this.sso.refreshToken);
+		var lURL = aOptions.URL;
+		// + "?grant_type=refresh_token"
+		// + "&refresh_token=" + encodeURIComponent(this.sso.refreshToken);
 		lXHR.open("POST", lURL, jws.SSOPlugIn.XHR_ASYNCHRONOUS);
-		lXHR.setRequestHeader("Content-Type", "application/json");
+		lXHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
+		// lXHR.setRequestHeader("Content-Type", "application/xml");
 		lXHR.setRequestHeader("Cache-Control", "no-cache");
-		lXHR.setRequestHeader("Authorization", "Basic " + Base64.encode("nvidia:secret"));
+		lXHR.setRequestHeader("Authorization", "Basic "
+				+ Base64.encode(this.ssoGetAppId()
+						+ ":" + this.ssoGetAppSecret()));
 
 		// save instance of WebSocket client to
 		// obtain OAuth data (get refresh token and set new access token)
@@ -786,17 +910,9 @@ jws.SSOPlugIn = {
 			}
 		};
 
-		// set POST body according to OAuth settings 
-		// to obtain new access token based on saved refresh token
-		// for PI server
-		/*
-		 var lPostBody =
-		 "client_id=ro_client"
-		 + "&grant_type=" + "refresh_token"
-		 + "refresh_token=" + this.sso.refreshToken;
-		 */
-		// for CA server
-		var lPostBody = null;
+		var lPostBody =
+				"grant_type=refresh_token"
+				+ "&refresh_token=" + encodeURIComponent(this.sso.refreshToken);
 
 		hTimeout = setTimeout(function( ) {
 			hTimeout = null;
@@ -811,6 +927,8 @@ jws.SSOPlugIn = {
 
 		lXHR.send(lPostBody);
 	},
+	//
+	//
 	ssoGetAccessTokenExpiration: function(aOptions) {
 
 		// set default options for OAuth call
@@ -851,7 +969,9 @@ jws.SSOPlugIn = {
 			return;
 		}
 	},
-	ssoGetSMSessionCookie: function(aOptions) {
+	//
+	//
+	ssoInvalidateAccessToken: function(aOptions) {
 
 		// set default options for OAuth call
 		aOptions = jws.getOptions(aOptions, {
@@ -859,21 +979,18 @@ jws.SSOPlugIn = {
 			OnSuccess: null,
 			OnFailure: null,
 			OnTimeout: null,
-			URL: jws.SSOPlugIn.BASE_URL
+			URL: jws.SSOPlugIn.OAUTH_HOST + jws.SSOPlugIn.OAUTH_INVALIDATETOKEN_URL
 		});
 
 		// get browser's XHR object
 		var lXHR = jws.SSOPlugIn.mGetXHR();
 
-		var lURL = aOptions.URL;
+		var lURL = aOptions.URL + "?access_token=" + encodeURIComponent(this.sso.accessToken);
 		lXHR.open("GET", lURL, jws.SSOPlugIn.XHR_ASYNCHRONOUS);
-		// lXHR.setRequestHeader("Content-Type", "application/json");
-		// lXHR.setRequestHeader("Cache-Control", "no-cache");
-		// lXHR.setRequestHeader("Authorization", "Basic " + Base64.encode("nvidia:secret"));
-		lXHR.setRequestHeader("Authorization", "Basic " + Base64.encode("aschulze:Div#2014"));
+		lXHR.setRequestHeader("Cache-Control", "no-cache");
 
-		// save instance of WebSocket client to
-		// obtain OAuth data (get refresh token and set new access token)
+		// save instance of WebSocket client to obtain OAuth data 
+		// get refresh token and set new access token
 		var lInstance = this;
 		var hTimeout = null;
 
@@ -895,17 +1012,32 @@ jws.SSOPlugIn = {
 					}
 					if (lResponseText) {
 						if (aOptions.OnSuccess) {
-							aOptions.OnSuccess({
-								JSON: lJSON,
-								text: lResponseText
-							});
+							var lJSON;
+							try {
+								lJSON = JSON.parse(lResponseText);
+								aOptions.OnSuccess({
+									JSON: lJSON,
+									text: lResponseText
+								});
+							} catch (lEx) {
+								if (aOptions.OnFailure) {
+									aOptions.OnFailure({
+										code: -1,
+										msg: "JSON parse error"
+									});
+								}
+							}
 						}
 					}
 				} else {
 					if (aOptions.OnFailure) {
 						aOptions.OnFailure({
-							code: (lXHR.status !== 0 ? lXHR.status : -1),
-							msg: (lXHR.statusText !== "" ? lXHR.statusText : "failure")
+							code: (lXHR.status !== 0
+									? lXHR.status
+									: -1),
+							msg: (lXHR.statusText !== ""
+									? lXHR.statusText
+									: "failure")
 						});
 					}
 				}
@@ -927,7 +1059,8 @@ jws.SSOPlugIn = {
 
 		lXHR.send(lPostBody);
 	},
-	
+	//
+	//
 	setSSOCallbacks: function(aListeners) {
 		if (!aListeners) {
 			aListeners = {};
