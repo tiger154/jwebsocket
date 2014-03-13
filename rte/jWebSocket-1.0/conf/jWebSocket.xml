@@ -1847,6 +1847,7 @@
 			</server-assignments>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/QuotaPlugin/quota.xml</setting>
+                <setting key="authentication_method">spring</setting>
 			</settings>
 		</plugin>
 		

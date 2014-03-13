@@ -135,10 +135,10 @@
 	</bean>
 	<!-- End definitions for QuotaInterval -->
         
-	<!-- QuotaInterval Diskspace definition -->
+	<!-- Quota Diskspace definition -->
         
 	<bean id="quotaDiskSpace" class="org.jwebsocket.plugins.quota.definitions.QuotaDiskSpace">
-		<property name="storage" ref="quotaMongoStorage" />
+		<property name="storage" ref="quotaItemStorage" />
 		<property name="quotaType">
 			<value>DiskSpace</value>
 		</property>
@@ -161,9 +161,9 @@
 			<map>
 				<!--The key must be the same value of their quota identifier -->
 				<entry key="CountDown" value-ref="quotaCountDown" />
+                                <entry key="DiskSpace" value-ref="quotaDiskSpace" />
 				<!--entry key="CountDownReduce5" value-ref="quotaCountDownReduce5" />
-				<entry key="IntervalDaily" value-ref="quotaIntervalDaily" />
-				<entry key="DiskSpace" value-ref="quotaDiskSpace" /-->
+				<entry key="IntervalDaily" value-ref="quotaIntervalDaily" /-->
 			</map>
 		</constructor-arg>
 		<constructor-arg>
