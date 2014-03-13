@@ -6,11 +6,11 @@ package org.jwebsocket.plugins.quota.definitions;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
-//TODO: ask rolando to use JWebSocketServerConstants
-//import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import static org.jwebsocket.plugins.quota.definitions.BaseQuota.mLog;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaDiskSpaceSI;
+import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaAlreadyExist;
 
 /**
  *
@@ -18,26 +18,23 @@ import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaDiskSpaceSI;
  */
 public class QuotaDiskSpace extends BaseQuota {
 
-	/**
-	 *
-	 */
-	public static final String JWS_HOME = "/home/svn/ijwssvn/rte/jWebSocket-1.0/";
-	/**
-	 * Private directory.
-	 */
-	public static final String PRIVATE_DIR_DEF = JWS_HOME + "/filesystem/private/";
-	/**
-	 * Public directory.
-	 */
-	public static final String PUBLIC_DIR_DEF = JWS_HOME + "/filesystem/public/";
-	/**
-	 * Value for the private names_space
-	 */
-	public static final String PRIVATE_NAMESPACE = "private";
-	/**
-	 * Value for the public names_space
-	 */
-	public static final String PUBLIC_NAMESPACE = "public";
+    public static final String JWS_HOME = JWebSocketServerConstants.JWEBSOCKET_HOME;
+    /**
+     * Private directory.
+     */
+    public static final String PRIVATE_DIR_DEF = JWS_HOME + "/filesystem/private/";
+    /**
+     * Public directory.
+     */
+    public static final String PUBLIC_DIR_DEF = JWS_HOME + "/filesystem/public/";
+    /**
+     * Value for the private names_space
+     */
+    public static final String PRIVATE_NAMESPACE = "private";
+    /**
+     * Value for the public names_space
+     */
+    public static final String PUBLIC_NAMESPACE = "public";
 
 	@Override
 	public long reduceQuota(String aInstance, String aNameSpace,
@@ -120,13 +117,17 @@ public class QuotaDiskSpace extends BaseQuota {
 					+ "namespace for a quotaDiskSpace");
 		}
 
-		super.create(aInstance, aNameSpace, aUuid, aAmount, aInstanceType, aQuotaType,
-				aQuotaIdentifier, aActions);
+        if (mQuotaStorage.quotaExist(aNameSpace, aQuotaIdentifier, aInstance, aActions)) {
 
-		IQuotaSingleInstance lSingleQuota;
-		lSingleQuota = new QuotaDiskSpaceSI(aAmount, aInstance, aUuid, aNameSpace, aQuotaType,
-				aQuotaIdentifier, aInstanceType, aActions);
-		mQuotaStorage.save(lSingleQuota);
+            throw new ExceptionQuotaAlreadyExist(mQuotaStorage.
+                    getUuid(aQuotaIdentifier, aNameSpace, aInstance,
+                    aInstanceType, aActions));
+        }
+
+        IQuotaSingleInstance lSingleQuota;
+        lSingleQuota = new QuotaDiskSpaceSI(aAmount, aInstance, aUuid, aNameSpace, aQuotaType,
+                aQuotaIdentifier, aInstanceType, aActions);
+        mQuotaStorage.save(lSingleQuota);
 
 	}
 }
