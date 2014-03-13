@@ -61,7 +61,6 @@
 		<module>jWebSocketProxy</module>
 		<module>jWebSocketEngines</module>
 		<module>jWebSocketAppSrvDemo</module>
-		<module>jWebSocketSSO</module>
 	</modules>
 	
 	<properties>

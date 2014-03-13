@@ -35,14 +35,50 @@
 
 		<script type="text/javascript" language="JavaScript">
 
-			function handleExtProcessMsg(aToken) {
+			var eUsername, ePassword;								// the elements for username and password
+
+			var APP_URL = "https://<host>.<tld>/sso/index.html";
+			var OAUTH_DEFAULT_TIMEOUT = 5000;						// the default timeout for request against the OAuth server
+			var OAUTH_APP_ID = "<id>";								// the application id
+			var OAUTH_APP_SECRET = "<secret>";
+																	// the application secret
+			var OAUTH_HOST = "https://<host>.<tld>";				// the OAuth host 
+			var OAUTH_AUTHSESSION_URL = "/auth/oauth/v2/token";		// the URL to authenticate a user by session id
+			var OAUTH_GETUSER_URL = "/use-token";					// the URL to obtain the user data by access token
+			var OAUTH_REFRESHTOKEN_URL = "/auth/oauth/v2/token";	// the URL to obtain a new access token by refresh token
+			var OAUTH_GETSESSION_URL = "/get-smsession";			// the URL to obtain a session id by user credentials
+			var OAUTH_INVALIDATETOKEN_URL = "/delete-token";		// the URL to invalidate an access token
+
+			var SSO_COOKIE_PAGE = "https://<host>.<tld>/getcookie/index.html";
+																	// URL to a SSO enabled web page, which provides the session cookie (session id)
+			var SSO_SESSION_COOKIE = "SMSESSION";					// the name of the SSO server's session cookie
+
+			// obtaining a session id from user credentials
+			function getSSOSession() {
+				log("Getting session Id from credentials...");
+				// pass username and password to obtain SSO session cookie
+				lWSC.ssoGetSSOSession(eUsername.value, ePassword.value, {
+					// timeout: 5000, // timeout in milliseconds, if required different from default
+					OnSuccess: function(aToken) {
+						log("Success: " + JSON.stringify(aToken));
+					},
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken));
+					},
+					OnTimeout: function(aToken) {
+						log("Timeout: " + JSON.stringify(aToken));
+					},
+					// use this app specific URL
+					URL: OAUTH_HOST + OAUTH_GETSESSION_URL
+				});
 			}
 
+			// authenticating explicitly against the OAuth server using credentials
 			function authDirect() {
-				log("Calling direct auth...");
+				log("Calling explicit OAuth authentication using credentials...");
 				// authenticate against OAuth/SSO server directly
 				lWSC.ssoAuthDirect(eUsername.value, ePassword.value, {
-					timeout: 20000, // timeout in milliseconds
+					// timeout: 5000, // timeout in milliseconds, if required different from default
 					OnSuccess: function(aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
@@ -55,18 +91,14 @@
 				});
 			}
 
+			// authenticating implicitly against the OAuth server using session id
 			function authSession() {
-				
-				log("Calling authentication via SSO Session-ID...");
-				log("document.cookie: " + document.cookie);
+				log("Calling implicit OAuth authentication using session id...");
+				// log("document.cookie: " + document.cookie);
 
-				if (!lWSC.sso) {
-					lWSC.sso = {};
-				}
-
-				// authenticate against OAuth/SSO server directly
-				lWSC.ssoAuthSession(lWSC.sso.smsession, "nvidia", "secret", {
-					timeout: 20000, // timeout in milliseconds
+				// authenticate against OAuth server using SSO session id
+				lWSC.ssoAuthSession(lWSC.ssoGetSessionId(), {
+					// timeout: 5000, // timeout in milliseconds, if required different from default
 					OnSuccess: function(aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
@@ -76,17 +108,16 @@
 					OnTimeout: function(aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					},
-					// URL: "https://hqdvmbl701:8443/auth/oauth/v2/token"
-					URL: "https://aschulze-dt.nvidia.com/auth/oauth/v2/token"
-					// URL: "https://aschulze-dt/get-smsession"
+					URL: OAUTH_HOST + OAUTH_AUTHSESSION_URL
 				});
 			}
 
+			// obtaining user from existing access token
 			function getUser() {
 				// validate an access token and get the user name
-				log("Calling get user...");
+				log("Calling 'getUser' using access token...");
 				lWSC.ssoGetUser({
-					timeout: 20000, // timeout in milliseconds
+					// timeout: 5000, // timeout in milliseconds, if required different from default
 					OnSuccess: function(aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
@@ -96,15 +127,37 @@
 					OnTimeout: function(aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					},
-					URL: "https://aschulze-dt.nvidia.com/use-token"
+					URL: OAUTH_HOST + OAUTH_GETUSER_URL
 				});
 			}
 
+			// invalidating existing access token
+			// after this operation the access token cannot be used anymore
+			function invalidateToken() {
+				// refreshing an access token after its expiration
+				log("Refreshing access token...");
+				lWSC.ssoInvalidateAccessToken({
+					// timeout: 5000, // timeout in milliseconds, if required different from default
+					OnSuccess: function(aToken) {
+						log("Success: " + JSON.stringify(aToken));
+					},
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken));
+					},
+					OnTimeout: function(aToken) {
+						log("Timeout: " + JSON.stringify(aToken));
+					},
+					URL: OAUTH_HOST + OAUTH_INVALIDATETOKEN_URL
+				});
+			}
+
+			// refreshing access token
+			// if not refesh token exists (yet), a re-authentication is required
 			function refreshAccessToken() {
 				// refreshing an access token after its expiration
 				log("Refreshing access token...");
 				lWSC.ssoRefreshAccessToken({
-					timeout: 20000, // timeout in milliseconds
+					// timeout: 5000, // timeout in milliseconds, if required different from default
 					OnSuccess: function(aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
@@ -114,11 +167,12 @@
 					OnTimeout: function(aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					},
-					URL: "https://aschulze-dt.nvidia.com/auth/oauth/v2/token"
-							// URL: "https://aschulze-dt/refresh-token/"
+					URL: OAUTH_HOST + OAUTH_REFRESHTOKEN_URL
 				});
 			}
 
+			// loads the OAuth data from the local OAuth store 
+			// (here an application specific cookie in JSON format)
 			function loadOAuthData() {
 				log("Loading OAuth data...");
 				lWSC.ssoLoadOAuthData({
@@ -131,6 +185,8 @@
 				});
 			}
 
+			// saves the OAuth data to the local OAuth store 
+			// (here an application specific cookie in JSON format)
 			function saveOAuthData() {
 				log("Saving OAuth data...");
 				lWSC.ssoSaveOAuthData({
@@ -143,45 +199,18 @@
 				});
 			}
 
-			function getSSOSession() {
-				log("Getting Session Cookie");
-				lWSC.ssoGetSSOSession({
-					OnSuccess: function(aToken) {
-						log("Value: " + JSON.stringify(aToken));
-					},
-					OnFailure: function(aToken) {
-						log("Value: " + JSON.stringify(aToken));
-					},
-					URL: "https://aschulze-dt.nvidia.com/get-smsession"
-				});
-			}
-
-			function getSMSessionCookie() {
-				log("Getting all document cookies (including potential SSO cookies from Web server agent)...");
-				lWSC.ssoGetSMSessionCookie({
-					OnSuccess: function(aToken) {
-						log("Cookie: " + JSON.stringify(aToken));
-					},
-					OnFailure: function(aToken) {
-						log("Failure: " + JSON.stringify(aToken));
-					},
-					URL: "https://aschulze-dt.nvdia.com/getcookie/getcookie.txt"
-				});
-			}
-
+			// sending a message with access token authentication to a JMS target
+			// at the JMS target the user name will be obtained from the access token
 			function sendJMSRequest() {
-				log("Sending JMS request...");
+				log("Sending JMS request with access token...");
 				lWSC.forwardJSON(
-						// "hqdvptas134", 
-						// "com.ptc.windchill",
-						// "createBOM", 
-						"server-aschulze-dt", // target
+						"JMSService", // target
 						"org.jwebsocket.svcep.demo", //	aNS, 
 						"sso1", //	aType, 
-						{
-							accessToken: lWSC.ssoGetAccessToken()
+						{accessToken: lWSC.ssoGetAccessToken()
 						}, //	aArgs, 
-				"{}", //	aJSON payload, 
+				//	aJSON payload, 
+				"{}",
 						{
 							OnSuccess: function(aToken) {
 								log("Success: " + JSON.stringify(aToken));
@@ -193,52 +222,51 @@
 			}
 
 			function receiveMessage(aEvent) {
-				// Do we trust the sender of this message?  (might be
-				// different from what we originally opened, for example).
-				log("Event: data=" + aEvent.data + ", origin=" + aEvent.origin);
-/*
-				if (aEvent.origin !== "http://localhost") {
-					return;
-				}	
-*/				
-				var lJSON = JSON.parse( aEvent.data );
-				log("JSON: " + JSON.stringify( lJSON ) );
+				// Do we trust the sender of this message?
+				// Might be different from what we originally opened.
+				// Here we can check for that.
+				/*
+				 if (aEvent.origin !== "http://localhost") {
+				 return;
+				 }	
+				 */
 
-				log("Loading cookie from Iframe: " + lJSON.cookie + "...");
-				// debugger;
+				// we get a JSON message from the embedded iframe
+				// which includes the session id
+				var lJSON = JSON.parse(aEvent.data);
+				log("Parsing cookie received from iframe: " + lJSON.cookie + "...");
+
 				lWSC.ssoLoadOAuthData({
-					// pass external cookie
+					// pass 'external' cookie from the iframe 
+					// instead of reading it from the document
 					cookie: lJSON.cookie,
 					OnSuccess: function(aToken) {
-						log("Success: " + JSON.stringify(aToken) + ", " + lWSC.sso.smsession);
+						log("Success: " + JSON.stringify(aToken));
 					},
 					OnFailure: function(aToken) {
-						log("Failure: " + JSON.stringify(aToken) + ", " + lWSC.sso.smsession);
-						// debugger;
-						// document.cookie = "SMSESSION=\"" + lWSC.sso.smsession + "\"";
+						log("Failure: " + JSON.stringify(aToken));
 					}
 				});
 			}
 
 			function initPage() {
-				eArgs = jws.$("stxfArgs");
+				eUsername = jws.$("stxfUsername");
+				ePassword = jws.$("spwfPassword");
 
+				// turn on logging in debug mode
 				jws.console.setActive(true);
 				jws.console.setLevel(jws.console.DEBUG);
-				// lWSC.ssoSetHost( "https://hqdvpngpoc01.nvidia.com/as/token.oauth2" );
-				// lWSC.ssoSetDefaultTimeout(100);
-				lWSC.ssoSetHost("https://aschulze-dt/as/token.oauth2");
-				// lWSC.ssoSetHost( "https://alsius.dev.nvidia.com/as/token.oauth2" );
-				lWSC.ssoSetSecret("2Federate");
-				lWSC.ssoSetAppURL("https://hqdvalsap01.nvidia.com/sso/index.html");
 
-//				lWSC.setExtProcessCallbacks({
-//					OnExtProcessMsg: handleExtProcessMsg
-//				});
+				lWSC.ssoSetDefaultTimeout(OAUTH_DEFAULT_TIMEOUT);
+				lWSC.ssoSetOAuthHost(OAUTH_HOST);
+				lWSC.ssoSetOAuthAppId(OAUTH_APP_ID);
+				lWSC.ssoSetOAuthAppSecret(OAUTH_APP_SECRET);
+				lWSC.ssoSetSessionCookieName(SSO_SESSION_COOKIE);
+				lWSC.ssoSetAppURL(APP_URL);
 
-				log("Adding event handler...");
+				// Adding event handler to obtain message from embedded iframe
 				window.addEventListener("message", receiveMessage, false);
-				
+
 				// var o = document.getElementsByTagName('iframe')[0];
 				// o.contentWindow.postMessage( "Trigger from host to iframe", "*");				
 			}
@@ -254,6 +282,16 @@
 		onload="initPage();"
 		onunload="exitPage();"
 		>
+		<!-- to obtain the SSO session id via the cookie, here we need to 
+			refer to a page which is accessible from an SSO enable host. -->
+		<iframe id="ifrSSO" style="display:none; width:99%; height:100px">
+		</iframe>
+		<!-- In case you require a proxy setting in the local web server
+			In Apache for instance you can use:
+			ProxyPass  /getcookie  https://[<subhost>.]<ssohost>.<tld>/getcookie
+		<iframe src="https://[<subhost>.]<ssohost>.<tld>/getcookie/index.html#https://[<subhost>.]<yourhost>.<tld>" style="display:block; width:99%; height:100px">
+		</iframe>
+		-->
 		<script type="text/javascript">
 			jws.DemoPlugIn.buildDemoPage({
 				title: "External Process",
@@ -261,35 +299,24 @@
 				description: "This test shows how to access SSO environments via jWebSocket."
 			});
 			processInitPage();
+			// load the SSO cookie page into the iframe
+			// the SSO cookie page triggers a message with the cookie to this page
+			var eSSOIframe = document.getElementById("ifrSSO");
+			if (eSSOIframe) {
+				eSSOIframe.src = SSO_COOKIE_PAGE + "#" + document.location.origin;
+			}
 		</script>
-
-		<!-- id="ifrConnector" style="position:absolute; left:10px; top:10px; width:150px; height:80px; background-color: #fefefe" -->
-		<!-- <iframe src="https://localhost/jwcDev/demos/sso/sso_connector.htm" > -->
-		<!-- <iframe src="https://localhost/getcookie/index.html" > -->
-		<!-- <iframe src="https://alsius.dev.nvidia.com/getcookie/index.html" > -->
-		<!-- <iframe src="https://aschulze-dt.nvidia.com/jwcDev/demos/sso/sso_xhostlink.htm" > -->
-		<!-- <iframe src="https://alsius.dev.nvidia.com/getcookie/index.html" > -->
-		<!-- <iframe src="https:/aschulze-dt/getcookie/index.html" > -->
-
-		<iframe src="https://aschulze-dt.nvidia.com/getcookie/index.html"  width="99%" height="150" >
-		</iframe>
-		
-		<!-- <iframe src="https://aschulze-dt.nvidia.com/jwcDev/demos/sso/sso_test.htm" > -->
-		<!--
-		<iframe src="https://aschulze-dt/jwcDev/demos/sso/sso_test.htm" >
-		</iframe>
-  -->
 
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 				<tr class="strDlg">
 					<td colspan="2" width="">
-						<input class="sbtnDlg" id="sbtnGetSSOSession" type="button" value="SSO Cookie" onclick="getSSOSession();"
-							   title="Tries to obtain the session cookie.">
+						<input class="sbtnDlg" id="sbtnGetSSOSession" type="button" value="Get Cookie" onclick="getSSOSession();"
+							   title="Tries to obtain a session cookie from user credentials.">
 						<input class="sbtnDlg" id="sbtnAuthSession" type="button" value="Auth Session" onclick="authSession();"
-							   title="Authenticates by using the session id.">
+							   title="Authenticates by using the session cookie (implicit authentication using NTLM, IWA or Kerberos).">
 						<input class="sbtnDlg" id="sbtnAuthDirect" type="button" value="Auth directly" onclick="authDirect();"
-							   title="Authenticates directly by typing user credentials.">
+							   title="Authenticates directly agaionst OAuth by passing user credentials.">
 						<input class="sbtnDlg" id="sbtnGetUser" type="button" value="Get User" onclick="getUser();"
 							   title="Gets the users from the access token, if exists already.">
 						<input class="sbtnDlg" id="sbtnRefreshAccessToken" type="button" value="Refresh" onclick="refreshAccessToken();"
@@ -298,12 +325,10 @@
 							   title="Saves the relevant OAuth data in a cookie.">
 						<input class="sbtnDlg" id="sbtnLoadOAuthData" type="button" value="Load Cookie" onclick="loadOAuthData();"
 							   title="Loads the relevant OAuth data from a cookie.">
-						<input class="sbtnDlg" id="sbtnGetSMSessionCookie" type="button" value="Cookies" onclick="getSMSessionCookie();"
-							   title="Tries to obtain the SiteMinder session cookie.">
-						<!--
+						<input class="sbtnDlg" id="sbtnInvalidateToken" type="button" value="Invalidate" onclick="invalidateToken();"
+							   title="Invalidates the access token.">
 						<input class="sbtnDlg" id="sbtnSendRequest" type="button" value="JMS Request" onclick="sendJMSRequest();"
 							   title="Send a request using the access token to the JMS demo server.">
-						-->
 					</td>
 				</tr>
 			</table>
