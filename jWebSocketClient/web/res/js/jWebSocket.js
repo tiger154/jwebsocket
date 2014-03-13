@@ -3917,47 +3917,17 @@ jws.SystemClientPlugIn = {
 	//:a:en::aUsername:String:The login name of the user.
 	//:a:en::aPassword:String:The password of the user.
 	//:a:en::aOptions:Object:Optional arguments for the sendToken operation
-	//:a:en:aOptions:pool:String:Default pool the user want to register at (default [tt]null[/tt], no pool).
-	//:a:en:aOptions:autoConnect:Boolean:not yet supported (defautl [tt]true[/tt]).
 	//:r:*:::void:none
 	login: function( aUsername, aPassword, aOptions ) {
-		var lPool = null;
-		var lEncoding = null;
-		if( aOptions ) {
-			if( aOptions.pool !== undefined ) {
-				lPool = aOptions.pool;
-			}
-			if( aOptions.encoding !== undefined ) {
-				lEncoding = aOptions.encoding;
-				// check if password has to be converted into a MD5 sum
-				if( lEncoding === jws.SystemClientPlugIn.PW_ENCODE_MD5 ) {
-					if( aPassword ) {
-						aPassword = jws.tools.calcMD5( aPassword );
-					}
-					lEncoding = "md5";
-				// check if password is already md5 encoded
-				} else if( lEncoding === jws.SystemClientPlugIn.PW_MD5_ENCODED ) {
-					lEncoding = "md5";
-				} else {
-					// TODO: raise error here due to invalid encoding option
-					lEncoding = null;
-				}
-			}
-		}
-		var lRes = this.createDefaultResult();
-		if( this.isOpened() ) {
-			this.sendToken({
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			var lToken = {
 				ns: jws.SystemClientPlugIn.NS,
 				type: "login",
 				username: aUsername,
-				password: aPassword,
-				encoding: lEncoding,
-				pool: lPool
-			}, aOptions);
-		} else {
-			lRes.code = -1;
-			lRes.localeKey = "jws.jsc.res.notConnected";
-			lRes.msg = "Not connected.";
+				password: aPassword
+			};
+			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
 	},
@@ -4014,41 +3984,24 @@ jws.SystemClientPlugIn = {
 	// TODO: implement optional auto disconnect!
 	//:a:en::::none
 	//:r:*:::void:none
-	logout: function() {
+	logout: function( aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			this.sendToken({
+			var lToken = {
 				ns: jws.SystemClientPlugIn.NS,
 				type: "logout"
-			});
+			};
+			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
 	},
 	
 	systemLogon: function( aUsername, aPassword, aOptions ) {
-		var lRes = this.checkConnected();
-		if( 0 === lRes.code ) {
-			var lToken = {
-				ns: jws.SystemClientPlugIn.NS,
-				type: "logon",
-				username: aUsername,
-				password: aPassword
-			};
-			this.sendToken( lToken,	aOptions );
-		}
-		return lRes;
+		return this.login( aUsername, aPassword, aOptions );
 	},
 
 	systemLogoff: function( aOptions ) {
-		var lRes = this.checkConnected();
-		if( 0 === lRes.code ) {
-			var lToken = {
-				ns: jws.SystemClientPlugIn.NS,
-				type: "logoff"
-			};
-			this.sendToken( lToken,	aOptions );
-		}
-		return lRes;
+		return this.logout( aOptions );
 	},
 
 	systemGetAuthorities: function( aOptions ) {

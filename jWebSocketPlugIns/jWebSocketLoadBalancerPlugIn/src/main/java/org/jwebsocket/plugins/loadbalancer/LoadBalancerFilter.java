@@ -36,59 +36,59 @@ import org.springframework.util.Assert;
  */
 public class LoadBalancerFilter extends TokenFilter {
 
-        private static final Logger mLog = Logging.getLogger();
-        /**
-         * Load balancer plug-in id.
-         */
-        private final String mLoadBalancerPlugInId;
-        /**
-         * Load balancer plug-in instance.
-         */
-        private LoadBalancerPlugIn mLoadBalancerPlugIn;
+	private static final Logger mLog = Logging.getLogger();
+	/**
+	 * Load balancer plug-in id.
+	 */
+	private final String mLoadBalancerPlugInId;
+	/**
+	 * Load balancer plug-in instance.
+	 */
+	private LoadBalancerPlugIn mLoadBalancerPlugIn;
 
-        /**
-         *
-         * @param aConfiguration
-         */
-        public LoadBalancerFilter(FilterConfiguration aConfiguration) {
-                super(aConfiguration);
-                mLoadBalancerPlugInId = getFilterConfiguration().getSettings().get("loadbalancer_plugin");
-                Assert.notNull(mLoadBalancerPlugInId, "Missing LoadBalancerFilter 'loadbalancer_plugin' "
-                        + "setting!");
-        }
+	/**
+	 *
+	 * @param aConfiguration
+	 */
+	public LoadBalancerFilter(FilterConfiguration aConfiguration) {
+		super(aConfiguration);
+		mLoadBalancerPlugInId = getFilterConfiguration().getSettings().get("loadbalancer_plugin");
+		Assert.notNull(mLoadBalancerPlugInId, "Missing LoadBalancerFilter 'loadbalancer_plugin' "
+				+ "setting!");
+	}
 
-        /**
-         * Allow that the incoming tokens with name space equals to cluster name
-         * space can be processed by load balancer plugIn.
-         *
-         * @param aResponse
-         * @param aConnector
-         * @param aToken
-         */
-        @Override
-        public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-                if (mLoadBalancerPlugIn.supportsNamespace(aToken.getNS())) {
-                        // redirect token
-                        if (null != aToken.getInteger("utid", null)) {
-                                if (mLog.isDebugEnabled()) {
-                                        mLog.debug("Redirecting incoming token to the load balancer plug-in...");
-                                }
-                                mLoadBalancerPlugIn.sendToService(aConnector, aToken);
+	/**
+	 * Allow that the incoming tokens with name space equals to cluster name
+	 * space can be processed by load balancer plugIn.
+	 *
+	 * @param aResponse
+	 * @param aConnector
+	 * @param aToken
+	 */
+	@Override
+	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+		if (mLoadBalancerPlugIn.supportsNamespace(aToken.getNS())) {
+			// redirect token
+			if (null != aToken.getInteger("utid", null)) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Redirecting incoming token to the load balancer plug-in...");
+				}
+				mLoadBalancerPlugIn.sendToService(aConnector, aToken);
 
-                                // stops token propagation
-                                aResponse.rejectMessage();
-                        }
-                }
-        }
+				// stops token propagation
+				aResponse.rejectMessage();
+			}
+		}
+	}
 
-        @Override
-        public void systemStarted() throws Exception {
-                mLoadBalancerPlugIn = (LoadBalancerPlugIn) getServer().getPlugInById(mLoadBalancerPlugInId);
-                Assert.notNull(mLoadBalancerPlugIn, "Unable to start the LoadBalancerFilter because "
-                        + "the LoadBalancer plug-in '" + mLoadBalancerPlugInId + "' was not found!");
+	@Override
+	public void systemStarted() throws Exception {
+		mLoadBalancerPlugIn = (LoadBalancerPlugIn) getServer().getPlugInById(mLoadBalancerPlugInId);
+		Assert.notNull(mLoadBalancerPlugIn, "Unable to start the LoadBalancerFilter because "
+				+ "the LoadBalancer plug-in '" + mLoadBalancerPlugInId + "' was not found!");
 
-                if (mLog.isDebugEnabled()) {
-                        mLog.debug("Filter started successfully!");
-                }
-        }
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Filter started successfully!");
+		}
+	}
 }
