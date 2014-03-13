@@ -12,7 +12,7 @@
 
 	<!-- the JMSEngine ActiveMQ connection factory	-->
 	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="failover:(tcp://192.168.56.2:61616,tcp://192.168.56.3:61616,tcp://192.168.56.4:61616)" />
+		<property name="brokerURL" value="failover:(tcp://192.168.56.1:61616)" />
 		<property name="useAsyncSend" value="true" />
 		<property name="userName">
 			<value>jws_cloud1</value>
@@ -23,16 +23,18 @@
 	</bean>
 
 	<!-- the MongoDB server connection instance -->
-	<bean id="mongodbConnection0" class="com.mongodb.MongoClient" destroy-method="close">
+	<bean id="mongodbConnection" class="com.mongodb.MongoClient" destroy-method="close">
 		<constructor-arg value="192.168.56.1"/>
 	</bean>
 
 	<!-- the MongoDB database instance to store the load balancer data -->
 	<bean id="jws_lb_db" class="org.jwebsocket.storage.mongodb.MongoDBUtils" factory-method="getDB">
-		<constructor-arg ref="mongodbConnection0"/>
+		<constructor-arg ref="mongodbConnection"/>
 		<constructor-arg ref="destination"/>
-		<!--<constructor-arg value="user"/>
-		<constructor-arg value="pass"/>-->
+		<!-- database user/password for authentication if required
+		<constructor-arg value="user"/>
+		<constructor-arg value="pass"/>
+		-->
 	</bean>
 
 	<!-- the cluster 'connectorsManager' instance for client connections management -->
@@ -52,7 +54,7 @@
 			</bean>
 		</property>
 		<property name="nodeDescription" ref="nodeDescription"></property>
-		<!-- the cluster 'synchronizer' instance for cluster workers synchronization -->
+		<!-- the cluster 'synchronizer' instance for nodes processes synchronization -->
 		<property name="synchronizer">
 			<bean class="org.jwebsocket.jms.mongodb.MongoDBClusterSynchronizer" init-method="initialize">
 				<property name="collection">
@@ -62,6 +64,7 @@
 				</property>
 			</bean>
 		</property>
+		<!-- utility temporary storage to access consumers information -->
 		<property name="consumerAdviceTempStorage">
 			<bean class="org.jwebsocket.jms.mongodb.MongoDBConsumerAdviceTempStorage" init-method="initialize">
 				<property name="collection">
@@ -71,6 +74,5 @@
 				</property>
 			</bean>
 		</property>
-		
 	</bean>
 </beans>
