@@ -925,11 +925,11 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Return TRUE if the JWebSocket cluster is active, FALSE otherwise
+	 * Return TRUE if the jWebSocket cluster is active, FALSE otherwise
 	 *
 	 * @return
 	 */
-	public boolean isClusterActive() {
-		return mPlugIn.getServer() instanceof JMSServer;
+	public boolean isClusterEnabled() {
+		return mPlugIn.isClusterEnabled();
 	}
 }

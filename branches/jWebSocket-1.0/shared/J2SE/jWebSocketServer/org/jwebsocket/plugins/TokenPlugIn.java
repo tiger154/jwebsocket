@@ -29,7 +29,9 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.jms.JMSServer;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.CloseReason;
@@ -458,6 +460,30 @@ public class TokenPlugIn extends BasePlugIn {
 
 		return lPlugIn.invoke(aConnector, aToken);
 	}
+	
+	public void notifySessionStarted() throws Exception {
+		
+	}
+	
+	public void notifySessionStopped() throws Exception {
+		
+	}
+	
+	public void notifyConnectorStarted() throws Exception {
+		
+	}
+	
+	public void notifyConnectorStopped() throws Exception {
+		
+	}
+	
+	public void notifyLogon() throws Exception {
+		
+	}
+	
+	public void notifyLogoff() throws Exception {
+		
+	}
 
 	/**
 	 * Send a message through the server JMSManager instance that notifies that
@@ -470,14 +496,14 @@ public class TokenPlugIn extends BasePlugIn {
 	 */
 	public void notifyProcessed(String aUsername, Token aInToken, Integer aCode) throws Exception {
 		// getting the message hub
-		JMSManager lMessageHub;
-		lMessageHub = getServer().getJMSManager();
+		JMSManager lMessageHub = getServer().getJMSManager();
 
 		// creating the message to be sent
 		MapMessage lMsg = lMessageHub.buildMessage(JWebSocketServerConstants.NS_BASE + ".plugins", "tokenProcessed");
 		lMsg.setStringProperty("tokenNS", aInToken.getNS());
 		lMsg.setStringProperty("tokenType", aInToken.getType());
 		lMsg.setStringProperty("username", aUsername);
+		lMsg.setStringProperty("nodeId", JWebSocketConfig.getConfig().getNodeId());
 		lMsg.setIntProperty("code", aCode);
 
 		// sending the message
@@ -500,5 +526,14 @@ public class TokenPlugIn extends BasePlugIn {
 //				}
 //			}
 //		}, "ns = 'org.jwebsocket.plugins' AND msgType='tokenProcessed'");
+	}
+
+	/**
+	 * Return TRUE if the jWebSocket cluster is enabled, FALSE otherwise
+	 *
+	 * @return
+	 */
+	public boolean isClusterEnabled() {
+		return getServer() instanceof JMSServer;
 	}
 }

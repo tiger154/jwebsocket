@@ -54,8 +54,6 @@ import org.springframework.util.Assert;
 public class TokenServer extends BaseServer {
 
 	private static final Logger mLog = Logging.getLogger(TokenServer.class);
-	// specify name space for token server
-	private static final String NS_TOKENSERVER = JWebSocketServerConstants.NS_BASE + ".tokenserver";
 	// specify shared connector variables
 	/**
 	 *
@@ -215,7 +213,7 @@ public class TokenServer extends BaseServer {
 		String lFormat = aConnector.getHeader().getFormat();
 		return TokenFactory.tokenToPacket(lFormat, aToken);
 	}
-	
+
 	public void broadcastToSharedSession(String aSenderId, String aSessionId, Token aToken, boolean aSenderIncluded) {
 		// getting shared session connectors
 		Collection<WebSocketConnector> lConnectors = getSharedSessionConnectors(aSessionId).values();

@@ -16,7 +16,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.plugins.jms;
+package org.jwebsocket.amq;
 
 import com.mongodb.Mongo;
 import java.util.List;
@@ -32,7 +32,7 @@ public class AMQClusterPlugIn implements BrokerPlugin {
 	private List<String> mTargetDestinations;
 	private Mongo mMongo;
 	private String mUsername, mPassword;
-
+	
 	/**
 	 *
 	 * @param broker

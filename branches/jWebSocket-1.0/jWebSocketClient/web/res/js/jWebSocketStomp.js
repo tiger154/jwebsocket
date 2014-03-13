@@ -76,12 +76,12 @@
 			try {
 				// supporting message delivery acknowledge on a LB scenario
 				var lMessage = JSON.parse(aData);
-				if ( typeof( lMessage ) === "object" && lMessage[ "jwsWrappedMsg" ] ) {
-					if ( "info" === lMessage.type && "ack" === lMessage.name ) {
-						self.stomp.send( self.destination, {
+				if (typeof (lMessage) === "object" && lMessage[ "jwsWrappedMsg" ]) {
+					if ("info" === lMessage.type && "ack" === lMessage.name) {
+						self.stomp.send(self.destination, {
 							msgType: "ACK",
 							msgId: jws.tools.createUUID(),
-							nodeId: lMessage.data.split( "-" )[ 0 ],
+							nodeId: lMessage.data.split("-")[ 0 ],
 							data: aData,
 							replySelector: mReplySelector
 						});
@@ -89,7 +89,7 @@
 					}
 				}
 			} catch (lError) {
-			// ommit it, not JSON format
+				// ommit it, not JSON format
 			}
 
 			self.stomp.send(self.destination, {
@@ -113,8 +113,8 @@
 		var handleEvent = function(aEvent) {
 			var lEvent;
 			if (aEvent.type === "close"
-				|| aEvent.type === "open"
-				|| aEvent.type === "error") {
+					|| aEvent.type === "open"
+					|| aEvent.type === "error") {
 				lEvent = createSimpleEvent(aEvent.type);
 			} else if (aEvent.type === "message") {
 				lEvent = createMessageEvent("message", aEvent.data);
@@ -140,18 +140,17 @@
 		};
 
 		var createMessageEvent = function(aType, aData) {
-			if (document.createEvent && window.MessageEvent && !window.opera) {
-				var lEvent = document.createEvent("MessageEvent");
-				lEvent.initMessageEvent("message", false, false, aData, null, null, window, null);
-				return lEvent;
-			} else {
-				return {
-					type: aType,
-					data: aData,
-					bubbles: false,
-					cancelable: false
-				};
-			}
+			return {
+				type: aType,
+				data: aData,
+				bubbles: false,
+				cancelable: false
+			};
+//			if (document.createEvent && window.MessageEvent && !window.opera) {
+//				var lEvent = document.createEvent("MessageEvent");
+//				lEvent.initMessageEvent("message", false, false, aData, null, null, window, null);
+//				return lEvent;
+//			}
 		};
 
 		STOMPWebSocket.prototype.open = function() {
@@ -167,62 +166,62 @@
 			},
 			function() {
 				self.stomp.subscribe(
-					// the target connection destination
-					self.destination,
-					// callback
-					function(aMessage) {
-						if ("DISCONNECTION" === aMessage.headers["msgType"]) {
-							self.readyState = self.readyStateValues.CLOSING;
-							self.stomp.disconnect(function() {
-								self.readyState = self.readyStateValues.CLOSED;
-								handleEvent({
-									type: "close",
-									data: aMessage.data
-								});
-							});
-						} else {
+						// the target connection destination
+						self.destination,
+						// callback
+								function(aMessage) {
+									if ("DISCONNECTION" === aMessage.headers["msgType"]) {
+										self.readyState = self.readyStateValues.CLOSING;
+										self.stomp.disconnect(function() {
+											self.readyState = self.readyStateValues.CLOSED;
+											handleEvent({
+												type: "close",
+												data: aMessage.data
+											});
+										});
+									} else {
+										handleEvent({
+											type: "message",
+											data: aMessage.body
+										});
+									}
+								}, {
+							selector: "replySelector='" + mReplySelector + "' OR isBroadcast=true"
+						});
+
+						self.stomp.send(self.destination, {
+							msgType: "CONNECTION",
+							replySelector: mReplySelector,
+							msgId: jws.tools.createUUID()
+						});
+
+						self.readyState = self.readyStateValues.OPEN;
+						// notify 'open' if not from reconnection
+						if (0 === mReconnectionAttempts) {
 							handleEvent({
-								type: "message",
-								data: aMessage.body
+								type: "open"
 							});
 						}
-					}, {
-						selector: "replySelector='" + mReplySelector + "' OR isBroadcast=true"
+						mReconnectionAttempts = 0;
+					},
+					function() {
+						if (self.readyState === self.readyStateValues.OPEN) {
+							self.readyState = self.readyStateValues.CONNECTING;
+							// perform reconnection
+							if (mReconnectionAttempts < 5) {
+								mReconnectionAttempts++;
+								setTimeout(function() {
+									self.open();
+								}, mReconnectionAttempts * 100);
+
+								return;
+							}
+						}
+						self.readyState = self.readyStateValues.CLOSED;
+						handleEvent({
+							type: "close"
+						});
 					});
-
-				self.stomp.send(self.destination, {
-					msgType: "CONNECTION",
-					replySelector: mReplySelector,
-					msgId: jws.tools.createUUID()
-				});
-
-				self.readyState = self.readyStateValues.OPEN;
-				// notify 'open' if not from reconnection
-				if (0 === mReconnectionAttempts) {
-					handleEvent({
-						type: "open"
-					});
-				}
-				mReconnectionAttempts = 0;
-			},
-			function() {
-				if (self.readyState === self.readyStateValues.OPEN) {
-					self.readyState = self.readyStateValues.CONNECTING;
-					// perform reconnection
-					if (mReconnectionAttempts < 5) {
-						mReconnectionAttempts++;
-						setTimeout(function() {
-							self.open();
-						}, mReconnectionAttempts * 100);
-
-						return;
-					}
-				}
-				self.readyState = self.readyStateValues.CLOSED;
-				handleEvent({
-					type: "close"
-				});
-			});
 		};
 		this.open();
 	};
