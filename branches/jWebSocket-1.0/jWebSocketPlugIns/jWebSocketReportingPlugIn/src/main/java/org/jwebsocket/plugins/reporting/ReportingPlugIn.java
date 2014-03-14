@@ -186,7 +186,6 @@ public class ReportingPlugIn extends ActionPlugIn {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequirePlugIns(ids = {"jws.filesystem", "jws.jdbc"})
 	public Token generateReport(WebSocketConnector aConnector, Token aToken) throws Exception {
 		// getting the report name
 		String lReportName = aToken.getString("reportName");
@@ -227,6 +226,7 @@ public class ReportingPlugIn extends ActionPlugIn {
 	 * @throws Exception
 	 */
 	@Role(name = NS_REPORTING + ".generateReport")
+	@RequirePlugIns(ids = {"jws.filesystem", "jws.jdbc"})
 	public void generateReportAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		Token lResponse = generateReport(aConnector, aToken);
 
