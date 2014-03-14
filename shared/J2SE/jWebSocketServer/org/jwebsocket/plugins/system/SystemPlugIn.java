@@ -20,6 +20,7 @@ package org.jwebsocket.plugins.system;
 
 import java.util.*;
 import java.util.Map.Entry;
+import javax.jms.MapMessage;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.collections.CollectionUtils;
@@ -57,6 +58,7 @@ import org.jwebsocket.session.SessionManager;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.JMSManager;
 import org.jwebsocket.util.MessagingControl;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
@@ -400,16 +402,19 @@ public class SystemPlugIn extends TokenPlugIn {
 		// sending the welcome token
 		sendWelcome(aConnector);
 
-		// if new connector is active broadcast this event to then network
-		if (false == aConnector instanceof InternalConnector) {
-			broadcastConnectEvent(aConnector);
-		}
-
 		// notify session started
 		WebSocketSession lSession = aConnector.getSession();
 		if (null != lSession.getStorage() && null == lSession.getCreatedAt()) {
 			lSession.setCreatedAt();
 			startSession(aConnector, aConnector.getSession());
+
+			// notifying event through the MessageHub
+			notifySessionStarted(aConnector);
+		}
+
+		// if new connector is active broadcast this event to then network
+		if (false == aConnector instanceof InternalConnector) {
+			broadcastConnectEvent(aConnector);
 		}
 	}
 
@@ -480,6 +485,9 @@ public class SystemPlugIn extends TokenPlugIn {
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
 		}
+
+		// notifying event through the MessageHub
+		notifyConnectorStarted(aConnector);
 	}
 
 	/**
@@ -512,6 +520,9 @@ public class SystemPlugIn extends TokenPlugIn {
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
 		}
+
+		// notifying event through the MessageHub
+		notifyConnectorStopped(aConnector);
 	}
 
 	private void sendWelcome(WebSocketConnector aConnector) {
@@ -604,6 +615,9 @@ public class SystemPlugIn extends TokenPlugIn {
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
 		}
+
+		// notifying event through the MessageHub
+		notifyLogon(aConnector);
 	}
 
 	/**
@@ -643,6 +657,9 @@ public class SystemPlugIn extends TokenPlugIn {
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
 		}
+
+		// notifying event through the MessageHub
+		notifyLogoff(aConnector);
 	}
 
 	/**
@@ -1482,5 +1499,110 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// sending entries to the client
 		getServer().sendToken(aConnector, lResponse);
+	}
+
+	void notifySessionStarted(WebSocketConnector aConnector) {
+		try {
+			// getting the message hub
+			JMSManager lMessageHub = getServer().getJMSManager();
+
+			// creating the event message to be sent
+			MapMessage lMsg = lMessageHub.buildMessage(getNamespace(), "sessionStarted");
+			lMsg.setStringProperty("connectorId", aConnector.getId());
+
+			// sending event
+			lMessageHub.send(lMsg);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying 'sessionStarted' "
+					+ "event through the MessageHub"), lEx);
+		}
+	}
+
+	void notifySessionStopped(WebSocketSession aSession) {
+		try {
+			// getting the message hub
+			JMSManager lMessageHub = getServer().getJMSManager();
+
+			// creating the event message to be sent
+			MapMessage lMsg = lMessageHub.buildMessage(getNamespace(), "sessionStopped");
+			lMsg.setStringProperty("username", aSession.getUsername());
+			lMsg.setStringProperty("uuid", aSession.getUUID());
+			lMsg.setBooleanProperty("authenticated", aSession.isAuthenticated());
+			lMsg.setStringProperty("authorities", (String) aSession.getStorage().get(SystemPlugIn.AUTHORITIES));
+
+			// sending event
+			lMessageHub.send(lMsg);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying 'sessionStopped' "
+					+ "event through the MessageHub"), lEx);
+		}
+	}
+
+	void notifyConnectorStarted(WebSocketConnector aConnector) {
+		try {
+			// getting the message hub
+			JMSManager lMessageHub = getServer().getJMSManager();
+
+			// creating the event message to be sent
+			MapMessage lMsg = lMessageHub.buildMessage(getNamespace(), "connectorStarted");
+			lMsg.setStringProperty("connectorId", aConnector.getId());
+
+			// sending event
+			lMessageHub.send(lMsg);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying 'connectorStarted' "
+					+ "event through the MessageHub"), lEx);
+		}
+	}
+
+	void notifyConnectorStopped(WebSocketConnector aConnector) {
+		try {
+			// getting the message hub
+			JMSManager lMessageHub = getServer().getJMSManager();
+
+			// creating the event message to be sent
+			MapMessage lMsg = lMessageHub.buildMessage(getNamespace(), "connectorStopped");
+			lMsg.setStringProperty("connectorId", aConnector.getId());
+
+			// sending event
+			lMessageHub.send(lMsg);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying 'connectorStopped' "
+					+ "event through the MessageHub"), lEx);
+		}
+	}
+
+	void notifyLogon(WebSocketConnector aConnector) {
+		try {
+			// getting the message hub
+			JMSManager lMessageHub = getServer().getJMSManager();
+
+			// creating the event message to be sent
+			MapMessage lMsg = lMessageHub.buildMessage(getNamespace(), "logon");
+			lMsg.setStringProperty("connectorId", aConnector.getId());
+
+			// sending event
+			lMessageHub.send(lMsg);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying 'logon' "
+					+ "event through the MessageHub"), lEx);
+		}
+	}
+
+	void notifyLogoff(WebSocketConnector aConnector) {
+		try {
+			// getting the message hub
+			JMSManager lMessageHub = getServer().getJMSManager();
+
+			// creating the event message to be sent
+			MapMessage lMsg = lMessageHub.buildMessage(getNamespace(), "logoff");
+			lMsg.setStringProperty("connectorId", aConnector.getId());
+
+			// sending event
+			lMessageHub.send(lMsg);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying 'logoff' "
+					+ "event through the MessageHub"), lEx);
+		}
 	}
 }
