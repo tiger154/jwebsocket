@@ -31,6 +31,7 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.jms.Attributes;
 import org.jwebsocket.jms.JMSServer;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.ChangeType;
@@ -38,6 +39,7 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.plugins.system.SecurityHelper;
+import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
@@ -460,30 +462,6 @@ public class TokenPlugIn extends BasePlugIn {
 		aToken.setNS(lPlugIn.getNamespace());
 
 		return lPlugIn.invoke(aConnector, aToken);
-	}
-	
-	public void notifySessionStarted(WebSocketSession aSession) throws Exception {
-		
-	}
-	
-	public void notifySessionStopped(WebSocketSession aSession) throws Exception {
-		
-	}
-	
-	public void notifyConnectorStarted(WebSocketConnector aConnector) throws Exception {
-		
-	}
-	
-	public void notifyConnectorStopped(WebSocketConnector aConnector) throws Exception {
-		
-	}
-	
-	public void notifyLogon(WebSocketConnector aConnector) throws Exception {
-		
-	}
-	
-	public void notifyLogoff(WebSocketConnector aConnector) throws Exception {
-		
 	}
 
 	/**

@@ -42,6 +42,7 @@ jws.tests.Benchmarks = {
 	title: "Benchmark plug-in",
 	description: "jWebSocket Benchmark plug-in.",
 	category: "Server Benchmarks",
+	enabled: false,
 	
 	MAX_CONNECTIONS: 50,
 	
