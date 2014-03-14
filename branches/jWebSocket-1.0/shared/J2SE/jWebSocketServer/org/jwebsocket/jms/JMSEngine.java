@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.engines.BaseEngine;
@@ -145,7 +146,10 @@ public class JMSEngine extends BaseEngine {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "removing connector data from database"));
 		}
 
-		super.connectorStopped(aConnector, aCloseReason);
+		// notify servers that a connector has stopped
+		for (final WebSocketServer lServer : getServers().values()) {
+			lServer.connectorStopped(aConnector, aCloseReason);
+		}
 	}
 
 	@Override

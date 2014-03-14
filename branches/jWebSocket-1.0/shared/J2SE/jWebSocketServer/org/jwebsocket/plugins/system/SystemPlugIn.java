@@ -67,8 +67,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Implements the jWebSocket system core features like login, logout, send, broadcast
- * etc...
+ * Implements the jWebSocket system core features like login, logout, send,
+ * broadcast etc...
  *
  * @author Alexander Schulze
  * @author kybernees
@@ -1123,9 +1123,9 @@ public class SystemPlugIn extends TokenPlugIn {
 					&& ANONYMOUS_USER.equals(lUsername));
 		}
 		// broadcasting response to all sharing session connectors
-		getServer().broadcastToSharedSession(aConnector.getId(), 
-				aConnector.getSession().getSessionId(), 
-				lResponse, 
+		getServer().broadcastToSharedSession(aConnector.getId(),
+				aConnector.getSession().getSessionId(),
+				lResponse,
 				true);
 
 		// broadcast the logout event

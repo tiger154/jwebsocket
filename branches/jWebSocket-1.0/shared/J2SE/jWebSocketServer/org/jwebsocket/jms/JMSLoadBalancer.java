@@ -100,8 +100,10 @@ public class JMSLoadBalancer implements IInitializable {
 				try {
 					String lMsgId = aMessage.getStringProperty(Attributes.MESSAGE_ID);
 					String lReplySelector = aMessage.getStringProperty(Attributes.REPLY_SELECTOR);
+					String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
 
-					if (null == lMsgId || null == lReplySelector || !mNodesManager.getSynchronizer().getWorkerTurn(lMsgId)) {
+					if (null == lMsgId || null == lReplySelector
+							|| !mNodesManager.getSynchronizer().getWorkerTurn(lMsgId)) {
 						// LB not turn to work
 						return;
 					}
@@ -132,14 +134,15 @@ public class JMSLoadBalancer implements IInitializable {
 							if (mLog.isDebugEnabled()) {
 								mLog.info("Processing message(CONNECTION) from client...");
 							}
-							// payload
 							Message lRequest = mClientsSession.createMessage();
-							// type
+							// the message type
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							// setting the worker node selected by the LB
 							lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
 							// reply selector value
 							lRequest.setStringProperty(Attributes.REPLY_SELECTOR, lReplySelector);
+							// sessionId value
+							lRequest.setStringProperty(Attributes.SESSION_ID, lSessionId);
 
 							// getting the consumer info data
 							Map<String, String> lConsumerData = mNodesManager.getConsumerAdviceTempStorage().getData(lReplySelector);

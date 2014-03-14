@@ -65,6 +65,23 @@ public class JWebSocketJMSClient extends BaseClient {
 	private MessageConsumer mConsumer;
 	private MessageProducer mProducer;
 	private String mReplySelector = UUID.randomUUID().toString();
+	private String mSessionId;
+
+	/**
+	 *
+	 * @param aClusterName
+	 * @param aSessionId 
+	 * @param aUsername 
+	 * @param aPassword 
+	 */
+	public JWebSocketJMSClient(String aClusterName, String aSessionId, String aUsername, String aPassword) {
+		Assert.notNull(aClusterName, "The 'cluster name' argument cannot be null!'");
+
+		mUsername = aUsername;
+		mPassword = aPassword;
+		mClusterName = aClusterName;
+		mSessionId = aSessionId;
+	}
 
 	/**
 	 *
@@ -73,11 +90,7 @@ public class JWebSocketJMSClient extends BaseClient {
 	 * @param aPassword
 	 */
 	public JWebSocketJMSClient(String aClusterName, String aUsername, String aPassword) {
-		Assert.notNull(aClusterName, "The 'cluster name' argument cannot be null!'");
-
-		this.mUsername = aUsername;
-		this.mPassword = aPassword;
-		this.mClusterName = aClusterName;
+		this(aClusterName, UUID.randomUUID().toString(), aUsername, aPassword);
 	}
 
 	/**
@@ -149,6 +162,7 @@ public class JWebSocketJMSClient extends BaseClient {
 			// sending CONNECTION message
 			Message lMessage = createMessage(MessageType.CONNECTION, null);
 			lMessage.setStringProperty(Attributes.REPLY_SELECTOR, mReplySelector);
+			lMessage.setStringProperty(Attributes.SESSION_ID, mSessionId);
 			mProducer.send(lMessage);
 
 			// notifying logic "opening" listeners notification

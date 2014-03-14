@@ -48,7 +48,8 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
-	public JMSConnector add(String aConnectionId, String aConsumerId, String aReplySelector) throws Exception {
+	public JMSConnector add(String aConnectionId, String aConsumerId, String aReplySelector,
+			String aSessionId) throws Exception {
 		Assert.notNull(aConnectionId);
 		Assert.notNull(aReplySelector);
 
@@ -57,7 +58,8 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 					.append(Attributes.CONNECTION_ID, aConnectionId)
 					.append(Attributes.CONSUMER_ID, aConsumerId)
 					.append(Attributes.REPLY_SELECTOR, aReplySelector)
-					.append(Attributes.STATUS, ConnectorStatus.UP));
+					.append(Attributes.STATUS, ConnectorStatus.UP)
+					.append(Attributes.SESSION_ID, aSessionId));
 		}
 
 		return get(aConnectionId);
@@ -78,10 +80,11 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 				(String) aRecord.get(Attributes.CONNECTION_ID),
 				(String) aRecord.get(Attributes.CONSUMER_ID));
 
-		// setting the session storage
+		// setting the session identifier
+		String lSessionId = (String) aRecord.get(Attributes.SESSION_ID);
+		lConnector.getSession().setSessionId(lSessionId);
 		IBasicStorage<String, Object> lSessionStorage = getSessionManager().getStorageProvider()
-				.getStorage(lReplySelector);
-		lConnector.getSession().setSessionId(lReplySelector);
+				.getStorage(lSessionId);
 		lConnector.getSession().setStorage(lSessionStorage);
 		// using the session storage as connector custom vars container
 		lConnector.setCustomVarsContainer(lSessionStorage);

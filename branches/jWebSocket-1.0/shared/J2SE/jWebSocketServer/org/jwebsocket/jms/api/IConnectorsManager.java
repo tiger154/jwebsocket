@@ -37,10 +37,12 @@ public interface IConnectorsManager extends IInitializable {
 	 * @param aConnectionId The JMS client connecton id.
 	 * @param aConsumerId The JMS client consumer id.
 	 * @param aReplySelector The client unique 'reply' selector value.
+	 * @param aSessionId  The client session identifier.
 	 * @return
 	 * @throws Exception
 	 */
-	JMSConnector add(String aConnectionId, String aConsumerId, String aReplySelector) throws Exception;
+	JMSConnector add(String aConnectionId, String aConsumerId, String aReplySelector,
+			String aSessionId) throws Exception;
 
 	/**
 	 * Returns TRUE if a given replySelector is associated to an existing
