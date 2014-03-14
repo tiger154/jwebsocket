@@ -29,6 +29,12 @@
 		var mReconnectionAttempts = 0;
 		var lQuery = jws.tools.parseQuery(aUrl);
 
+		var mSessionId = lQuery["sessionId"];
+		if (!mSessionId) {
+			mSessionId = cookie.get("JWSSESSIONID", jws.tools.createUUID());
+			cookie.set("JWSSESSIONID", mSessionId);
+		}
+
 		self.url = aUrl.split("?")[0];
 		self.destination = "/topic/" + lQuery["cluster"];
 		self.subPrcol = aSubprotocol;
@@ -146,11 +152,6 @@
 				bubbles: false,
 				cancelable: false
 			};
-//			if (document.createEvent && window.MessageEvent && !window.opera) {
-//				var lEvent = document.createEvent("MessageEvent");
-//				lEvent.initMessageEvent("message", false, false, aData, null, null, window, null);
-//				return lEvent;
-//			}
 		};
 
 		STOMPWebSocket.prototype.open = function() {
@@ -192,7 +193,8 @@
 						self.stomp.send(self.destination, {
 							msgType: "CONNECTION",
 							replySelector: mReplySelector,
-							msgId: jws.tools.createUUID()
+							msgId: jws.tools.createUUID(),
+							sessionId: mSessionId
 						});
 
 						self.readyState = self.readyStateValues.OPEN;

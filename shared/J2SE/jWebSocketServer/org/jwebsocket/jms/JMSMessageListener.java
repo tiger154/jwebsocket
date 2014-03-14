@@ -65,7 +65,8 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 						lConnManager.add(
 								aMessage.getStringProperty(Attributes.CONNECTION_ID),
 								aMessage.getStringProperty(Attributes.CONSUMER_ID),
-								aMessage.getStringProperty(Attributes.REPLY_SELECTOR));
+								aMessage.getStringProperty(Attributes.REPLY_SELECTOR),
+								aMessage.getStringProperty(Attributes.SESSION_ID));
 
 						// getting the connector instance
 						JMSConnector lConnector = lConnManager.get(lReplySelector);

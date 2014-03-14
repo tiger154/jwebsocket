@@ -36,6 +36,7 @@ import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.plugins.system.SecurityHelper;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
@@ -461,27 +462,27 @@ public class TokenPlugIn extends BasePlugIn {
 		return lPlugIn.invoke(aConnector, aToken);
 	}
 	
-	public void notifySessionStarted() throws Exception {
+	public void notifySessionStarted(WebSocketSession aSession) throws Exception {
 		
 	}
 	
-	public void notifySessionStopped() throws Exception {
+	public void notifySessionStopped(WebSocketSession aSession) throws Exception {
 		
 	}
 	
-	public void notifyConnectorStarted() throws Exception {
+	public void notifyConnectorStarted(WebSocketConnector aConnector) throws Exception {
 		
 	}
 	
-	public void notifyConnectorStopped() throws Exception {
+	public void notifyConnectorStopped(WebSocketConnector aConnector) throws Exception {
 		
 	}
 	
-	public void notifyLogon() throws Exception {
+	public void notifyLogon(WebSocketConnector aConnector) throws Exception {
 		
 	}
 	
-	public void notifyLogoff() throws Exception {
+	public void notifyLogoff(WebSocketConnector aConnector) throws Exception {
 		
 	}
 
