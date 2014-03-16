@@ -228,12 +228,17 @@ public class Cluster {
                 ClusterEndPoint lTempClusterEndPoint = getRoundRobinEndPoint();
                 Object lJwsType = lTempClusterEndPoint.getConnector().getVar("jwsType");
 
-                // if 'ClusterEndPoint' is java script client executes round robin algorithm,
-                // but executes least CPU usage algorithm (with CPU usage).
-                if (lJwsType.toString().equals("javascript")) {
+                if (null == lJwsType) {
                         return lTempClusterEndPoint;
                 } else {
-                        return getOptimumEndPoint();
+
+                        // if 'ClusterEndPoint' is java script client executes round robin algorithm,
+                        // but executes least CPU usage algorithm (with CPU usage).
+                        if (lJwsType.toString().equals("javascript")) {
+                                return lTempClusterEndPoint;
+                        } else {
+                                return getOptimumEndPoint();
+                        }
                 }
         }
 
