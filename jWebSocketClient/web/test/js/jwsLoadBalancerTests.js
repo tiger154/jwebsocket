@@ -23,135 +23,159 @@ jws.tests.LoadBalancer = {
 	title: "Load balancer plug-in",
 	description: "jWebSocket load balancer plug-in for balance and manage the load in the jWebSocket server",
 	category: "Community Edition",
-	SUM_NS: 'org.jwebsocket.plugins.samplesum',
-	MULT_NS: 'org.jwebsocket.plugins.samplemult',
-	testRegisterServiceEndPoint: function(aPassword, aClusterAlias, aCheckValue, aDescription) {
-		var lSpec = "Register service endpoint (" + aPassword + ", " + aClusterAlias + "), " + aDescription;
-
+	
+	// this spec tests the clusters information feature	
+	testClustersInfo: function() {
+		var lSpec = "Clusters Information ()";
+		
 		it(lSpec, function() {
 			var lResponse = {};
-
-			var lServiceEndPoint = new jws.jWebSocketJSONClient();
-			lServiceEndPoint.open("ws://localhost:8787/jWebSocket/jWebSocket", {
-				OnWelcome: function() {
-					lServiceEndPoint.lbRegisterServiceEndPoint(aPassword, {
-						clusterAlias: aClusterAlias,
-						OnResponse: function(aToken) {
-							lResponse = aToken;
-						}
-					});
-
-					lServiceEndPoint.addPlugIn({
-						processToken: function(aToken) {
-							if (aToken.ns == jws.tests.LoadBalancer.SUM_NS) {
-								if ('sumXY' == aToken.type) {
-
-									var lResponseSum = lServiceEndPoint.lbCreateResponse(aToken);
-									lResponseSum.data = parseFloat(aToken.x) + parseFloat(aToken.y);
-									lServiceEndPoint.sendToken(lResponseSum);
+			
+			// perform the clusters information feature on the server
+			jws.Tests.getAdminTestConn().lbClustersInfo({
+				OnResponse: function(aToken) {
+					lResponse = aToken;
+				}
+			});
+			
+			// wait for result, consider reasonable timeout
+			waitsFor(
+					function() {
+						return(lResponse.code == 0);
+					},
+					lSpec,
+					2000
+					);
+					
+			// check the result 
+			runs(function() {
+				expect(lResponse.code).toEqual(0);
+			});
+		});
+	},
+	
+	// this spec tests the register endpoints feature
+	testRegisterServiceEndPoint: function() {
+		var lSpec = "Register service endpoint with valid and invalid arguments ( password, clusterAlias)";
+	
+		it(lSpec, function(){
+			var lResponse = {};
+			
+			// perform the clusters information feature on the server
+			jws.Tests.getAdminTestConn().lbClustersInfo({
+				OnResponse: function(aToken) {
+					var lClusterInfoValues = aToken.data;
+					
+					// check if the response contains data
+					if(lClusterInfoValues.length != 0){
+						lResponse = {
+							code: 0,
+							msg: 'ok'
+						};
+					
+						for(var lPos=0; lPos < lClusterInfoValues.length; lPos++){
+						
+							// perform the create sample service on the server
+							// with valid credential and valid arguments	
+							jws.Tests.getAdminTestConn().lbSampleService("admin", {
+								clusterAlias: lClusterInfoValues[lPos].clusterAlias,
+								nameSpace: lClusterInfoValues[lPos].clusterNS,
+								OnResponse: function(aToken) {
+									if(aToken.code == -1){
+										lResponse = {
+											code: -1,
+											msg: 'failure'
+										};
+										return;
+									}
 								}
-							} else if (aToken.ns == jws.tests.LoadBalancer.MULT_NS) {
-								if ('multXY' == aToken.type) {
-
-									var lResponseMul = lServiceEndPoint.lbCreateResponse(aToken);
-									lResponseMul.data = parseFloat(aToken.x) * parseFloat(aToken.y);
-									lServiceEndPoint.sendToken(lResponseMul);
+							});		
+						}
+					
+						// perform the create five sample service on the server
+						// with valid credential and valid arguments
+						jws.Tests.getAdminTestConn().lbSampleService("admin", {
+							clusterAlias: lClusterInfoValues[0].clusterAlias,
+							nameSpace: lClusterInfoValues[0].clusterNS,
+							OnResponse: function(aToken) {
+								if(aToken.code == -1){
+									lResponse = {
+										code: -1,
+										msg: 'failure'
+									};
+									return;
 								}
 							}
-						}
-					});
+						});		
+					
+						// perform the create five sample service on the server
+						// with invalid credential and valid arguments
+						jws.Tests.getAdminTestConn().lbSampleService("noAdmin", {
+							clusterAlias: lClusterInfoValues[0].clusterAlias,
+							nameSpace: lClusterInfoValues[0].clusterNS,
+							OnResponse: function(aToken) {
+								if(aToken.code == 0){
+									lResponse = {
+										code: -1,
+										msg: 'failure'
+									};
+									return;
+								}
+							}
+						});		
+					
+						// perform the create five sample service on the server
+						// with valid credential and invalid arguments
+						jws.Tests.getAdminTestConn().lbSampleService("admin", {
+							clusterAlias: 'serviceWrong',
+							nameSpace: lClusterInfoValues[0].clusterNS,
+							OnResponse: function(aToken) {
+								if(aToken.code == 0){
+									lResponse = {
+										code: -1,
+										msg: 'failure'
+									};
+									return;
+								}
+							}
+						});
+					}
 				}
 			});
-
+			
+			// wait for result, consider reasonable timeout
 			waitsFor(
 					function() {
-						return(lResponse.code == aCheckValue);
-					},
-					lSpec,
-					3000
-					);
-
-			runs(function() {
-				expect(lResponse.code).toEqual(aCheckValue);
-			});
-		});
-	},
-	testServices1: function( ) {
-		var lSpec = "Testing service1, sum two numbers ( 3 , 7 )";
-
-		it(lSpec, function() {
-			var lResponse = {};
-
-			jws.Tests.getAdminTestConn().sendToken({
-				ns: jws.tests.LoadBalancer.SUM_NS,
-				type: 'sumXY',
-				x: 3,
-				y: 7
-			}, {
-				OnResponse: function(aToken) {
-					lResponse = aToken;
-				}
-			}
-			);
-
-			waitsFor(
-					function() {
-						return(lResponse.type == "response");
-					},
-					lSpec,
-					5000
-					);
-
-			runs(function() {
-				expect(lResponse.data).toEqual(10);
-			});
-		});
-	},
-	testServices2: function( ) {
-		var lSpec = "Testing service2, multiply two numbers ( 4 , 5 )";
-
-		it(lSpec, function() {
-			var lResponse = {};
-
-			jws.Tests.getAdminTestConn().sendToken({
-				ns: jws.tests.LoadBalancer.MULT_NS,
-				type: 'multXY',
-				x: 4,
-				y: 5
-			}, {
-				OnResponse: function(aToken) {
-					lResponse = aToken;
-				}
-			}
-			);
-
-			waitsFor(
-					function() {
-						return(lResponse.type == "response");
+						return(lResponse.code == 0);
 					},
 					lSpec,
 					5000
 					);
-
+					
+			// check the result
 			runs(function() {
-				expect(lResponse.data).toEqual(20);
+				expect(lResponse.code).toEqual(0);
+				expect(lResponse.msg).toEqual('ok');
 			});
 		});
 	},
+	
+	// this spec tests the change algorithm feature
 	testChangeAlgorithm: function(aValue, aDescription) {
 		var lSpec = "Change Algorithm ( " + aValue + " ), " + aDescription;
 
 		it(lSpec, function() {
 			var lResponse = {};
 
+			// perform the change algorithm  on the server
 			jws.Tests.getAdminTestConn().lbChangeAlgorithm({
 				algorithm: aValue,
 				OnResponse: function(aToken) {
 					lResponse = aToken;
 				}
-			}
-			);
-
+			});
+			
+			// wait for result, consider reasonable timeout
 			waitsFor(
 					function() {
 						if (aValue > 0 && aValue < 4) {
@@ -163,279 +187,209 @@ jws.tests.LoadBalancer = {
 					lSpec,
 					2000
 					);
-
+					
+			// check the result
 			runs(function() {
 				if (aValue > 0 && aValue < 4) {
-					expect(lResponse.currentAlgorithm).toEqual(aValue);
+					expect(lResponse.code).toEqual(0);
 				} else {
-					expect(lResponse.code == -1);
+					expect(lResponse.code).toEqual(-1);
 				}
 			});
 		});
 	},
-	testClustersInfo: function() {
-		var lSpec = "Clusters Information ()";
-
-		it(lSpec, function() {
-			var lResponse = {};
-
-			jws.Tests.getAdminTestConn().lbClustersInfo({
-				OnResponse: function(aToken) {
-					lResponse = aToken;
-				}
-			}
-			);
-
-			waitsFor(
-					function() {
-						return(lResponse.code == 0);
-					},
-					lSpec,
-					3000
-					);
-
-			runs(function() {
-				expect(lResponse.code).toEqual(0);
-			});
-
-		});
-	},
+	
+	// this spec tests the sticky routes feature
 	testStickyRoutes: function( ) {
 		var lSpec = "Sticky routes ()";
 
 		it(lSpec, function() {
 			var lResponse = {};
 
+			// perform the sticky routes feature on the server
 			jws.Tests.getAdminTestConn().lbStickyRoutes({
 				OnResponse: function(aToken) {
 					lResponse = aToken;
 				}
-			}
-			);
-
+			});
+			
+			// wait for result, consider reasonable timeout
 			waitsFor(
 					function() {
 						return(lResponse.code == 0);
+					},
+					lSpec,
+					2000
+					);
+					
+			// check the result
+			runs(function() {
+				expect(lResponse.code).toEqual(0);
+			});
+		});
+	},
+	
+	// this spec tests the test services feature
+	testServices: function( ) {
+		var lSpec = "Testing services()";
+
+		it(lSpec, function() {
+			var lResponse = {};
+			
+			// perform the clusters information feature on the server
+			jws.Tests.getAdminTestConn().lbClustersInfo({
+				OnResponse: function(aToken) {
+					var lClusterInfoValues = aToken.data;
+					
+					// check if the response contains data
+					if(lClusterInfoValues.length != 0){
+						lResponse = {
+							code: 0,
+							msg: 'ok'
+						};
+					
+						for(var lPos=0; lPos < lClusterInfoValues.length; lPos++){
+							jws.Tests.getAdminTestConn().sendToken({
+								ns: lClusterInfoValues[lPos].clusterNS,
+								type: 'test',
+							}, {
+								OnResponse: function(aToken) {
+									if(aToken.code == -1){
+										lResponse = {
+											code: -1,
+											msg: 'failure'
+										};
+										return;
+									}
+								}
+							});
+						}
+					}
+				}
+			});
+			
+			// wait for result, consider reasonable timeout
+			waitsFor(
+					function() {
+						return(lResponse.code == 0);
+					},
+					lSpec,
+					2000
+					);
+					
+			// check the result
+			runs(function() {
+				expect(lResponse.code).toEqual(0);
+				expect(lResponse.msg).toEqual('ok');
+			});
+		});
+	},
+	
+	// this spec tests the shutdown service endpoint feature
+	testShutdownEndPoint: function(aPassword, aArguments, aValue, aDescription) {
+		var lSpec = "Shutdown service (" + aPassword + ", endPointId, service), " + aDescription ;
+
+		it(lSpec, function() {
+			var lResponse = {};
+
+			// perform the sticky routes feature on the server
+			jws.Tests.getAdminTestConn().lbStickyRoutes({
+				OnResponse: function(aToken) {
+					if(aArguments == "valid")
+						aArguments = aToken.data;
+					
+					// perform the shutdown feature an specific service endpoint
+					jws.Tests.getAdminTestConn().lbShutdownEndPoint(
+						aPassword, {
+							endPointId: aArguments[0].endPointId,
+							clusterAlias: aArguments[0].clusterAlias,
+							OnResponse: function(aToken) {
+								lResponse = aToken;
+							}
+					});
+				}
+			});	
+			
+			// wait for result, consider reasonable timeout
+			waitsFor(
+					function() {
+						return(lResponse.code == aValue);
 					},
 					lSpec,
 					3000
 					);
-
+					
+			// check the result
 			runs(function() {
-				expect(lResponse.code).toEqual(0);
+				expect(lResponse.code).toEqual(aValue);
 			});
 		});
 	},
-	testDeregisterServiceEndPoint: function(aPassword) {
-		var lSpec = "Deregister service (" + aPassword + ", endPointId, service1), whit valid credential and arguments.";
+	
+	// this spec tests the deregister service endpoint feature
+	testDeregisterServiceEndPoint: function(aPassword, aArguments, aValue, aDescription) {
+		var lSpec = "Deregister service (" + aPassword + ", endPointId, service1), " + aDescription;
 
 		it(lSpec, function() {
 			var lResponse = {};
 
+			// perform the sticky routes feature on the server
 			jws.Tests.getAdminTestConn().lbStickyRoutes({
 				OnResponse: function(aToken) {
-
+					if(aArguments == "valid")
+						aArguments = aToken.data;
+						
+					// perform the deregister feature an specific service endpoint	
 					jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint(
-							aPassword, {
-								endPointId: aToken.data[0].endPointId,
-								clusterAlias: aToken.data[0].clusterAlias,
-								OnResponse: function(aToken) {
-									lResponse = aToken;
-								}
+						aPassword, {
+							endPointId: aArguments[0].endPointId,
+							clusterAlias: aArguments[0].clusterAlias,
+							OnResponse: function(aToken) {
+								lResponse = aToken;
 							}
-					);
-				}
-			}
-			);
-
-			waitsFor(
-					function() {
-						return(lResponse.code == 0);
-					},
-					lSpec,
-					2000
-					);
-
-			runs(function() {
-				expect(lResponse.code).toEqual(0);
-			});
-		});
-	},
-	testDeregisterServiceEndPointFailCredential: function(aPassword) {
-		var lSpec = "Deregister service (" + aPassword + ", endPointId, service1), whit invalid credential and valid arguments.";
-
-		it(lSpec, function() {
-			var lResponse = {};
-
-			jws.Tests.getAdminTestConn().lbStickyRoutes({
-				OnResponse: function(aToken) {
-
-					jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint(
-							aPassword,
-							{endPointId: aToken.data[0].endPointId,
-								clusterAlias: aToken.data[0].clusterAlias,
-								OnResponse: function(aToken) {
-									lResponse = aToken;
-								}
-							}
-					);
-				}
-			}
-			);
-
-			waitsFor(
-					function() {
-						return(lResponse.code == -1);
-					},
-					lSpec,
-					2000
-					);
-
-			runs(function() {
-				expect(lResponse.code).toEqual(-1);
-			});
-		});
-	},
-	testDeregisterServiceEndPointFailArguments: function(aPassword) {
-		var lSpec = "Deregister service (" + aPassword + ", endPointIdWrong, service3), whit valid credential and invalid arguments.";
-
-		it(lSpec, function() {
-			var lResponse = {};
-
-			jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint(
-					aPassword,
-					{endPointId: "wrongId",
-						clusterAlias: "service3",
-						OnResponse: function(aToken) {
-							lResponse = aToken;
 						}
-					}
-			);
-
+					);
+				}		
+			});
+			
+			// wait for result, consider reasonable timeout
 			waitsFor(
 					function() {
-						return(lResponse.code == -1);
+						return(lResponse.code == aValue);
 					},
 					lSpec,
 					2000
 					);
-
+					
+			// check the result
 			runs(function() {
-				expect(lResponse.code).toEqual(-1);
+				expect(lResponse.code).toEqual(aValue);
 			});
 		});
 	},
-	testShutdownEndPoint: function(aPassword) {
-		var lSpec = "Shutdown service (" + aPassword + ", endPointId, service2), whit valid credential and arguments";
-
-		it(lSpec, function() {
-			var lResponse = {};
-
-			jws.Tests.getAdminTestConn().lbStickyRoutes({
-				OnResponse: function(aToken) {
-
-					jws.Tests.getAdminTestConn().lbShutdownEndPoint(
-							aPassword, {
-								endPointId: aToken.data[0].endPointId,
-								clusterAlias: aToken.data[0].clusterAlias,
-								OnResponse: function(aToken) {
-									lResponse = aToken;
-								}
-							}
-					);
-				}
-			});
-
-			waitsFor(
-					function() {
-						return(lResponse.code == 0);
-					},
-					lSpec,
-					2000
-					);
-
-			runs(function() {
-				expect(lResponse.code).toEqual(0);
-			});
-		});
-	},
-	testShutdownEndPointFailCredential: function(aPassword) {
-		var lSpec = "Shutdown service (" + aPassword + ", endPointId, service2), whit invalid credential and valid arguments";
-
-		it(lSpec, function() {
-			var lResponse = {};
-
-			jws.Tests.getAdminTestConn().lbShutdownEndPoint(
-					aPassword,
-					{endPointId: "endPointId",
-						clusterAlias: "service2",
-						OnResponse: function(aToken) {
-							lResponse = aToken;
-						}
-					}
-			);
-
-			waitsFor(
-					function() {
-						return(lResponse.code == -1);
-					},
-					lSpec,
-					2000
-					);
-
-			runs(function() {
-				expect(lResponse.code).toEqual(-1);
-			});
-		});
-	},
-	testShutdownEndPointFailArguments: function(aPassword) {
-		var lSpec = "Shutdown service (" + aPassword + ", endPointIdWrong, service3), whit valid credential and invalid arguments";
-
-		it(lSpec, function() {
-			var lResponse = {};
-
-			jws.Tests.getAdminTestConn().lbShutdownEndPoint(
-					aPassword,
-					{endPointId: "wrongId",
-						clusterAlias: "service3",
-						OnResponse: function(aToken) {
-							lResponse = aToken;
-						}
-					}
-			);
-
-			waitsFor(
-					function() {
-						return(lResponse.code == -1);
-					},
-					lSpec,
-					2000
-					);
-
-			runs(function() {
-				expect(lResponse.code).toEqual(-1);
-			});
-		});
-	},
+	
 	runSpecs: function() {
-		jws.tests.LoadBalancer.testRegisterServiceEndPoint("admin", "service1", 0, "with valid credential and valid service");
-		jws.tests.LoadBalancer.testRegisterServiceEndPoint("admin", "service2", 0, "with valid credential and valid service");
-		jws.tests.LoadBalancer.testRegisterServiceEndPoint("manage", "service2", -1, "with invalid credential and valid service");
-		jws.tests.LoadBalancer.testRegisterServiceEndPoint("admin", "service3", -1, "with invalid credential and invalid service");
-		jws.tests.LoadBalancer.testServices1();
-		jws.tests.LoadBalancer.testServices2();
-		jws.tests.LoadBalancer.testChangeAlgorithm(1, "valid argument");
-		jws.tests.LoadBalancer.testChangeAlgorithm(2, "valid argument");
-		jws.tests.LoadBalancer.testChangeAlgorithm(3, "valid argument");
-		jws.tests.LoadBalancer.testChangeAlgorithm(4, "invalid argument");
-		jws.tests.LoadBalancer.testClustersInfo();
-		jws.tests.LoadBalancer.testStickyRoutes();
-		jws.tests.LoadBalancer.testDeregisterServiceEndPoint("admin");
-		jws.tests.LoadBalancer.testDeregisterServiceEndPointFailCredential("noAdmin");
-		jws.tests.LoadBalancer.testDeregisterServiceEndPointFailArguments("admin");
-		jws.tests.LoadBalancer.testShutdownEndPoint("admin");
-		jws.tests.LoadBalancer.testShutdownEndPointFailCredential("noAdmin");
-		jws.tests.LoadBalancer.testShutdownEndPointFailArguments("admin");
-
+	
+		//run alls tests
+		this.testClustersInfo();
+		
+		this.testRegisterServiceEndPoint();
+		
+		this.testStickyRoutes();
+		
+		this.testChangeAlgorithm(1, "valid argument");
+		this.testChangeAlgorithm(2, "valid argument");
+		this.testChangeAlgorithm(3, "valid argument");
+		this.testChangeAlgorithm(4, "invalid argument");
+		
+		this.testServices();
+		
+		this.testShutdownEndPoint("admin", "valid", 0, "whit valid credential and arguments.");
+		this.testShutdownEndPoint("noAdmin", "valid", -1, "whit invalid credential and valid arguments.");
+		this.testShutdownEndPoint("admin", "invalid", -1, "whit valid credential and invalid arguments.");
+		
+		this.testDeregisterServiceEndPoint("admin", "valid", 0, "whit valid credential and arguments.");
+		this.testDeregisterServiceEndPoint("noAdmin", "valid", -1, "whit invalid credential and valid arguments.");
+		this.testDeregisterServiceEndPoint("admin",  "invalid", -1, "whit valid credential and invalid arguments.");
 	}
 };
