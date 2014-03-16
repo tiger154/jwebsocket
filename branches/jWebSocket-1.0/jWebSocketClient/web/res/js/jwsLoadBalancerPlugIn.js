@@ -190,9 +190,8 @@ jws.LoadBalancerPlugIn = {
 		var lServiceEndPoint = new jws.jWebSocketJSONClient();				
 		lServiceEndPoint.open( "ws://localhost:8787/jWebSocket/jWebSocket", {	
 			OnWelcome: function (){
-				lServiceEndPoint.lbRegisterServiceEndPoint( aPassword, {
-					clusterAlias: aOptions.clusterAlias
-				});		
+			
+				lServiceEndPoint.lbRegisterServiceEndPoint( aPassword, aOptions);		
 				
 				lServiceEndPoint.addPlugIn({
 					processToken: function( aToken ){
