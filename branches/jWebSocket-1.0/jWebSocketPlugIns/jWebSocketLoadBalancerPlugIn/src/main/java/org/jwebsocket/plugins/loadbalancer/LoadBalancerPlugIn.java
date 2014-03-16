@@ -334,7 +334,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
                         Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
                 }
 
-                ClusterEndPoint lClusterEndPoint = lCluster.containsEndPoint(lEndPointId);
+                final ClusterEndPoint lClusterEndPoint = lCluster.containsEndPoint(lEndPointId);
 
                 Assert.notNull(lClusterEndPoint, "The target endpoint does not exists!");
                 Assert.isTrue(lClusterEndPoint.getStatus().equals(EndPointStatus.ONLINE),
@@ -364,7 +364,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
                         public void run() {
                                 try {
                                         if (!mDelayConnectorsQueue.isEmpty()) {
-                                                connectorStopped(mDelayConnectorsQueue.remove(mDelayConnectorsQueue.size() - 1), CloseReason.TIMEOUT);
+                                                lClusterEndPoint.getConnector().stopConnector(CloseReason.TIMEOUT);
                                         }
                                 } catch (Exception lEx) {
                                         Logger.getLogger(LoadBalancerPlugIn.class.getName()).log(Priority.FATAL, lEx + " while the load balancer stopped the endpoint!");
