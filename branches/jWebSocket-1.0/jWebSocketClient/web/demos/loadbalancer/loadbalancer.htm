@@ -59,9 +59,7 @@
 					lWSC.lbStickyRoutes({
 						OnResponse: function( aToken ) {
 							loadEndpointIdOptions( aToken.data );
-							console.log(jws);
 						}
-						
 					});
 				} else {
 					log( "Not connected." );
@@ -73,13 +71,13 @@
 				log("Running create new service endpoint...");
 				if( lWSC.isConnected() ) {
 					if(mClusterInfoValues.length == 0){
-						log("INFORMATION - Press key 'Endpoints Info' to load dynamically the cluster alias and their namespaces!.")
+						log("INFO - Select the cluster alias!.")
 					}else{
 						var lPassword = document.getElementById("stxPass").value;
 						var lClusterAlias = document.getElementById("stxService").value;
 						var lNamespace = getServicesNamespace();
 						if(lNamespace == -1){
-							log("INFORMATION - Select the cluster alias!.")
+							log("INFO - Select the cluster alias!.")
 						}else{
 							lWSC.lbSampleService( lPassword, {
 								clusterAlias: lClusterAlias,
@@ -144,7 +142,7 @@
 				if( lWSC.isConnected() ) {
 					var lNamespace = getServicesNamespace();
 					if(lNamespace == -1){
-						log("INFORMATION - Select the cluster alias!.")
+						log("INFO - Select the cluster alias!.")
 					}else{
 						lWSC.sendToken( {
 							ns: lNamespace,
@@ -188,7 +186,7 @@
 			function loadServiceOptions(){
 				if(mClusterInfoValues.length == 0){
 					log(" ");
-					log("INFORMATION - Press key 'Endpoints Info' to load dynamically the cluster alias and their namespaces!.")
+					log("INFO - Press key 'Endpoints Info' to load dynamically the cluster alias and their namespaces!.")
 				}else{
 			
 					var lService  = new Array();
