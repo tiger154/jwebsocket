@@ -73,6 +73,4 @@ var shutdown = function() {
 	for (var lIndex in lModules) {
 		App.getModule(lModules[lIndex]).unload(lJMS);
 	}
-
-	lJMS.shutdown();
 };
