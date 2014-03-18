@@ -33,7 +33,7 @@ App.setModule('useradmin', {
 
 
                 // required for cluster compatibility
-                if (App.isClusterActive() && !App.getWebSocketServer().getSynchronizer()
+                if (App.isClusterEnabled() && !App.getWebSocketServer().getSynchronizer()
                         .getWorkerTurn(lMsgId)) {
                     return;
                 }
