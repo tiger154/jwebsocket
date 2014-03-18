@@ -62,8 +62,7 @@ public class APIPlugIn extends TokenPlugIn {
 	private final static String GET_PLUGIN_IDS = "getPlugInIds";
 	private final static String SUPPORTS_TOKEN = "supportsToken";
 	private final static String HAS_PLUGIN = "hasPlugin";
-	private static final String NS_INTERFACE
-			= JWebSocketServerConstants.NS_BASE + ".plugins.api";
+	private static final String NS_INTERFACE = NS_API;
 	private BeanFactory mBeanFactory;
 
 	/**
@@ -82,7 +81,7 @@ public class APIPlugIn extends TokenPlugIn {
 
 		try {
 			// Creating the Spring Bean Factory
-			mBeanFactory = getConfigBeanFactory();
+			mBeanFactory = getConfigBeanFactory(NS_INTERFACE);
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating API plug-in"));
 		}
