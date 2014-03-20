@@ -244,4 +244,12 @@ public class MailPlugIn extends TokenPlugIn {
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);
 	}
+	
+	/**
+	 * Access to the MailPlugInService to be able to send mails from another PlugIn
+	 * @return the mService
+	 */
+	public static MailPlugInService getService() {
+		return mService;
+	}
 }

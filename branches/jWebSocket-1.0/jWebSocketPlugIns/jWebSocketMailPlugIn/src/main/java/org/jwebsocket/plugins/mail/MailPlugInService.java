@@ -584,7 +584,12 @@ public class MailPlugInService {
 				lEmail.setFrom(lFrom);
 			}
 			if (lTo != null && lTo.length() > 0) {
-				lEmail.addTo(lTo);
+				String[] lToSplit = lTo.split(";");
+				for (String lToSplit1 : lToSplit) {
+					if (lToSplit1 != null && lToSplit1.length() > 0) {
+						lEmail.addTo(lToSplit1.trim());
+					}
+				}
 			}
 			if (lSubject != null && lSubject.length() > 0) {
 				lEmail.setSubject(lSubject);
