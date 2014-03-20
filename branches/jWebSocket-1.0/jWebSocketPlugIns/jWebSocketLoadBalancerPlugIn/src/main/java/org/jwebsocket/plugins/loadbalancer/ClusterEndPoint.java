@@ -32,125 +32,125 @@ import org.jwebsocket.token.Token;
  */
 public class ClusterEndPoint implements ITokenizable {
 
-        /**
-         * Cluster endpoint status, default value 'ONLINE'.
-         */
-        private EndPointStatus mStatus = EndPointStatus.ONLINE;
-        /**
-         * Cluster endpoint connector.
-         */
-        private WebSocketConnector mConnector;
-        /**
-         * Cluster endpoint requests, initial value '0'.
-         */
-        private long mRequests = 0;
-        /**
-         * Cluster endpoint id.
-         */
-        private final String mServiceId;
-        /**
-         * Cluster endpoint CPU usage, initial value '-1.0'.
-         */
-        private double mCpuUsage = -1.0;
+	/**
+	 * Cluster endpoint status, default value 'ONLINE'.
+	 */
+	private EndPointStatus mStatus = EndPointStatus.ONLINE;
+	/**
+	 * Cluster endpoint connector.
+	 */
+	private WebSocketConnector mConnector;
+	/**
+	 * Cluster endpoint requests, initial value '0'.
+	 */
+	private long mRequests = 0;
+	/**
+	 * Cluster endpoint id.
+	 */
+	private final String mServiceId;
+	/**
+	 * Cluster endpoint CPU usage, initial value '-1.0'.
+	 */
+	private double mCpuUsage = -1.0;
 
-        public ClusterEndPoint() {
-                // creates an unique service id. 
-                mServiceId = UUID.randomUUID().toString();
-        }
+	public ClusterEndPoint() {
+		// creates an unique service id. 
+		mServiceId = UUID.randomUUID().toString();
+	}
 
-        /**
-         *
-         * @param aConnector
-         */
-        public ClusterEndPoint(WebSocketConnector aConnector) {
-                this();
-                mConnector = aConnector;
-        }
+	/**
+	 *
+	 * @param aConnector
+	 */
+	public ClusterEndPoint(WebSocketConnector aConnector) {
+		this();
+		mConnector = aConnector;
+	}
 
-        /**
-         * @return the cluster endpoint status.
-         */
-        public EndPointStatus getStatus() {
-                return mStatus;
-        }
+	/**
+	 * @return the cluster endpoint status.
+	 */
+	public EndPointStatus getStatus() {
+		return mStatus;
+	}
 
-        /**
-         * @param aStatus the status to set.
-         */
-        public void setStatus(EndPointStatus aStatus) {
-                mStatus = aStatus;
-        }
+	/**
+	 * @param aStatus the status to set.
+	 */
+	public void setStatus(EndPointStatus aStatus) {
+		mStatus = aStatus;
+	}
 
-        /**
-         * @return the cluster endpoint connector.
-         */
-        public WebSocketConnector getConnector() {
-                return mConnector;
-        }
+	/**
+	 * @return the cluster endpoint connector.
+	 */
+	public WebSocketConnector getConnector() {
+		return mConnector;
+	}
 
-        /**
-         * @param aConnector the connector to set.
-         */
-        public void setConnector(WebSocketConnector aConnector) {
-                this.mConnector = aConnector;
-        }
+	/**
+	 * @param aConnector the connector to set.
+	 */
+	public void setConnector(WebSocketConnector aConnector) {
+		this.mConnector = aConnector;
+	}
 
-        /**
-         *
-         * @return the cluster endpoint id.
-         */
-        public String getServiceId() {
-                return mServiceId;
-        }
+	/**
+	 *
+	 * @return the cluster endpoint id.
+	 */
+	public String getServiceId() {
+		return mServiceId;
+	}
 
-        /**
-         * Increase requests for this cluster endpoint.
-         */
-        public void increaseRequests() {
-                mRequests++;
-        }
+	/**
+	 * Increase requests for this cluster endpoint.
+	 */
+	public void increaseRequests() {
+		mRequests++;
+	}
 
-        /**
-         *
-         * @return cluster endpoint requests.
-         */
-        public long getRequests() {
-                return mRequests;
-        }
+	/**
+	 *
+	 * @return cluster endpoint requests.
+	 */
+	public long getRequests() {
+		return mRequests;
+	}
 
-        /**
-         *
-         * @param aRequests the requests to set.
-         */
-        public void setRequests(int aRequests) {
-                this.mRequests = aRequests;
-        }
+	/**
+	 *
+	 * @param aRequests the requests to set.
+	 */
+	public void setRequests(int aRequests) {
+		this.mRequests = aRequests;
+	}
 
-        /**
-         * @return the CPU usage.
-         */
-        public double getCpuUsage() {
-                return mCpuUsage;
-        }
+	/**
+	 * @return the CPU usage.
+	 */
+	public double getCpuUsage() {
+		return mCpuUsage;
+	}
 
-        /**
-         * @param aCpuUsage the CPU usage to set.
-         */
-        public void setCpuUsage(double aCpuUsage) {
-                this.mCpuUsage = aCpuUsage;
-        }
+	/**
+	 * @param aCpuUsage the CPU usage to set.
+	 */
+	public void setCpuUsage(double aCpuUsage) {
+		this.mCpuUsage = aCpuUsage;
+	}
 
-        @Override
-        public void writeToToken(Token aToken) {
-                aToken.setString("id", getServiceId());
-                aToken.setString("status", getStatus().name());
-                aToken.setLong("requests", getRequests());
-                if (getCpuUsage() != -1) {
-                        aToken.setDouble("cpu", getCpuUsage());
-                }
-        }
+	@Override
+	public void writeToToken(Token aToken) {
+		aToken.setString("id", getServiceId());
+		aToken.setString("status", getStatus().name());
+		aToken.setLong("requests", getRequests());
+		if (getCpuUsage() != -1) {
+			aToken.setDouble("cpu", getCpuUsage());
+		}
+	}
 
-        @Override
-        public void readFromToken(Token aToken) {
-        }
+	@Override
+	public void readFromToken(Token aToken) {
+	}
 }

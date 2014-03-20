@@ -70,9 +70,9 @@ public class JWebSocketJMSClient extends BaseClient {
 	/**
 	 *
 	 * @param aClusterName
-	 * @param aSessionId 
-	 * @param aUsername 
-	 * @param aPassword 
+	 * @param aSessionId
+	 * @param aUsername
+	 * @param aPassword
 	 */
 	public JWebSocketJMSClient(String aClusterName, String aSessionId, String aUsername, String aPassword) {
 		Assert.notNull(aClusterName, "The 'cluster name' argument cannot be null!'");

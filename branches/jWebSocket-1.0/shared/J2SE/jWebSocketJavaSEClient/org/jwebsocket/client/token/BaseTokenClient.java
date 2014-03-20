@@ -82,10 +82,8 @@ public class BaseTokenClient implements WebSocketTokenClient {
 	// private WebSocketEncoding mEncoding;
 	private String mUsername = null;
 	private String mClientId = null;
-	private final Map<Integer, PendingResponseQueueItem> mPendingResponseQueue
-			= new FastMap<Integer, PendingResponseQueueItem>().shared();
-	private final ScheduledThreadPoolExecutor mResponseQueueExecutor
-			= new ScheduledThreadPoolExecutor(1);
+	private final Map<Integer, PendingResponseQueueItem> mPendingResponseQueue = new FastMap<Integer, PendingResponseQueueItem>().shared();
+	private final ScheduledThreadPoolExecutor mResponseQueueExecutor = new ScheduledThreadPoolExecutor(1);
 	private List<String> mEncodingFormats = new FastList<String>();
 	private WebSocketClient mClient;
 
@@ -441,8 +439,7 @@ public class BaseTokenClient implements WebSocketTokenClient {
 				Integer lCode = lToken.getInteger("code");
 				// is there unique token id available in the response
 				// and is there a matching pending response at all?
-				PendingResponseQueueItem lPRQI
-						= (lUTID != null ? mPendingResponseQueue.get(lUTID) : null);
+				PendingResponseQueueItem lPRQI = (lUTID != null ? mPendingResponseQueue.get(lUTID) : null);
 				if (lPRQI != null) {
 					// if so start analyzing
 					WebSocketResponseTokenListener lWSRTL = lPRQI.getListener();
@@ -609,8 +606,7 @@ public class BaseTokenClient implements WebSocketTokenClient {
 		@Override
 		public void run() {
 			synchronized (mPendingResponseQueue) {
-				PendingResponseQueueItem lPRQI
-						= (mUTID != null ? mPendingResponseQueue.get(mUTID) : null);
+				PendingResponseQueueItem lPRQI = (mUTID != null ? mPendingResponseQueue.get(mUTID) : null);
 				if (lPRQI != null) {
 					// if so start analyzing
 					WebSocketResponseTokenListener lWSRTL = lPRQI.getListener();
@@ -902,12 +898,12 @@ public class BaseTokenClient implements WebSocketTokenClient {
 			sendTokenInTransaction(lCurrentChunk, aChunkable.getFragmentSize(),
 					new InChunkingResponseListener(aResponseListener, lSentTime),
 					new ChunkableListener(
-							lCurrentChunk,
-							lChunksIterator,
-							aResponseListener,
-							aDeliveryListener,
-							lSentTime,
-							aChunkable.getFragmentSize()));
+					lCurrentChunk,
+					lChunksIterator,
+					aResponseListener,
+					aDeliveryListener,
+					lSentTime,
+					aChunkable.getFragmentSize()));
 		} catch (Exception lEx) {
 			aDeliveryListener.OnFailure(lEx);
 		}
