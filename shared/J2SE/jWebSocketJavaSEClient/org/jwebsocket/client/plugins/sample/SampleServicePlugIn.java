@@ -34,15 +34,10 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 
 	/**
 	 *
-	 */
-	public static final String NS_SAMPLESERVICE = "org.jwebsocket.plugins.sample";
-
-	/**
-	 *
 	 * @param aClient
 	 */
-	public SampleServicePlugIn(WebSocketTokenClient aClient) {
-		super(aClient, NS_SAMPLESERVICE);
+	public SampleServicePlugIn(WebSocketTokenClient aClient, String aServiceNS) {
+		super(aClient, aServiceNS);
 	}
 
 	@Override
@@ -50,26 +45,23 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 		// get the type of the token
 		// the type can be associated with a "command"
 		String lType = aToken.getType();
+
 		// get the namespace of the token
 		// each plug-in should have its own unique namespace
 		String lNS = aToken.getNS();
+
 		// check if token has a type and a matching namespace
-		if (lType != null && lNS != null && lNS.equals(NS_SAMPLESERVICE)) {
+		if (lType != null && lNS != null) {
+
+			//&& lNS.equals(getNS())) {
 			// here you can interpret incoming tokens from the server
 			// according to the name space of the plug-in
-			if (lType.equals("echo")) {
-				echo(aToken);
-			} else if (lType.equals("shutdown")) {
+			if (lNS.equals(getNS()) && lType.equals("test")) {
+				test(aToken);
+			}
+			if (lNS.equals("org.jwebsocket.plugins.loadbalancer") && lType.equals("shutdown")) {
 				shutdown();
 			}
-		}
-	}
-
-	private void shutdown() {
-		try {
-			getTokenClient().close();
-		} catch (WebSocketException ex) {
-			Logger.getLogger(SampleServicePlugIn.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -77,14 +69,23 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 	 *
 	 * @param aToken
 	 */
-	private void echo(Token aToken) {
-		String lData = aToken.getString("data");
-		Token lResponse = createResponse(aToken);
-		lResponse.setString("data", lData);
+	private void test(Token aToken) {
 		try {
+			Token lResponse = createResponse(aToken);
 			getTokenClient().sendToken(lResponse);
 		} catch (WebSocketException ex) {
 			Logger.getLogger(SampleServicePlugIn.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	/**
+	 *
+	 */
+	private void shutdown() {
+		try {
+			getTokenClient().close();
+		} catch (WebSocketException ex) {
+			Logger.getLogger(BaseServiceTokenPlugIn.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 }

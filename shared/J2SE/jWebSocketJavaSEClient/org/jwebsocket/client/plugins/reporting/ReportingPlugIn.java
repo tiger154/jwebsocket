@@ -37,7 +37,6 @@ public class ReportingPlugIn extends BaseClientTokenPlugIn {
 	 *
 	 */
 	public static final String REPORT_FORMAT_PDF = "pdf";
-
 	/**
 	 *
 	 */
@@ -139,5 +138,4 @@ public class ReportingPlugIn extends BaseClientTokenPlugIn {
 			WebSocketResponseTokenListener aListener) throws Exception {
 		generateReport(aReportName, aParams, null, REPORT_FORMAT_PDF, aUseJDBCConnection, aListener);
 	}
-
 }

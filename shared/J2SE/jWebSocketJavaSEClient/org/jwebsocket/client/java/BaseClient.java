@@ -60,7 +60,6 @@ public abstract class BaseClient implements WebSocketClient {
 	 *
 	 */
 	public static final int RECEIVER_SHUTDOWN_TIMEOUT = 3000;
-
 	/**
 	 *
 	 */
@@ -68,7 +67,6 @@ public abstract class BaseClient implements WebSocketClient {
 	private final ScheduledThreadPoolExecutor mExecutor = new ScheduledThreadPoolExecutor(1);
 	private final ExecutorService mListenersExecutor = Executors.newFixedThreadPool(1);
 	private final Map<String, Object> mParams = new FastMap<String, Object>();
-
 	/**
 	 *
 	 */
@@ -626,10 +624,9 @@ public abstract class BaseClient implements WebSocketClient {
 			try {
 				open(mURI.toString());
 			} catch (Exception lEx) {
-				WebSocketClientEvent lEvent
-						= new WebSocketBaseClientEvent(mEvent.getClient(), EVENT_CLOSE,
-								lEx.getClass().getSimpleName() + ": "
-								+ lEx.getMessage());
+				WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(mEvent.getClient(), EVENT_CLOSE,
+						lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
 				notifyClosed(lEvent);
 			}
 		}

@@ -20,8 +20,6 @@ package org.jwebsocket.client.plugins;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketTokenClient;
 import org.jwebsocket.token.Token;
@@ -43,7 +41,6 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 	 */
 	public BaseServiceTokenPlugIn(WebSocketTokenClient aClient, String aNS) {
 		super(aClient, aNS);
-		// UpdateCpuUsage();
 	}
 
 	@Override
@@ -118,7 +115,6 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 	private void SendCpuUsage() {
 
 		getTimer().schedule(new TimerTask() {
-
 			@Override
 			public void run() {
 
@@ -127,10 +123,9 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 					lTokenCpuUsage.setDouble("usage", Tools.getCpuUsage());
 					getTokenClient().sendToken(lTokenCpuUsage);
 				} catch (Exception lEx) {
-					Logger.getLogger(BaseServiceTokenPlugIn.class.getName()).log(Level.SEVERE, null,
-							lEx + " while the load balancer CPU usage was update");
+					this.cancel();
 				}
 			}
-		}, 1500, 1500);
+		}, 2000, 2000);
 	}
 }

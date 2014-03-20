@@ -201,8 +201,7 @@ public class BaseWebSocketClient extends BaseClient {
 				mCookies.addAll(HttpCookie.parse(mURI, lResponseCookies));
 
 				if (!mHeaders.isValid()) {
-					WebSocketClientEvent lEvent
-							= new WebSocketBaseClientEvent(this, EVENT_CLOSE, "Handshake rejected.");
+					WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_CLOSE, "Handshake rejected.");
 					notifyClosed(lEvent);
 					checkReconnect(lEvent);
 					return;
@@ -250,8 +249,7 @@ public class BaseWebSocketClient extends BaseClient {
 		} catch (IsAlreadyConnectedException lex) {
 			throw new IsAlreadyConnectedException(lex.getMessage());
 		} catch (Exception lEx) {
-			WebSocketClientEvent lEvent
-					= new WebSocketBaseClientEvent(this, EVENT_CLOSE, mCloseReason);
+			WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_CLOSE, mCloseReason);
 			notifyClosed(lEvent);
 			checkReconnect(lEvent);
 		}
@@ -267,7 +265,7 @@ public class BaseWebSocketClient extends BaseClient {
 
 				sendInternal(
 						WebSocketProtocolAbstraction.rawToProtocolPacket(
-								mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
+						mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
 			}
 		}
 	}
@@ -283,7 +281,7 @@ public class BaseWebSocketClient extends BaseClient {
 
 				sendInternal(
 						WebSocketProtocolAbstraction.rawToProtocolPacket(
-								mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
+						mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
 			}
 		}
 	}
@@ -603,8 +601,7 @@ public class BaseWebSocketClient extends BaseClient {
 			// set the status accordingly
 			mStatus = WebSocketStatus.CLOSED;
 
-			WebSocketClientEvent lEvent
-					= new WebSocketBaseClientEvent(mClient, EVENT_CLOSE, mCloseReason);
+			WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(mClient, EVENT_CLOSE, mCloseReason);
 			// notify listeners that client has closed
 			notifyClosed(lEvent);
 

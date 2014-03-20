@@ -62,7 +62,8 @@ public class LoadBalancerTest {
 				lToken.setString("clusterAlias", "service1");
 				lClient.sendToken(lToken);
 
-				SampleServicePlugIn lSamplePlugIn = new SampleServicePlugIn(lClient);
+				SampleServicePlugIn lSamplePlugIn = new SampleServicePlugIn(lClient,
+						"org.jwebsocket.plugins.sampleservice1");
 				lServices.add(lClient);
 				Thread.sleep(50);
 			}
@@ -76,7 +77,8 @@ public class LoadBalancerTest {
 				lToken.setString("clusterAlias", "service2");
 				lClient.sendToken(lToken);
 
-				SampleServicePlugIn lSamplePlugIn = new SampleServicePlugIn(lClient);
+				SampleServicePlugIn lSamplePlugIn = new SampleServicePlugIn(lClient,
+						"org.jwebsocket.plugins.sampleservice2");
 				lServices.add(lClient);
 				Thread.sleep(50);
 			}

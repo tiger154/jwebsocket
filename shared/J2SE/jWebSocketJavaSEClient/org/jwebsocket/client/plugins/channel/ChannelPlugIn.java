@@ -173,7 +173,7 @@ public class ChannelPlugIn extends BaseClientTokenPlugIn {
 			aAccessKey = Tools.getMD5(aAccessKey);
 		}
 		lRequest.setString("accessKey", aAccessKey);
-		
+
 		if (null != aSecretKey && !"".equals(aSecretKey)) {
 			aSecretKey = Tools.getMD5(aSecretKey);
 		}
@@ -182,11 +182,10 @@ public class ChannelPlugIn extends BaseClientTokenPlugIn {
 
 		getTokenClient().sendToken(lRequest, aListener);
 	}
-	
-	
+
 	/**
-	 * Modify a channel 
-	 * 
+	 * Modify a channel
+	 *
 	 * @param aId
 	 * @param aSecretKey The current secret key value
 	 * @param aNewSecretKey The channel new secret key value
@@ -195,9 +194,9 @@ public class ChannelPlugIn extends BaseClientTokenPlugIn {
 	 * @param aIsSystem The channel new 'isSystem' value
 	 * @param aIsPrivate The channel new 'isPrivate' value
 	 * @param aListener
-	 * @throws WebSocketException 
+	 * @throws WebSocketException
 	 */
-	public void modify(String aId, String aSecretKey, String aNewSecretKey, String aAccessKey, 
+	public void modify(String aId, String aSecretKey, String aNewSecretKey, String aAccessKey,
 			String aOwner, boolean aIsSystem, boolean aIsPrivate, WebSocketResponseTokenListener aListener) throws WebSocketException {
 		Token lRequest = TokenFactory.createToken(getNS(), "modifyChannel");
 		lRequest.setString("channel", aId);
@@ -212,7 +211,7 @@ public class ChannelPlugIn extends BaseClientTokenPlugIn {
 		}
 		lRequest.setString("accessKey", aAccessKey);
 		lRequest.setString("newSecretKey", aNewSecretKey);
-		
+
 		if (null != aSecretKey && !"".equals(aSecretKey)) {
 			aSecretKey = Tools.getMD5(aSecretKey);
 		}
