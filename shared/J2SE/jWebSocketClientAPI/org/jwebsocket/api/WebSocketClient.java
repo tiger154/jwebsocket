@@ -18,9 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
+import java.net.URI;
 import java.util.List;
 import org.jwebsocket.config.ReliabilityOptions;
-import org.jwebsocket.kit.IsAlreadyConnectedException;
 import org.jwebsocket.kit.WebSocketEncoding;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketFrameType;
@@ -334,4 +334,11 @@ public interface WebSocketClient {
 	 * @param aValue
 	 */
 	void setParam(String aKey, Object aValue);
+
+	/**
+	 * Get the WebSocketClient connection URI
+	 *
+	 * @return
+	 */
+	URI getURI();
 }
