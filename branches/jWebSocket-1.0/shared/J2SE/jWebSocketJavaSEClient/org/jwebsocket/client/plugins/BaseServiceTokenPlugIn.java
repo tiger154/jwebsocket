@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.plugins;
 
-import java.util.Timer;
 import java.util.TimerTask;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketTokenClient;
@@ -32,8 +31,6 @@ import org.jwebsocket.util.Tools;
  */
 public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 
-	private Timer mTimer;
-
 	/**
 	 *
 	 * @param aClient
@@ -46,12 +43,12 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
 		super.processOpened(aEvent);
-		SendCpuUsage();
-	}
 
-	@Override
-	public void processClosed(WebSocketClientEvent aEvent) {
-		getTimer().cancel();
+		try {
+			updateCpuUsage();
+		} catch (Exception lEx) {
+			throw new RuntimeException(lEx);
+		}
 	}
 
 	/**
@@ -103,18 +100,12 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 
 	/**
 	 *
-	 * @return
 	 */
-	private Timer getTimer() {
-		return (mTimer == null ? new Timer("Send Cpu Usage") : mTimer);
-	}
+	private void updateCpuUsage() throws Exception {
+		// testing first if SIGAR is installed 
+		Tools.getCpuUsage();
 
-	/**
-	 *
-	 */
-	private void SendCpuUsage() {
-
-		getTimer().schedule(new TimerTask() {
+		Tools.getTimer().schedule(new TimerTask() {
 			@Override
 			public void run() {
 
