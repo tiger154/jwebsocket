@@ -110,6 +110,11 @@ public abstract class BaseClient implements WebSocketClient {
 	public int getPingInterval() {
 		return mPingInterval;
 	}
+	
+	@Override
+	public URI getURI(){
+		return mURI;
+	}
 
 	/**
 	 *

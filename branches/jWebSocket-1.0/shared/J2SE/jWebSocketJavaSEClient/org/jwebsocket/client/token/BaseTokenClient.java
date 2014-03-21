@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.token;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -334,6 +335,11 @@ public class BaseTokenClient implements WebSocketTokenClient {
 	@Override
 	public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
 		mClient.sendPacketInTransaction(aDataPacket, aListener);
+	}
+
+	@Override
+	public URI getURI() {
+		return mClient.getURI();
 	}
 
 	/**
