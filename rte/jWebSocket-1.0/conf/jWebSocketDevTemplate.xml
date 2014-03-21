@@ -1263,6 +1263,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</filter>
+
 	</filters>
 
 </jWebSocket>
