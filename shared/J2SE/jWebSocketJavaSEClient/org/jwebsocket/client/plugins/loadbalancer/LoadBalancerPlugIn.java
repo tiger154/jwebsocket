@@ -171,11 +171,7 @@ public class LoadBalancerPlugIn extends BaseClientTokenPlugIn {
 	public BaseServiceTokenPlugIn sampleService(String aPassword, String aClusterAlias, String aEndpointNS,
 			WebSocketResponseTokenListener aListener) throws WebSocketException {
 		JWebSocketTokenClient lClient = new JWebSocketTokenClient();
-		try {
-			lClient.open(getTokenClient().getURI().toURL().toString());
-		} catch (MalformedURLException lEx) {
-			throw new WebSocketException(lEx.getMessage());
-		}
+		lClient.open(getTokenClient().getURI().toString());
 
 		SampleServicePlugIn lServiceEndpoint = new SampleServicePlugIn(lClient, aEndpointNS);
 		LoadBalancerPlugIn lServiceEndpointPlugIn = new LoadBalancerPlugIn(lServiceEndpoint.getTokenClient());
