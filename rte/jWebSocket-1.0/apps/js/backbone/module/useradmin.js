@@ -39,7 +39,7 @@ App.setModule('useradmin', {
                 }
 
                 // processing message
-                if ('registerNewUser' == lTokenType) {
+                if ('registerNewUser' == lTokenType || 'addUser' == lTokenType ) {
 
                     //Getting Countdown quota for SMSPlugin
                     var lResponse = lMe.getSMSQuota('CountDown',
