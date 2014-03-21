@@ -45,77 +45,77 @@ public class ItemStorageQuota implements IQuotaStorage {
     private IItemCollection mCollectionQuotaInstance = null;
     private static final Logger mLog = Logging.getLogger();
 
-	/**
-	 *
-	 * @param mCollectionQuotaName
-	 */
-	public void setCollectionQuotaName(String mCollectionQuotaName) {
+    /**
+     *
+     * @param mCollectionQuotaName
+     */
+    public void setCollectionQuotaName(String mCollectionQuotaName) {
         this.mCollectionQuotaName = mCollectionQuotaName;
     }
 
-	/**
-	 *
-	 * @param mRootUser
-	 */
-	public void setRootUser(String mRootUser) {
+    /**
+     *
+     * @param mRootUser
+     */
+    public void setRootUser(String mRootUser) {
         this.mRootUser = mRootUser;
     }
 
-	/**
-	 *
-	 * @param mCollectionQuotaInstanceName
-	 */
-	public void setCollectionQuotaInstanceName(String mCollectionQuotaInstanceName) {
+    /**
+     *
+     * @param mCollectionQuotaInstanceName
+     */
+    public void setCollectionQuotaInstanceName(String mCollectionQuotaInstanceName) {
         this.mCollectionQuotaInstanceName = mCollectionQuotaInstanceName;
     }
 
-	/**
-	 *
-	 * @param mQuotaDefinition
-	 */
-	public void setQuotaDefinition(IItemDefinition mQuotaDefinition) {
+    /**
+     *
+     * @param mQuotaDefinition
+     */
+    public void setQuotaDefinition(IItemDefinition mQuotaDefinition) {
         this.mQuotaDefinition = mQuotaDefinition;
     }
 
-	/**
-	 *
-	 * @param mquotaInstanceDefinition
-	 */
-	public void setquotaInstanceDefinition(IItemDefinition mquotaInstanceDefinition) {
+    /**
+     *
+     * @param mquotaInstanceDefinition
+     */
+    public void setquotaInstanceDefinition(IItemDefinition mquotaInstanceDefinition) {
         this.mquotaInstanceDefinition = mquotaInstanceDefinition;
     }
 
-	/**
-	 *
-	 * @param mCollectionAccessPassword
-	 */
-	public void setCollectionAccessPassword(String mCollectionAccessPassword) {
+    /**
+     *
+     * @param mCollectionAccessPassword
+     */
+    public void setCollectionAccessPassword(String mCollectionAccessPassword) {
         this.mCollectionAccessPassword = mCollectionAccessPassword;
     }
 
-	/**
-	 *
-	 * @param mCollectionSecretPassword
-	 */
-	public void setCollectionSecretPassword(String mCollectionSecretPassword) {
+    /**
+     *
+     * @param mCollectionSecretPassword
+     */
+    public void setCollectionSecretPassword(String mCollectionSecretPassword) {
         this.mCollectionSecretPassword = mCollectionSecretPassword;
     }
 
-	/**
-	 *
-	 * @throws Exception
-	 */
-	@Override
+    /**
+     *
+     * @throws Exception
+     */
+    @Override
     public void initialize() throws Exception {
-        
+
         // getting the collection provider
         IItemCollectionProvider lCollectionProvider = (IItemCollectionProvider) JWebSocketBeanFactory
                 .getInstance(ItemStoragePlugIn.NS_ITEM_STORAGE).getBean("collectionProvider");
         // getting the item definitions factory
         IItemFactory lItemFactory = lCollectionProvider.getItemStorageProvider().getItemFactory();
         // checking if quota collection already exists
-        
-        
+
+
         if (!lCollectionProvider.collectionExists(mCollectionQuotaName)) {
             // check if definition already exists
             if (!lItemFactory.supportsType(mQuotaDefinition.getType())) {
@@ -123,8 +123,16 @@ public class ItemStorageQuota implements IQuotaStorage {
                 lItemFactory.registerDefinition(mQuotaDefinition);
             }
             // creating the collection
-            IItemCollection lQuotaCollection = lCollectionProvider
-                    .getCollection(mCollectionQuotaName, mQuotaDefinition.getType());
+            IItemCollection lQuotaCollection = null;
+            try {
+                lQuotaCollection = lCollectionProvider
+                        .getCollection(mCollectionQuotaName, mQuotaDefinition.getType());
+            } catch (Exception exp) {
+                lQuotaCollection = lCollectionProvider
+                        .getCollection(mCollectionQuotaName, mQuotaDefinition.getType());
+            }
+
+
             lQuotaCollection.setAccessPassword(Tools.getMD5(mCollectionAccessPassword));
             lQuotaCollection.setSecretPassword(Tools.getMD5(mCollectionSecretPassword));
             lQuotaCollection.setOwner(mRootUser);
@@ -140,9 +148,16 @@ public class ItemStorageQuota implements IQuotaStorage {
                 lItemFactory.registerDefinition(mquotaInstanceDefinition);
             }
             // creating the collection
-            IItemCollection lQuotaInstCollection = lCollectionProvider
-                    .getCollection(mCollectionQuotaInstanceName,
-                    mquotaInstanceDefinition.getType());
+            IItemCollection lQuotaInstCollection = null;
+            try {
+                lQuotaInstCollection = lCollectionProvider
+                        .getCollection(mCollectionQuotaInstanceName,
+                        mquotaInstanceDefinition.getType());
+            } catch (Exception exp) {
+                lQuotaInstCollection = lCollectionProvider
+                        .getCollection(mCollectionQuotaInstanceName,
+                        mquotaInstanceDefinition.getType());
+            }
 
             lQuotaInstCollection.setAccessPassword(Tools.getMD5(mCollectionAccessPassword));
             lQuotaInstCollection.setSecretPassword(Tools.getMD5(mCollectionSecretPassword));
@@ -153,15 +168,15 @@ public class ItemStorageQuota implements IQuotaStorage {
 
         mCollectionQuota = lCollectionProvider.getCollection(mCollectionQuotaName);
         mCollectionQuotaInstance = lCollectionProvider.getCollection(mCollectionQuotaInstanceName);
-        
+
     }
 
-	/**
-	 *
-	 * @param aQuota
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuota
+     * @return
+     */
+    @Override
     public boolean save(IQuotaSingleInstance aQuota) {
         try {
             ItemCollectionUtils.saveItem(mRootUser, mCollectionQuota, new MapAppender()
@@ -180,12 +195,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         return true;
     }
 
-	/**
-	 *
-	 * @param aQuota
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuota
+     * @return
+     */
+    @Override
     public boolean save(QuotaChildSI aQuota) {
         try {
             ItemCollectionUtils.saveItem(mRootUser, mCollectionQuotaInstance, new MapAppender()
@@ -200,12 +215,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         return true;
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @param aInstance
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @param aInstance
+     */
+    @Override
     public void remove(String aUuid, String aInstance) {
 
         try {
@@ -233,11 +248,11 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-	/**
-	 *
-	 * @param aQuotaChild
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaChild
+     */
+    @Override
     public void remove(QuotaChildSI aQuotaChild) {
 
         try {
@@ -245,9 +260,9 @@ public class ItemStorageQuota implements IQuotaStorage {
                     "uuidQuota", aQuotaChild.getUuid());
 
             for (IItem lItem : lChildQuotaistItem) {
-                if (lItem.get("instance").equals(aQuotaChild.getInstance())){
+                if (lItem.get("instance").equals(aQuotaChild.getInstance())) {
                     ItemCollectionUtils.removeItem(mRootUser,
-                        mCollectionQuotaInstance, lItem.getPK());
+                            mCollectionQuotaInstance, lItem.getPK());
                 }
             }
 
@@ -256,15 +271,15 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @param aValue
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @param aValue
+     * @return
+     */
+    @Override
     public long update(String aUuid, Long aValue) {
-        
+
         try {
             List<IItem> listItem = mCollectionQuota.getItemStorage()
                     .find("uuid", aUuid);
@@ -272,9 +287,9 @@ public class ItemStorageQuota implements IQuotaStorage {
             if (!listItem.isEmpty()) {
                 IItem lItem = listItem.get(0);
                 lItem.set("value", aValue);
-                
+
                 ItemCollectionUtils.saveItem(mRootUser, mCollectionQuota,
-                        new FastMap<String, Object>(lItem.getAttributes())); 
+                        new FastMap<String, Object>(lItem.getAttributes()));
             }
 
         } catch (Exception ex) {
@@ -283,12 +298,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         return aValue;
     }
 
-	/**
-	 *
-	 * @param aQuotaChild
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaChild
+     * @return
+     */
+    @Override
     public long update(QuotaChildSI aQuotaChild) {
 
         try {
@@ -296,26 +311,26 @@ public class ItemStorageQuota implements IQuotaStorage {
                     .find("uuidQuota", aQuotaChild.getUuid());
 
             for (IItem lItem : listItem) {
-                if (lItem.get("instance").equals(aQuotaChild.getInstance())){
-                    
+                if (lItem.get("instance").equals(aQuotaChild.getInstance())) {
+
                     lItem.set("value", aQuotaChild.getValue());
                     ItemCollectionUtils.saveItem(mRootUser, mCollectionQuotaInstance,
-                        new FastMap<String, Object>(lItem.getAttributes())); 
+                            new FastMap<String, Object>(lItem.getAttributes()));
                 }
             }
         } catch (Exception ex) {
             mLog.error("Error updating quota with the message: " + ex.getMessage());
         }
-        
+
         return aQuotaChild.getValue();
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @return
+     */
+    @Override
     public boolean quotaExist(String aUuid) {
 
         try {
@@ -332,15 +347,15 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-	/**
-	 *
-	 * @param aNameSpace
-	 * @param aQuotaIdentifier
-	 * @param aInstance
-	 * @param aActions
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aNameSpace
+     * @param aQuotaIdentifier
+     * @param aInstance
+     * @param aActions
+     * @return
+     */
+    @Override
     public boolean quotaExist(String aNameSpace, String aQuotaIdentifier,
             String aInstance, String aActions) {
 
@@ -372,28 +387,28 @@ public class ItemStorageQuota implements IQuotaStorage {
 
             return false;
         } catch (Exception ex) {
-            mLog.error("quota not found in in quota exist method");
+            mLog.debug("There is not a quota with namespace=" + aNameSpace);
             return true;
         }
 
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @return
+     */
+    @Override
     public String getActions(String aUuid) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-	/**
-	 *
-	 * @param aQuotaType
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaType
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -409,12 +424,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-	/**
-	 *
-	 * @param aIdentifier
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aIdentifier
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -431,14 +446,14 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-	/**
-	 *
-	 * @param aIdentifier
-	 * @param aNameSpace
-	 * @param aInstanceType
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aIdentifier
+     * @param aNameSpace
+     * @param aInstanceType
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotasByIdentifierNSInstanceType(String aIdentifier, String aNameSpace, String aInstanceType) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -462,14 +477,14 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-	/**
-	 *
-	 * @param aQuotaType
-	 * @param aNs
-	 * @param aInstance
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaType
+     * @param aNs
+     * @param aInstance
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -492,26 +507,26 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-	/**
-	 *
-	 * @param aQuotaIdentifier
-	 * @param aNs
-	 * @param aInstance
-	 * @param aInstanceType
-	 * @param aActions
-	 * @return
-	 * @throws ExceptionQuotaNotFound
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaIdentifier
+     * @param aNs
+     * @param aInstance
+     * @param aInstanceType
+     * @param aActions
+     * @return
+     * @throws ExceptionQuotaNotFound
+     */
+    @Override
     public String getUuid(String aQuotaIdentifier, String aNs, String aInstance,
-            String aInstanceType,String aActions ) throws ExceptionQuotaNotFound {
+            String aInstanceType, String aActions) throws ExceptionQuotaNotFound {
 
         List<IItem> lQuotaList = new FastList<IItem>();
         try {
             lQuotaList = mCollectionQuota.getItemStorage()
                     .find("quotaIdentifier", aQuotaIdentifier);
         } catch (Exception ex) {
-            mLog.error("An error occur in the getUiuid method of the quota Storage ");
+            mLog.debug("quota not found with identifier=" + aQuotaIdentifier);
         }
 
         IItem lResponse = null;
@@ -542,13 +557,13 @@ public class ItemStorageQuota implements IQuotaStorage {
         return lUuid;
     }
 
-	/**
-	 *
-	 * @param aQuotaType
-	 * @param aInstance
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaType
+     * @param aInstance
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType, String aInstance) {
         FastList<IQuotaSingleInstance> lResult = null;
         try {
@@ -569,13 +584,13 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-	/**
-	 *
-	 * @param aQuotaType
-	 * @param aNs
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaType
+     * @param aNs
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs) {
 
         FastList<IQuotaSingleInstance> lResult = null;
@@ -597,12 +612,12 @@ public class ItemStorageQuota implements IQuotaStorage {
         }
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @return
+     */
+    @Override
     public IQuotaSingleInstance getQuotaByUuid(String aUuid) {
 
         IQuotaSingleInstance lSingle = null;
@@ -619,23 +634,23 @@ public class ItemStorageQuota implements IQuotaStorage {
         return lSingle;
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @param aInstance
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @param aInstance
+     * @return
+     */
+    @Override
     public Map<String, Object> getRawQuota(String aUuid, String aInstance) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @param aResetDate
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @param aResetDate
+     */
+    @Override
     public void updateIntervalResetDate(String aUuid, String aResetDate) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
