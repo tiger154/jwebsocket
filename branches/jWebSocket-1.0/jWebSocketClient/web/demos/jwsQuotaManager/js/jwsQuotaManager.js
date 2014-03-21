@@ -896,7 +896,6 @@ Ext.onReady(function() {
 
 function logMessage(aToken) {
     
-    console.log(aToken);
     var lMsgContiner = Ext.getCmp('msg_label');
 
     lMsgContiner.setText("");
@@ -965,7 +964,22 @@ function showQuotaPluginMainWindows() {
     var lStore = new Ext.data.Store({
         pageSize: 50,
         model: 'Quota',
-        proxy: lJWSProxy
+        proxy: lJWSProxy,
+        listeners: {
+            load: {
+                fn: function(records, operation, success) {
+                    
+                     //the operation object contains all of the details of the load operation
+                     Ext.each(expandedRecordRowExpandedExtQuota, function(el, index,to){
+                         
+                         var lEl = expandedRecordRowExpandedExtQuota.get(index);
+                         if ( lEl.expanded == true ){
+                             rowExpandedExtQuota.expandRow(index);
+                         }
+                     });
+                }
+            }
+        }
     });
 
     var lJWSProxyQuotaActive = new Ext.jws.data.Proxy({
@@ -1276,7 +1290,7 @@ function showQuotaPluginMainWindows() {
     });
 
     //=====gridPanel=======
-    var lGridPanel = Ext.create('Ext.grid.Panel', {
+    lGridPanel = Ext.create('Ext.grid.Panel', {
         store: lStore,
         border: false,
         id: 'gridPanelQuota',
@@ -1716,6 +1730,6 @@ function exitDemo() {
 
 function log(aMsg) {
     if (console && typeof console.log === "function") {
-        console.log(aMsg);
+        //console.log(aMsg);
     }
 }

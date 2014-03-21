@@ -11,52 +11,44 @@
  *
  * @ptype rowexpander
  */
+rowExpandedExtQuota = null;
+
 Ext.define('Ext.ux.RowExpander', {
     extend: 'Ext.AbstractPlugin',
-
     requires: [
         'Ext.grid.feature.RowBody',
-        'Ext.grid.feature.RowWrap'
+        'Ext.grid.feature.RowWrap',
+        'Ext.util.MixedCollection'
     ],
-
     alias: 'plugin.rowexpander',
-
     rowBodyTpl: null,
-
     /**
      * @cfg {Boolean} expandOnEnter
      * <tt>true</tt> to toggle selected row(s) between expanded/collapsed when the enter
      * key is pressed (defaults to <tt>true</tt>).
      */
     expandOnEnter: true,
-
     /**
      * @cfg {Boolean} expandOnDblClick
      * <tt>true</tt> to toggle a row between expanded/collapsed when double clicked
      * (defaults to <tt>true</tt>).
      */
     expandOnDblClick: true,
-
     /**
      * @cfg {Boolean} selectRowOnExpand
      * <tt>true</tt> to select a row when clicking on the expander icon
      * (defaults to <tt>false</tt>).
      */
     selectRowOnExpand: false,
-
     rowBodyTrSelector: '.x-grid-rowbody-tr',
     rowBodyHiddenCls: 'x-grid-row-body-hidden',
     rowCollapsedCls: 'x-grid-row-collapsed',
-
-
-
     renderer: function(value, metadata, record, rowIdx, colIdx) {
         if (colIdx === 0) {
             metadata.tdCls = 'x-grid-td-expander';
         }
         return '<div class="x-grid-row-expander">&#160;</div>';
     },
-
     /**
      * @event expandbody
      * <b<Fired through the grid's View</b>
@@ -75,6 +67,8 @@ Ext.define('Ext.ux.RowExpander', {
     constructor: function() {
         this.callParent(arguments);
         var grid = this.getCmp();
+        expandedRecordRowExpandedExtQuota = new Ext.util.MixedCollection();
+        
         this.recordsExpanded = {};
         // <debug>
         if (!this.rowBodyTpl) {
@@ -84,7 +78,7 @@ Ext.define('Ext.ux.RowExpander', {
         // TODO: if XTemplate/Template receives a template as an arg, should
         // just return it back!
         var rowBodyTpl = Ext.create('Ext.XTemplate', this.rowBodyTpl),
-            features = [{
+                features = [{
                 ftype: 'rowbody',
                 columnId: this.getHeaderId(),
                 recordsExpanded: this.recordsExpanded,
@@ -94,7 +88,7 @@ Ext.define('Ext.ux.RowExpander', {
                 getRowBodyContents: function(data) {
                     return rowBodyTpl.applyTemplate(data);
                 }
-            },{
+            }, {
                 ftype: 'rowwrap'
             }];
 
@@ -106,7 +100,6 @@ Ext.define('Ext.ux.RowExpander', {
 
         // NOTE: features have to be added before init (before Table.initComponent)
     },
-
     init: function(grid) {
         this.callParent(arguments);
         this.grid = grid;
@@ -117,39 +110,34 @@ Ext.define('Ext.ux.RowExpander', {
         grid.on('render', this.bindView, this, {single: true});
         grid.on('reconfigure', this.onReconfigure, this);
     },
-    
-    onReconfigure: function(){
+    onReconfigure: function() {
         this.addExpander();
     },
-    
-    addExpander: function(){
+    addExpander: function() {
         this.grid.headerCt.insert(0, this.getHeaderConfig());
     },
-
     getHeaderId: function() {
         if (!this.headerId) {
             this.headerId = Ext.id();
         }
         return this.headerId;
     },
-
     getRowBodyFeatureData: function(data, idx, record, orig) {
         var o = Ext.grid.feature.RowBody.prototype.getAdditionalData.apply(this, arguments),
-            id = this.columnId;
+                id = this.columnId;
         o.rowBodyColspan = o.rowBodyColspan - 1;
         o.rowBody = this.getRowBodyContents(record.raw);
         o.rowCls = this.recordsExpanded[record.internalId] ? '' : this.rowCollapsedCls;
         o.rowBodyCls = this.recordsExpanded[record.internalId] ? '' : this.rowBodyHiddenCls;
         o[id + '-tdAttr'] = ' valign="top" rowspan="2" ';
-        if (orig[id+'-tdAttr']) {
-            o[id+'-tdAttr'] += orig[id+'-tdAttr'];
+        if (orig[id + '-tdAttr']) {
+            o[id + '-tdAttr'] += orig[id + '-tdAttr'];
         }
         return o;
     },
-
     bindView: function() {
         var view = this.getCmp().getView(),
-            viewEl;
+                viewEl;
 
         if (!view.rendered) {
             view.on('render', this.bindView, this, {single: true});
@@ -157,7 +145,7 @@ Ext.define('Ext.ux.RowExpander', {
             viewEl = view.getEl();
             if (this.expandOnEnter) {
                 this.keyNav = Ext.create('Ext.KeyNav', viewEl, {
-                    'enter' : this.onEnter,
+                    'enter': this.onEnter,
                     scope: this
                 });
             }
@@ -167,53 +155,89 @@ Ext.define('Ext.ux.RowExpander', {
             this.view = view;
         }
     },
-
     onEnter: function(e) {
         var view = this.view,
-            ds   = view.store,
-            sm   = view.getSelectionModel(),
-            sels = sm.getSelection(),
-            ln   = sels.length,
-            i = 0,
-            rowIdx;
+                ds = view.store,
+                sm = view.getSelectionModel(),
+                sels = sm.getSelection(),
+                ln = sels.length,
+                i = 0,
+                rowIdx;
 
         for (; i < ln; i++) {
             rowIdx = ds.indexOf(sels[i]);
             this.toggleRow(rowIdx);
         }
     },
+    toggleRow: function( rowIdx ) {
+        rowExpandedExtQuota = this;
 
-    toggleRow: function(rowIdx) {
         var view = this.view,
-            rowNode = view.getNode(rowIdx),
-            row = Ext.get(rowNode),
-            nextBd = Ext.get(row).down(this.rowBodyTrSelector),
-            record = view.getRecord(rowNode),
-            grid = this.getCmp();
+                rowNode = view.getNode(rowIdx),
+                row = Ext.get(rowNode),
+                nextBd = Ext.get(row).down(this.rowBodyTrSelector),
+                record = view.getRecord(rowNode),
+                grid = this.getCmp();
+        
+        if (expandedRecordRowExpandedExtQuota.indexOfKey(record.index) == -1) {
+
+            expandedRecordRowExpandedExtQuota.add(record.index, {
+                expanded: true,
+                rowIdx: rowIdx
+            });
+        }
 
         if (row.hasCls(this.rowCollapsedCls)) {
             row.removeCls(this.rowCollapsedCls);
             nextBd.removeCls(this.rowBodyHiddenCls);
             this.recordsExpanded[record.internalId] = true;
+            expandedRecordRowExpandedExtQuota.get(record.index).expanded = true;
             //view.refreshSize();
             view.fireEvent('expandbody', rowNode, record, nextBd.dom);
         } else {
             row.addCls(this.rowCollapsedCls);
             nextBd.addCls(this.rowBodyHiddenCls);
             this.recordsExpanded[record.internalId] = false;
+            expandedRecordRowExpandedExtQuota.get(record.index).expanded = false;
             //view.refreshSize();
             view.fireEvent('collapsebody', rowNode, record, nextBd.dom);
+
         }
     },
-
+    expandRow: function(index) {
+                rowExpandedExtQuota = this;
+        
+                var ds = this.view.store;
+                var sm = this.view.getSelectionModel();
+                sm.select(index);
+                var sels = sm.getSelection();
+                
+                var rowIdx = ds.indexOf(sels[0]);
+        
+                var view = this.view,
+                rowNode = view.getNode(rowIdx),
+                row = Ext.get(rowNode),
+                nextBd = Ext.get(row).down(this.rowBodyTrSelector),
+                record = view.getRecord(rowNode),
+                grid = this.getCmp();
+        
+        
+        if (row.hasCls(this.rowCollapsedCls)) {
+            row.removeCls(this.rowCollapsedCls);
+            nextBd.removeCls(this.rowBodyHiddenCls);
+            this.recordsExpanded[record.internalId] = true;
+            expandedRecordRowExpandedExtQuota.get(record.index).expanded = true;
+            //view.refreshSize();
+            view.fireEvent('expandbody', rowNode, record, nextBd.dom);
+        }
+    },
     onDblClick: function(view, cell, rowIdx, cellIndex, e) {
         this.toggleRow(rowIdx);
     },
-
     getHeaderConfig: function() {
-        var me                = this,
-            toggleRow         = Ext.Function.bind(me.toggleRow, me),
-            selectRowOnExpand = me.selectRowOnExpand;
+        var me = this,
+                toggleRow = Ext.Function.bind(me.toggleRow, me),
+                selectRowOnExpand = me.selectRowOnExpand;
 
         return {
             id: this.getHeaderId(),
