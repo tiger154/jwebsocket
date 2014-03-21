@@ -22,13 +22,13 @@ import java.awt.Toolkit;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
-import org.jwebsocket.api.WebSocketClientEvent;
-import org.jwebsocket.api.WebSocketClientTokenListener;
-import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.client.plugins.BaseServiceTokenPlugIn;
+import org.jwebsocket.client.plugins.loadbalancer.LoadBalancerPlugIn;
 import org.jwebsocket.client.token.JWebSocketTokenClient;
+import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.token.WebSocketResponseTokenListener;
 
 /**
  *
@@ -38,7 +38,10 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
 
 	private JWebSocketTokenClient mBaseClient;
 	private List<BaseServiceTokenPlugIn> mServices;
-	private javax.swing.JTextArea mLogPanel;
+	private LoadBalancerPlugIn mLBPlugIn;
+	private PlugInListener mPlugInListener;
+	private List<String> mServicesLoaded;
+	private List<String> mNamespaceLoaded;
 
 	/**
 	 * Creates new form LoadBalancerDialog
@@ -46,13 +49,21 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
 	 * @param aClient
 	 * @param aLogPanel
 	 */
-	public LoadBalancerDialog(JWebSocketTokenClient aClient, javax.swing.JTextArea aLogPanel) {
+	public LoadBalancerDialog(JWebSocketTokenClient aClient) {
 		initComponents();
 		mBaseClient = aClient;
 		mServices = new FastList<BaseServiceTokenPlugIn>();
-		mLogPanel = aLogPanel;
+		mLBPlugIn = new LoadBalancerPlugIn(aClient);
+		mPlugInListener = new PlugInListener();
+		mServicesLoaded = new FastList<String>();
+		mNamespaceLoaded = new FastList<String>();
+
+		Log("jWebSocket Load Balancer Demo initialized");
 	}
 
+	/**
+	 *
+	 */
 	private LoadBalancerDialog() {
 		throw new UnsupportedOperationException("Not supported!");
 	}
@@ -66,70 +77,49 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jbMultXY = new javax.swing.JButton();
-        jbSumXY = new javax.swing.JButton();
-        cbY = new javax.swing.JComboBox();
-        jLabel5 = new javax.swing.JLabel();
-        cbX = new javax.swing.JComboBox();
-        jLabel4 = new javax.swing.JLabel();
-        jbEndPointsI = new javax.swing.JButton();
-        jbStickyEP = new javax.swing.JButton();
+        btnEndpointInfo = new javax.swing.JButton();
+        btnStickyRoutes = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        cbEndPointId = new javax.swing.JComboBox();
-        jbShutdownEP = new javax.swing.JButton();
-        jbDeregisterSE = new javax.swing.JButton();
-        jbRegisterSE = new javax.swing.JButton();
+        cbEndpoint = new javax.swing.JComboBox();
+        btnShutdownService = new javax.swing.JButton();
+        btnDeregisterService = new javax.swing.JButton();
+        btnCreateService = new javax.swing.JButton();
         cbClusterAlias = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
-        jpPassword = new javax.swing.JPasswordField();
+        tfPassword = new javax.swing.JPasswordField();
+        jLabel4 = new javax.swing.JLabel();
+        cbAlgorithms = new javax.swing.JComboBox();
+        btnTestService = new javax.swing.JButton();
+        btnChoose = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("jWebSocket Load Balancer Demo");
+        setAlwaysOnTop(true);
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/Synapso16x16.png")));
         setName(""); // NOI18N
-
-        jbMultXY.setLabel("Mul");
-        jbMultXY.setPreferredSize(new java.awt.Dimension(60, 20));
-        jbMultXY.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbMultXYActionPerformed(evt);
+        setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
             }
         });
 
-        jbSumXY.setLabel("Sum");
-        jbSumXY.setMaximumSize(new java.awt.Dimension(55, 23));
-        jbSumXY.setMinimumSize(new java.awt.Dimension(55, 23));
-        jbSumXY.setPreferredSize(new java.awt.Dimension(50, 20));
-        jbSumXY.addActionListener(new java.awt.event.ActionListener() {
+        btnEndpointInfo.setText("EndPoints Info");
+        btnEndpointInfo.setToolTipText("Detailed information about all endpoints of the clusters.");
+        btnEndpointInfo.setPreferredSize(new java.awt.Dimension(110, 20));
+        btnEndpointInfo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbSumXYActionPerformed(evt);
+                btnEndpointInfoActionPerformed(evt);
             }
         });
 
-        cbY.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
-        cbY.setPreferredSize(new java.awt.Dimension(37, 18));
-
-        jLabel5.setText("Y:");
-
-        cbX.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
-        cbX.setPreferredSize(new java.awt.Dimension(37, 18));
-
-        jLabel4.setText("X:");
-
-        jbEndPointsI.setText("EndPoints Info");
-        jbEndPointsI.setPreferredSize(new java.awt.Dimension(110, 20));
-        jbEndPointsI.addActionListener(new java.awt.event.ActionListener() {
+        btnStickyRoutes.setText("Sticky Routes");
+        btnStickyRoutes.setToolTipText("Detailed information about all sticky routes ( The endpoints with status ONLINE ).");
+        btnStickyRoutes.setPreferredSize(new java.awt.Dimension(110, 20));
+        btnStickyRoutes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbEndPointsIActionPerformed(evt);
-            }
-        });
-
-        jbStickyEP.setText("Sticky Routes");
-        jbStickyEP.setPreferredSize(new java.awt.Dimension(110, 20));
-        jbStickyEP.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbStickyEPActionPerformed(evt);
+                btnStickyRoutesActionPerformed(evt);
             }
         });
 
@@ -138,46 +128,80 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
         jLabel3.setText("EndPoint Id:");
         jLabel3.setToolTipText("");
 
-        cbEndPointId.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cbEndPointId.setPreferredSize(new java.awt.Dimension(56, 18));
-        cbEndPointId.addFocusListener(new java.awt.event.FocusAdapter() {
+        cbEndpoint.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-Select the cluster endpoint-" }));
+        cbEndpoint.setPreferredSize(new java.awt.Dimension(56, 18));
+        cbEndpoint.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                cbEndPointIdFocusGained(evt);
+                cbEndpointFocusGained(evt);
             }
         });
 
-        jbShutdownEP.setText("Shutdown Endpoint");
-        jbShutdownEP.setPreferredSize(new java.awt.Dimension(125, 20));
-        jbShutdownEP.addActionListener(new java.awt.event.ActionListener() {
+        btnShutdownService.setToolTipText("Select the cluster alias and endpoint id for do you can shutdown a specific endpoint.");
+        btnShutdownService.setLabel("Shutdown Service Endpoint");
+        btnShutdownService.setPreferredSize(new java.awt.Dimension(125, 20));
+        btnShutdownService.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbShutdownEPActionPerformed(evt);
+                btnShutdownServiceActionPerformed(evt);
             }
         });
 
-        jbDeregisterSE.setText("Deregister Service ");
-        jbDeregisterSE.setPreferredSize(new java.awt.Dimension(165, 20));
-        jbDeregisterSE.addActionListener(new java.awt.event.ActionListener() {
+        btnDeregisterService.setToolTipText("Select the cluster alias and endpoint id for do you can deregister a specific endpoint.");
+        btnDeregisterService.setLabel("Deregister Service Endpoint");
+        btnDeregisterService.setPreferredSize(new java.awt.Dimension(165, 20));
+        btnDeregisterService.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbDeregisterSEActionPerformed(evt);
+                btnDeregisterServiceActionPerformed(evt);
             }
         });
 
-        jbRegisterSE.setText("Register Service ");
-        jbRegisterSE.setMaximumSize(new java.awt.Dimension(100, 20));
-        jbRegisterSE.setMinimumSize(new java.awt.Dimension(100, 20));
-        jbRegisterSE.setPreferredSize(new java.awt.Dimension(100, 20));
-        jbRegisterSE.addActionListener(new java.awt.event.ActionListener() {
+        btnCreateService.setText("Create New Service Endpoint");
+        btnCreateService.setToolTipText("Create a new service endpoint in the selected service.");
+        btnCreateService.setMaximumSize(new java.awt.Dimension(100, 20));
+        btnCreateService.setMinimumSize(new java.awt.Dimension(100, 20));
+        btnCreateService.setPreferredSize(new java.awt.Dimension(100, 20));
+        btnCreateService.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbRegisterSEActionPerformed(evt);
+                btnCreateServiceActionPerformed(evt);
             }
         });
 
-        cbClusterAlias.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "service1", "service2" }));
+        cbClusterAlias.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-Select-" }));
         cbClusterAlias.setPreferredSize(new java.awt.Dimension(56, 18));
+        cbClusterAlias.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                cbClusterAliasFocusGained(evt);
+            }
+        });
 
-        jLabel1.setText("Cluster Alias:");
+        jLabel1.setText("Select Cluster Alias:");
 
-        jpPassword.setText("admin");
+        tfPassword.setText("admin");
+
+        jLabel4.setText("Select the algorithm:");
+
+        cbAlgorithms.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Round Robin", "Least CPU Usage", "Optimum Balance" }));
+        cbAlgorithms.setPreferredSize(new java.awt.Dimension(107, 18));
+
+        btnTestService.setText("Test Services");
+        btnTestService.setToolTipText("Select a cluster alias for do it a test.");
+        btnTestService.setMaximumSize(new java.awt.Dimension(100, 20));
+        btnTestService.setMinimumSize(new java.awt.Dimension(100, 20));
+        btnTestService.setPreferredSize(new java.awt.Dimension(100, 20));
+        btnTestService.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTestServiceActionPerformed(evt);
+            }
+        });
+
+        btnChoose.setToolTipText("Choose the convenient algorithm for load balance.");
+        btnChoose.setLabel("Choose");
+        btnChoose.setName("");
+        btnChoose.setPreferredSize(new java.awt.Dimension(75, 20));
+        btnChoose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChooseActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -187,295 +211,163 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(18, 18, 18)
-                                .addComponent(cbClusterAlias, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(81, 81, 81)
-                                .addComponent(cbEndPointId, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbAlgorithms, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnChoose, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(95, 95, 95)
+                        .addComponent(btnEndpointInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnStickyRoutes, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
                             .addComponent(jLabel3))
-                        .addGap(27, 27, 27)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jbRegisterSE, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(28, 28, 28)
-                                .addComponent(jbShutdownEP, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
+                                .addComponent(cbEndpoint, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jpPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(27, 27, 27)
-                                .addComponent(jbDeregisterSE, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jbStickyEP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGap(18, 18, 18)
-                            .addComponent(jbEndPointsI, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel4)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(cbX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(15, 15, 15)
-                            .addComponent(jLabel5)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(cbY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(jbSumXY, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jbMultXY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(30, Short.MAX_VALUE))
+                                .addComponent(btnShutdownService, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnDeregisterService, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbClusterAlias, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCreateService, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnTestService, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(cbClusterAlias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jbRegisterSE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jbShutdownEP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel3)
-                        .addComponent(cbEndPointId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jbDeregisterSE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jpPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel2)))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jbStickyEP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jbEndPointsI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(25, 25, 25)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(cbX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5)
-                    .addComponent(jbSumXY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jbMultXY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(20, Short.MAX_VALUE))
+                    .addComponent(cbAlgorithms, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEndpointInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnStickyRoutes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnChoose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1)
+                    .addComponent(cbClusterAlias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCreateService, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnTestService, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnShutdownService, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(cbEndpoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDeregisterService, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-	private void jbEndPointsIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEndPointsIActionPerformed
+	private void cbEndpointFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbEndpointFocusGained
 		try {
-			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "clustersInfo");
-			mBaseClient.sendToken(lToken);
-		} catch (Exception lEx) {
-			Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage() + "\n");
+			mLBPlugIn.stickyRoutes(mPlugInListener);
+		} catch (WebSocketException lEx) {
+			Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
 		}
-	}//GEN-LAST:event_jbEndPointsIActionPerformed
+	}//GEN-LAST:event_cbEndpointFocusGained
 
-	private void jbSumXYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSumXYActionPerformed
-		try {
-			Integer lX = Integer.parseInt(cbX.getSelectedItem().toString());
-			Integer lY = Integer.parseInt(cbY.getSelectedItem().toString());
-
-			Token lToken = TokenFactory.createToken(ServiceSumPlugIn.NS_SERVICESUM, "sumXY");
-			lToken.setInteger("x", lX);
-			lToken.setInteger("y", lY);
-			mBaseClient.sendToken(lToken);
-		} catch (Exception lEx) {
-			Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage() + "\n");
-		}
-	}//GEN-LAST:event_jbSumXYActionPerformed
-
-	private void jbRegisterSEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbRegisterSEActionPerformed
-		try {
-			String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
-			if (lClusterAlias == null) {
-				Log("The argument 'clusterAlias' cannot be null!" + "\n");
-				return;
+        private void btnChooseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseActionPerformed
+			try {
+				mLBPlugIn.changeAlgorithm(cbAlgorithms.getSelectedIndex() + 1, mPlugInListener);
+			} catch (WebSocketException lEx) {
+				Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
 			}
-			String lPassword = new String(jpPassword.getPassword());
-			if (lPassword.isEmpty()) {
-				Log("The argument 'password' cannot be null!" + "\n");
-				return;
+        }//GEN-LAST:event_btnChooseActionPerformed
+
+        private void btnEndpointInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEndpointInfoActionPerformed
+			try {
+				mLBPlugIn.clustersInfo(mPlugInListener);
+			} catch (WebSocketException lEx) {
+				Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
 			}
+        }//GEN-LAST:event_btnEndpointInfoActionPerformed
 
-			final JWebSocketTokenClient lClient = new JWebSocketTokenClient();
-			lClient.open("ws://localhost:8787/jWebSocket/jWebSocket");
-			lClient.addTokenClientListener(new WebSocketClientTokenListener() {
+        private void btnStickyRoutesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStickyRoutesActionPerformed
+			try {
+				mLBPlugIn.stickyRoutes(mPlugInListener);
+			} catch (WebSocketException lEx) {
+				Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
+			}
+        }//GEN-LAST:event_btnStickyRoutesActionPerformed
 
-				@Override
-				public void processToken(WebSocketClientEvent aEvent, Token aToken) {
-					Log("Received Token: " + aToken.toString() + "\n");
+        private void btnCreateServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateServiceActionPerformed
+			if (cbClusterAlias.getSelectedItem().equals("-Select-")) {
+				Log("INFO - Select the cluster alias!.");
+			} else {
+				try {
+					String lPassword = tfPassword.getText();
+					String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
+					String lServiceNamespace = mNamespaceLoaded.get(mServicesLoaded.indexOf(lClusterAlias));
+					mServices.add(mLBPlugIn.sampleService(lPassword, lClusterAlias, lServiceNamespace, mPlugInListener));
+				} catch (WebSocketException lEx) {
+					Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
 				}
-
-				@Override
-				public void processOpening(WebSocketClientEvent aEvent) {
-					Log("Opening...\n");
-				}
-
-				@Override
-				public void processOpened(WebSocketClientEvent aEvent) {
-					Log("Opened.\n");
-				}
-
-				@Override
-				public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
-				}
-
-				@Override
-				public void processClosed(WebSocketClientEvent aEvent) {
-					Log("Closed (" + aEvent.getData() + ").\n");
-				}
-
-				@Override
-				public void processReconnecting(WebSocketClientEvent aEvent) {
-					Log("Reconnecting...\n");
-				}
-			});
-
-			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "registerServiceEndPoint");
-			lToken.setString("clusterAlias", lClusterAlias);
-			lToken.setString("password", lPassword);
-			lClient.sendToken(lToken);
-
-			if (lClusterAlias.equals("service1")) {
-				mServices.add(new ServiceSumPlugIn(lClient));
-			} else if (lClusterAlias.equals("service2")) {
-				mServices.add(new ServiceMultPlugIn(lClient));
 			}
-		} catch (Exception lEx) {
-			Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage() + "\n");
-		}
-	}//GEN-LAST:event_jbRegisterSEActionPerformed
+        }//GEN-LAST:event_btnCreateServiceActionPerformed
 
-	private void jbStickyEPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbStickyEPActionPerformed
-		try {
-			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "stickyRoutes");
-			mBaseClient.sendToken(lToken);
-		} catch (Exception lEx) {
-			Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage() + "\n");
-		}
-	}//GEN-LAST:event_jbStickyEPActionPerformed
+        private void btnTestServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestServiceActionPerformed
+			try {
+				String lServiceNamespace = mNamespaceLoaded.get(mServicesLoaded.indexOf(cbClusterAlias.getSelectedItem().toString()));
 
-	private void jbMultXYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMultXYActionPerformed
-		try {
-			Integer lX = Integer.parseInt(cbX.getSelectedItem().toString());
-			Integer lY = Integer.parseInt(cbY.getSelectedItem().toString());
-
-			Token lToken = TokenFactory.createToken(ServiceMultPlugIn.NS_SERVICEMULT, "multXY");
-			lToken.setInteger("x", lX);
-			lToken.setInteger("y", lY);
-
-			mBaseClient.sendToken(lToken);
-		} catch (Exception lEx) {
-			Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage() + "\n");
-		}
-	}//GEN-LAST:event_jbMultXYActionPerformed
-
-	private void cbEndPointIdFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbEndPointIdFocusGained
-		try {
-			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "stickyRoutes");
-			mBaseClient.sendToken(lToken);
-		} catch (Exception lEx) {
-			Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage() + "\n");
-		}
-	}//GEN-LAST:event_cbEndPointIdFocusGained
-
-	private void jbShutdownEPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbShutdownEPActionPerformed
-		try {
-			String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
-			if (lClusterAlias == null) {
-				Log("The argument 'clusterAlias' cannot be null!" + "\n");
-				return;
+				Token lRequest = TokenFactory.createToken(lServiceNamespace, "test");
+				mBaseClient.sendToken(lRequest, mPlugInListener);
+			} catch (WebSocketException lEx) {
+				Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
 			}
-			String lEndPointId = cbEndPointId.getSelectedItem().toString();
-			if (lEndPointId == null) {
-				Log("The argument 'endPointId' cannot be null!" + "\n");
-				return;
-			}
-			String lPassword = new String(jpPassword.getPassword());
-			if (lPassword.isEmpty()) {
-				Log("The argument 'password' cannot be null!" + "\n");
-				return;
-			}
-			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "shutdownServiceEndPoint");
-			lToken.setString("clusterAlias", lClusterAlias);
-			lToken.setString("endPointId", lEndPointId);
-			lToken.setString("password", lPassword);
+        }//GEN-LAST:event_btnTestServiceActionPerformed
 
-			mBaseClient.sendToken(lToken);
-		} catch (Exception lEx) {
-			Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage() + "\n");
-		}
-	}//GEN-LAST:event_jbShutdownEPActionPerformed
+        private void btnShutdownServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShutdownServiceActionPerformed
+			try {
+				String lPassword = tfPassword.getText();
+				String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
+				String lEndpoint = cbEndpoint.getSelectedItem().toString();
 
-	private void jbDeregisterSEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbDeregisterSEActionPerformed
-		try {
-			String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
-			if (lClusterAlias == null) {
-				Log("The argument 'clusterAlias' cannot be null!" + "\n");
-				return;
+				mLBPlugIn.shutdownEndPoint(lPassword, lClusterAlias, lEndpoint, mPlugInListener);
+			} catch (WebSocketException lEx) {
+				Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
 			}
-			String lEndPointId = cbEndPointId.getSelectedItem().toString();
-			if (lEndPointId == null) {
-				Log("The argument 'endPointId' cannot be null!" + "\n");
-				return;
-			}
-			String lPassword = new String(jpPassword.getPassword());
-			if (lPassword.isEmpty()) {
-				Log("The argument 'password' cannot be null!" + "\n");
-				return;
-			}
-			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "deregisterServiceEndPoint");
-			lToken.setString("clusterAlias", lClusterAlias);
-			lToken.setString("endPointId", lEndPointId);
-			lToken.setString("password", lPassword);
+        }//GEN-LAST:event_btnShutdownServiceActionPerformed
 
-			mBaseClient.sendToken(lToken);
-		} catch (Exception lEx) {
-			Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage() + "\n");
-		}
-	}//GEN-LAST:event_jbDeregisterSEActionPerformed
+        private void btnDeregisterServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeregisterServiceActionPerformed
+			try {
+				String lPassword = tfPassword.getText();
+				String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
+				String lEndpoint = cbEndpoint.getSelectedItem().toString();
+
+				mLBPlugIn.deregisterServiceEndPoint(lPassword, lClusterAlias, lEndpoint, mPlugInListener);
+			} catch (WebSocketException lEx) {
+				Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
+			}
+        }//GEN-LAST:event_btnDeregisterServiceActionPerformed
+
+        private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+			Log("Load Balancer Demo shutdown");
+        }//GEN-LAST:event_formWindowClosed
+
+        private void cbClusterAliasFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbClusterAliasFocusGained
+			if (mServicesLoaded.isEmpty()) {
+				Log("INFO - Press key 'Endpoints Info' to load dynamically the cluster alias and their namespaces!.");
+			}
+        }//GEN-LAST:event_cbClusterAliasFocusGained
 
 	private void Log(String aMessage) {
-		synchronized (mLogPanel) {
-			int lMAX = 1000;
-			int lLineCount = mLogPanel.getLineCount();
-			if (lLineCount > lMAX) {
-				String lText = mLogPanel.getText();
-				int lIdx = 0;
-				int lCnt = lLineCount;
-				while (lIdx < lText.length() && lCnt > lMAX) {
-					if (lText.charAt(lIdx) == '\n') {
-						lCnt--;
-					}
-					lIdx++;
-				}
-				mLogPanel.replaceRange("", 0, lIdx);
-			}
-			if (null != aMessage) {
-				mLogPanel.append(aMessage);
-			} else {
-				mLogPanel.setText("");
-			}
-			mLogPanel.setCaretPosition(mLogPanel.getText().length());
-		}
-	}
-
-	/**
-	 *
-	 * @param mRoutes
-	 */
-	public static void loadEndPoints(List<Map<String, String>> mRoutes) {
-		cbEndPointId.removeAllItems();
-		String lKey = cbClusterAlias.getSelectedItem().toString();
-		for (int lPos = 0; lPos < mRoutes.size(); lPos++) {
-			if (mRoutes.get(lPos).get("clusterAlias").equals(lKey)) {
-				cbEndPointId.addItem(mRoutes.get(lPos).get("endPointId").toString());
-			}
-		}
+		System.out.println(aMessage);
 	}
 
 	/**
@@ -513,29 +405,91 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
 		 * Create and display the form
 		 */
 		java.awt.EventQueue.invokeLater(new Runnable() {
-
+			@Override
 			public void run() {
 				new LoadBalancerDialog().setVisible(true);
 			}
 		});
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnChoose;
+    private javax.swing.JButton btnCreateService;
+    private javax.swing.JButton btnDeregisterService;
+    private javax.swing.JButton btnEndpointInfo;
+    private javax.swing.JButton btnShutdownService;
+    private javax.swing.JButton btnStickyRoutes;
+    private javax.swing.JButton btnTestService;
+    private javax.swing.JComboBox cbAlgorithms;
     private static javax.swing.JComboBox cbClusterAlias;
-    private static javax.swing.JComboBox cbEndPointId;
-    private javax.swing.JComboBox cbX;
-    private javax.swing.JComboBox cbY;
+    private static javax.swing.JComboBox cbEndpoint;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JButton jbDeregisterSE;
-    private javax.swing.JButton jbEndPointsI;
-    private javax.swing.JButton jbMultXY;
-    private javax.swing.JButton jbRegisterSE;
-    private javax.swing.JButton jbShutdownEP;
-    private javax.swing.JButton jbStickyEP;
-    private javax.swing.JButton jbSumXY;
-    private javax.swing.JPasswordField jpPassword;
+    private javax.swing.JPasswordField tfPassword;
     // End of variables declaration//GEN-END:variables
+
+	class PlugInListener implements WebSocketResponseTokenListener {
+
+		@Override
+		public long getTimeout() {
+			return 10000;
+		}
+
+		@Override
+		public void setTimeout(long aTimeout) {
+		}
+
+		@Override
+		public void OnTimeout(Token aToken) {
+		}
+
+		@Override
+		public void OnResponse(Token aToken) {
+			if (aToken.getString("reqType").equals("clustersInfo")) {
+				if (mServicesLoaded.isEmpty() || mNamespaceLoaded.isEmpty()) {
+					mServicesLoaded.clear();
+					mNamespaceLoaded.clear();
+
+					List<Map<String, Object>> lInfo = (List<Map<String, Object>>) aToken.getList("data");
+					for (int lPos = 0; lPos < lInfo.size(); lPos++) {
+						mServicesLoaded.add(lInfo.get(lPos).get("clusterAlias").toString());
+						mNamespaceLoaded.add(lInfo.get(lPos).get("clusterNS").toString());
+					}
+
+					cbClusterAlias.removeAllItems();
+					for (int lPos = 0; lPos < mServicesLoaded.size(); lPos++) {
+						cbClusterAlias.addItem(mServicesLoaded.get(lPos));
+					}
+					cbClusterAlias.repaint();
+
+				}
+			} else if (aToken.getString("reqType").equals("stickyRoutes")) {
+				cbEndpoint.removeAllItems();
+				List<Map<String, Object>> lRoutes = (List<Map<String, Object>>) aToken.getList("data");
+				String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
+
+				for (int lPos = 0; lPos < lRoutes.size(); lPos++) {
+					if (lRoutes.get(lPos).get("clusterAlias").equals(lClusterAlias)) {
+						cbEndpoint.addItem(lRoutes.get(lPos).get("endPointId"));
+					}
+				}
+
+				if (cbEndpoint.getItemCount() == 0) {
+					cbEndpoint.addItem("-Select the cluster endpoint-");
+				}
+				cbEndpoint.repaint();
+			} else if (aToken.getString("reqType").equals("registerServiceEndPoint")) {
+				Log("Received Token: " + aToken.toString());
+			}
+		}
+
+		@Override
+		public void OnSuccess(Token aToken) {
+		}
+
+		@Override
+		public void OnFailure(Token aToken) {
+		}
+	}
 }
