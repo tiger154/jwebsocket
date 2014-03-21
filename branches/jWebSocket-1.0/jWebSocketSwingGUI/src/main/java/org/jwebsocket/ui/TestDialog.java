@@ -80,7 +80,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	private ImageIcon mIcoConnected = null;
 	private ImageIcon mIcoAuthenticated = null;
 	private ReliabilityOptions mReliabilityOptions = null;
-	private List<Map<String, String>> mRoutes = new FastList<Map<String, String>>();
 	private JMSClientDialog mJMSClient;
 	private boolean mJMSServerIsRunning = false;
 	private Thread mJMSServerThread;
@@ -174,11 +173,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 
 	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
-		mLog("Received Token: " + aToken.toString());
-		if (aToken.getString("reqType").equals("stickyRoutes")) {
-			mRoutes = aToken.getList("data");
-			LoadBalancerDialog.loadEndPoints(mRoutes);
-		}
 		checkStatusIcon();
 	}
 
@@ -1296,8 +1290,14 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     }//GEN-LAST:event_bntSendActionPerformed
 
 	private void mniViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniViewActionPerformed
-		LoadBalancerDialog lLb = new LoadBalancerDialog(mClient, txaLog);
-		lLb.setVisible(true);
+		if (mClient != null) {
+			LoadBalancerDialog lLb = new LoadBalancerDialog(mClient);
+			lLb.setLocation(this.getX() + 300,
+					this.getLocation().y + 200);
+			lLb.setVisible(true);
+		} else {
+			mLog("INFO - Press key 'Connect' to open connection with the jWebSocket Server!.");
+		}
 	}//GEN-LAST:event_mniViewActionPerformed
 
     private void jmiViewJMSCLientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiViewJMSCLientActionPerformed
