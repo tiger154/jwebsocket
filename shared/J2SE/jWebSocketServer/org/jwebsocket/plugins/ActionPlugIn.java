@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins;
 
 import java.lang.reflect.Method;
+import javax.annotation.security.RolesAllowed;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -31,6 +32,7 @@ import org.jwebsocket.plugins.annotations.RequireConnection;
 import org.jwebsocket.plugins.annotations.RequirePlugIn;
 import org.jwebsocket.plugins.annotations.RequirePlugIns;
 import org.jwebsocket.plugins.annotations.Role;
+import org.jwebsocket.plugins.annotations.Roles;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.ConnectionManager;
@@ -99,6 +101,29 @@ public class ActionPlugIn extends TokenPlugIn {
 				if (!hasAuthority(aConnector, lAnnotation.name())) {
 					sendToken(aConnector, createAccessDenied(aToken));
 					return;
+				}
+			} else if (lMethod.isAnnotationPresent(Roles.class)) {
+				Roles lAnnotation = lMethod.getAnnotation(Roles.class);
+				String[] lRoles = lAnnotation.names();
+				if (lAnnotation.requireAll()) {
+					for (String lRole : lRoles) {
+						if (!hasAuthority(aConnector, lRole)) {
+							sendToken(aConnector, createAccessDenied(aToken));
+							return;
+						}
+					}
+				} else {
+					boolean lHasOne = false;
+					for (String lRole : lRoles) {
+						if (hasAuthority(aConnector, lRole)) {
+							lHasOne = true;
+							break;
+						}
+					}
+					if (!lHasOne) {
+						sendToken(aConnector, createAccessDenied(aToken));
+						return;
+					}
 				}
 			} else if (lMethod.isAnnotationPresent(Authenticated.class)) {
 				if (null == aConnector.getUsername()) {

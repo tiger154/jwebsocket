@@ -49,6 +49,7 @@ import org.springframework.context.ApplicationContext;
 /**
  *
  * @author Alexander Schulze EhChache
+ * @author Rolando Santamaria Maso
  */
 public class JDBCPlugIn extends TokenPlugIn {
 
@@ -133,9 +134,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
-		String lNS = aToken.getNS();
 
-		if (lType != null && getNamespace().equals(lNS)) {
+		if (lType != null) {
 			if (lType.equals("querySQL")) {
 				// run single native query sql command (select)
 				// with returning a result set
@@ -247,7 +247,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'querySQL'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'querySQL' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".querySQL")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
@@ -347,7 +347,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 			List<Integer> lValues = new FastList<Integer>();
 			String lErrMsg = null;
 			for (int lValIdx = 0; lValIdx < lCount; lValIdx++) {
-				String lQuery = Tools.expandVars(getNativeAccess(aToken).getSelectSequenceSQL(), lVars, Tools.EXPAND_CASE_SENSITIVE);
+				String lQuery = Tools.expandVars(getNativeAccess(aToken).getSelectSequenceSQL(), 
+						lVars, Tools.EXPAND_CASE_SENSITIVE);
 				Token lPKToken = getNativeAccess(aToken).query(lQuery);
 				if (0 == lPKToken.getInteger("code")) {
 					Number lNextSeqVal;
@@ -469,7 +470,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 	private void execSQL(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'execSQL' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".execSQL")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
@@ -635,7 +636,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'update'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'update' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".update")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
@@ -715,7 +716,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'insert'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'insert' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".insert")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
@@ -780,7 +781,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'delete'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'delete' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".delete")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
@@ -849,7 +850,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'startTA'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'transactions' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".transactions")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
@@ -876,7 +877,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'rollback'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'transactions' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".transactions")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
@@ -903,7 +904,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'commit'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'transactions' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".transactions")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
@@ -930,7 +931,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'getSecure'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'getSecure' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".getSecure")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
@@ -957,7 +958,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'postSecure'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'postSecure' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".postSecure")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
@@ -984,7 +985,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'getSQL'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'getSQL' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".getSQL")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
@@ -1011,7 +1012,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'postSQL'...");
 		}
 
-		// check if user is allowed to run 'select' command
+		// check if user is allowed to run 'postSQL' command
 		if (!hasAuthority(aConnector, NS_JDBC + ".postSQL")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
