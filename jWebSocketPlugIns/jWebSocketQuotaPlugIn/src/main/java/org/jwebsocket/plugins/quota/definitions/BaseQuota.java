@@ -293,6 +293,11 @@ public abstract class BaseQuota implements IQuota {
 		long lResult = -1;
 		if (lQSingle != null) {
 			long lReduce = lQSingle.getvalue() - aAmount;
+                        if (lReduce <= -1)
+                            lReduce = -1;
+                        
+                            
+                        
 			lResult = setQuota(lQSingle.getInstance(), aNameSpace,
 					lQSingle.getInstanceType(), aActions, lReduce);
 		}

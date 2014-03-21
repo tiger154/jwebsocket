@@ -8,7 +8,7 @@ import java.util.Calendar;
 
 /**
  *
- * @author dino
+ * @author Osvaldo Aguilar Lauzurique
  */
 public class Interval {
 

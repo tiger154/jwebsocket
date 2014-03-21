@@ -6,7 +6,7 @@ package org.jwebsocket.plugins.quota.utils;
 
 /**
  *
- * @author dino
+ * @author Osvaldo Aguilar Lauzurique
  */
 public enum IntervalType {
 
