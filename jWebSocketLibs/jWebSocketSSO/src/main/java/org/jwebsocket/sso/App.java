@@ -24,14 +24,29 @@ package org.jwebsocket.sso;
 public class App {
 
 	public static void main(String[] args) {
+
 		OAuth lOAuth = new OAuth();
-		// lOAuth.setBaseURL("https://localhost/as/token.oauth2");
-		lOAuth.setBaseURL("https://hqdvpngpoc01.nvidia.com/as/token.oauth2");
-		lOAuth.setClientSecret("2Federate");
-		System.out.println("JSON Direct Authentication: " + lOAuth.authDirect("aschulze@nvidia.com", "Yami#2812"));
-		System.out.println("JSON User from Access Token: " + lOAuth.getUser());
-		System.out.println("JSON Refresh Access Token: " + lOAuth.refreshAccessToken());
-		System.out.println("Username from OAuth Object: " + lOAuth.getUsername());
-		
+
+		System.setProperty("jsse.enableSNIExtension", "false");
+
+		lOAuth.setOAuthHost("https://aschulze-dt.nvidia.com");
+		// lOAuth.setOAuthHost("https://hqdvmbl702:8443");
+
+		lOAuth.setOAuthAppId("alsiusdev");
+		lOAuth.setOAuthAppSecret("ffdf1D56-5825-49e5-Afb9-335393a94606]");
+
+		// System.out.println("Test https call: " + lOAuth.testCall("https://hqdvmbl702:8443/get-smsession"));
+		// System.out.println("Test https call: " + lOAuth.testCall("https://www.google.com"));
+		System.out.println("Getting Session Cookie: " + lOAuth.getSSOSession("aschulze", "Div#2014", 5000));
+		System.out.println("Authenticate Session: " + lOAuth.authSession(lOAuth.getSessionId(), 5000));
+		/*		
+		 System.out.println("JSON Direct Authentication: " + lOAuth.authDirect("aschulze", "Div#2014"));
+		*/
+		 System.out.println("JSON User from Access Token: " + lOAuth.getUser());
+		/*
+		 System.out.println("JSON Refresh Access Token: " + lOAuth.refreshAccessToken());
+		 System.out.println("Username from OAuth Object: " + lOAuth.getUsername());
+		 */
+
 	}
 }
