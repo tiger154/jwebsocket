@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.plugins;
 
+import java.util.Timer;
 import java.util.TimerTask;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketTokenClient;
@@ -31,92 +32,103 @@ import org.jwebsocket.util.Tools;
  */
 public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 
-	/**
-	 *
-	 * @param aClient
-	 * @param aNS
-	 */
-	public BaseServiceTokenPlugIn(WebSocketTokenClient aClient, String aNS) {
-		super(aClient, aNS);
-	}
+        private Timer mTimer;
 
-	@Override
-	public void processOpened(WebSocketClientEvent aEvent) {
-		super.processOpened(aEvent);
+        /**
+         *
+         * @param aClient
+         * @param aNS
+         */
+        public BaseServiceTokenPlugIn(WebSocketTokenClient aClient, String aNS) {
+                super(aClient, aNS);
+        }
 
-		try {
-			updateCpuUsage();
-		} catch (Exception lEx) {
-			throw new RuntimeException(lEx);
-		}
-	}
+        @Override
+        public void processOpened(WebSocketClientEvent aEvent) {
+                super.processOpened(aEvent);
 
-	/**
-	 *
-	 * @param aInToken
-	 * @return
-	 */
-	public Token createResponse(Token aInToken) {
-		Token lResToken = TokenFactory.createToken();
-		setResponseFields(aInToken, lResToken);
-		return lResToken;
-	}
+                try {
+                        updateCpuUsage();
+                } catch (Exception lEx) {
+                        throw new RuntimeException(lEx);
+                }
+        }
 
-	/**
-	 *
-	 * @param aInToken
-	 * @param aOutToken
-	 */
-	private void setResponseFields(Token aInToken, Token aOutToken) {
-		Integer lTokenId = null;
-		String lType = null;
-		String lNS = null;
-		String lSourceID = null;
-		if (aInToken != null) {
-			lTokenId = aInToken.getInteger("utid", -1);
-			lType = aInToken.getString("type");
-			lNS = "org.jwebsocket.plugins.loadbalancer";
-			lSourceID = aInToken.getString("sourceId");
-		}
-		aOutToken.setType("response");
+        /**
+         *
+         * @param aInToken
+         * @return
+         */
+        public Token createResponse(Token aInToken) {
+                Token lResToken = TokenFactory.createToken();
+                setResponseFields(aInToken, lResToken);
+                return lResToken;
+        }
 
-		// if code and msg are already part of outgoing token do not overwrite!
-		aOutToken.setInteger("code", aOutToken.getInteger("code", 0));
-		aOutToken.setString("msg", aOutToken.getString("msg", "ok"));
+        /**
+         *
+         * @param aInToken
+         * @param aOutToken
+         */
+        private void setResponseFields(Token aInToken, Token aOutToken) {
+                Integer lTokenId = null;
+                String lType = null;
+                String lNS = null;
+                String lSourceID = null;
+                if (aInToken != null) {
+                        lTokenId = aInToken.getInteger("utid", -1);
+                        lType = aInToken.getString("type");
+                        lNS = "org.jwebsocket.plugins.loadbalancer";
+                        lSourceID = aInToken.getString("sourceId");
+                }
+                aOutToken.setType("response");
 
-		if (lTokenId != null) {
-			aOutToken.setInteger("utid", lTokenId);
-		}
-		if (lNS != null) {
-			aOutToken.setString("ns", lNS);
-		}
-		if (lType != null) {
-			aOutToken.setString("reqType", lType);
-		}
-		if (lSourceID != null) {
-			aOutToken.setString("sourceId", lSourceID);
-		}
-	}
+                // if code and msg are already part of outgoing token do not overwrite!
+                aOutToken.setInteger("code", aOutToken.getInteger("code", 0));
+                aOutToken.setString("msg", aOutToken.getString("msg", "ok"));
 
-	/**
-	 *
-	 */
-	private void updateCpuUsage() throws Exception {
-		// testing first if SIGAR is installed 
-		Tools.getCpuUsage();
+                if (lTokenId != null) {
+                        aOutToken.setInteger("utid", lTokenId);
+                }
+                if (lNS != null) {
+                        aOutToken.setString("ns", lNS);
+                }
+                if (lType != null) {
+                        aOutToken.setString("reqType", lType);
+                }
+                if (lSourceID != null) {
+                        aOutToken.setString("sourceId", lSourceID);
+                }
+        }
 
-		Tools.getTimer().schedule(new TimerTask() {
-			@Override
-			public void run() {
+        /**
+         *
+         * @return
+         */
+        private Timer getTimer() {
+                return (mTimer == null ? new Timer("Send Cpu Usage") : mTimer);
+        }
 
-				try {
-					Token lTokenCpuUsage = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "updateCpuUsage");
-					lTokenCpuUsage.setDouble("usage", Tools.getCpuUsage());
-					getTokenClient().sendToken(lTokenCpuUsage);
-				} catch (Exception lEx) {
-					this.cancel();
-				}
-			}
-		}, 2000, 2000);
-	}
+        /**
+         *
+         */
+        private void updateCpuUsage() throws Exception {
+                //testing first if SIGAR is installed 
+                Tools.getCpuUsage();
+
+                getTimer().schedule(new TimerTask() {
+
+                        @Override
+                        public void run() {
+
+                                try {
+                                        Token lTokenCpuUsage = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "updateCpuUsage");
+                                        lTokenCpuUsage.setDouble("usage", Tools.getCpuUsage());
+                                        getTokenClient().sendToken(lTokenCpuUsage);
+                                } catch (Exception lEx) {
+                                        this.cancel();
+                                }
+                        }
+                }, 2000, 2000);
+        }
 }
