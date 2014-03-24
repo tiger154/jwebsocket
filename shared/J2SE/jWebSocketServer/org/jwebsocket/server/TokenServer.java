@@ -831,7 +831,7 @@ public class TokenServer extends BaseServer {
 		String lFormat;
 		// interate through all connectors of all engines
 		for (WebSocketConnector lConnector : selectTokenConnectors().values()) {
-			if (!aSource.equals(lConnector) /*
+			if (!lConnector.equals(aSource) /*
 					 * &&
 					 * WebSocketConnectorStatus.UP.equals(lConnector.getStatus())
 					 */) {
@@ -850,7 +850,8 @@ public class TokenServer extends BaseServer {
 						lConnector.sendPacket(lPacket);
 					}
 				} catch (Exception ex) {
-					System.out.println(ex);
+					mLog.error(Logging.getSimpleExceptionMessage(ex,
+							"sending token to connection '" + lConnector.getId() + "'"));
 				}
 			}
 		}
