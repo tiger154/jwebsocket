@@ -172,6 +172,7 @@ public class LoadBalancerPlugIn extends BaseClientTokenPlugIn {
 			WebSocketResponseTokenListener aListener) throws WebSocketException {
 		JWebSocketTokenClient lClient = new JWebSocketTokenClient();
 		lClient.open(getTokenClient().getURI().toString());
+                lClient.login("root", "root");
 
 		SampleServicePlugIn lServiceEndpoint = new SampleServicePlugIn(lClient, aEndpointNS);
 		LoadBalancerPlugIn lServiceEndpointPlugIn = new LoadBalancerPlugIn(lServiceEndpoint.getTokenClient());
