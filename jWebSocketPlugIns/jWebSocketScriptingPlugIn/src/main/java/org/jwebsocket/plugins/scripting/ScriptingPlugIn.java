@@ -621,7 +621,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Reloads a deployed script application.
+	 * Reload a deployed script application.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -666,7 +666,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Calls a custom method on a public application object.
+	 * Call a custom method on a public application object.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -703,7 +703,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Calls a custom method on a public application object.
+	 * Call a custom method on a public application object.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -714,7 +714,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Gets a target application version.
+	 * Get a target application version.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -727,6 +727,24 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		Token lResponse = createResponse(aToken);
 		lResponse.setString("version", lScriptApp.getVersion());
+
+		sendToken(aConnector, lResponse);
+	}
+
+	/**
+	 * Get a target application client API
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
+	public void getClientAPIAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		String lApp = aToken.getString("app");
+		BaseScriptApp lScriptApp = mApps.get(lApp);
+		Assert.notNull(lScriptApp, "The target app does not exists!");
+
+		Token lResponse = createResponse(aToken);
+		lResponse.setMap("API", lScriptApp.getClientAPI());
 
 		sendToken(aConnector, lResponse);
 	}
@@ -754,7 +772,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Deploys an application
+	 * Deploy an application
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -853,7 +871,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Gets a target application manifest content.
+	 * Get a target application manifest content.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -887,7 +905,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Undeploys an application
+	 * Undeploy an application
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -937,7 +955,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Checks if an app has access to a target bean.
+	 * Check if an app has access to a target bean.
 	 *
 	 * @param aAppName The app name
 	 * @param aBeanPath The bean path
