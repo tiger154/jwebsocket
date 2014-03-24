@@ -8,7 +8,6 @@
 	<description>jWebSocket ActiveMQ plug-in for clustering support</description>
 	<packaging>jar</packaging>
 	<properties>
-		<project.distVer>1.0</project.distVer>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -20,7 +19,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<outputDirectory>../../../../rte/jWebSocket-${project.distVer}/libs</outputDirectory>
+					<outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
