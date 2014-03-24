@@ -8,9 +8,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jwebsocket</groupId>
-	<artifactId>jWebSocketChatPlugIn</artifactId>
-	<name>jWebSocketChatPlugIn</name>
-	<description>jWebSocket Chat Plug-in</description>
+	<artifactId>jWebSocketFTPPlugIn</artifactId>
+	<name>jWebSocketFTPPlugIn</name>
+	<description>jWebSocket FTP Plug-in</description>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -80,7 +80,13 @@
 			<artifactId>jWebSocketServer</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+		<!--
+		<dependency>
+			<groupId></groupId>
+			<artifactId></artifactId>
+			<version></version>
+		</dependency>
+		-->
 	</dependencies>
 
 	<!--  define repositories -->

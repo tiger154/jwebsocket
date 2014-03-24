@@ -19,7 +19,6 @@
 package tld.yourname.jms.server;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;

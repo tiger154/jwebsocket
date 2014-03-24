@@ -67,7 +67,8 @@
 		<module>jWebSocketPlugIns/jWebSocketArduinoPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketMonitoringPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketTestPlugIn</module>
-		<module>jWebSocketPlugIns/jWebSocketClusterPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketCloudPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketFTPPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketLoadBalancerPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketValidatorPlugIn</module>
 		<module>jWebSocketPlugIns/JWebSocketPingPongGame</module>
