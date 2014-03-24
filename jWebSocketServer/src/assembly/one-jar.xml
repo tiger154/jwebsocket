@@ -21,13 +21,12 @@
 			<includes>
 				<include>${groupId}:${artifactId}</include>
 
-				<!--
-				<include>org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec</include>
-				<include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
-				-->
+				<!-- from jWebSocketDynamicSQL -->
+				<include>org.apache.ddlutils:ddlutils</include>
+				<include>com.healthmarketscience.common:common-util</include>
+				<include>com.healthmarketscience.sqlbuilder:sqlbuilder</include>
 				
 				<!-- from org.jwebsocket:jWebSocketCommon -->
-				
 				<include>org.jwebsocket:jWebSocketCommon</include>
 				<include>javolution:javolution</include>
 				<include>org.codehaus.jackson:jackson-core-asl</include>
@@ -39,15 +38,13 @@
 				<include>org.apache.commons:commons-compress</include>
 				<include>org.apache.activemq:activemq-all</include>
 
-																								
 				<!-- from org.jwebsocket:jWebSocketServerAPI -->
-				
 				<include>org.jwebsocket:jWebSocketServerAPI</include>
 				<include>${groupId}:${artifactId}</include>
 				
-				<include>org.slf4j:slf4j-api</include>
+				<!-- <include>org.slf4j:slf4j-api</include> -->
 				<!-- prevent slf4j double binding issue -->
-				<include>org.slf4j:slf4j-log4j12</include>
+				<!-- <include>org.slf4j:slf4j-log4j12</include> -->
 				<!-- <include>org.slf4j:slf4j-simple</include> -->
 				
 				<include>javax.mail:mail</include>
@@ -79,7 +76,6 @@
 				-->
 				
 				<!-- from org.jwebsocket:jWebSocketServer -->
-
 				<include>commons-beanutils:commons-beanutils</include>
 				<include>commons-beanutils:commons-beanutils-core</include>
 				<include>commons-collections:commons-collections</include>

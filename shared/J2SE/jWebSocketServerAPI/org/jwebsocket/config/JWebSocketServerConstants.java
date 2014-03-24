@@ -28,7 +28,7 @@ public final class JWebSocketServerConstants {
 	/**
 	 * Current version string of the jWebSocket package.
 	 */
-	public static final String VERSION_STR = "1.0.0 RC2 (build 40310)";
+	public static final String VERSION_STR = "1.0.0 RC2 (build 40324)";
 	/**
 	 * Name space base for tokens and plug-ins.
 	 */
@@ -38,7 +38,7 @@ public final class JWebSocketServerConstants {
 	 */
 	public static final String DEFAULT_INSTALLATION = "prod";
 	/**
-	 * Constant for default server hostname
+	 * Constant for default server host name
 	 */
 	public static final String DEFAULT_HOSTNAME = "localhost";
 	/**

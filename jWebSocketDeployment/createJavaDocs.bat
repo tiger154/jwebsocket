@@ -273,12 +273,12 @@ call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
 
-:jWebSocketClusterPlugIn
+:jWebSocketCloudPlugIn
 echo ------------------------------------------------------------------------
-echo Plug-ins/jWebSocketClusterPlugIn
+echo Plug-ins/jWebSocketCloudPlugIn
 echo ------------------------------------------------------------------------
-cd %plugins%jWebSocketClusterPlugIn
-if exist %javadocs%jWebSocketClusterPlugIn rd %javadocs%jWebSocketClusterPlugIn /s/q
+cd %plugins%jWebSocketCloudPlugIn
+if exist %javadocs%jWebSocketCloudPlugIn rd %javadocs%jWebSocketCloudPlugIn /s/q
 call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
@@ -309,6 +309,16 @@ echo Plug-ins/jWebSocketFileSystemPlugIn
 echo ------------------------------------------------------------------------
 cd %plugins%jWebSocketFileSystemPlugIn
 if exist %javadocs%jWebSocketFileSystemPlugIn rd %javadocs%jWebSocketFileSystemPlugIn /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
+
+:jWebSocketFTPPlugIn
+echo ------------------------------------------------------------------------
+echo Plug-ins/jWebSocketFTPPlugIn
+echo ------------------------------------------------------------------------
+cd %plugins%jWebSocketFTPPlugIn
+if exist %javadocs%jWebSocketFTPPlugIn rd %javadocs%jWebSocketFTPPlugIn /s/q
 call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%

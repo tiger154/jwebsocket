@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC2 (build 40310)
+	//:const:*:VERSION:String:1.0.0 RC2 (build 40324)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 40310)",
+	VERSION: "1.0.0 RC2 (build 40324)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -3917,47 +3917,17 @@ jws.SystemClientPlugIn = {
 	//:a:en::aUsername:String:The login name of the user.
 	//:a:en::aPassword:String:The password of the user.
 	//:a:en::aOptions:Object:Optional arguments for the sendToken operation
-	//:a:en:aOptions:pool:String:Default pool the user want to register at (default [tt]null[/tt], no pool).
-	//:a:en:aOptions:autoConnect:Boolean:not yet supported (defautl [tt]true[/tt]).
 	//:r:*:::void:none
 	login: function( aUsername, aPassword, aOptions ) {
-		var lPool = null;
-		var lEncoding = null;
-		if( aOptions ) {
-			if( aOptions.pool !== undefined ) {
-				lPool = aOptions.pool;
-			}
-			if( aOptions.encoding !== undefined ) {
-				lEncoding = aOptions.encoding;
-				// check if password has to be converted into a MD5 sum
-				if( lEncoding === jws.SystemClientPlugIn.PW_ENCODE_MD5 ) {
-					if( aPassword ) {
-						aPassword = jws.tools.calcMD5( aPassword );
-					}
-					lEncoding = "md5";
-				// check if password is already md5 encoded
-				} else if( lEncoding === jws.SystemClientPlugIn.PW_MD5_ENCODED ) {
-					lEncoding = "md5";
-				} else {
-					// TODO: raise error here due to invalid encoding option
-					lEncoding = null;
-				}
-			}
-		}
-		var lRes = this.createDefaultResult();
-		if( this.isOpened() ) {
-			this.sendToken({
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			var lToken = {
 				ns: jws.SystemClientPlugIn.NS,
 				type: "login",
 				username: aUsername,
-				password: aPassword,
-				encoding: lEncoding,
-				pool: lPool
-			}, aOptions);
-		} else {
-			lRes.code = -1;
-			lRes.localeKey = "jws.jsc.res.notConnected";
-			lRes.msg = "Not connected.";
+				password: aPassword
+			};
+			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
 	},
@@ -4014,41 +3984,24 @@ jws.SystemClientPlugIn = {
 	// TODO: implement optional auto disconnect!
 	//:a:en::::none
 	//:r:*:::void:none
-	logout: function() {
+	logout: function( aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			this.sendToken({
+			var lToken = {
 				ns: jws.SystemClientPlugIn.NS,
 				type: "logout"
-			});
+			};
+			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
 	},
 	
 	systemLogon: function( aUsername, aPassword, aOptions ) {
-		var lRes = this.checkConnected();
-		if( 0 === lRes.code ) {
-			var lToken = {
-				ns: jws.SystemClientPlugIn.NS,
-				type: "logon",
-				username: aUsername,
-				password: aPassword
-			};
-			this.sendToken( lToken,	aOptions );
-		}
-		return lRes;
+		return this.login( aUsername, aPassword, aOptions );
 	},
 
 	systemLogoff: function( aOptions ) {
-		var lRes = this.checkConnected();
-		if( 0 === lRes.code ) {
-			var lToken = {
-				ns: jws.SystemClientPlugIn.NS,
-				type: "logoff"
-			};
-			this.sendToken( lToken,	aOptions );
-		}
-		return lRes;
+		return this.logout( aOptions );
 	},
 
 	systemGetAuthorities: function( aOptions ) {
@@ -4786,33 +4739,34 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 (function() {
 
 	XHRWebSocket = function(aUrl, aSubprotocol) {
-		var self              = this;
-		self.url              = (aUrl.substr(0, 2) == "ws")? "http" + aUrl.substr(2) : aUrl;
-		self.subPrcol         = aSubprotocol;
+		var self = this;
+		self.url = (aUrl.substr(0, 2) == "ws") ? "http" + aUrl.substr(2) : aUrl;
+		self.subPrcol = aSubprotocol;
 		self.readyStateValues = {
-			CONNECTING:0, 
-			OPEN:1, 
-			CLOSING:2, 
-			CLOSED:3
+			CONNECTING: 0,
+			OPEN: 1,
+			CLOSING: 2,
+			CLOSED: 3
 		}
-        
+
 		self.readyState = self.readyStateValues.CONNECTING;
 		self.bufferedAmount = 0;
 		self.__events = {};
-        
+
 		self.__ableToSend = true;
 		self.__pendingMessages = [];
 		XHRWebSocket.prototype.__already = false;
-        
-		XHRWebSocket.prototype.addEventListener = function(aType, aListener){
-			if (!(aType in this.__events)){
+
+		XHRWebSocket.prototype.addEventListener = function(aType, aListener) {
+			if (!(aType in this.__events)) {
 				this.__events[aType] = [];
 			}
 			this.__events[aType].push(aListener);
 		};
-        
+
 		XHRWebSocket.prototype.removeEventListener = function(aType, aListener, aUseCapture) {
-			if (!(aType in this.__events)) return;
+			if (!(aType in this.__events))
+				return;
 			var lEvents = this.__events[aType];
 			for (var lIndex = lEvents.length - 1; lIndex >= 0; --lIndex) {
 				if (lEvents[lIndex] === aListener) {
@@ -4821,64 +4775,65 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 				}
 			}
 		}
-        
+
 		XHRWebSocket.prototype.dispatchEvent = function(aEvent) {
 			var lEvents = this.__events[aEvent.type] || [];
 			for (var lIndex = 0; lIndex < lEvents.length; ++lIndex) {
 				lEvents[lIndex](aEvent);
 			}
 			var lHandler = self["on" + aEvent.type];
-			if (lHandler) lHandler(aEvent);
+			if (lHandler)
+				lHandler(aEvent);
 		}
-        
-		XHRWebSocket.prototype.send=function(aData){
+
+		XHRWebSocket.prototype.send = function(aData) {
 			this.__pendingMessages.push(aData);
-			if (true == this.__ableToSend){
+			if (true == this.__ableToSend) {
 				this.__sendMessage(this.__pendingMessages.shift());
 			}
 		}
-        
-		XHRWebSocket.prototype.close = function(){
+
+		XHRWebSocket.prototype.close = function() {
 			if (this.readyState == this.readyStateValues.CLOSING)
 				throw "The websocket connection is closing";
 			else if (this.readyState == this.readyStateValues.CLOSED)
 				throw "The websocket connection is already closed";
 			else {
 				var lMessage = this.__messageFactory({
-					cometType:"message",
-					readyState:3
+					cometType: "message",
+					readyState: 3
 				});
 				var lJSONMessage = JSON.stringify(lMessage);
-                 
+
 				this.__handleEvent({
-					type:"close"
+					type: "close"
 				});
-                    
+
 				var lXHR = this.__getXHRTransport();
 				lXHR.open("POST", this.url, true);
 				lXHR.setRequestHeader("Content-Type", "application/x-javascript;");
-      
-				lXHR.onreadystatechange = function(){
 
-					if (lXHR.readyState >= 4 && lXHR.status == 200) {				
+				lXHR.onreadystatechange = function() {
+
+					if (lXHR.readyState >= 4 && lXHR.status == 200) {
 						if (lXHR.responseText) {
 							self.readyState = self.readyStateValues.CLOSED;
-							setTimeout(function(){
+							setTimeout(function() {
 								self.__handleEvent({
-									type:"close"
+									type: "close"
 								});
 							}, 0)
-						}	      
+						}
 					}
 				};
-				
+
 				lXHR.send(lJSONMessage);
 			}
-		}    
-    
-		self.__handleEvent = function(aXHREvent){
+		}
+
+		self.__handleEvent = function(aXHREvent) {
 			var lEvent;
-			if ( aXHREvent.type == "close" || aXHREvent.type == "open" || aXHREvent.type == "error") {
+			if (aXHREvent.type == "close" || aXHREvent.type == "open" || aXHREvent.type == "error") {
 				lEvent = this.__createSimpleEvent(aXHREvent.type);
 			} else if (aXHREvent.type == "message") {
 				lEvent = this.__createMessageEvent("message", aXHREvent.data);
@@ -4888,24 +4843,17 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 
 			this.dispatchEvent(lEvent);
 		}
-        
-    
+
+
 		self.__createSimpleEvent = function(lType) {
-			if (document.createEvent && window.Event) {
-				var lEvent = document.createEvent("Event");
-				lEvent.initEvent(lType, false, false);
-				
-				return lEvent;
-			} else {
-				return {
-					type: lType, 
-					bubbles: false, 
-					cancelable: false
-				};
-			}
+			return {
+				type: lType,
+				bubbles: false,
+				cancelable: false
+			};
 		};
-        
-    
+
+
 		self.__createMessageEvent = function(aType, aData) {
 			if (document.createEvent && window.MessageEvent && !window.opera) {
 				var lEvent = document.createEvent("MessageEvent");
@@ -4914,79 +4862,79 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 			} else {
 				// IE and Opera, the latter one truncates the data parameter after any 0x00 bytes.
 				return {
-					type: aType, 
-					data: aData, 
-					bubbles: false, 
+					type: aType,
+					data: aData,
+					bubbles: false,
 					cancelable: false
 				};
 			}
 		};
-        
-		this.__checkPendingMessage = function(){
-			if (this.__pendingMessages.length > 0){
+
+		this.__checkPendingMessage = function() {
+			if (this.__pendingMessages.length > 0) {
 				var lData = this.__pendingMessages.shift()
 				this.__sendMessage(lData);
 			}
 		}
-       
-		this.open = function(){
+
+		this.open = function() {
 			if (this.readyState == this.readyStateValues.OPEN)
 				throw "the connection is already opened";
 			else
 				this.__handleConnectionChannel();
 		}
-    
-		this.keepConnection = function(){
+
+		this.keepConnection = function() {
 			this.__handleConnectionChannel();
 		}
 
-		this.__handleConnectionChannel = function(){
-            
+		this.__handleConnectionChannel = function() {
+
 			var lXHR = this.__getXHRTransport();
 			this.__xhr = lXHR;
-            
+
 			lXHR.open("POST", this.url, true);
 			lXHR.setRequestHeader("Content-Type", "application/x-javascript;");
 
-			lXHR.onreadystatechange = function(){
-				if (lXHR.readyState >= 4){
-					if (lXHR.status == 200) {				
+			lXHR.onreadystatechange = function() {
+				if (lXHR.readyState >= 4) {
+					if (lXHR.status == 200) {
 						if (lXHR.responseText) {
 							var lResponse = JSON.parse(lXHR.responseText);
-						
-							if (lResponse.data != ""){
-								setTimeout(function(){
+
+							if (lResponse.data != "") {
+								setTimeout(function() {
 									for (var lIndex = 0; lIndex < lResponse.data.length; lIndex++) {
 										self.__handleEvent({
-											type:"message",
+											type: "message",
 											data: lResponse.data[lIndex]
 										});
 									}
 								}, 0);
 							}
-							
+
 							// process response from the server
 							self.handleConnectionState(lResponse);
-							
+
 							// IMPORTANT: wait for the XHR connection close
-							if (1 == self.readyState){
-								setTimeout(function(){
+							if (1 == self.readyState) {
+								setTimeout(function() {
 									self.keepConnection();
 								}, 50);
 							}
-						} 
+						}
 					}
 				}
 			};
 			var lMessage = this.__messageFactory({
-				cometType:"connection"
+				cometType: "connection"
 			});
 			var lJSONMessage = JSON.stringify(lMessage);
-			
+
 			lXHR.send(lJSONMessage);
 		}
-                
-		this.__objectMessageBasePrototype = function(){
+
+		this.__objectMessageBasePrototype = function() {
 			var lMessage = {
 				subPl: "json", //jWebSocket subprotocol support
 				cometType: undefined,
@@ -4994,64 +4942,64 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 				readyState: self.readyState
 			}
 			return lMessage;
-		} 
-        
-		this.__sendMessage = function(aData){
-			if (this.readyState == this.readyStateValues.CONNECTING){
+		}
+
+		this.__sendMessage = function(aData) {
+			if (this.readyState == this.readyStateValues.CONNECTING) {
 				throw "The websocket connection has not been stablished";
 			} else if (this.readyState == this.readyStateValues.CLOSED) {
 				throw "The websocket connection has been closed, the message can not be sent to the server";
-			} else if (this.__ableToSend == true){  
+			} else if (this.__ableToSend == true) {
 				// basic synchronism
 				this.__ableToSend = false;
-				
+
 				var lMessage = this.__messageFactory({
-					cometType:"message",
-					data:aData
+					cometType: "message",
+					data: aData
 				});
 				var lJSONMessage = JSON.stringify(lMessage);
 				var lXHR = this.__getXHRTransport();
-            
+
 				lXHR.open("POST", this.url, true);
 				lXHR.setRequestHeader("Content-Type", "application/x-javascript;");
-            
-				lXHR.onreadystatechange = function(){
+
+				lXHR.onreadystatechange = function() {
 					// the channel is released
 					self.__ableToSend = true;
-					
-					if (lXHR.readyState >= 4 && lXHR.status == 200) {				
+
+					if (lXHR.readyState >= 4 && lXHR.status == 200) {
 						if (lXHR.responseText) {
-							var lResponse  = JSON.parse(lXHR.responseText)
-							
-							setTimeout(function(){
+							var lResponse = JSON.parse(lXHR.responseText)
+
+							setTimeout(function() {
 								for (var lIndex = 0; lIndex < lResponse.data.length; lIndex++) {
 									self.__handleEvent({
-										type:"message",
+										type: "message",
 										data: lResponse.data[lIndex]
 									});
-									
+
 								}
 							}, 0);
 						}
 						self.__checkPendingMessage();
 					}
 				};
-				
+
 				// sending XHR message
 				lXHR.send(lJSONMessage);
-			}else{
+			} else {
 				this.__pendingMessages.push(aData);
 			}
 
 		}
-        
-		this.__messageFactory = function(aArgs){
-            
+
+		this.__messageFactory = function(aArgs) {
+
 			var lMessage = this.__objectMessageBasePrototype();
 			if (aArgs != undefined)
 				if (aArgs.cometType == undefined)
 					throw "Error up, type message not found";
-				else{
+				else {
 					lMessage.cometType = aArgs.cometType;
 					if (aArgs.data != undefined)
 						lMessage.data = aArgs.data;
@@ -5060,18 +5008,18 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 					if (aArgs.readyState != undefined)
 						lMessage.readyState = aArgs.readyState;
 				}
-                
+
 			return lMessage;
 		}
-    
-		this.handleConnectionState = function(lResponse){
-			if (this.readyState == this.readyStateValues.CONNECTING 
-				&& lResponse.readyState == this.readyStateValues.OPEN){
+
+		this.handleConnectionState = function(lResponse) {
+			if (this.readyState == this.readyStateValues.CONNECTING
+					&& lResponse.readyState == this.readyStateValues.OPEN) {
 				// require to affect the readyState flag before call the onopen callback
 				this.readyState = lResponse.readyState;
 				this.__handleEvent({
-					type:"open"
-				}); 
+					type: "open"
+				});
 			}
 
 			if (lResponse.readyState)
@@ -5079,20 +5027,20 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 			else
 				throw "Missing 'readyState' argument from the server";
 
-			if (this.readyState == 2 || this.readyState == 3){
+			if (this.readyState == 2 || this.readyState == 3) {
 				this.__handleEvent({
-					type:"close"
-				}); 
+					type: "close"
+				});
 			}
 		}
-        
-		this.__getXHRTransport = function(){
+
+		this.__getXHRTransport = function() {
 
 			var lXHR;
 			if (window.XMLHttpRequest) { // Mozilla, Safari, ...
 				ie = 0;
 				lXHR = new XMLHttpRequest();
-				if (lXHR.overrideMimeType) 
+				if (lXHR.overrideMimeType)
 					lXHR.overrideMimeType('text/xml');
 			}
 			else { // IE
@@ -5100,22 +5048,24 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 				try {
 					lXHR = new ActiveXObject("Msxml2.XMLHTTP");
 				}
-				catch (e) {}
-				if ( typeof httpRequest == 'undefined' ) {
+				catch (e) {
+				}
+				if (typeof httpRequest == 'undefined') {
 					try {
 						lXHR = new ActiveXObject("Microsoft.XMLHTTP");
 					}
-					catch (f) {}
+					catch (f) {
+					}
 				}
 			}
 			if (!lXHR) {
 				throw "Cannot create an XMLHTTP instance";
 				return false;
 			}
-			
-			return lXHR ;
+
+			return lXHR;
 		}
-               
+
 		this.open();
 	}
 
