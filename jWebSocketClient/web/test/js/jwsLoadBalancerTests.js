@@ -125,7 +125,7 @@ jws.tests.LoadBalancer = {
 						});		
 					
 						// perform the create five sample service on the server
-						// with valid credential and invalid arguments
+						// with valid credential and invalid arguments.
 						jws.Tests.getAdminTestConn().lbSampleService("admin", {
 							clusterAlias: 'serviceWrong',
 							nameSpace: lClusterInfoValues[0].clusterNS,
