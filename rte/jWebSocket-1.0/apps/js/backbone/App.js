@@ -28,39 +28,42 @@ App.on('appLoaded', function() {
 	// loading modules
 	for (var lIndex in lModules) {
 		App.importScript('${APP_HOME}/module/' + lModules[lIndex]);
-		App.getModule(lModules[lIndex]).load(lJMS);
-		App.getLogger().debug('Module "' + lModules[lIndex] + '" successfully loaded!');
-	}
-	
-	App.publish('Main', {
-
-		simulateRegisterUser: function(aUsername){
-			var lMsg= lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
-			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.useradmin');
-			lMsg.setStringProperty('tokenType', 'registerNewUser');
-			lMsg.setStringProperty('username', aUsername);
-			lMsg.setIntProperty('code', 0);
-			
-			lJMS.send(lMsg);
-		},
-		simulateSendSMS: function(){
-			var lMsg= lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
-			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.sms');
-			lMsg.setStringProperty('tokenType', 'sendSMS');
-			lMsg.setStringProperty('username', 'guest');
-			lMsg.setIntProperty('code', 0);
-			
-			lJMS.send(lMsg);
-		},
-		simulateSendSMSError: function(){
-			var lMsg= lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
-			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.sms');
-			lMsg.setStringProperty('tokenType', 'sendSMS');
-			lMsg.setStringProperty('username', 'guest');
-			lMsg.setIntProperty('code', -1 );
-			
-			lJMS.send(lMsg);
+		try {
+			App.getModule(lModules[lIndex]).load(lJMS);
+			App.getLogger().debug('Module "' + lModules[lIndex] + '" successfully loaded!');
+		} catch (lError) {
+			App.getLogger().error('Error on loading ' + lModules[lIndex] + ' module: ' + lError.toString());
 		}
+	}
+
+	App.publish('Main', {
+//		simulateRegisterUser: function(aUsername) {
+//			var lMsg = lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
+//			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.useradmin');
+//			lMsg.setStringProperty('tokenType', 'registerNewUser');
+//			lMsg.setStringProperty('username', aUsername);
+//			lMsg.setIntProperty('code', 0);
+//
+//			lJMS.send(lMsg);
+//		},
+//		simulateSendSMS: function() {
+//			var lMsg = lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
+//			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.sms');
+//			lMsg.setStringProperty('tokenType', 'sendSMS');
+//			lMsg.setStringProperty('username', 'guest');
+//			lMsg.setIntProperty('code', 0);
+//
+//			lJMS.send(lMsg);
+//		},
+//		simulateSendSMSError: function() {
+//			var lMsg = lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
+//			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.sms');
+//			lMsg.setStringProperty('tokenType', 'sendSMS');
+//			lMsg.setStringProperty('username', 'guest');
+//			lMsg.setIntProperty('code', -1);
+//
+//			lJMS.send(lMsg);
+//		}
 	});
 });
 
