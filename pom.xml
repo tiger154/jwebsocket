@@ -9,6 +9,25 @@
 	<version>1.0</version>
 	<description>Parent Project for jWebSocket</description>
 	<url>http://jwebsocket.org</url>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>aschulze</id>
+			<name>Alexander Schulze</name>
+			<email>aschulze@jwebsocket.org</email>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:svn:http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/</connection>
+		<developerConnection>scm:svn:http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/</developerConnection>
+		<url>http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/</url>
+	</scm>
 	<modules>
 		<module>jWebSocketLibs</module>
 		<module>jWebSocketCommon</module>
