@@ -186,7 +186,7 @@ jws.LoadBalancerPlugIn = {
 	//:a:en::aPassword:String:Password to verify privileges.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	lbSampleService: function( aPassword, aOptions ){
+	lbSampleService: function( aPassword, aOptions ) {
 		var lServiceEndPoint = new jws.jWebSocketJSONClient();				
 		lServiceEndPoint.open( "ws://localhost:8787/jWebSocket/jWebSocket", {	
 			OnWelcome: function (){
