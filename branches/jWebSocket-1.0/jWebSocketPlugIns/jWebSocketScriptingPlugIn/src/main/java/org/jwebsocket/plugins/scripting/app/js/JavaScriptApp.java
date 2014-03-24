@@ -20,6 +20,7 @@ package org.jwebsocket.plugins.scripting.app.js;
 
 import java.io.File;
 import java.security.PrivilegedAction;
+import java.util.Map;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import org.apache.commons.io.FileUtils;
@@ -156,6 +157,20 @@ public class JavaScriptApp extends BaseScriptApp {
 		String lVersion = (String) lInvocable.invokeMethod(mApp, "getVersion", new Object[0]);
 
 		return lVersion;
+	}
+	
+	/**
+	 * {@inheritDoc }
+	 *
+	 * @return
+	 * @throws java.lang.Exception
+	 */
+	@Override
+	public Map getClientAPI() throws Exception {
+		Invocable lInvocable = (Invocable) getScriptApp();
+		Map lAPI = (Map) lInvocable.invokeMethod(mApp, "getClientAPI", new Object[0]);
+
+		return lAPI;
 	}
 
 	/**
