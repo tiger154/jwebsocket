@@ -17,240 +17,226 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 App.setModule('useradmin', {
-    // the module durable subscriber id
-    subscriptionId: 'backbone_module_useradmin',
-    // the target plugin namespace to listen
-    targetNS: 'org.jwebsocket.plugins.useradmin',
-    // called when the module is loaded
-    load: function(aJMSManager) {
-        lMe = this;
-        // listening useradmin events
-        aJMSManager.subscribe({
-            onMessage: function(aMessage) {
-                var lMsgId = aMessage.getStringProperty('msgId');
-                var lTokenType = aMessage.getStringProperty('tokenType');
-                var lUsername = aMessage.getStringProperty('username');
+	// the module durable subscriber id
+	subscriptionId: 'backbone_module_useradmin',
+	// the target plugin namespace to listen
+	targetNS: 'org.jwebsocket.plugins.useradmin',
+	// called when the module is loaded
+	load: function(aJMSManager) {
+		lMe = this;
+		// listening useradmin events
+		aJMSManager.subscribe({
+			onMessage: function(aMessage) {
+				var lMsgId = aMessage.getStringProperty('msgId');
+				var lTokenType = aMessage.getStringProperty('tokenType');
+				var lUsername = aMessage.getStringProperty('username');
 
+				// required for cluster compatibility
+				if (App.isClusterEnabled() && !App.getWebSocketServer().getSynchronizer()
+						.getWorkerTurn(lMsgId)) {
+					return;
+				}
 
-                // required for cluster compatibility
-                if (App.isClusterEnabled() && !App.getWebSocketServer().getSynchronizer()
-                        .getWorkerTurn(lMsgId)) {
-                    return;
-                }
+				// processing message
+				if ('registerNewUser' == lTokenType || 'addUser' == lTokenType) {
+					//Getting Countdown quota for SMSPlugin
+					var lResponse = lMe.getSMSQuota('CountDown',
+							'org.jwebsocket.plugins.sms',
+							'defaultUser', 'Group', 'sendSMS');
 
-                // processing message
-                if ('registerNewUser' == lTokenType || 'addUser' == lTokenType ) {
+					if (0 == lResponse.getCode()) {
+						// assigning the SMS countdown quota to the new user
+						var lResponse = lMe.registerSMSQuota(lResponse.getString('uuid'),
+								'CountDown', lUsername, 'User');
 
-                    //Getting Countdown quota for SMSPlugin
-                    var lResponse = lMe.getSMSQuota('CountDown',
-                            'org.jwebsocket.plugins.sms',
-                            'defaultUser', 'Group', 'sendSMS');
+						if (0 != lResponse.getCode()) {
+							App.getLogger().error("UserAdmin - Could not register quota: " + lResponse.getString('msg'));
+						}
+					} else {
+						//if there is not a quota for SMSPlugin, create tue quota
+						//for the new user that has been register
+						lResponse = App.invokePlugIn('jws.quota', null, {
+							type: 'createQuota',
+							identifier: 'CountDown',
+							namespace: 'org.jwebsocket.plugins.sms',
+							instance: 'defaultUser',
+							instance_type: 'Group',
+							actions: 'sendSMS',
+							value: '5'
+						});
 
+						//if quota create was success then register user to the quota.
+						if (0 == lResponse.getCode()) {
 
-                    if (0 == lResponse.getCode()) {
+							lUuidResponse = lResponse.getString('uuid');
+							var lResponse = lMe.registerSMSQuota(lUuidResponse,
+									'CountDown', lUsername, 'User');
 
-                        // assigning the SMS countdown quota to the new user
-                        var lResponse = lMe.registerSMSQuota(lResponse.getString('uuid'),
-                                'CountDown', lUsername, 'User');
+							if (0 != lResponse.getCode()) {
+								App.getLogger().error("UserAdmin - Could not register quota: " + lResponse.getString('msg'));
+							}
+							lMe.initQuotaDefaultServerUsers(lUuidResponse);
 
-                        if (0 != lResponse.getCode()) {
-                            App.getLogger().error("UserAdmin - Could not register quota: " + lResponse.getString('msg'));
-                        }
-                    } else {
-                        //if there is not a quota for SMSPlugin, create tue quota
-                        //for the new user that has been register
-                        lResponse = App.invokePlugIn('jws.quota', null, {
-                            type: 'createQuota',
-                            identifier: 'CountDown',
-                            namespace: 'org.jwebsocket.plugins.sms',
-                            instance: 'defaultUser',
-                            instance_type: 'Group',
-                            actions: 'sendSMS',
-                            value: '5'
-                        });
+						} else {
+							App.getLogger().error("UserAdmin - Could not create the quota: " + lResponse.getString('msg'));
+						}
+					}
+				}
+			}
+		}, 'ns = \'org.jwebsocket.plugins\' AND '
+				+ 'msgType = \'tokenProcessed\' AND '
+				+ 'code = 0 AND '
+				+ 'tokenNS = \'' + this.targetNS + '\'',
+				true,
+				this.subscriptionId);
 
-                        //if quota create was success then register user to the quota.
-                        if (0 == lResponse.getCode()) {
+		var lResponse = lMe.getSMSQuota('CountDown',
+				'org.jwebsocket.plugins.sms',
+				'defaultUser', 'Group', 'sendSMS');
 
-                            lUuidResponse = lResponse.getString('uuid');
-                            var lResponse = lMe.registerSMSQuota(lUuidResponse,
-                                    'CountDown', lUsername, 'User');
+		//if there is not a quota for SMSPlugin, create tue quota
+		if (0 != lResponse.getCode()) {
+			lResponse = App.invokePlugIn('jws.quota', null, {
+				type: 'createQuota',
+				identifier: 'CountDown',
+				namespace: 'org.jwebsocket.plugins.sms',
+				instance: 'defaultUser',
+				instance_type: 'Group',
+				actions: 'sendSMS',
+				value: '5'
+			});
 
-                            if (0 != lResponse.getCode()) {
-                                App.getLogger().error("UserAdmin - Could not register quota: " + lResponse.getString('msg'));
-                            }
-                            lMe.initQuotaDefaultServerUsers(lUuidResponse);
+			if (0 == lResponse.getCode()) {
+				//Registering quotas for defualt server users
+				this.initQuotaDefaultServerUsers(lResponse.getString('uuid'));
+			} else {
+				App.getLogger().error("UserAdmin - Could not create the quota: "
+						+ lResponse.getString('msg'));
+			}
+		} else {
+			//Registering quotas for defualt server users
+			this.initQuotaDefaultServerUsers(lResponse.getString('uuid'));
+		}
+	},
+	// called when the module is unloaded
+	unload: function(aJMSManager) {
+		aJMSManager.unsubscribe(this.subscriptionId);
+	},
+	
+	registerSMSQuota: function(aUuid, aIdentifier,
+			aInstance, aIntanceType) {
 
-                        } else {
-                            App.getLogger().error("UserAdmin - Could not create the quota: " + lResponse.getString('msg'));
-                        }
-                    }
-                }
-            }
-        }, 'ns = \'org.jwebsocket.plugins\' AND '
-                + 'msgType = \'tokenProcessed\' AND '
-                + 'code = 0 AND '
-                + 'tokenNS = \'' + this.targetNS + '\'',
-                true,
-                this.subscriptionId);
+		// assigning the SMS countdown quota to the new user
+		lResponse = App.invokePlugIn('jws.quota', null, {
+			type: 'registerQuota',
+			uuid: aUuid,
+			identifier: aIdentifier,
+			instance: aInstance,
+			instance_type: aIntanceType
+		});
 
-        var lResponse = lMe.getSMSQuota('CountDown',
-                'org.jwebsocket.plugins.sms',
-                'defaultUser', 'Group', 'sendSMS');
+		return lResponse;
+	},
+	getSMSQuota: function(aIdentifier, aNamespace, aInstance, aInstanceType, aActions) {
+		// getting the SMS countdown quota
+		var lResponse = App.invokePlugIn('jws.quota', null, {
+			type: 'getQuota',
+			identifier: aIdentifier,
+			namespace: aNamespace,
+			instance: aInstance,
+			instance_type: aInstanceType,
+			actions: aActions
+		});
 
-        //if there is not a quota for SMSPlugin, create tue quota
-        if (0 != lResponse.getCode()) {
+		return lResponse;
+	}, initQuotaDefaultServerUsers: function(aUuid) {
 
-            lResponse = App.invokePlugIn('jws.quota', null, {
-                type: 'createQuota',
-                identifier: 'CountDown',
-                namespace: 'org.jwebsocket.plugins.sms',
-                instance: 'defaultUser',
-                instance_type: 'Group',
-                actions: 'sendSMS',
-                value: '5'
-            });
+		//registering quota for SMS plugin to default users anonymous,guest,root
+		//the firt time when the quota is created their quota values is equal 0
+		//aIdentifier, aNamespace, aInstance, aInstanceType, aActions
+		var lResponse = this.getSMSQuota('CountDown',
+				'org.jwebsocket.plugins.sms',
+				'anonymous', 'User', 'sendSMS');
 
-            if (0 == lResponse.getCode()) {
-                //Registering quotas for defualt server users
-                this.initQuotaDefaultServerUsers(lResponse.getString('uuid'));
-            } else {
-                App.getLogger().error("UserAdmin - Could not create the quota: "
-                        + lResponse.getString('msg'));
-            }
-        } else {
-            //Registering quotas for defualt server users
-            this.initQuotaDefaultServerUsers(lResponse.getString('uuid'));
-        }
-    },
-    // called when the module is unloaded
-    unload: function(aJMSManager) {
+		if (0 != lResponse.getCode()) {
+			lResponse = this.registerSMSQuota(aUuid, 'CountDown', 'anonymous', 'User');
+			if (0 == lResponse.getCode()) {
+				App.invokePlugIn('jws.quota', null, {
+					type: 'setQuota',
+					identifier: 'CountDown',
+					namespace: 'org.jwebsocket.plugins.sms',
+					instance: 'anonymous',
+					instance_type: 'User',
+					actions: 'sendSMS',
+					value: '0'
+				});
+			}
+		}
 
-    },
-    registerSMSQuota: function(aUuid, aIdentifier,
-            aInstance, aIntanceType) {
+		//Creating quota for guest user and setting this to 0
+		var lResponse = this.getSMSQuota('CountDown',
+				'org.jwebsocket.plugins.sms', 'guest', 'User', 'sendSMS');
 
-        // assigning the SMS countdown quota to the new user
-        lResponse = App.invokePlugIn('jws.quota', null, {
-            type: 'registerQuota',
-            uuid: aUuid,
-            identifier: aIdentifier,
-            instance: aInstance,
-            instance_type: aIntanceType
-        });
+		if (0 != lResponse.getCode()) {
+			lResponse = this.registerSMSQuota(aUuid,
+					'CountDown', 'guest', 'User');
 
-        return lResponse;
-    },
-    getSMSQuota: function(aIdentifier, aNamespace, aInstance, aInstanceType, aActions) {
+			if (0 == lResponse.getCode()) {
+				App.invokePlugIn('jws.quota', null, {
+					type: 'setQuota',
+					identifier: 'CountDown',
+					namespace: 'org.jwebsocket.plugins.sms',
+					instance: 'guest',
+					instance_type: 'User',
+					actions: 'sendSMS',
+					value: '0'
+				});
+			}
+		}
 
-        // getting the SMS countdown quota
-        var lResponse = App.invokePlugIn('jws.quota', null, {
-            type: 'getQuota',
-            identifier: aIdentifier,
-            namespace: aNamespace,
-            instance: aInstance,
-            instance_type: aInstanceType,
-            actions: aActions
-        });
+		//Creating quota for root user and setting this to 0
+		var lResponse = this.getSMSQuota('CountDown',
+				'org.jwebsocket.plugins.sms',
+				'root', 'User', 'sendSMS');
 
-        return lResponse;
-    }, initQuotaDefaultServerUsers: function(aUuid) {
+		if (0 != lResponse.getCode()) {
+			lResponse = this.registerSMSQuota(aUuid,
+					'CountDown', 'root', 'User');
 
-        //registering quota for SMS plugin to default users anonymous,guest,root
-        //the firt time when the quota is created their quota values is equal 0
-        //aIdentifier, aNamespace, aInstance, aInstanceType, aActions
-        var lResponse = this.getSMSQuota('CountDown',
-                'org.jwebsocket.plugins.sms',
-                'anonymous', 'User', 'sendSMS');
+			if (0 == lResponse.getCode()) {
+				App.invokePlugIn('jws.quota', null, {
+					type: 'setQuota',
+					identifier: 'CountDown',
+					namespace: 'org.jwebsocket.plugins.sms',
+					instance: 'root',
+					instance_type: 'User',
+					actions: 'sendSMS',
+					value: '0'
+				});
+			}
+		}
 
-        if (0 != lResponse.getCode()) {
+		//Creating quota for root user and setting this to 0
+		var lResponse = this.getSMSQuota('CountDown',
+				'org.jwebsocket.plugins.sms',
+				'alexander', 'User', 'sendSMS');
 
-            lResponse = this.registerSMSQuota(aUuid,
-                    'CountDown', 'anonymous', 'User');
+		if (0 != lResponse.getCode()) {
+			lResponse = this.registerSMSQuota(aUuid,
+					'CountDown', 'alexander', 'User');
 
-            if (0 == lResponse.getCode()) {
-
-                App.invokePlugIn('jws.quota', null, {
-                    type: 'setQuota',
-                    identifier: 'CountDown',
-                    namespace: 'org.jwebsocket.plugins.sms',
-                    instance: 'anonymous',
-                    instance_type: 'User',
-                    actions: 'sendSMS',
-                    value: '0'
-                });
-            }
-        }
-
-        //Creating quota for guest user and setting this to 0
-        var lResponse = this.getSMSQuota('CountDown',
-                'org.jwebsocket.plugins.sms',
-                'guest', 'User', 'sendSMS');
-
-        if (0 != lResponse.getCode()) {
-            lResponse = this.registerSMSQuota(aUuid,
-                    'CountDown', 'guest', 'User');
-
-            if (0 == lResponse.getCode()) {
-                App.invokePlugIn('jws.quota', null, {
-                    type: 'setQuota',
-                    identifier: 'CountDown',
-                    namespace: 'org.jwebsocket.plugins.sms',
-                    instance: 'guest',
-                    instance_type: 'User',
-                    actions: 'sendSMS',
-                    value: '0'
-                });
-            }
-        }
-
-
-        //Creating quota for root user and setting this to 0
-        var lResponse = this.getSMSQuota('CountDown',
-                'org.jwebsocket.plugins.sms',
-                'root', 'User', 'sendSMS');
-
-        if (0 != lResponse.getCode()) {
-            lResponse = this.registerSMSQuota(aUuid,
-                    'CountDown', 'root', 'User');
-
-            if (0 == lResponse.getCode()) {
-                App.invokePlugIn('jws.quota', null, {
-                    type: 'setQuota',
-                    identifier: 'CountDown',
-                    namespace: 'org.jwebsocket.plugins.sms',
-                    instance: 'root',
-                    instance_type: 'User',
-                    actions: 'sendSMS',
-                    value: '0'
-                });
-            }
-        }
-
-
-        //Creating quota for root user and setting this to 0
-        var lResponse = this.getSMSQuota('CountDown',
-                'org.jwebsocket.plugins.sms',
-                'alexander', 'User', 'sendSMS');
-
-        if (0 != lResponse.getCode()) {
-            lResponse = this.registerSMSQuota(aUuid,
-                    'CountDown', 'alexander', 'User');
-
-            if (0 == lResponse.getCode()) {
-                App.invokePlugIn('jws.quota', null, {
-                    type: 'setQuota',
-                    identifier: 'CountDown',
-                    namespace: 'org.jwebsocket.plugins.sms',
-                    instance: 'alexander',
-                    instance_type: 'User',
-                    actions: 'sendSMS',
-                    value: '5'
-                });
-            }
-        }
-
-
-    }
-
+			if (0 == lResponse.getCode()) {
+				App.invokePlugIn('jws.quota', null, {
+					type: 'setQuota',
+					identifier: 'CountDown',
+					namespace: 'org.jwebsocket.plugins.sms',
+					instance: 'alexander',
+					instance_type: 'User',
+					actions: 'sendSMS',
+					value: '5'
+				});
+			}
+		}
+	}
 });
+
