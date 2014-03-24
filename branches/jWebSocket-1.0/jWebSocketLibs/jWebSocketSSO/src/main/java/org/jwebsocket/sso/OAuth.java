@@ -23,36 +23,20 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.sso;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.net.URLCodec;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
  * @author Alexander Schulze
  */
-public class OAuth {
+public class OAuth extends OAuthBase{
 
-	private String mBaseURL = null;
-	private String mClientSecret = null;
-	private String mRefreshToken = null;
-	private String mAccessToken = null;
-	private String mUsername = null;
-	private long mDefaultTimeout = 10000;
-	private int mReturnCode = 0;
-	private String mReturnMsg = "Ok";
 
 	/**
 	 *
@@ -62,181 +46,67 @@ public class OAuth {
 
 	/**
 	 *
-	 * @param aURL
+	 * @param aHost
 	 */
-	public OAuth(String aURL) {
-		mBaseURL = aURL;
+	public OAuth(String aHost) {
+		mOAuthHost = aHost;
 	}
 
 	/**
 	 *
-	 * @param aURL
-	 * @param aClientSecret
+	 * @param aHost
+	 * @param aAppId
+	 * @param aAppSecret
 	 */
-	public OAuth(String aURL, String aClientSecret) {
-		mBaseURL = aURL;
-		mClientSecret = aClientSecret;
+	public OAuth(String aHost, String aAppId, String aAppSecret) {
+		mOAuthHost = aHost;
+		mOAuthAppId = aAppId;
+		mOAuthAppSecret = aAppSecret;
 	}
 
 	/**
 	 *
-	 * @param aURL
-	 * @param aClientSecret
+	 * @param aHost
+	 * @param aAppId
+	 * @param aAppSecret
 	 * @param aDefaultTimeout
 	 */
-	public OAuth(String aURL, String aClientSecret, long aDefaultTimeout) {
-		mBaseURL = aURL;
-		mClientSecret = aClientSecret;
+	public OAuth(String aHost, String aAppId, String aAppSecret, long aDefaultTimeout) {
+		mOAuthHost = aHost;
+		mOAuthAppId = aAppId;
+		mOAuthAppSecret = aAppSecret;
 		mDefaultTimeout = aDefaultTimeout;
 	}
 
 	/**
 	 *
-	 * @param aURL
-	 * @param aContentType
-	 * @param aPostBody
+	 * @param aUsername
+	 * @param aPassword
 	 * @param aTimeout
 	 * @return
 	 */
-	public String call(String aURL, String aContentType, String aPostBody, long aTimeout) {
-		String lJSON;
-		SSLContext lSSLContext;
-
+	public String getSSOSession(String aUsername, String aPassword, long aTimeout) {
+		String lPostBody;
 		try {
-			// TODO: Make acceptance of unsigned certificates optional!
-			// This methodology is used to accept unsigned certficates
-			// on the SSL server. Be careful with this in production environments!
+			lPostBody = null;
+			String lCredentials = Base64.encodeBase64String((aUsername + ":" + aPassword).getBytes("UTF-8"));
+			Map lHeaders = new HashMap<String, String>();
+			lHeaders.put("Authorization", "Basic " + lCredentials);
+			lHeaders.put("Cache-Control", "no-cache");
+			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+			String lJSONString = call2(mOAuthHost + mOAuthGetSessionURL, "GET",
+					lHeaders, lPostBody, aTimeout);
 
-			// Create a trust manager to accept unsigned certificates
-			TrustManager[] lTrustManager = new TrustManager[]{
-				new X509TrustManager() {
-					@Override
-					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-						return null;
-					}
-
-					@Override
-					public void checkClientTrusted(
-							java.security.cert.X509Certificate[] aCerts, String aAuthType) {
-					}
-
-					@Override
-					public void checkServerTrusted(
-							java.security.cert.X509Certificate[] aCerts, String aAuthType) {
-					}
-				}
-			};
-
-			// Use this trustmanager to not reject unsigned certificates
-			lSSLContext = SSLContext.getInstance("TLS");
-			lSSLContext.init(null, lTrustManager, new java.security.SecureRandom());
-		} catch (KeyManagementException lEx) {
-			// exceptions could be processed differently
-			mReturnCode = -1;
-			mReturnMsg = lEx.getClass().getSimpleName() + " initializing SSL connection to OAuth host.";
-			return "{\"code\":-1, \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
-		} catch (NoSuchAlgorithmException lEx) {
-			// exceptions could be processed differently
-			mReturnCode = -1;
-			mReturnMsg = lEx.getClass().getSimpleName() + " initializing SSL connection to OAuth host.";
-			return "{\"code\":-1, \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
-		}
-
-		try {
-			URL lURL = new URL(mBaseURL);
-
-			HttpsURLConnection lConn = (HttpsURLConnection) lURL.openConnection();
-			// in case basic authentication is required:
-			// String encodedLoginCreds = new Base64().encodeAsString("username:password".getBytes());
-			// lConn.setRequestProperty("Authorization", "Basic " + encodedLoginCreds);
-			lConn.setSSLSocketFactory(lSSLContext.getSocketFactory());
-			lConn.setDoInput(true);
-			lConn.setDoOutput(true);
-			lConn.setRequestMethod("POST");
-			// lConn.setFollowRedirects(true);
-			lConn.setRequestProperty("Content-Type", aContentType);
-
-			// open up the output stream of the connection 
-			DataOutputStream lOut = new DataOutputStream(lConn.getOutputStream());
-			lOut.write(aPostBody.getBytes("UTF-8"));
-			lOut.close();
-
-			// System.out.println("Resp Code:" + lConn.getResponseCode());
-			// System.out.println("Resp Message:" + lConn.getResponseMessage());
-
-			Timer lTimer = new Timer();
-			lTimer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-				}
-			}, aTimeout);
-
-			// get ready to read the response from the server 
-			DataInputStream lIS = new DataInputStream(lConn.getInputStream());
-			// read in each character until end-of-stream is detected 
-			StringBuilder lSB = new StringBuilder();
-			for (int lInt = lIS.read(); lInt != -1; lInt = lIS.read()) {
-				lSB.append((char) lInt);
-			}
-			lJSON = lSB.toString();
-			lIS.close();
-
+			ObjectMapper lMapper = new ObjectMapper();
+			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class);
+			mSessionId = (String) lJSON.get("smsession");
+			return lJSONString;
 		} catch (IOException lEx) {
 			mReturnCode = -1;
-			mReturnMsg = lEx.getClass().getSimpleName() + " requesting OAuth host.";
-			return "{\"code\":-1, \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
+			mReturnMsg = lEx.getClass().getSimpleName() + " authenticating directly against OAuth host.";
+			return "{\"code\":-1, \"msg\":\""
+					+ lEx.getClass().getSimpleName() + "\"}";
 		}
-		return lJSON;
-	}
-
-	/**
-	 * @return the BASE_URL
-	 */
-	public String getBaseURL() {
-		return mBaseURL;
-	}
-
-	/**
-	 *
-	 * @param aBaseURL
-	 */
-	public void setBaseURL(String aBaseURL) {
-		mBaseURL = aBaseURL;
-	}
-
-	/**
-	 * @return the CLIENT_SECRET
-	 */
-	public String getClientSecret() {
-		return mClientSecret;
-	}
-
-	/**
-	 * @param aCLIENT_SECRET the CLIENT_SECRET to set
-	 */
-	public void setClientSecret(String aCLIENT_SECRET) {
-		mClientSecret = aCLIENT_SECRET;
-	}
-
-	/**
-	 * @return the mUsername
-	 */
-	public String getUsername() {
-		return mUsername;
-	}
-
-	/**
-	 * @return the mRefreshToken
-	 */
-	public String getRefreshToken() {
-		return mRefreshToken;
-	}
-
-	/**
-	 * @return the mAccessToken
-	 */
-	public String getAccessToken() {
-		return mAccessToken;
 	}
 
 	/**
@@ -249,13 +119,49 @@ public class OAuth {
 	public String authDirect(String aUsername, String aPassword, long aTimeout) {
 		String lPostBody;
 		try {
-			lPostBody =
-					"client_id=ro_client"
+			lPostBody
+					= "client_id=ro_client"
 					+ "&grant_type=password"
 					+ "&username=" + URLEncoder.encode(aUsername, "UTF-8")
 					+ "&password=" + URLEncoder.encode(aPassword, "UTF-8");
-			String lJSONString = call(mBaseURL,
-					"application/x-www-form-urlencoded;", lPostBody, aTimeout);
+			Map lHeaders = new HashMap<String, String>();
+			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+			String lJSONString = call(mOAuthHost, "POST",
+					lHeaders, lPostBody, aTimeout);
+			ObjectMapper lMapper = new ObjectMapper();
+			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class
+			);
+			mAccessToken = (String) lJSON.get("access_token");
+			mRefreshToken = (String) lJSON.get("refresh_token");
+			return lJSONString;
+		} catch (IOException lEx) {
+			mReturnCode = -1;
+			mReturnMsg = lEx.getClass().getSimpleName() + " authenticating directly against OAuth host.";
+			return "{\"code\":-1, \"msg\":\""
+					+ lEx.getClass().getSimpleName() + "\"}";
+		}
+	}
+
+	/**
+	 *
+	 * @param aSessionId
+	 * @param aTimeout
+	 * @return
+	 */
+	public String authSession(String aSessionId, long aTimeout) {
+		String lPostBody;
+		try {
+			URLCodec lCodec = new URLCodec();
+			lPostBody
+					= "grant_type=password&"
+					+ SSO_SESSION_COOKIE_NAME + "=" + lCodec.encode(aSessionId, "UTF-8");
+			Map lHeaders = new HashMap<String, String>();
+			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+			lHeaders.put("Authorization",
+					"Basic " + Base64.encodeBase64String(
+							(getOAuthAppId() + ":" + getOAuthAppSecret()).getBytes("UTF-8")));
+			String lJSONString = call2(mOAuthHost + OAUTH_AUTHSESSION_URL, "POST",
+					lHeaders, lPostBody, aTimeout);
 			ObjectMapper lMapper = new ObjectMapper();
 			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class);
 			mAccessToken = (String) lJSON.get("access_token");
@@ -281,13 +187,15 @@ public class OAuth {
 
 	/**
 	 *
-	 * @param aClientSecret
+	 * @param aAppId
+	 * @param aAppSecret
 	 * @param aAccessToken
 	 * @param aTimeout
 	 * @return
 	 */
-	public String getUser(String aClientSecret, String aAccessToken, long aTimeout) {
-		if (null == aClientSecret) {
+	public String getUser(String aAppId, String aAppSecret, String aAccessToken,
+			long aTimeout) {
+		if (null == aAppSecret) {
 			return "{\"code\":-1, \"msg\":\"No client secret passed\"}";
 		}
 		if (null == aAccessToken) {
@@ -298,19 +206,22 @@ public class OAuth {
 		}
 		String lPostBody;
 		mUsername = null;
+		mFullname = null;
+		mEmail = null;
 		try {
-			lPostBody =
-					"client_id=rs_client"
-					+ "&client_secret=" + aClientSecret
-					+ "&grant_type=" + "urn:pingidentity.com:oauth2:grant_type:validate_bearer"
-					+ "&token=" + aAccessToken;
-			String lJSONString = call(mBaseURL,
-					"application/x-www-form-urlencoded;", lPostBody, aTimeout);
+			lPostBody = "access_token=" + aAccessToken;
+
+			Map lHeaders = new HashMap<String, String>();
+			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
+			String lJSONString = call2(mOAuthHost + OAUTH_GETUSER_URL, "POST",
+					lHeaders, lPostBody, aTimeout);
 			ObjectMapper lMapper = new ObjectMapper();
 			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class);
-			Map<String, Object> lAccessToken = (Map) lJSON.get("access_token");
-			if (null != lAccessToken) {
-				mUsername = (String) lAccessToken.get("username");
+			if (null != lJSON) {
+				mUsername = (String) lJSON.get("login_name");
+				mFullname = (String) lJSON.get("full_user_name");
+				mEmail = (String) lJSON.get("email");
 			}
 			return lJSONString;
 		} catch (IOException lEx) {
@@ -328,7 +239,7 @@ public class OAuth {
 	 * @return
 	 */
 	public String getUser(String aAccessToken, long aTimeout) {
-		return getUser(mClientSecret, aAccessToken, aTimeout);
+		return getUser(mOAuthAppId, mOAuthAppSecret, aAccessToken, aTimeout);
 	}
 
 	/**
@@ -337,7 +248,7 @@ public class OAuth {
 	 * @return
 	 */
 	public String getUser(String aAccessToken) {
-		return getUser(mClientSecret, aAccessToken, mDefaultTimeout);
+		return getUser(mOAuthAppId, mOAuthAppSecret, aAccessToken, mDefaultTimeout);
 	}
 
 	/**
@@ -346,7 +257,7 @@ public class OAuth {
 	 * @return
 	 */
 	public String getUser(long aTimeout) {
-		return getUser(mClientSecret, mAccessToken, aTimeout);
+		return getUser(mOAuthAppId, mOAuthAppSecret, mAccessToken, aTimeout);
 	}
 
 	/**
@@ -354,7 +265,7 @@ public class OAuth {
 	 * @return
 	 */
 	public String getUser() {
-		return getUser(mClientSecret, mAccessToken, mDefaultTimeout);
+		return getUser(mOAuthAppId, mOAuthAppSecret, mAccessToken, mDefaultTimeout);
 	}
 
 	/**
@@ -366,14 +277,18 @@ public class OAuth {
 	public String refreshAccessToken(String aRefreshToken, long aTimeout) {
 		String lPostBody;
 		try {
-			lPostBody =
-					"client_id=ro_client"
+			lPostBody
+					= "client_id=ro_client"
 					+ "&grant_type=" + "refresh_token"
 					+ "&refresh_token=" + aRefreshToken;
-			String lJSONString = call(mBaseURL,
-					"application/x-www-form-urlencoded;", lPostBody, aTimeout);
+			Map lHeaders = new HashMap<String, String>();
+			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
+			String lJSONString = call(mOAuthHost, "POST",
+					lHeaders, lPostBody, aTimeout);
 			ObjectMapper lMapper = new ObjectMapper();
-			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class);
+			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class
+			);
 			mAccessToken = (String) lJSON.get("access_token");
 			return lJSONString;
 		} catch (IOException lEx) {
@@ -428,4 +343,52 @@ public class OAuth {
 	public String getReturnMsg() {
 		return mReturnMsg;
 	}
+
+	/**
+	 * @return the mOAuthAppId
+	 */
+	public String getOAuthAppId() {
+		return mOAuthAppId;
+	}
+
+	/**
+	 * @param mOAuthAppId the mOAuthAppId to set
+	 */
+	public void setOAuthAppId(String mOAuthAppId) {
+		this.mOAuthAppId = mOAuthAppId;
+	}
+
+	/**
+	 * @return the OAuthAppSecret
+	 */
+	public String getOAuthAppSecret() {
+		return mOAuthAppSecret;
+	}
+
+	/**
+	 * @param OAuthAppSecret the OAuthAppSecret to set
+	 */
+	public void setOAuthAppSecret(String OAuthAppSecret) {
+		this.mOAuthAppSecret = OAuthAppSecret;
+	}
+
+	/**
+	 *
+	 * @param aURL
+	 * @return
+	 */
+	public String testCall(String aURL) {
+		Map lHeaders = new HashMap<String, String>();
+		lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+		String lRes = call2(aURL, "GET", lHeaders, null, 5000);
+		return lRes;
+	}
+
+	/**
+	 * @return the mSessionId
+	 */
+	public String getSessionId() {
+		return mSessionId;
+	}
+
 }
