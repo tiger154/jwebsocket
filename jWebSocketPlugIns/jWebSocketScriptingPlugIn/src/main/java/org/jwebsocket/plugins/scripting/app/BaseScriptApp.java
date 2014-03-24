@@ -37,7 +37,6 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.LocalLoader;
-import org.jwebsocket.jms.JMSServer;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
@@ -869,6 +868,14 @@ abstract public class BaseScriptApp {
 	 * @throws Exception
 	 */
 	public abstract String getDescription() throws Exception;
+
+	/**
+	 * Get the application client API
+	 *
+	 * @return
+	 * @throws Exception
+	 */
+	public abstract Map getClientAPI() throws Exception;
 
 	/**
 	 * Get system property. May require sandbox permission.
