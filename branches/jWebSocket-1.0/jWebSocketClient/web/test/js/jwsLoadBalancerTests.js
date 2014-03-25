@@ -384,12 +384,12 @@ jws.tests.LoadBalancer = {
 		
 		this.testServices();
 		
-		this.testShutdownEndPoint("admin", "valid", 0, "whit valid credential and arguments.");
-		this.testShutdownEndPoint("noAdmin", "valid", -1, "whit invalid credential and valid arguments.");
-		this.testShutdownEndPoint("admin", "invalid", -1, "whit valid credential and invalid arguments.");
+		this.testShutdownEndPoint("admin", "valid", 0, "with valid credential and arguments.");
+		this.testShutdownEndPoint("noAdmin", "valid", -1, "with invalid credential and valid arguments.");
+		this.testShutdownEndPoint("admin", "invalid", -1, "with valid credential and invalid arguments.");
 		
-		this.testDeregisterServiceEndPoint("admin", "valid", 0, "whit valid credential and arguments.");
-		this.testDeregisterServiceEndPoint("noAdmin", "valid", -1, "whit invalid credential and valid arguments.");
-		this.testDeregisterServiceEndPoint("admin",  "invalid", -1, "whit valid credential and invalid arguments.");
+		this.testDeregisterServiceEndPoint("admin", "valid", 0, "with valid credential and arguments.");
+		this.testDeregisterServiceEndPoint("noAdmin", "valid", -1, "with invalid credential and valid arguments.");
+		this.testDeregisterServiceEndPoint("admin",  "invalid", -1, "with valid credential and invalid arguments.");
 	}
 };
