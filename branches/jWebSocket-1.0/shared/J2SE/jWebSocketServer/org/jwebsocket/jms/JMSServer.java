@@ -27,6 +27,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.jms.api.IClusterSynchronizer;
+import org.jwebsocket.jms.api.IConnectorsManager;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.logging.Logging;
@@ -45,6 +46,7 @@ public class JMSServer extends TokenServer {
 	private final static Logger mLog = Logging.getLogger(JMSServer.class);
 	private JMSManager mJMSManager = null;
 	private IClusterSynchronizer mSynchronizer = null;
+	private IConnectorsManager mConnectorsManager = null;
 
 	/**
 	 *
@@ -61,6 +63,7 @@ public class JMSServer extends TokenServer {
 			mJMSManager = new JMSManager(false, lEngine.getConnection(), "topic://"
 					+ lEngine.getDestination() + "_messagehub");
 			mSynchronizer = lEngine.getNodesManager().getSynchronizer();
+			mConnectorsManager = lEngine.getConnectorsManager();
 		}
 
 		super.engineStarted(aEngine);
@@ -128,6 +131,11 @@ public class JMSServer extends TokenServer {
 
 	@Override
 	public Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId) {
-		return new HashMap<String, WebSocketConnector>();
+		try {
+			return mConnectorsManager.getSharedSession(aSessionId);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "getting connectors that share the session id"));
+			return new HashMap<String, WebSocketConnector>();
+		}
 	}
 }

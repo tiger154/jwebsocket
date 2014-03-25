@@ -37,7 +37,7 @@ public interface IConnectorsManager extends IInitializable {
 	 * @param aConnectionId The JMS client connecton id.
 	 * @param aConsumerId The JMS client consumer id.
 	 * @param aReplySelector The client unique 'reply' selector value.
-	 * @param aSessionId  The client session identifier.
+	 * @param aSessionId The client session identifier.
 	 * @return
 	 * @throws Exception
 	 */
@@ -86,6 +86,15 @@ public interface IConnectorsManager extends IInitializable {
 	 * @throws Exception
 	 */
 	Map<String, WebSocketConnector> getAll() throws Exception;
+
+	/**
+	 * Get all connectors that share the session id
+	 *
+	 * @param aSessionId
+	 * @return
+	 * @throws Exception
+	 */
+	Map<String, WebSocketConnector> getSharedSession(String aSessionId) throws Exception;
 
 	/**
 	 * Gets the client replySelector by it's JMS consumer id.

@@ -149,6 +149,20 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
+	public Map<String, WebSocketConnector> getSharedSession(String aSessionId) throws Exception {
+		DBCursor lCursor = mConnectors.find(new BasicDBObject().append(Attributes.STATUS, ConnectorStatus.UP)
+				.append(Attributes.SESSION_ID, aSessionId));
+
+		Map<String, WebSocketConnector> lConnectors = new HashMap<String, WebSocketConnector>();
+		while (lCursor.hasNext()) {
+			WebSocketConnector lConnector = toConnector(lCursor.next());
+			lConnectors.put(lConnector.getId(), lConnector);
+		}
+
+		return lConnectors;
+	}
+
+	@Override
 	public String getReplySelectorByConsumerId(String aConsumerId) throws Exception {
 		DBCursor lCursor = mConnectors.find(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
 
