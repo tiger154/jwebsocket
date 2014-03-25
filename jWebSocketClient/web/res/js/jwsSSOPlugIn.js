@@ -1061,13 +1061,46 @@ jws.SSOPlugIn = {
 	},
 	//
 	//
+	ssoSetRefreshTokenInterval: function(aInterval, aOptions) {
+		this.ssoCheckStore();
+		if (aInterval <= 0) {
+			if (this.sso.hRefrTokenIntv) {
+				clearInterval(this.sso.hRefrTokenIntv);
+				this.sso.hRefrTokenIntv = null;
+			}
+		} else {
+			var lInstance = this;
+			this.sso.hRefrTokenIntv = setInterval(function() {
+				if (lInstance.sso.accessToken && lInstance.sso.refreshToken) {
+					jws.console.debug("Refreshing access token...");
+					lInstance.ssoRefreshAccessToken(aOptions);
+				}
+			}, aInterval);
+		}
+	},
+	//
+	//
+	ssoClearRefreshTokenInterval: function() {
+		this.ssoSetRefreshTokenInterval(-1, null);
+	},
+	//
+	//
 	setSSOCallbacks: function(aListeners) {
 		if (!aListeners) {
 			aListeners = {};
 		}
-//		if( aListeners.OnSamplesServerTime !== undefined ) {
-//			this.OnSamplesServerTime = aListeners.OnSamplesServerTime;
-//		}
+		if (aListeners.OnRefreshingAccessToken !== undefined) {
+			this.OnRefreshingAccessToken = aListeners.OnRefreshingAccessToken;
+		}
+		if (aListeners.OnRefreshAccessTokenSuccess !== undefined) {
+			this.OnRefreshAccessTokenSuccess = aListeners.OnRefreshAccessTokenSuccess;
+		}
+		if (aListeners.OnRefreshAccessTokenFailure !== undefined) {
+			this.OnRefreshAccessTokenFailure = aListeners.OnRefreshAccessTokenFailure;
+		}
+		if (aListeners.OnRefreshAccessTokenTimeout !== undefined) {
+			this.OnRefreshAccessTokenTimeout = aListeners.OnRefreshAccessTokenTimeout;
+		}
 	}
 
 };

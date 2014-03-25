@@ -22,17 +22,16 @@ this.addEvents({'open':true,'close':true,'timeout':true,'logon':true,'logoff':tr
 this.superclass.constructor.call(this,K)},init:function(K){Ext.form.Basic.prototype.submit=function(options){return this.doAction(
 this.standardSubmit?'standardsubmit':this.api?'directsubmit':this.jwsSubmit?'jwssubmit':'submit',options);};
 Ext.form.Basic.prototype.load=function(V){return this.doAction(this.api?'directload':this.jwsSubmit?'jwsload':'load',V);}},open:
-function(bD,O,v){var self=this;if(jws.browserSupportsWebSockets()){var aA=bD||jws.getAutoServerURL();if(O)this.fTokenClient=O;
-else this.fTokenClient=new jws.jWebSocketJSONClient();this.fTokenClient.open(aA,{OnWelcome:function(C){self.init();self.fireEvent(
-'open');},OnClose:function(){self.fireEvent('close');},OnTimeout:function(){self.fireEvent('timeout');},OnLogon:function(C){
-self.fireEvent('logon',C);},OnLogoff:function(C){self.fireEvent('logoff',C);},OnMessage:function(C){self.fireEvent('message',C);}});
-if(v)this.setDefaultTimeOut(v);}else{var R=jws.MSG_WS_NOT_SUPPORTED;Ext.Error.raise(R);}},getConnection:function(){
-return this.fTokenClient;},send:function(bi,an,L,F,j){var T=j;var l={};if(L){l=Ext.clone(L);}l.ns=bi;l.type=an;this.fireEvent(
-'beforesend',l);this.fTokenClient.sendToken(l,{OnResponse:function(C){if(C.code<0){if('function'==typeof F['failure']){if(j==
-undefined){return F.failure(C);}F.failure.call(T,C);}}else{if('function'==typeof F['success']){if(j==undefined){return F.success(C);
-}F.success.call(T,C);}}},OnTimeOut:function(C){if('function'==typeof F['timeout']){if(j==undefined){return F.timeout(C);}
-F.timeout.call(T,C);}}});},addPlugIn:function(aJ){this.fTokenClient.addPlugIn(aJ);},setDefaultTimeOut:function(v){if(
-this.fTokenClient)this.fTokenClient.DEF_RESP_TIMEOUT=v;else jws.DEF_RESP_TIMEOUT=v;},close:function(){this.fTokenClient.close();
+function(bD,O,v){var self=this;if(jws.browserSupportsWebSockets()){var aA=bD||jws.getAutoServerURL();if(O)this.bu=O;else this.bu=
+new jws.jWebSocketJSONClient();this.bu.open(aA,{OnWelcome:function(C){self.init();self.fireEvent('open');},OnClose:function(){
+self.fireEvent('close');},OnTimeout:function(){self.fireEvent('timeout');},OnLogon:function(C){self.fireEvent('logon',C);},OnLogoff:
+function(C){self.fireEvent('logoff',C);},OnMessage:function(C){self.fireEvent('message',C);}});if(v)this.setDefaultTimeOut(v);}else{
+var R=jws.MSG_WS_NOT_SUPPORTED;Ext.Error.raise(R);}},getConnection:function(){return this.bu;},send:function(bi,an,L,F,j){var T=j;
+var l={};if(L){l=Ext.clone(L);}l.ns=bi;l.type=an;this.fireEvent('beforesend',l);this.bu.sendToken(l,{OnResponse:function(C){if(
+C.code<0){if('function'==typeof F['failure']){if(j==undefined){return F.failure(C);}F.failure.call(T,C);}}else{if('function'==
+typeof F['success']){if(j==undefined){return F.success(C);}F.success.call(T,C);}}},OnTimeOut:function(C){if('function'==
+typeof F['timeout']){if(j==undefined){return F.timeout(C);}F.timeout.call(T,C);}}});},addPlugIn:function(aJ){this.bu.addPlugIn(aJ);}
+,setDefaultTimeOut:function(v){if(this.bu)this.bu.DEF_RESP_TIMEOUT=v;else jws.DEF_RESP_TIMEOUT=v;},close:function(){this.bu.close();
 this.fireEvent('close');}});Ext.define('Ext.jws.data.Proxy',{alternateClassName:'Ext.jws.data.proxy',extend:'Ext.data.proxy.Server',
 alias:'proxy.jws',ns:undefined,api:{create:'create',read:'read',update:'update',destroy:'destroy'},transform:function(){},
 constructor:function(K){var self=this;self.callParent(arguments);if(self.ns==undefined)Ext.Error.raise(
