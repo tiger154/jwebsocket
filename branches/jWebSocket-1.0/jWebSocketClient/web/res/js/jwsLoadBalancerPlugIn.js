@@ -190,6 +190,10 @@ jws.LoadBalancerPlugIn = {
 		var lServiceEndPoint = new jws.jWebSocketJSONClient();				
 		lServiceEndPoint.open( "ws://localhost:8787/jWebSocket/jWebSocket", {	
 			OnWelcome: function (){
+				
+				if(lServiceEndPoint.isLoggedIn() != 'root'){
+					lServiceEndPoint.login("root", "root");
+				}
 			
 				lServiceEndPoint.lbRegisterServiceEndPoint( aPassword, aOptions);		
 				
