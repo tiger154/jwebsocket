@@ -44,14 +44,23 @@ start /wait "" "%JASOB_HOME%\jasob.exe" /src:"jWebSocket\jWebSocket3rdPartyLibs.
 
 rem copy minified/obfuscated EE editions into CE deployment
 set jsCE=%JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketClient\web\res\js\
+set jsJQ=%JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketClient\web\lib\jQuery\
 set jsEE=%JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise\jWebSocketClient\web\res\js\
+set jsUAEE=%JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise\jWebSocketClient\web\useradmin\res\libs\jWebSocket
 echo jsCE=%jsCE%
+echo jsJQ=%jsJQ%
 echo jsEE=%jsEE%
 
 echo Copying minified/obfuscated enterprise js files to ce version...
 copy %jsEE%jwsItemStoragePlugInEE_min.js %jsCE% /v
 copy %jsEE%jwsFileSystemPlugInEE_min.js %jsCE% /v
 copy %jsEE%jwsMailPlugInEE_min.js %jsCE% /v
+
+rem copy minified/obfuscated CE editions into EE deployment
+echo Copying minified/obfuscated community js files to enterprise version...
+copy %jsCE%jWebSocket_min.js %jsUAEE% /v
+copy %jsCE%jwsFilesystemPlugIn_min.js %jsUAEE% /v
+copy %jsJQ%jWebSocketJQueryPlugIn_min.js %jsUAEE% /v
 
 echo finished! Please check if JavaScript Docs have been created.
 if "%1"=="/y" goto dontAsk2

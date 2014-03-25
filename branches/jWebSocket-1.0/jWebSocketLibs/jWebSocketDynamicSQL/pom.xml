@@ -69,7 +69,7 @@
 						<id>Bundle</id>
 						<configuration>
 							<finalName>jWebSocketDynamicSQL</finalName>
-							<outputDirectory>../../../../rte/jWebSocket-${project.distVer}/libs</outputDirectory>
+							<outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 							<descriptors>
 								<descriptor>src/assembly/one-jar.xml</descriptor>
 							</descriptors>

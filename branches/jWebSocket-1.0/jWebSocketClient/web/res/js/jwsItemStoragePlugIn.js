@@ -1,3 +1,4 @@
+//	<JasobNoObfs>
 //	---------------------------------------------------------------------------
 //	jWebSocket ItemStorage Client Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
@@ -16,6 +17,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
+//	</JasobNoObfs>
 
 jws.ItemStoragePlugIn = {
 
@@ -25,41 +27,41 @@ jws.ItemStoragePlugIn = {
 	
 	processToken: function( aToken ) {
 		// check if namespace matches
-		if( aToken.ns == jws.ItemStoragePlugIn.NS ) {
-			if ( "event" == aToken.type ){
-				if ( "itemSaved" == aToken.name ){
+		if( aToken.ns === jws.ItemStoragePlugIn.NS ) {
+			if ( "event" === aToken.type ){
+				if ( "itemSaved" === aToken.name ){
 					if ( this.OnItemSaved ){
 						this.OnItemSaved(aToken);
 					} 
-				} else if ( "itemRemoved" == aToken.name ){
+				} else if ( "itemRemoved" === aToken.name ){
 					if ( this.OnItemRemoved ){
 						this.OnItemRemoved(aToken);
 					} 
-				} else if ( "collectionCleaned" == aToken.name ){
+				} else if ( "collectionCleaned" === aToken.name ){
 					if ( this.OnCollectionCleaned ){
 						this.OnCollectionCleaned(aToken);
 					} 
-				} else if ( "collectionRestarted" == aToken.name ){
+				} else if ( "collectionRestarted" === aToken.name ){
 					if ( this.OnCollectionRestarted ){
 						this.OnCollectionRestarted(aToken);
 					} 
-				} else if ( "collectionRemoved" == aToken.name ){
+				} else if ( "collectionRemoved" === aToken.name ){
 					if ( this.OnCollectionRemoved ){
 						this.OnCollectionRemoved(aToken);
 					} 
-				} else if ( "collectionSaved" == aToken.name ){
+				} else if ( "collectionSaved" === aToken.name ){
 					if ( this.OnCollectionSaved ){
 						this.OnCollectionSaved(aToken);
 					} 
-				} else if ( "authorization" == aToken.name ){
+				} else if ( "authorization" === aToken.name ){
 					if ( this.OnCollectionAuthorization ){
 						this.OnCollectionAuthorization(aToken);
 					} 
-				} else if ( "subscription" == aToken.name ){
+				} else if ( "subscription" === aToken.name ){
 					if ( this.OnCollectionSubscription ){
 						this.OnCollectionSubscription(aToken);
 					} 
-				} else if ( "unsubscription" == aToken.name ){
+				} else if ( "unsubscription" === aToken.name ){
 					if ( this.OnCollectionUnsubscription ){
 						this.OnCollectionUnsubscription(aToken);
 					} 
@@ -81,11 +83,11 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	createCollection: function(aCollectionName, aItemType, aSecretPwd, aAccessPwd, aIsPrivate, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
-			if ("string" == typeof(aSecretPwd) && "" != aSecretPwd) {
+		if( 0 === lRes.code ) {
+			if ("string" === typeof(aSecretPwd) && "" !== aSecretPwd) {
 				aSecretPwd = jws.tools.calcMD5(aSecretPwd);
 			}
-			if ("string" == typeof(aAccessPwd) && "" != aAccessPwd) {
+			if ("string" === typeof(aAccessPwd) && "" !== aAccessPwd) {
 				aAccessPwd = jws.tools.calcMD5(aAccessPwd);
 			}
 			
@@ -117,7 +119,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	removeCollection: function(aCollectionName, aSecretPwd, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "removeCollection",
@@ -136,7 +138,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	existsCollection: function(aCollectionName, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "existsCollection",
@@ -155,7 +157,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	subscribeCollection: function(aCollectionName, aAccessPwd, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "subscribe",
@@ -174,7 +176,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	unsubscribeCollection: function(aCollectionName, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "unsubscribe",
@@ -193,7 +195,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	authorizeCollection: function(aCollectionName, aSecretPwd, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "authorize",
@@ -213,7 +215,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	clearCollection: function(aCollectionName, aSecretPwd, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "clearCollection",
@@ -237,17 +239,17 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none	
 	editCollection: function(aCollectionName, aSecretPwd, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "editCollection",
 				collectionName: aCollectionName,
 				secretPassword: aSecretPwd
 			};
-			if ("string" == typeof(aOptions.newSecretPassword) && "" != aOptions.newSecretPassword) {
+			if ("string" === typeof(aOptions.newSecretPassword) && "" !== aOptions.newSecretPassword) {
 				lToken.newSecretPassword = jws.tools.calcMD5(aOptions.newSecretPassword);
 			}
-			if ("string" == typeof(aOptions.accessPassword) && "" != aOptions.accessPassword) {
+			if ("string" === typeof(aOptions.accessPassword) && "" !== aOptions.accessPassword) {
 				lToken.accessPassword = jws.tools.calcMD5(aOptions.accessPassword);
 			}
 			if (aOptions["private"]){
@@ -272,7 +274,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	restartCollection: function(aCollectionName, aSecretPwd, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "restartCollection",
@@ -293,7 +295,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	getCollectionNames: function(aUserOnly, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "getCollectionNames",
@@ -321,7 +323,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	findCollection: function(aCollectionName, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "findCollection",
@@ -340,7 +342,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	saveItem: function(aCollectionName, aItem, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "saveItem",
@@ -360,7 +362,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	removeItem: function(aCollectionName, aPK, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "removeItem",
@@ -380,7 +382,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	findItemByPK: function(aCollectionName, aPK, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "findItemByPK",
@@ -400,7 +402,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	existsItem: function(aCollectionName, aPK, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "existsItem",
@@ -421,7 +423,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	listItems: function(aCollectionName, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "listItems",
@@ -441,7 +443,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	findItemDefinition: function (aItemType, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "findDefinition",
@@ -459,7 +461,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	existsItemDefinition: function (aItemType, aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "existsDefinition",
@@ -478,7 +480,7 @@ jws.ItemStoragePlugIn = {
 	//:r:*:::void:none
 	listItemDefinitions: function (aOptions){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "listDefinitions",
@@ -536,7 +538,7 @@ jws.ItemStoragePlugIn = {
 			this.OnCollectionUnsubscription = aListeners.OnCollectionUnsubscription;
 		}
 	}
-}
+};
 
 // add the jWebSocket ItemStoragePlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ItemStoragePlugIn );

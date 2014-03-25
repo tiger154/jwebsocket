@@ -18,7 +18,7 @@
               saveDefaultEncoding="1"
               saveAlwaysUseDefaultEncoding="false">
 <files>
-	<file srcPath="..\..\jWebSocketClient\web\lib\jQuery\jWebSocketJQueryPlugIn-1.0.js" obfsPath="..\..\jWebSocketClient\web\lib\jQuery\jWebSocketJQueryPlugIn-1.0_min.js" description="JavaScript Files" ssParams="0" ssScriptLangs="" ssElemsStartWith="" ssElems="" csParams="8396289" csCustomElemsFile="" csEscapeStrPercent="" csRemoveWSNonJSorCSSExceptElems="" csMaxObfsLineLength="132" excluded="false"/>
+	<file srcPath="..\..\jWebSocketClient\web\lib\jQuery\jWebSocketJQueryPlugIn.js" obfsPath="..\..\jWebSocketClient\web\lib\jQuery\jWebSocketJQueryPlugIn-1.0_min.js" description="JavaScript Files" ssParams="0" ssScriptLangs="" ssElemsStartWith="" ssElems="" csParams="8396289" csCustomElemsFile="" csEscapeStrPercent="" csRemoveWSNonJSorCSSExceptElems="" csMaxObfsLineLength="132" excluded="false"/>
 	<file srcPath="..\..\jWebSocketClient\web\lib\ExtJS\jwsExtJSPlugin.js" obfsPath="..\..\jWebSocketClient\web\lib\ExtJS\jwsExtJSPlugin_min.js" description="JavaScript Files" ssParams="0" ssScriptLangs="" ssElemsStartWith="" ssElems="" csParams="8396289" csCustomElemsFile="" csEscapeStrPercent="" csRemoveWSNonJSorCSSExceptElems="" csMaxObfsLineLength="132" excluded="false"/>
 </files>
 <systemNames>
@@ -5662,7 +5662,7 @@
 	<item marked="false" name="failure" newName="" status="3" inStrings="1-25-1-0-2"/>
 	<item marked="true" name="fResponse" newName="as" status="0" inStrings=""/>
 	<item marked="true" name="fResult" newName="aM" status="0" inStrings=""/>
-	<item marked="false" name="fTokenClient" newName="" status="1" inStrings=""/>
+	<item marked="true" name="fTokenClient" newName="bu" status="0" inStrings=""/>
 	<item marked="false" name="getAutoServerURL" newName="" status="1" inStrings=""/>
 	<item marked="false" name="getConnection" newName="" status="1" inStrings=""/>
 	<item marked="false" name="getDefaultServerURL" newName="" status="1" inStrings=""/>
