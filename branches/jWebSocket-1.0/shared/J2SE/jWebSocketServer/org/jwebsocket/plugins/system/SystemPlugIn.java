@@ -1113,7 +1113,6 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// sending the response to requester
 		// sending response to clients that share the requester session
-		// broadcasting response to all sharing session connectors
 		getServer().broadcastToSharedSession(aConnector.getId(),
 				aConnector.getSession().getSessionId(),
 				lResponse,
