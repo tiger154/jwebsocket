@@ -110,17 +110,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
                 String lClientId = (null != mClient) ? mClient.getClientId() : "";
                 lblStatus.setText("Client-Id: " + (lClientId != null ? lClientId : "-"));
 
-//                if (lStatus != mPrevStatus) {
-//                        mPrevStatus = lStatus;
-//                        if (lStatus == WebSocketStatus.AUTHENTICATED) {
-//                                lblStatus.setIcon(mIcoAuthenticated);
-//                        } else if (lStatus == WebSocketStatus.OPEN) {
-//                                lblStatus.setIcon(mIcoConnected);
-//                        } else {
-//                                lblStatus.setIcon(mIcoDisconnected);
-//                        }
-//                }
-
                 if (lStatus != mPrevStatus) {
 
                         if (lStatus == WebSocketStatus.AUTHENTICATED) {
