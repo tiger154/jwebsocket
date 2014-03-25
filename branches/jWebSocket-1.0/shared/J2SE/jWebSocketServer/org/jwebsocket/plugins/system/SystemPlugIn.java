@@ -1106,13 +1106,19 @@ public class SystemPlugIn extends TokenPlugIn {
 		lSession.put(AUTHORITIES, lAuthorities);
 
 		// creating the response
-		Token response = createResponse(aToken);
-		response.setString("uuid", lUUID);
-		response.setString("username", lUsername);
-		response.setList("authorities", Tools.parseStringArrayToList(lAuthorities.split(" ")));
+		Token lResponse = createResponse(aToken);
+		lResponse.setString("uuid", lUUID);
+		lResponse.setString("username", lUsername);
+		lResponse.setList("authorities", Tools.parseStringArrayToList(lAuthorities.split(" ")));
 
-		// sending the response
-		sendToken(aConnector, aConnector, response);
+		// sending the response to requester
+		// sending response to clients that share the requester session
+		// broadcasting response to all sharing session connectors
+		getServer().broadcastToSharedSession(aConnector.getId(),
+				aConnector.getSession().getSessionId(),
+				lResponse,
+				true);
+		
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logon process finished successfully!");
 		}
