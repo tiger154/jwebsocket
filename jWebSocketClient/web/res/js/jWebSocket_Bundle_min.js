@@ -17,7 +17,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC2 (build 40324)",NS_BASE:"org.jwebsocket",
+if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC2 (build 40326)",NS_BASE:"org.jwebsocket",
 NS_SYSTEM:"org.jwebsocket.plugins.system",MSG_WS_NOT_SUPPORTED:
 "Unfortunately your browser does neither natively support WebSockets\n"+"nor you have the Adobe Flash-PlugIn 10+ installed.\n"+
 "Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer, "+
@@ -1042,10 +1042,10 @@ break;}case jws.FileSystemPlugIn.INVALID_MODIFICATION_ERR:{dm="INVALID_MODIFICAT
 case jws.FileSystemPlugIn.QUOTA_EXCEEDED_ERR:{dm="QUOTA_EXCEEDED_ERR";break;}case jws.FileSystemPlugIn.TYPE_MISMATCH_ERR:{dm=
 "TYPE_MISMATCH_ERR";break;}case jws.FileSystemPlugIn.PATH_EXISTS_ERR:{dm="PATH_EXISTS_ERR";break;}}return dm;},fileLoadLocal:
 function(ds,ax){var bj={code:0,msg:"ok"};if(!ds|| !ds.files){return{code: -1,msg:"No input file element passed."};}if(undefined===
-window.FileReader){return{code: -1,msg:"Your browser does not yet support the HTML5 File API."};}if(!ax){ax={};}ax.encoding=
-"base64";var cH=ds.files;if(!cH|| !cH.length){return{code: -1,msg:"No files selected."};}for(var db=0,dB=cH.length;db<dB;db++){
-var dw=cH[db];var dh=new FileReader();var dJ=this;dh.onload=(function(cw){return function(cz){if(dJ.OnLocalFileRead||ax.OnSuccess){
-var cg={encoding:ax.encoding,fileName:(cw.fileName?cw.fileName:cw.name),fileSize:(cw.fileSize?cw.fileSize:cw.size),type:cw.type,
+window.FileReader){return{code: -1,msg:"Your browser does not yet support the HTML5 File kZ."};}if(!ax){ax={};}ax.encoding="base64";
+var cH=ds.files;if(!cH|| !cH.length){return{code: -1,msg:"No files selected."};}for(var db=0,dB=cH.length;db<dB;db++){var dw=cH[db];
+var dh=new FileReader();var dJ=this;dh.onload=(function(cw){return function(cz){if(dJ.OnLocalFileRead||ax.OnSuccess){var cg={
+encoding:ax.encoding,fileName:(cw.fileName?cw.fileName:cw.name),fileSize:(cw.fileSize?cw.fileSize:cw.size),type:cw.type,
 lastModified:cw.lastModifiedDate,data:cz.target.result};if(ax.args){cg.args=ax.args;}if(ax.action){cg.action=ax.action;}}if(
 dJ.OnLocalFileRead){dJ.OnLocalFileRead(cg);}if(ax.OnSuccess){ax.OnSuccess(cg);}};})(dw);dh.onerror=(function(cw){return function(cz)
 {if(dJ.OnLocalFileError||ax.OnFailure){var dn=cz.target.error.code;var cg={code:dn,msg:dJ.fileGetErrorMsg(dn)};if(ax.args){cg.args=
@@ -1354,23 +1354,32 @@ this.OnSamplesServerTime(aR);}}}},requestServerTime:function(ax){var bj=this.cre
 ns:jws.SamplesPlugIn.NS,type:"requestServerTime"};this.sendToken(cg,ax);}else{bj.code= -1;bj.localeKey="jws.jsc.res.notConnected";
 bj.msg="Not connected.";}return bj;},setSamplesCallbacks:function(ci){if(!ci){ci={};}if(ci.OnSamplesServerTime!==undefined){
 this.OnSamplesServerTime=ci.OnSamplesServerTime;}}};jws.oop.addPlugIn(jws.jWebSocketTokenClient,jws.SamplesPlugIn);
-jws.ScriptingPlugIn={NS:jws.NS_BASE+'.plugins.scripting',callScriptAppMethod:function(eE,io,jB,bl,ax){var bj=this.checkConnected();
-if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'callMethod',method:jB,objectId:io,app:eE,args:bl};this.sendToken(cg,ax);}
-return bj;},reloadScriptApp:function(eE,iF,ax){var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:
-'reloadApp',hotReload:iF,app:eE};this.sendToken(cg,ax);}return bj;},getScriptAppVersion:function(eE,ax){var bj=this.checkConnected()
-;if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'getVersion',app:eE};this.sendToken(cg,ax);}return bj;},sendScriptAppToken:
-function(eE,aR,ax){var bj=this.checkConnected();if(0===bj.code&&aR){this.sendToken({app:eE,ns:jws.ScriptingPlugIn.NS,type:'token',
-token:aR},ax);}return bj;},deployScriptApp:function(hQ,ib,ax){var bj=this.checkConnected();if(0===bj.code){var cg={ns:
-jws.ScriptingPlugIn.NS,type:'deploy',hotDeploy:ib,appFile:hQ,deleteAfterDeploy:(ax)?ax.deleteAfterDeploy||false:false};
-this.sendToken(cg,ax);}return bj;},listScriptApps:function(ax){if(!ax)ax={};var iJ=ax.userOnly||false;var hU=ax.namesOnly||true;
-var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'listApps',userOnly:iJ,namesOnly:hU};
-this.sendToken(cg,ax);}return bj;},undeployScriptApp:function(eE,ax){var bj=this.checkConnected();if(0===bj.code){var cg={ns:
-jws.ScriptingPlugIn.NS,type:'undeploy',app:eE};this.sendToken(cg,ax);}return bj;},getScriptAppManifest:function(eE,ax){var bj=
-this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'getManifest',app:eE};this.sendToken(cg,ax);}return bj;
-}};jws.oop.addPlugIn(jws.jWebSocketTokenClient,jws.ScriptingPlugIn);jws.SharedObjectsPlugIn={NS:jws.NS_BASE+".plugins.sharedObjs",
-DATA_TYPES:["number","string","boolean","object","set","list","map","table"],cb:{},processToken:function(aR){if(aR.ns==
-jws.SharedObjectsPlugIn.NS){if(aR.name=="created"){if(this.OnSharedObjectCreated){this.OnSharedObjectCreated(aR);}}else if(aR.name==
-"destroyed"){if(this.OnSharedObjectDestroyed){this.OnSharedObjectDestroyed(aR);}}else if(aR.name=="updated"){if(
+jws.ScriptingPlugIn={NS:jws.NS_BASE+'.plugins.scripting',callScriptAppMethod:function(eE,io,jB,bl,ax){ax=this.iW(ax);var bj=
+this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'callMethod',method:jB,objectId:io,app:eE,args:bl};
+this.sendToken(cg,ax);}return bj;},iW:function(ke){var kx=ke;if('function'==typeof ke){var kJ=ke;kx={OnSuccess:function(lo){kJ(lo);}
+,OnFailure:function(lo){kJ(new Error(lo.msg));},OnTimeout:function(){kJ(new Error('timeout'));}};}return kx;},kh:function(eE,jS,kk){
+var kR=this;var ja={};ja.getName=function(){return eE;};ja.sendToken=function(aR,ax){kR.sendScriptAppToken(eE,aR,ax);};ja.jQ=
+function(ax){kR.getScriptAppVersion(eE,ax);};ja.kI=function(ax){kR.getScriptAppManifest(eE,ax);};this.kf(eE,{OnSuccess:function(lo){
+var kg=lo.kZ;for(var lg in kg){var jV={};var ku=kg[lg];jV.description=ku.description;jV.name=lg;for(var cI in ku.ka){var bu=
+ku.ka[cI].name;var fq=ku.ka[cI].length;eval('jV["'+bu+'"] = function() {kR.callScriptAppMethod("'+eE+'","'+lg+'","'+bu+
+'",Array.prototype.slice.call(arguments, 0,'+fq+'),'+'arguments['+fq+']);};');}ja[lg]=jV;}jS(ja);},OnFailure:function(aR){kk(aR);}})
+;return ja;},reloadScriptApp:function(eE,iF,ax){ax=this.iW(ax);var bj=this.checkConnected();if(0===bj.code){var cg={ns:
+jws.ScriptingPlugIn.NS,type:'reloadApp',hotReload:iF,app:eE};this.sendToken(cg,ax);}return bj;},getScriptAppVersion:function(eE,ax){
+ax=this.iW(ax);var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'jQ',app:eE};this.sendToken(cg,
+ax);}return bj;},kf:function(eE,ax){ax=this.iW(ax);var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,
+type:'getClientAPI',app:eE};this.sendToken(cg,ax);}return bj;},sendScriptAppToken:function(eE,aR,ax){ax=this.iW(ax);var bj=
+this.checkConnected();if(0===bj.code&&aR){this.sendToken({app:eE,ns:jws.ScriptingPlugIn.NS,type:'token',token:aR},ax);}return bj;},
+deployScriptApp:function(hQ,ib,ax){ax=this.iW(ax);var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,
+type:'deploy',hotDeploy:ib,appFile:hQ,deleteAfterDeploy:(ax)?ax.deleteAfterDeploy||true:true};this.sendToken(cg,ax);}return bj;},
+listScriptApps:function(ax){ax=this.iW(ax);if(!ax)ax={};var iJ=ax.userOnly||false;var hU=ax.namesOnly||true;var bj=
+this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'listApps',userOnly:iJ,namesOnly:hU};this.sendToken(cg,
+ax);}return bj;},undeployScriptApp:function(eE,ax){ax=this.iW(ax);var bj=this.checkConnected();if(0===bj.code){var cg={ns:
+jws.ScriptingPlugIn.NS,type:'undeploy',app:eE};this.sendToken(cg,ax);}return bj;},getScriptAppManifest:function(eE,ax){ax=this.iW(
+ax);var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'kI',app:eE};this.sendToken(cg,ax);}
+return bj;}};jws.oop.addPlugIn(jws.jWebSocketTokenClient,jws.ScriptingPlugIn);jws.SharedObjectsPlugIn={NS:jws.NS_BASE+
+".plugins.sharedObjs",DATA_TYPES:["number","string","boolean","object","set","list","map","table"],cb:{},processToken:function(aR){
+if(aR.ns==jws.SharedObjectsPlugIn.NS){if(aR.name=="created"){if(this.OnSharedObjectCreated){this.OnSharedObjectCreated(aR);}}
+else if(aR.name=="destroyed"){if(this.OnSharedObjectDestroyed){this.OnSharedObjectDestroyed(aR);}}else if(aR.name=="updated"){if(
 this.OnSharedObjectUpdated){this.OnSharedObjectUpdated(aR);}}else if(aR.name=="init"){if(this.OnSharedObjectsInit){var bk=
 JSON.parse(aR.value);this.OnSharedObjectsInit(aR,bk);}}}},createSharedObject:function(aT,bq,ck,ax){var bj=this.createDefaultResult()
 ;if(this.isConnected()){var cg={ns:jws.SharedObjectsPlugIn.NS,type:"create",id:aT,datatype:bq,value:ck};this.sendToken(cg,ax);if(
