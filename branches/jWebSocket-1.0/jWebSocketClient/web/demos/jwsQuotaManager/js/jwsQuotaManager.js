@@ -64,6 +64,11 @@ Ext.define('jws.quotaPlugin.alterWindow', {
             Ext.jwsClient.send(jws.QuotaDemo.NS_QUOTA_PLUGIN, jws.QuotaDemo.TT_SET_QUOTA, lArguments, {
                 success: function(aResponse) {
                     lQuotaValueFunction(aResponse.value);
+                },
+                failure: function(aResponse){
+                    if(aResponse.code == -1 ){
+                        Ext.Msg.alert(aResponse.msg, "Permission denied, not enough privilege" );
+                    }
                 }
             });
 
@@ -91,6 +96,10 @@ Ext.define('jws.quotaPlugin.alterWindow', {
             Ext.jwsClient.send(jws.QuotaDemo.NS_QUOTA_PLUGIN, jws.QuotaDemo.TT_REDUCE_QUOTA, lArguments, {
                 success: function(aResponse) {
                     lQuotaValueFunction(aResponse.value);
+                },failure: function(aResponse){
+                    if(aResponse.code == -1 ){
+                        Ext.Msg.alert(aResponse.msg, "Permission denied, not enough privilege" );
+                    }
                 }
             });
 
@@ -118,6 +127,11 @@ Ext.define('jws.quotaPlugin.alterWindow', {
             Ext.jwsClient.send(jws.QuotaDemo.NS_QUOTA_PLUGIN, jws.QuotaDemo.TT_INCREASE_QUOTA, lArguments, {
                 success: function(aResponse) {
                     lQuotaValueFunction(aResponse.value);
+                },
+                failure: function(aResponse){
+                    if(aResponse.code == -1 ){
+                        Ext.Msg.alert(aResponse.msg, "Permission denied, not enough privilege" );
+                    }
                 }
             });
         };
@@ -875,10 +889,11 @@ Ext.onReady(function() {
         Ext.jwsClient.close();
     });
 
-    Ext.jwsClient.on('logoff', function() {
+    Ext.jwsClient.on('logoff', function(aResponse) {
         Ext.getCmp('user_label').setText('         ');
         closeQuotaPluginMainwindows();
         showQuotaPluginLoginWindows();
+        Ext.jwsClient.getConnection().broadcastToSharedSession({data: aResponse}, false);
     });
 
     Ext.jwsClient.on(jws.QuotaDemo.TT_LOGON, function(aResponse) {
