@@ -55,7 +55,7 @@ echo -------------------------------------------------------------------------
 pause
 :dontAsk1
 
-rem goto others
+goto jWebSocketSSO
 
 :jWebSocketDynamicSQL
 echo ------------------------------------------------------------------------
@@ -66,6 +66,18 @@ if exist %javadocs%jWebSocketDynamicSQL rd %javadocs%jWebSocketDynamicSQL /s/q
 call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
+
+:jWebSocketSSO
+echo ------------------------------------------------------------------------
+echo Libraries/jWebSocketSSO
+echo ------------------------------------------------------------------------
+cd %libs%jWebSocketSSO
+if exist %javadocs%jWebSocketSSO rd %javadocs%jWebSocketSSO /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
+
+goto end
 
 :jWebSocketCommon
 echo ------------------------------------------------------------------------
