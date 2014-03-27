@@ -188,7 +188,7 @@ jws.LoadBalancerPlugIn = {
 	//:r:*:::void:none
 	lbSampleService: function( aPassword, aOptions ) {
 		var lServiceEndPoint = new jws.jWebSocketJSONClient();				
-		lServiceEndPoint.open( "ws://localhost:8787/jWebSocket/jWebSocket", {	
+		lServiceEndPoint.open( "ws://localhost:8787/jWebSocket/jWebSocket?sessionCookieName=sSessionId" + new Date().getTime(), {	
 			OnWelcome: function (){
 				
 				if(lServiceEndPoint.isLoggedIn() != 'root'){
