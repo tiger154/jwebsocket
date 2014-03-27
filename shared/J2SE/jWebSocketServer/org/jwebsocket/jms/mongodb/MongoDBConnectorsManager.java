@@ -177,6 +177,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 		super.initialize();
 
 		mConnectors.ensureIndex(new BasicDBObject().append(Attributes.CONSUMER_ID, 1));
+		mConnectors.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1));
 		mConnectors.ensureIndex(new BasicDBObject().append(Attributes.REPLY_SELECTOR, 1),
 				new BasicDBObject().append("unique", true));
 	}
