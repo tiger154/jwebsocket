@@ -185,10 +185,13 @@ jws.LoadBalancerPlugIn = {
 	//:d:en:Create a new sample service endpoint.
 	//:a:en::aPassword:String:Password to verify privileges.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionURL:String:Optional argument to override the default service connection URL.
 	//:r:*:::void:none
 	lbSampleService: function( aPassword, aOptions ) {
-		var lServiceEndPoint = new jws.jWebSocketJSONClient();				
-		lServiceEndPoint.open( "ws://localhost:8787/jWebSocket/jWebSocket?sessionCookieName=sSessionId" + new Date().getTime(), {	
+		var lServiceEndPoint = new jws.jWebSocketJSONClient();	
+		var lURL = aOptions.connectionURL || 
+		"ws://localhost:8787/jWebSocket/jWebSocket?sessionCookieName=sSessionId" + new Date().getTime();
+		lServiceEndPoint.open( lURL, {	
 			OnWelcome: function (){
 				
 				if(lServiceEndPoint.isLoggedIn() != 'root'){
