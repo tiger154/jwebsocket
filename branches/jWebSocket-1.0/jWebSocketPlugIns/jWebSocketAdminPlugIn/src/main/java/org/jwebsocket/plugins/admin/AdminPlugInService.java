@@ -273,10 +273,15 @@ public class AdminPlugInService {
 				FastMap lMap = new FastMap();
 				lMap.put("id", lConfig.getId());
 				lMap.put("name", lConfig.getName());
-				lMap.put("namespace", lConfig.getNamespace());
+				lMap.put("namespace", lPlugIn.getNamespace());
 				lMap.put("jar", lConfig.getJar());
 				lMap.put("servers", lConfig.getServers());
 				lMap.put("enabled", lConfig.getEnabled());
+				lMap.put("version", lPlugIn.getVersion());
+				lMap.put("vendor", lPlugIn.getVendor());
+				lMap.put("description", lPlugIn.getDescription());
+				lMap.put("copyright", lPlugIn.getCopyright());
+				lMap.put("license", lPlugIn.getLicense());
 
 				lTokenPlugIn.add(lMap);
 			}
