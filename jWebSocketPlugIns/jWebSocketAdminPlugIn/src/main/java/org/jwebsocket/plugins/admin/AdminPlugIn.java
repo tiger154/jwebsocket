@@ -120,14 +120,13 @@ public class AdminPlugIn extends TokenPlugIn {
 	public String getNamespace() {
 		return NS_ADMIN;
 	}
-	
 
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
 		String lNS = aToken.getNS();
 
-		if (lType != null && getNamespace().equals(lNS)) {
+		if (lType != null) {
 			// remote shut down server
 			if (lType.equals("shutdown")) {
 				shutdown(aConnector, aToken);
@@ -349,6 +348,7 @@ public class AdminPlugIn extends TokenPlugIn {
 				lResultItem.put("unid", lConnector.getNodeId());
 				lResultItem.put("username", lConnector.getUsername());
 				lResultItem.put("isToken", lConnector.supportTokens());
+				lResultItem.put("isCluster", !lConnector.isLocal());
 				lResultList.add(lResultItem);
 			}
 			lResponse.setList("connections", lResultList);
