@@ -187,7 +187,6 @@ public class AdminPlugIn extends TokenPlugIn {
 	@Override
 	public Token invoke(WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
-		String lNS = aToken.getNS();
 
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
