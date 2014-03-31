@@ -893,7 +893,6 @@ Ext.onReady(function() {
         Ext.getCmp('user_label').setText('         ');
         closeQuotaPluginMainwindows();
         showQuotaPluginLoginWindows();
-        Ext.jwsClient.getConnection().broadcastToSharedSession({data: aResponse}, false);
     });
 
     Ext.jwsClient.on(jws.QuotaDemo.TT_LOGON, function(aResponse) {
@@ -903,7 +902,6 @@ Ext.onReady(function() {
         closeQuotaPluginLoginWindows();
         Ext.getCmp('user_label').setText(aResponse.username);
         Ext.getCmp("namespace_diskspace").setVisible(false);
-        Ext.jwsClient.getConnection().broadcastToSharedSession({data: aResponse}, false);
     });
     // Auto opening the connection
     Ext.jwsClient.open();

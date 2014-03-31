@@ -111,7 +111,7 @@ $.widget("jws.chat", {
 		this.eMainContainer = $("#demo_box");
 
 		// Messages used in the widget
-		this.MSG_NOT_CONNECTED_USERS = "There are not connected users";
+		this.MSG_NOT_CONNECTED_USERS = "There are not connected users.";
 		this.MSG_NOT_PRIVATE_USERS = "You must select a user from the public tab to chat with.";
 		this.MSG_USER_OFFLINE = "The user you are chatting with is offline";
 		this.MSG_COULDNT_SEND_MSG = "The message could not be sent";
@@ -171,6 +171,10 @@ $.widget("jws.chat", {
 			w.chat.eEmoticonsWindow.hide( );
 		});
 
+		$(window).unload(function() {
+			w.chat.unregister();
+		});
+
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var
 				lCallbacks = {
@@ -215,6 +219,22 @@ $.widget("jws.chat", {
 					}
 				};
 		$(w.chat.eMainContainer).auth(lCallbacks);
+	},
+	register: function() {
+		// Sending a register token to the server
+		var lRegister = {
+			ns: w.chat.NS,
+			type: "register"
+		};
+		mWSC.sendToken(lRegister);
+	},
+	unregister: function() {
+		// Sending a register token to the server
+		var lUnregister = {
+			ns: w.chat.NS,
+			type: "unregister"
+		};
+		mWSC.sendToken(lUnregister);
 	},
 	openNewChatWindow: function( ) {
 		var lLeft = parseInt(50 + w.chat.mNextWindowId * 30, 10),
