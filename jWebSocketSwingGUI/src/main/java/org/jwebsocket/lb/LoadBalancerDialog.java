@@ -21,8 +21,9 @@ package org.jwebsocket.lb;
 import java.awt.Toolkit;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
 import javolution.util.FastList;
-import org.jwebsocket.client.plugins.BaseServiceTokenPlugIn;
 import org.jwebsocket.client.plugins.loadbalancer.LoadBalancerPlugIn;
 import org.jwebsocket.client.token.JWebSocketTokenClient;
 import org.jwebsocket.kit.WebSocketException;
@@ -34,14 +35,13 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
  *
  * @author Rolando Betancourt Toucet
  */
-public class LoadBalancerDialog extends javax.swing.JFrame {
+public class LoadBalancerDialog extends javax.swing.JFrame implements WebSocketResponseTokenListener {
 
         private JWebSocketTokenClient mBaseClient;
-        private List<BaseServiceTokenPlugIn> mServices;
         private LoadBalancerPlugIn mLBPlugIn;
-        private PlugInListener mPlugInListener;
         private List<String> mServicesLoaded;
         private List<String> mNamespaceLoaded;
+        private JTextArea mTxaLog;
 
         /**
          * Creates new form LoadBalancerDialog
@@ -49,12 +49,11 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
          * @param aClient
          * @param aLogPanel
          */
-        public LoadBalancerDialog(JWebSocketTokenClient aClient) {
+        public LoadBalancerDialog(JWebSocketTokenClient aClient, JTextArea aTxaLog) {
                 initComponents();
                 mBaseClient = aClient;
-                mServices = new FastList<BaseServiceTokenPlugIn>();
-                mLBPlugIn = new LoadBalancerPlugIn(aClient);
-                mPlugInListener = new PlugInListener();
+                mTxaLog = aTxaLog;
+                mLBPlugIn = new LoadBalancerPlugIn(mBaseClient);
                 mServicesLoaded = new FastList<String>();
                 mNamespaceLoaded = new FastList<String>();
 
@@ -276,7 +275,7 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
 
 	private void cbEndpointFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbEndpointFocusGained
                 try {
-                        mLBPlugIn.stickyRoutes(mPlugInListener);
+                        mLBPlugIn.stickyRoutes(this);
                 } catch (WebSocketException lEx) {
                         Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
                 }
@@ -284,7 +283,7 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
 
         private void btnChooseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseActionPerformed
                 try {
-                        mLBPlugIn.changeAlgorithm(cbAlgorithms.getSelectedIndex() + 1, mPlugInListener);
+                        mLBPlugIn.changeAlgorithm(cbAlgorithms.getSelectedIndex() + 1, this);
                 } catch (WebSocketException lEx) {
                         Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
                 }
@@ -292,7 +291,7 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
 
         private void btnEndpointInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEndpointInfoActionPerformed
                 try {
-                        mLBPlugIn.clustersInfo(mPlugInListener);
+                        mLBPlugIn.clustersInfo(this);
                 } catch (WebSocketException lEx) {
                         Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
                 }
@@ -300,7 +299,7 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
 
         private void btnStickyRoutesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStickyRoutesActionPerformed
                 try {
-                        mLBPlugIn.stickyRoutes(mPlugInListener);
+                        mLBPlugIn.stickyRoutes(this);
                 } catch (WebSocketException lEx) {
                         Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
                 }
@@ -314,7 +313,8 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
                                 String lPassword = tfPassword.getText();
                                 String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
                                 String lServiceNamespace = mNamespaceLoaded.get(mServicesLoaded.indexOf(lClusterAlias));
-                                mServices.add(mLBPlugIn.sampleService(lPassword, lClusterAlias, lServiceNamespace, mPlugInListener));
+
+                                mLBPlugIn.sampleService(lPassword, lClusterAlias, lServiceNamespace, this);
                         } catch (WebSocketException lEx) {
                                 Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
                         }
@@ -326,7 +326,7 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
                         String lServiceNamespace = mNamespaceLoaded.get(mServicesLoaded.indexOf(cbClusterAlias.getSelectedItem().toString()));
 
                         Token lRequest = TokenFactory.createToken(lServiceNamespace, "test");
-                        mBaseClient.sendToken(lRequest, mPlugInListener);
+                        mLBPlugIn.getTokenClient().sendToken(lRequest, this);
                 } catch (WebSocketException lEx) {
                         Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
                 }
@@ -338,7 +338,7 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
                         String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
                         String lEndpoint = cbEndpoint.getSelectedItem().toString();
 
-                        mLBPlugIn.shutdownEndPoint(lPassword, lClusterAlias, (!"".equals(lEndpoint) ? lEndpoint : "*"), mPlugInListener);
+                        mLBPlugIn.shutdownEndPoint(lPassword, lClusterAlias, lEndpoint, this);
                 } catch (WebSocketException lEx) {
                         Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
                 }
@@ -350,7 +350,7 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
                         String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
                         String lEndpoint = cbEndpoint.getSelectedItem().toString();
 
-                        mLBPlugIn.deregisterServiceEndPoint(lPassword, lClusterAlias, !"".equals(lEndpoint) ? lEndpoint : "*", mPlugInListener);
+                        mLBPlugIn.deregisterServiceEndPoint(lPassword, lClusterAlias, lEndpoint, this);
                 } catch (WebSocketException lEx) {
                         Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
                 }
@@ -367,7 +367,88 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
         }//GEN-LAST:event_cbClusterAliasFocusGained
 
         private void Log(String aMessage) {
-                System.out.println(aMessage);
+                synchronized (mTxaLog) {
+                        try {
+                                int lMAX = 1000;
+                                int lLineCount = mTxaLog.getLineCount();
+
+                                if (lLineCount > lMAX) {
+                                        int lLinePosStart = mTxaLog.getLineEndOffset(0);
+                                        int lLinePosEnd = mTxaLog.getLineEndOffset(lMAX);
+                                        String lTextToReplace = mTxaLog.getText(lLinePosStart, mTxaLog.getText().length() - lLinePosStart);
+                                        mTxaLog.replaceRange(lTextToReplace, 0, lLinePosEnd);
+                                }
+
+                                if (null != aMessage) {
+                                        System.out.println(aMessage);
+                                }
+
+                        } catch (BadLocationException ex) {
+                                Log(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
+                        }
+                }
+        }
+
+        @Override
+        public long getTimeout() {
+                return 5000;
+        }
+
+        @Override
+        public void setTimeout(long aTimeout) {
+        }
+
+        @Override
+        public void OnTimeout(Token aToken) {
+        }
+
+        @Override
+        public void OnResponse(Token aToken) {
+                if (aToken.getString("reqType").equals("clustersInfo")) {
+                        if (mServicesLoaded.isEmpty() || mNamespaceLoaded.isEmpty()) {
+                                mServicesLoaded.clear();
+                                mNamespaceLoaded.clear();
+
+                                List<Map<String, Object>> lInfo = (List<Map<String, Object>>) aToken.getList("data");
+                                for (int lPos = 0; lPos < lInfo.size(); lPos++) {
+                                        mServicesLoaded.add(lInfo.get(lPos).get("clusterAlias").toString());
+                                        mNamespaceLoaded.add(lInfo.get(lPos).get("clusterNS").toString());
+                                }
+
+                                cbClusterAlias.removeAllItems();
+                                for (int lPos = 0; lPos < mServicesLoaded.size(); lPos++) {
+                                        cbClusterAlias.addItem(mServicesLoaded.get(lPos));
+                                }
+                                cbClusterAlias.repaint();
+                        }
+                } else if (aToken.getString("reqType").equals("stickyRoutes")) {
+                        cbEndpoint.removeAllItems();
+                        if (aToken.getInteger("code") != -1) {
+                                List<Map<String, Object>> lRoutes = (List<Map<String, Object>>) aToken.getList("data");
+                                String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
+
+                                for (int lPos = 0; lPos < lRoutes.size(); lPos++) {
+                                        if (lRoutes.get(lPos).get("clusterAlias").equals(lClusterAlias)) {
+                                                cbEndpoint.addItem(lRoutes.get(lPos).get("endPointId"));
+                                        }
+                                }
+                        }
+                }
+
+                if (cbEndpoint.getItemCount() == 0) {
+                        cbEndpoint.addItem("-Select the cluster endpoint-");
+                }
+                cbEndpoint.repaint();
+        }
+
+        @Override
+        public void OnSuccess(Token aToken) {
+                Log("Success : " + aToken.toString());
+        }
+
+        @Override
+        public void OnFailure(Token aToken) {
+                Log("Failure: " + aToken.toString());
         }
 
         /**
@@ -421,80 +502,12 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
     private javax.swing.JButton btnStickyRoutes;
     private javax.swing.JButton btnTestService;
     private javax.swing.JComboBox cbAlgorithms;
-    private static javax.swing.JComboBox cbClusterAlias;
-    private static javax.swing.JComboBox cbEndpoint;
+    private javax.swing.JComboBox cbClusterAlias;
+    private javax.swing.JComboBox cbEndpoint;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPasswordField tfPassword;
     // End of variables declaration//GEN-END:variables
-
-        class PlugInListener implements WebSocketResponseTokenListener {
-
-                @Override
-                public long getTimeout() {
-                        return 10000;
-                }
-
-                @Override
-                public void setTimeout(long aTimeout) {
-                }
-
-                @Override
-                public void OnTimeout(Token aToken) {
-                }
-
-                @Override
-                public void OnResponse(Token aToken) {
-
-                        if (!aToken.getString("reqType").equals("test")) {
-                                Log("Received Token: " + aToken.toString());
-                        }
-
-                        if (aToken.getString("reqType").equals("clustersInfo")) {
-                                if (mServicesLoaded.isEmpty() || mNamespaceLoaded.isEmpty()) {
-                                        mServicesLoaded.clear();
-                                        mNamespaceLoaded.clear();
-
-                                        List<Map<String, Object>> lInfo = (List<Map<String, Object>>) aToken.getList("data");
-                                        for (int lPos = 0; lPos < lInfo.size(); lPos++) {
-                                                mServicesLoaded.add(lInfo.get(lPos).get("clusterAlias").toString());
-                                                mNamespaceLoaded.add(lInfo.get(lPos).get("clusterNS").toString());
-                                        }
-
-                                        cbClusterAlias.removeAllItems();
-                                        for (int lPos = 0; lPos < mServicesLoaded.size(); lPos++) {
-                                                cbClusterAlias.addItem(mServicesLoaded.get(lPos));
-                                        }
-                                        cbClusterAlias.repaint();
-                                }
-                        } else if (aToken.getString("reqType").equals("stickyRoutes")) {
-                                cbEndpoint.removeAllItems();
-                                if (aToken.getInteger("code") != -1) {
-                                        List<Map<String, Object>> lRoutes = (List<Map<String, Object>>) aToken.getList("data");
-                                        String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
-
-                                        for (int lPos = 0; lPos < lRoutes.size(); lPos++) {
-                                                if (lRoutes.get(lPos).get("clusterAlias").equals(lClusterAlias)) {
-                                                        cbEndpoint.addItem(lRoutes.get(lPos).get("endPointId"));
-                                                }
-                                        }
-                                }
-                        }
-
-                        if (cbEndpoint.getItemCount() == 0) {
-                                cbEndpoint.addItem("-Select the cluster endpoint-");
-                        }
-                        cbEndpoint.repaint();
-                }
-
-                @Override
-                public void OnSuccess(Token aToken) {
-                }
-
-                @Override
-                public void OnFailure(Token aToken) {
-                }
-        }
 }
