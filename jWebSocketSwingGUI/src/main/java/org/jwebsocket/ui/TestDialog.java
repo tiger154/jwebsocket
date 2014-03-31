@@ -34,6 +34,7 @@ import java.util.Properties;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -129,29 +130,26 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         }
 
         private void mLog(String aMessage) {
-                System.out.println(aMessage);
-//		synchronized (txaLog) {
-//			int lMAX = 1000;
-//			int lLineCount = txaLog.getLineCount();
-//			if (lLineCount > lMAX) {
-//				String lText = txaLog.getText();
-//				int lIdx = 0;
-//				int lCnt = lLineCount;
-//				while (lIdx < lText.length() && lCnt > lMAX) {
-//					if (lText.charAt(lIdx) == '\n') {
-//						lCnt--;
-//					}
-//					lIdx++;
-//				}
-//				txaLog.replaceRange("", 0, lIdx);
-//			}
-//			if (null != aMessage) {
-//				txaLog.append(aMessage);
-//			} else {
-//				txaLog.setText("");
-//			}
-//			txaLog.setCaretPosition(txaLog.getText().length());
-//		}
+                synchronized (txaLog) {
+                        try {
+                                int lMAX = 1000;
+                                int lLineCount = txaLog.getLineCount();
+
+                                if (lLineCount > lMAX) {
+                                        int lLinePosStart = txaLog.getLineEndOffset(0);
+                                        int lLinePosEnd = txaLog.getLineEndOffset(lMAX);
+                                        String lTextToReplace = txaLog.getText(lLinePosStart, txaLog.getText().length() - lLinePosStart);
+                                        txaLog.replaceRange(lTextToReplace, 0, lLinePosEnd);
+                                }
+
+                                if (null != aMessage) {
+                                        System.out.println(aMessage);
+                                }
+
+                        } catch (BadLocationException ex) {
+                                mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
+                        }
+                }
         }
 
         @Override
@@ -173,7 +171,13 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 
         @Override
         public void processToken(WebSocketClientEvent aEvent, Token aToken) {
-                if (aToken.getString("reqType").equals("test")) {
+                String lreqType = aToken.getString("reqType");
+                if (!(lreqType.equals("clustersInfo")
+                        || lreqType.equals("stickyRoutes")
+                        || lreqType.equals("registerServiceEndPoint")
+                        || lreqType.equals("shutdownServiceEndPoint")
+                        || lreqType.equals("deregisterServiceEndPoint")
+                        || lreqType.equals("changeAlgorithm"))) {
                         mLog("Received Token: " + aToken.toString());
                 }
                 checkStatusIcon();
@@ -278,9 +282,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
-            }
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
             }
         });
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -1144,7 +1145,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 
         private void doCloseForm() {
                 checkDisconnect();
-                dispose();
+                System.exit(0);
         }
 
 	private void mniExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniExitActionPerformed
@@ -1209,6 +1210,12 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
                 } catch (WebSocketException ex) {
                         // process potential exception
                         mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
+
+
+
+
+
+
                 }
 	}//GEN-LAST:event_btnRPCActionPerformed
 
@@ -1242,7 +1249,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
                         mLog("Response: " + aToken.toString());
                 }
         }
-
 	private void txfReconnectDelayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txfReconnectDelayActionPerformed
                 try {
                         long lTimeout = Long.parseLong(txfReconnectDelay.getText());
@@ -1250,6 +1256,12 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
                 } catch (Exception ex) {
                         // process potential exception
                         mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
+
+
+
+
+
+
                 }
 	}//GEN-LAST:event_txfReconnectDelayActionPerformed
 
@@ -1260,7 +1272,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
                         mLog(aMsg);
                 }
         }
-
 	private void btnStressTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStressTestActionPerformed
                 mStressTestsThread = new Thread(new Runnable() {
 
@@ -1294,7 +1305,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 
 	private void mniViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniViewActionPerformed
                 if (mClient != null) {
-                        LoadBalancerDialog lLb = new LoadBalancerDialog(mClient);
+                        LoadBalancerDialog lLb = new LoadBalancerDialog(mClient, txaLog);
                         lLb.setLocation(this.getX() + 300,
                                 this.getLocation().y + 200);
                         lLb.setVisible(true);
@@ -1365,9 +1376,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
             stopJMSServerDemo();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-    }//GEN-LAST:event_formWindowOpened
 
     private void btnUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUploadActionPerformed
             try {
