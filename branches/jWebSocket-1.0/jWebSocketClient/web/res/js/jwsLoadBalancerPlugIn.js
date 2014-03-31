@@ -179,36 +179,52 @@ jws.LoadBalancerPlugIn = {
 	//:a:en::aOptions.connectionURL:String:Optional argument to override the default service connection URL.
 	//:a:en::aOptions.connectionUsername:String:Optional argument that indicates the server connection username. Default: root
 	//:a:en::aOptions.connectionPassword:String:Optional argument that indicates the server connection password. Default: root
-	//:r:*:::void:none
+	//:r:*:::jWebSocketJSONClient:The sample service endpoint instance
 	lbSampleService: function(aPassword, aOptions) {
 		var lServiceEndPoint = new jws.jWebSocketJSONClient();
 		var lURL = aOptions.connectionURL ||
-				"ws://localhost:8787/jWebSocket/jWebSocket?sessionCookieName=sSessionId" + new Date().getTime();
+		"ws://localhost:8787/jWebSocket/jWebSocket?sessionCookieName=sSessionId" + new Date().getTime();
 		lServiceEndPoint.open(lURL, {
 			OnWelcome: function() {
-				lServiceEndPoint.login(aOptions.connectionUsername || "root", aOptions.connectionPassword || "root");
-				lServiceEndPoint.lbRegisterServiceEndPoint(aPassword, aOptions);
-				lServiceEndPoint.addPlugIn({
-					processToken: function(aToken) {
-						if (aToken.ns == aOptions.nameSpace) {
-							if ('test' == aToken.type) {
-								var lResponse = lServiceEndPoint.lbCreateResponse(aToken);
-								lServiceEndPoint.sendToken(lResponse);
-							}
-						}
+				lServiceEndPoint.login(aOptions.connectionUsername || "root", aOptions.connectionPassword || "root", {
+					OnSuccess: function(){
+						lServiceEndPoint.lbRegisterServiceEndPoint(aPassword, aOptions);
+						lServiceEndPoint.addPlugIn({
+							processToken: function(aToken) {
+								if (aToken.ns == aOptions.nameSpace) {
+									if ('test' == aToken.type) {
+										var lResponse = lServiceEndPoint.lbCreateResponse(aToken);
+										lServiceEndPoint.sendToken(lResponse);
+									}
+								}
 
-						if (aToken.ns == jws.LoadBalancerPlugIn.NS) {
-							if ('shutdown' == aToken.type) {
-								lServiceEndPoint.close();
+								if (aToken.ns == jws.LoadBalancerPlugIn.NS) {
+									if ('shutdown' == aToken.type) {
+										lServiceEndPoint.close();
+									}
+								}
 							}
+						});
+					}, OnFailure: function(aResponse){
+						if (aOptions.OnFailure){
+							aOptions.OnFailure(aResponse);
+						} else if (aOptions.OnReponse){
+							aOptions.OnResponse(aResponse);
 						}
 					}
 				});
 			},
 			OnMessage: function(aMessage) {
-				log('Message "' + aMessage.data + '" received on endpoint: ' + (lServiceEndPoint.getId() == null ? aMessage.data.split('"')[11] : lServiceEndPoint.getId()));
+				if ('function' == typeof log){
+					log('Message "' + aMessage.data + '" received on endpoint: ' 
+						+ (lServiceEndPoint.getId() == null 
+							? aMessage.data.split('"')[11] 
+							: lServiceEndPoint.getId()));
+				}
 			}
 		});
+		
+		return lServiceEndPoint;
 	}
 };
 
