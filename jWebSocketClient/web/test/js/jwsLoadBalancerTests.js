@@ -23,6 +23,7 @@ jws.tests.LoadBalancer = {
 	title: "Load balancer plug-in",
 	description: "jWebSocket load balancer plug-in for balance and manage the load in the jWebSocket server",
 	category: "Community Edition",
+	services: [],
 	
 	// this spec tests the clusters information feature	
 	testClustersInfo: function() {
@@ -57,7 +58,7 @@ jws.tests.LoadBalancer = {
 	// this spec tests the register endpoints feature
 	testRegisterServiceEndPoint: function() {
 		var lSpec = "Register service endpoint with valid and invalid arguments ( password, clusterAlias)";
-	
+		var lServicesList = this.services;
 		it(lSpec, function(){
 			var lResponse = {};
 			
@@ -77,7 +78,7 @@ jws.tests.LoadBalancer = {
 						
 							// perform the create sample service on the server
 							// with valid credential and valid arguments	
-							jws.Tests.getAdminTestConn().lbSampleService("admin", {
+							lServicesList.push(jws.Tests.getAdminTestConn().lbSampleService("admin", {
 								clusterAlias: lClusterInfoValues[lPos].clusterAlias,
 								nameSpace: lClusterInfoValues[lPos].clusterNS,
 								OnResponse: function(aToken) {
@@ -89,12 +90,12 @@ jws.tests.LoadBalancer = {
 										return;
 									}
 								}
-							});		
+							}));		
 						}
 					
-						// perform the create five sample service on the server
+						// perform the create a sample service on the server
 						// with valid credential and valid arguments
-						jws.Tests.getAdminTestConn().lbSampleService("admin", {
+						lServicesList.push(jws.Tests.getAdminTestConn().lbSampleService("admin", {
 							clusterAlias: lClusterInfoValues[0].clusterAlias,
 							nameSpace: lClusterInfoValues[0].clusterNS,
 							OnResponse: function(aToken) {
@@ -106,11 +107,11 @@ jws.tests.LoadBalancer = {
 									return;
 								}
 							}
-						});		
+						}));		
 					
-						// perform the create five sample service on the server
+						// perform the create a sample service on the server
 						// with invalid credential and valid arguments
-						jws.Tests.getAdminTestConn().lbSampleService("noAdmin", {
+						lServicesList.push(jws.Tests.getAdminTestConn().lbSampleService("noAdmin", {
 							clusterAlias: lClusterInfoValues[0].clusterAlias,
 							nameSpace: lClusterInfoValues[0].clusterNS,
 							OnResponse: function(aToken) {
@@ -122,11 +123,11 @@ jws.tests.LoadBalancer = {
 									return;
 								}
 							}
-						});		
+						}));		
 					
 						// perform the create five sample service on the server
 						// with valid credential and invalid arguments.
-						jws.Tests.getAdminTestConn().lbSampleService("admin", {
+						lServicesList.push(jws.Tests.getAdminTestConn().lbSampleService("admin", {
 							clusterAlias: 'serviceWrong',
 							nameSpace: lClusterInfoValues[0].clusterNS,
 							OnResponse: function(aToken) {
@@ -138,7 +139,7 @@ jws.tests.LoadBalancer = {
 									return;
 								}
 							}
-						});
+						}));
 					}
 				}
 			});
@@ -251,7 +252,7 @@ jws.tests.LoadBalancer = {
 						for(var lPos=0; lPos < lClusterInfoValues.length; lPos++){
 							jws.Tests.getAdminTestConn().sendToken({
 								ns: lClusterInfoValues[lPos].clusterNS,
-								type: 'test',
+								type: 'test'
 							}, {
 								OnResponse: function(aToken) {
 									if(aToken.code == -1){
