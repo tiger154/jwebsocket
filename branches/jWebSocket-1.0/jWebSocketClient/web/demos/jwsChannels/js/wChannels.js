@@ -516,7 +516,7 @@ $.widget( "jws.channels", {
 	onMessage: function( aEvent, aToken ) {
 		if ( aToken ) {
 			// is it a response from a previous request of this client?
-			if ( aToken.type === "response" ) {
+			if ( aToken.type === "response" && aToken.code === 0 ) {
 				if ( aToken.reqType === "getSubscribers" ) {
 					w.channels.onChannelSubscribers( aToken );
 				} else if ( aToken.reqType === "subscribe" ) {

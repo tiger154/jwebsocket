@@ -189,21 +189,14 @@ $.widget("jws.forms", {
 			}
 		});
 
-		$.jws.bind(w.forms.NS_SYSTEM + ":broadcastToSharedSession", function(aEvt, aToken) {
-			var lToken = aToken.data;
-			if (lToken) {
-				if (lToken.reqType === "logon") {
-					$.jws.trigger(w.forms.NS_SYSTEM + ":logon", lToken);
-				}
-				else if (lToken.reqType === "logoff") {
-					w.forms.onLoggedOff();
-				}
-			}
+		$.jws.bind(w.forms.NS_SYSTEM + ":logoff", function(aEvt, aToken) {
+			w.forms.onLoggedOff();
 		});
-
+		
 		$.jws.bind(w.forms.NS_SYSTEM + ":logon", function(aEvt, aToken) {
 			w.forms.login(aToken);
 		});
+		
 		$.jws.bind("logon", function(aEvt, aToken) {
 			w.forms.login(aToken);
 		});

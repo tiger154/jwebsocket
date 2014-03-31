@@ -82,21 +82,14 @@ $(document).bind({
 				}
 			});
 
-			$.jws.bind(w.mobile.NS_SYSTEM + ":broadcastToSharedSession", function(aEvt, aToken) {
-				var lToken = aToken.data;
-				if (lToken) {
-					if (lToken.reqType === "logon") {
-						$.jws.trigger(w.forms.NS_SYSTEM + ":logon", lToken);
-					}
-					else if (lToken.reqType === "logoff") {
-						w.mobile.onLoggedOff();
-					}
-				}
+			$.jws.bind(w.mobile.NS_SYSTEM + ":logoff", function(aEvt, aToken) {
+				w.mobile.onLoggedOff();
 			});
 
 			$.jws.bind(w.mobile.NS_SYSTEM + ":logon", function(aEvt, aToken) {
 				w.mobile.setLoggedIn(aToken);
 			});
+
 			$.jws.bind("logon", function(aEvt, aToken) {
 				w.mobile.setLoggedIn(aToken);
 			});

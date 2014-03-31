@@ -71,11 +71,15 @@ $.widget("jws.SMSGateway", {
 			},
 			OnClose: function(aEvent) {
 				w.SMSGateway.eImg.attr("src", "css/images/blank.png");
+				$("#remining_sms").hide();
+				w.SMSGateway.disableAll();
 			},
 			OnLogon: function() {
 				w.SMSGateway.enableAll();
+				w.SMSGateway.remainingSMS(lData.username);
 			},
-			OnLogoff: function(){
+			OnLogoff: function() {
+				$("#remining_sms").hide();
 				w.SMSGateway.disableAll();
 			},
 			OnMessage: function(aEvent, aToken) {
@@ -83,23 +87,6 @@ $.widget("jws.SMSGateway", {
 				// if we want to have this global for all the demos we just have 
 				// to add these lines to the OnMessage from the widget 
 				// wAuth.js under ../../res/js/widgets/wAuth.js
-				if (aToken.ns === jws.NS_SYSTEM) {
-					if (aToken.type === "broadcastToSharedSession") {
-						var lData = aToken.data,
-								lreqType = lData.reqType;
-
-						if (lreqType === "logon") {
-							w.auth.getCallbacks().OnLogon(lData);
-							w.SMSGateway.remainingSMS(lData.username);
-						}
-
-						if (lreqType === "logoff") {
-							w.auth.getCallbacks().OnLogoff(lData);
-							$("#remining_sms").hide();
-							w.SMSGateway.disableAll();
-						}
-					}
-				}
 			}
 		};
 		// To automatically handle all the logon, logoff events for all demos
@@ -288,7 +275,7 @@ $.widget("jws.SMSGateway", {
 		w.SMSGateway.enableButton(w.SMSGateway.eBtnReport);
 		w.SMSGateway.eBtnUpdate.attr("disabled", false);
 		w.SMSGateway.eBtnUpdate.removeClass("disabled");
-		if(w.SMSGateway.gritterDialog){
+		if (w.SMSGateway.gritterDialog) {
 			$.gritter.remove(w.SMSGateway.gritterDialog);
 		}
 	}

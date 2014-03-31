@@ -88,11 +88,7 @@ Ext.onReady(function() {
 		if (aToken.username !== "anonymous") {
 			Ext.jwsClient.fireEvent(jws.ExtJSDemo.TT_LOGON, aToken, Ext.jwsClient);
 		} else {
-			Ext.jwsClient.getConnection().systemLogon(jws.DEMO_ROOT_LOGINNAME, jws.DEMO_ROOT_PASSWORD, {
-				OnSuccess: function(aToken) {
-					Ext.jwsClient.getConnection().broadcastToSharedSession({data: aToken}, false);
-				}
-			});
+			Ext.jwsClient.getConnection().systemLogon(jws.DEMO_ROOT_LOGINNAME, jws.DEMO_ROOT_PASSWORD);
 		}
 	});
 
@@ -129,7 +125,6 @@ Ext.onReady(function() {
 	eBtnDisconnect.on("click", function() {
 		Ext.jwsClient.getConnection().systemLogoff({
 			OnSuccess: function(aToken) {
-				Ext.jwsClient.getConnection().broadcastToSharedSession({data: aToken}, false);
 				Ext.jwsClient.close();
 			},
 			OnFailure: function() {

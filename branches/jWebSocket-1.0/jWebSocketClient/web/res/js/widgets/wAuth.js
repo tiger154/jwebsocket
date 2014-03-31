@@ -201,6 +201,9 @@ $.widget("jws.auth", {
 			},
 			// OnMessage callback
 			OnMessage: function(aEvent, aToken) {
+				if(!aToken && aEvent && aEvent.type === "message" && aEvent.data){
+					aToken = JSON.parse(aEvent.data);
+				}
 				if (aToken && aToken.code === -1) {
 					if (mLog.isDebugEnabled) {
 						log("<font color='red'>The following error" +
@@ -208,15 +211,6 @@ $.widget("jws.auth", {
 					}
 				}
 
-				if (aToken.ns === "org.jwebsocket.plugins.system") {
-					if (aToken.type === "broadcastToSharedSession") {
-						if (aToken.data && aToken.data.reqType === "logon") {
-							this.OnLogon(aToken.data);
-						} else if (aToken.data && aToken.data.reqType === "logoff") {
-							this.OnLogoff(aToken.data);
-						}
-					}
-				}
 				// Debug if the user doesn't have an OnMessage method
 				if (w.auth.options.OnMessage) {
 					w.auth.options.OnMessage(aEvent, aToken);
@@ -345,7 +339,7 @@ $.widget("jws.auth", {
 			}
 		}
 	},
-	auth: function( aUser, aPassword ) {
+	auth: function(aUser, aPassword) {
 		if (mWSC) {
 			if (mLog.isDebugEnabled) {
 				log("Authenticating...");
@@ -368,12 +362,7 @@ $.widget("jws.auth", {
 					return;
 				}
 
-				var lRes = mWSC.systemLogon(
-						lUsername, lPassword, {
-							OnSuccess: function(aToken) {
-								mWSC.broadcastToSharedSession({data: aToken}, false);
-							}
-						});
+				var lRes = mWSC.systemLogon(lUsername, lPassword);
 				if (lRes.code === 0) {
 					if (mLog.isDebugEnabled) {
 						log("Asychronously waiting for response...");
@@ -397,11 +386,7 @@ $.widget("jws.auth", {
 				log("Deauthenticating...");
 			}
 			try {
-				var lRes = mWSC.systemLogoff({
-					OnSuccess: function(aToken) {
-						mWSC.broadcastToSharedSession({data: aToken}, false);
-					}
-				});
+				var lRes = mWSC.systemLogoff();
 				if (lRes.code === 0) {
 					if (mLog.isDebugEnabled) {
 						log("Asychronously waiting for response...");
