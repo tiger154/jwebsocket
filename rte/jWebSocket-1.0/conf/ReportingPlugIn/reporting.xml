@@ -12,6 +12,10 @@
 			 and to be  accessible by the web or application server.
 		-->
 		<property name="outputFolder" value="${USER_HOME}/reports/"/>
+		<!-- The jdbcAliasTest specifies the alias of the jdbc connection to use 
+			 in those reports that require it
+		-->
+		<property name="jdbcAlias" value="default"/>
 	</bean>
 	
 	<bean id="jrService" class="org.jwebsocket.plugins.reporting.service.JasperReportService">
