@@ -39,18 +39,18 @@ jws.tests.Reporting = {
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
-						// check response
-						return(null != lResponse);
-					},
-					lSpec,
-					1500
-					);
+				function() {
+					// check response
+					return(null != lResponse);
+				},
+				lSpec,
+				1500
+				);
 
 			// check the result 
 			runs(function() {
 				expect(lResponse.code).toEqual(0);
-				expect(lResponse.data.indexOf("person") > -1).toEqual(true);
+				expect(lResponse.data.indexOf("jWebSocketContactReport") > -1).toEqual(true);
 			});
 
 		});
@@ -64,30 +64,189 @@ jws.tests.Reporting = {
 
 			// perform the generate reports on the server
 			jws.Tests.getAdminTestConn().reportingGenerateReport(
-					aReportName,
-					aParams,
-					aFields,
-					{
-						OnResponse: function(aToken) {
-							lResponse = aToken;
-						}
+				aReportName,
+				aParams,
+				aFields,
+				{
+					OnResponse: function(aToken) {
+						lResponse = aToken;
 					}
-			);
+				}
+				);
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
-						return(null != lResponse);
-					},
-					lSpec,
-					1000 * 10
-					);
+				function() {
+					return(null != lResponse);
+				},
+				lSpec,
+				1500
+				);
 
 			// check the result 
 			runs(function() {
 				expect(lResponse.code).toEqual(0);
-				expect(lResponse.path.indexOf("person.pdf") > -1);
-				
+				expect(lResponse.path.indexOf("jWebSocketContactReport.pdf") > -1);
+
+				jws.Tests.getAdminTestConn().fileLoad(lResponse.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
+					OnSuccess: function(aToken) {
+						window.open("data:application/pdf;base64," + aToken.data, "_blank");
+					}
+				});
+			});
+		});
+	},
+	testCreateTable: function() {
+
+		var lSpec = "create table (admin)";
+		it(lSpec, function() {
+
+			// init response
+			var lResponse = {};
+
+			// perform the native create table...
+			jws.Tests.getAdminTestConn().jdbcExecSQL(
+				"create table jwebsocket_reporting_demo ( \n\
+						user_id int, \n\
+						name varchar(255), \n\
+						lastName varchar(255), \n\
+						age int, \n\
+						email varchar(255))",
+				{
+					OnResponse: function(aToken) {
+						lResponse = aToken;
+					}
+				}
+				);
+
+			// wait for result, consider reasonable timeout
+			waitsFor(
+				function() {
+					// check response
+					return(lResponse.msg !== undefined);
+				},
+				lSpec,
+				1500
+				);
+
+			// check result if ok
+			runs(function() {
+				expect(lResponse.msg).toEqual("ok");
+			});
+
+		});
+	},
+	testInsertSQL: function() {
+
+		var lSpec = "insertSQL (admin)";
+		it(lSpec, function() {
+
+			// init response
+			var lResponse = {};
+
+			// perform the native insert...
+			jws.Tests.getAdminTestConn().jdbcUpdateSQL(
+				"insert into jwebsocket_reporting_demo (user_id, name, lastName, age, email) values \n\
+						(1, 'Alexander', 'Schulze', 40, 'a.schulze@jwebsocket.org'),\n\
+						(2, 'Rolando', 'Santamaria', 27,'rsantamaria@jwebsocket.org'),\n\
+						(3, 'Lisdey', 'Perez', 27, 'lperez@jwebsocket.org'),\n\
+						(4, 'Marcos', 'Gonzalez', 27, 'mgonzalez@jwebsocket.org'),\n\
+						(5, 'Osvaldo', 'Aguilar', 27, 'oaguilar@jwebsocket.org'),\n\
+						(6, 'Victor', 'Barzana', 27, 'vbarzana@jwebsocket.org'),\n\
+						(7, 'Javier Alejandro', 'Puentes Serrano', 26, 'jpuentes@jwebsocket.org')",
+				{
+					OnResponse: function(aToken) {
+						lResponse = aToken;
+					}
+				}
+				);
+			// wait for result, consider reasonable timeout
+			waitsFor(
+				function() {
+					return(lResponse.code !== undefined);
+				},
+				lSpec,
+				1500
+				);
+
+			// check result if ok
+			runs(function() {
+				expect(lResponse.msg).toEqual("ok");
+				expect(lResponse.rowsAffected[0]>=1);
+			});
+
+		});
+	},
+	testDropTable: function() {
+
+		var lSpec = "drop table (admin)";
+		it(lSpec, function() {
+
+			// init response
+			var lResponse = {};
+
+			// perform the native drop table...
+			jws.Tests.getAdminTestConn().jdbcExecSQL(
+				"drop table jwebsocket_reporting_demo",
+				{
+					OnResponse: function(aToken) {
+						lResponse = aToken;
+					}
+				}
+				);
+
+			// wait for result, consider reasonable timeout
+			waitsFor(
+				function() {
+					// check response
+					return(lResponse.msg !== undefined);
+				},
+				lSpec,
+				1500
+				);
+
+			// check result if ok
+			runs(function() {
+				expect(lResponse.msg).toEqual("ok");
+			});
+
+		});
+	},
+	testGenerateJDBCReport: function(aReportName, aParams, aFields) {
+
+		var lSpec = "generateReport(" + aReportName + "," + aFields + "," + aParams + ")";
+		it(lSpec, function() {
+			var lResponse = null;
+
+			// perform the generate reports on the server
+			jws.Tests.getAdminTestConn().reportingGenerateReport(
+				aReportName,
+				aParams,
+				aFields,
+				{
+					useJDBCConnection: true,
+					connectionAlias: "default",
+					outputType: "pdf",
+					OnResponse: function(aToken) {
+						lResponse = aToken;
+					}
+				}
+				);
+
+			// wait for result, consider reasonable timeout
+			waitsFor(
+				function() {
+					return(null != lResponse);
+				},
+				lSpec,
+				1500
+				);
+
+			// check the result 
+			runs(function() {
+				expect(lResponse.code).toEqual(0);
+				expect(lResponse.path.indexOf("jWebSocketContactReport.pdf") > -1);
+
 				jws.Tests.getAdminTestConn().fileLoad(lResponse.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
 					OnSuccess: function(aToken) {
 						window.open("data:application/pdf;base64," + aToken.data, "_blank");
@@ -100,14 +259,71 @@ jws.tests.Reporting = {
 		this.testGetReports();
 
 		// generate report calling args
-		var lReportName = "person";
-		var lParams = {reportTitle: 'My Report'};
+		var lReportName = "jWebSocketContactReport";
+		var lParams = {
+			reportTitle: 'jWebSocket Contact Report'
+		};
 		var lFields = [
-			{name: 'Alexander', lastName: 'Schulze', age: 37, email: 'a.schulze@jwebsocket.org'},
-			{name: 'Rolando', lastName: 'Santamaria Maso', age: 27, email: 'r.santamaria@jwebsocket.org'},
-			{name: 'Lisdey', lastName: 'Perez', age: 27, email: 'l.perez@jwebsocket.org'},
-			{name: 'Javier Alejandro', lastName: 'Puentes Serrano', age: 27, email: 'j.puentes@jwebsocket.org'}
-		];
+		{
+			name: 'Alexander', 
+			lastName: 'Schulze', 
+			age: 40, 
+			email: 'a.schulze@jwebsocket.org'
+		},
+
+		{
+			name: 'Rolando', 
+			lastName: 'Santamaria Maso', 
+			age: 27, 
+			email: 'rsantamaria@jwebsocket.org'
+		},
+
+		{
+			name: 'Lisdey', 
+			lastName: 'Perez', 
+			age: 27, 
+			email: 'lperez@jwebsocket.org'
+		},
+
+		{
+			name: 'Marcos', 
+			lastName: 'Gonzalez', 
+			age: 27, 
+			email: 'mgonzalez@jwebsocket.org,'
+		},
+
+		{
+			name: 'Osvaldo', 
+			lastName: 'Aguilar', 
+			age: 27, 
+			email: 'oaguilar@jwebsocket.org,'
+		},
+
+		{
+			name: 'Victor', 
+			lastName: 'Barzana', 
+			age: 27, 
+			email: 'vbarzana@jwebsocket.org,'
+		},
+
+		{
+			name: 'Javier Alejandro', 
+			lastName: 'Puentes Serrano', 
+			age: 27, 
+			email: 'jpuentes@jwebsocket.org'
+		}];
+		
 		this.testGenerateReport(lReportName, lParams, lFields);
+		// generate report with jdbc connection
+		lReportName = "JDBCExampleReport";
+
+		// creating a table to run the test
+		this.testCreateTable();
+		// inserting data on table to load in the report
+		this.testInsertSQL();
+		// generating/creating the report
+		this.testGenerateJDBCReport(lReportName, null, null);
+		//cleaning the database erasing the table 
+		this.testDropTable();
 	}
 };

@@ -50,6 +50,7 @@
 		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
 		<script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
 		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
+		<script type="text/javascript" src="../../res/js/jwsJDBCPlugIn.js"></script>
 
 		<!--  PUBLIC WIDGETS   -->
 		<script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
@@ -97,42 +98,19 @@
 
 				<!--       DESCRIPTION       -->
                 <div class="box" id="help_header">
-					<p>Here we show how easily jWebSocketReporting can be used
-						to obtain generated reports. You will be able to upload 
-						a custom report template, obtain the list of existing 
-						templates on server and generate a report by typing your own data.
+					<p>Here we show how easily jWebSocketReporting can be used to generate reports.
+						You will be able to upload a custom report template, 
+						get the list of existing templates on server and generate a report by typing your own data or
+						loading data from a JDBC connection.  
 					</p>
-					<p>
-						This demo generates a default report called "person" if you 
-						don't type any data in Create Report form. Otherwise if you choose 
-						generate your own report you must pick one from the list of reports
-						and introduce the report data as a JSON object as is shown in the next example:
-					</p>
-				</div>
-				<div id="show_icon_help"></div>
-				<div id="hide_icon_help_text">Read more</div>				
-				<div class="box" id="help_footer">
-					<p>
-						Person report:
-					</p>
-					<p>	
-						lParams = {<b>reportTitle:</b> 'My Report'};
-					</p>	
-					<p>	
-
-						lFields = [
-					</p>
-					<p>
-						{<b>name:</b> 'type something here', <b>lastName:</b> 'type something here', <b>age:</b> type something here, <b>email:</b> 'type something here'},
-					</p>
-					<p>
-						{<b>name:</b> 'type something here', <b>lastName:</b> 'type something here', <b>age:</b> type something here, <b>email:</b> 'type something here'},
-					</p>
-					<p>
-						];
+					<p> If the "Create Report" form is empty a default report will be shown. 
+						To avoid that you need to pick a item after you get the list of available reports from server.
+						On this demo to try the "JDBCExampleReport" you must run 
+						the follow <a href="createDataBaseScript.txt" target="blank">script</a> on the database server 
+						that corresponds with the selected JDBC alias in ReportingPlugIn configuration, 
+						default JDBC alias: <b>default</b>.
 					</p>
 				</div>
-
 				<!--       SCENARIO          -->
 				<div id="scenario_container" class="box">
 					<div id="jws_reporting_content">
@@ -159,23 +137,7 @@
 						<!--       CREATE REPORT BOX           -->
 						<div class="jws_create_report">
 							<div class="box_header">Create Report</div>
-							<div id="hide_icon_banner">
-								<div id="show_icon"></div>
-								<div id="hide_icon_text">Type custom data</div>
-							</div>
 							<div class="box_content_gen" id="gen_content_box">								
-								<div class="jws_formats">
-									<div class="jws_reporting_label">Formats</div>
-									<select id="jws_reporting_formats_cmb" class="jws_create_report_cmb"
-											title="List of availables formats">
-									</select>
-								</div>
-								<div class="jws_connection">
-									<input type="checkbox" id="jws_reporting_connection_chk" class="jws_create_report_chk" 
-										   title="on/off Use JDBConnection PlugIn"/>
-									<div class="jws_connection_label">Use connection?</div>
-									<input type="text" class="jws_connection_txt" title="Valid JDBC conection instance"></input>
-								</div>
 								<div class="jws_fields_params">
 									<div class="jws_fields">
 										<div class="jws_fields_label">Fields</div>
@@ -195,7 +157,7 @@
 					<!--       DESCRIPTION       -->						
 					<div class="description_box">
 						<p>
-							To know how it works please visit 
+							To know more about how it works please visit the
 							<a href="http://jwebsocket.org/docs/reporting/" target="blank">jWebSocket Reporting Help</a>
 
 						</p>

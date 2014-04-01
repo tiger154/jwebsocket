@@ -61,7 +61,7 @@ jws.ReportingPlugIn = {
 				reportFields: aFields,
 				reportParams: aParams,
 				reportOutputType: aOptions.outputType || "pdf",
-				useJDBCConnection: aOptions.useConection || false,
+				useJDBCConnection: aOptions.useJDBCConnection || false,
 				nameJDBCCOnnection:aOptions.nameConnection || ""
 			};
 			this.sendToken(lToken, aOptions);

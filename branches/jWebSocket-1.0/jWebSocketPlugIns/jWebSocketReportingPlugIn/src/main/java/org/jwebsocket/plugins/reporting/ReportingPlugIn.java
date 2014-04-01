@@ -1,8 +1,8 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - Reporting Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//	Alexander Schulze, Germany (NRW)
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.springframework.util.Assert;
 /**
  *
  * @author Alexander Schulze
+ * @author Javier Alejandro Puentes
  */
 public class ReportingPlugIn extends ActionPlugIn {
 
@@ -186,6 +187,7 @@ public class ReportingPlugIn extends ActionPlugIn {
 	 * @return
 	 * @throws Exception
 	 */
+	@RequirePlugIns(ids = {"jws.filesystem", "jws.jdbc"})
 	public Token generateReport(WebSocketConnector aConnector, Token aToken) throws Exception {
 		// getting the report name
 		String lReportName = aToken.getString("reportName");
@@ -195,7 +197,8 @@ public class ReportingPlugIn extends ActionPlugIn {
 		List<Map<String, Object>> lReportFields = aToken.getList("reportFields", new ArrayList());
 		// checking JDBCplug-in is loaded
 		boolean lUseJDBC = aToken.getBoolean("useJDBCConnection", false);
-		String lConnectionAlias = aToken.getString("connectionAlias", "default");
+//		String lConnectionAlias = aToken.getString("connectionAlias", "default");
+		String lConnectionAlias = mJasperReportService.getConnectionAlias();
 		// getting the connection object, only from S2S
 		Connection lConnection = (Connection) aToken.getObject("connection");
 		if (lUseJDBC) {
@@ -209,13 +212,23 @@ public class ReportingPlugIn extends ActionPlugIn {
 		// crating a response token for client
 		Token lResponse = createResponse(aToken);
 		String lUserHome = getUserHome(aConnector);
-		String lReportPath = mJasperReportService.generateReport(lUserHome, lReportName,
-				lReportParams, lReportFields, lConnection, lReportFormat);
+		String lReportPath = "";
+		try {
+			lReportPath = mJasperReportService.generateReport(lUserHome, lReportName,
+					lReportParams, lReportFields, lConnection, lReportFormat);
 
-		// returning the path of the generated report
-		lResponse.setString("path", lReportPath);
+			// returning the path of the generated report
+			lResponse.setString("path", lReportPath);
+
+			return lResponse;
+
+		} catch (Exception lEx) {
+			lResponse.setCode(-1);
+			lResponse.setString("error", lEx.getMessage());
+		}
 
 		return lResponse;
+
 	}
 
 	/**
@@ -226,7 +239,6 @@ public class ReportingPlugIn extends ActionPlugIn {
 	 * @throws Exception
 	 */
 	@Role(name = NS_REPORTING + ".generateReport")
-	@RequirePlugIns(ids = {"jws.filesystem", "jws.jdbc"})
 	public void generateReportAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		Token lResponse = generateReport(aConnector, aToken);
 
