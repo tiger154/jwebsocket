@@ -1,7 +1,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - Report Service for Reporting Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
 
 /**
  *
- * @author Javier Alejandro Puentes Serrano
+ * @author Javier Alejandro Puentes
  */
 public class JasperReportService implements IJasperReportService {
 
@@ -200,6 +200,12 @@ public class JasperReportService implements IJasperReportService {
 		return lFinalPath.replace(aUserHome, "");
 	}
 
+	@Override
+	public String getConnectionAlias(){
+		return
+				mSettings.getJdbcAlias();
+	}
+	
 	@Override
 	public void initialize() throws Exception {
 	}
