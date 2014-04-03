@@ -21,11 +21,11 @@ $(document).ready(function() {
 
 				$('#start').fadeOut(500);
 				startTest(
-						$('#transport').val(),
-						generateString(parseInt($('#length').val())),
-						parseInt($('#loops').val()),
-						parseInt($('#repeats').val())
-						);
+					$('#transport').val(),
+					generateString(parseInt($('#length').val())),
+					parseInt($('#loops').val()),
+					parseInt($('#repeats').val())
+					);
 			});
 		}
 	});
@@ -80,8 +80,25 @@ execChannelBroadcast = function(aData, aLoops, aListener) {
 };
 
 execJmsBroadcast = function(aData, aLoops, aListener) {
-	aListener.OnStart();
+	if ($('#loops').val() == aLoops){
+		aListener.OnStart();
+	}
 
+	aListener.OnSampleStart();
+	lWSC.sendJmsText("connectionFactory", "testQueue", false, aData, {
+		OnFailure: function(aToken){
+			log('ERROR: ' + aToken.msg);
+		},
+		OnResponse: function(aToken){
+			aListener.OnSampleComplete();
+			
+			if (aLoops > 0){
+				execJmsBroadcast(aData, aLoops - 1, aListener);
+			} else {
+				aListener.OnComplete();
+			}
+		}
+	});
 };
 
 
