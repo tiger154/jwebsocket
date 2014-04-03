@@ -217,6 +217,7 @@ jws.SSOPlugIn = {
 				if (lSplitPos > 0) {
 					var lKey = lCookies[ lIdx ].substr(0, lSplitPos);
 					var lValue = lCookies[ lIdx ].substr(lSplitPos + 1);
+					// do we read the jWebSocket SSO cookie?
 					if (jws.SSOPlugIn.JWS_SSO_COOKIE === lKey) {
 						// TODO: process exception
 						var lJSON;
@@ -231,8 +232,8 @@ jws.SSOPlugIn = {
 						} catch (lEx) {
 							break;
 						}
-					} else if (!this.sso.sessionId
-							&& jws.SSOPlugIn.SSO_SESSION_COOKIE_NAME === lKey) {
+					// do we read the SSO server cookie?
+					} else if (jws.SSOPlugIn.SSO_SESSION_COOKIE_NAME === lKey) {
 						this.sso.sessionId = lValue;
 						lFound = true;
 					}

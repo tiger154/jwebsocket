@@ -95,7 +95,7 @@
 	<!-- Set system properties here -->
 	<properties>
 		<!--
-		<property name="env" value="prod" />
+		<property na" />
 		-->
 	</properties>
 
@@ -1868,6 +1868,7 @@
 		</plugin>
 		
 		<!-- Monitoring plugin -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
 			<id>MonitoringPlugIn</id>
@@ -1876,7 +1877,8 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-
+		-->
+		
 		<!-- API disclosure plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.api.APIPlugIn</name>
@@ -2062,6 +2064,21 @@
 				</settings>
 		</plugin>
 		-->
+		<!--
+		<plugin>
+			<name>org.jwebsocket.plugins.scada.streaming.PointStreamingPlugIn</name>
+			<ns>org.jwebsocket.plugins.scada.streaming</ns>
+			<id>iwerks.ep</id>
+			<jars>
+				<jar>C:/svn/iwerks_ep/in/jWebsocketPointStreamingPlugIn-1.0/dist/jWebSocketPointStreamingPlugIn-1.0.jar</jar>
+			</jars>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+			</settings>
+		</plugin>
+		-->
 	</plugins>
     
 	<!-- filters to be instantiated for jWebSocket -->
@@ -2135,6 +2152,7 @@
 		</filter>
 		
 		<!-- this filter is required to capture all events for the monitoring plug-in -->
+		<!--
 		<filter>
 			<name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
 			<id>jws.monitoringFilter</id>
@@ -2144,6 +2162,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</filter>
+		-->
 
 		<filter>
 			<name>org.jwebsocket.plugins.loadbalancer.LoadBalancerFilter</name>

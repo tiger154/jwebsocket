@@ -27,8 +27,6 @@ public class App {
 
 		OAuth lOAuth = new OAuth();
 
-		System.setProperty("jsse.enableSNIExtension", "false");
-
 		lOAuth.setOAuthHost("https://aschulze-dt.nvidia.com");
 		// lOAuth.setOAuthHost("https://hqdvmbl702:8443");
 
@@ -37,12 +35,13 @@ public class App {
 
 		// System.out.println("Test https call: " + lOAuth.testCall("https://hqdvmbl702:8443/get-smsession"));
 		// System.out.println("Test https call: " + lOAuth.testCall("https://www.google.com"));
-		System.out.println("Getting Session Cookie: " + lOAuth.getSSOSession("aschulze", "Div#2014", 5000));
+		System.out.println("Getting Session Cookie: " + lOAuth.getSSOSession("aschulze", "TryAgain#2014", 5000));
 		System.out.println("Authenticate Session: " + lOAuth.authSession(lOAuth.getSessionId(), 5000));
+		String lAccessToken = lOAuth.getAccessToken();
 		/*		
 		 System.out.println("JSON Direct Authentication: " + lOAuth.authDirect("aschulze", "Div#2014"));
-		*/
-		 System.out.println("JSON User from Access Token: " + lOAuth.getUser());
+		 */
+		System.out.println("JSON User from Access Token: " + lOAuth.getUser(lAccessToken));
 		/*
 		 System.out.println("JSON Refresh Access Token: " + lOAuth.refreshAccessToken());
 		 System.out.println("Username from OAuth Object: " + lOAuth.getUsername());

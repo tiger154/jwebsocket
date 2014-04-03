@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.jwebsocket.sso;
 
 import java.io.DataInputStream;
@@ -40,7 +39,7 @@ import org.apache.http.util.EntityUtils;
  * @author aschulze
  */
 public class OAuthBase {
-	
+
 	int mReturnCode = 0;
 	String mReturnMsg = "Ok";
 
@@ -59,7 +58,12 @@ public class OAuthBase {
 	String OAUTH_GETUSER_URL = "/use-token";
 	String mOAuthAppId = null; // global (static) application id (not instance app_id)!
 	String mOAuthAppSecret = null; // global (static) application secret (not instance app_secret)!
-/**
+
+	static {
+		System.setProperty("jsse.enableSNIExtension", "false");
+	}
+
+	/**
 	 *
 	 * @param aURL
 	 * @param aMethod
@@ -89,7 +93,7 @@ public class OAuthBase {
 			HttpUriRequest lRequest;
 			if ("POST".equals(aMethod)) {
 				lRequest = new HttpPost(aURL);
-				((HttpPost)lRequest).setEntity(new ByteArrayEntity(aPostBody.getBytes("UTF-8")));
+				((HttpPost) lRequest).setEntity(new ByteArrayEntity(aPostBody.getBytes("UTF-8")));
 			} else {
 				lRequest = new HttpGet(aURL);
 			}
@@ -98,7 +102,6 @@ public class OAuthBase {
 			}
 
 			// System.out.println("Executing request " + lRequest.getRequestLine());
-
 			// Create a custom response handler
 			ResponseHandler<String> lResponseHandler = new ResponseHandler<String>() {
 
@@ -271,5 +274,4 @@ public class OAuthBase {
 		return mAccessToken;
 	}
 
-	
 }

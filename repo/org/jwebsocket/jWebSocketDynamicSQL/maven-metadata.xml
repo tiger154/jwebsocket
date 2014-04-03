@@ -2,11 +2,12 @@
 <metadata>
   <groupId>org.jwebsocket</groupId>
   <artifactId>jWebSocketDynamicSQL</artifactId>
-  <version>1.0</version>
   <versioning>
+    <release>1.0.RC2.b40307</release>
     <versions>
       <version>1.0</version>
+      <version>1.0.RC2.b40307</version>
     </versions>
-    <lastUpdated>20140226114258</lastUpdated>
+    <lastUpdated>20140307142753</lastUpdated>
   </versioning>
 </metadata>
