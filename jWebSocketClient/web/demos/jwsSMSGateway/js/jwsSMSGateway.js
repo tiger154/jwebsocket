@@ -74,9 +74,9 @@ $.widget("jws.SMSGateway", {
 				$("#remining_sms").hide();
 				w.SMSGateway.disableAll();
 			},
-			OnLogon: function() {
+			OnLogon: function(aToken) {
 				w.SMSGateway.enableAll();
-				w.SMSGateway.remainingSMS(lData.username);
+				w.SMSGateway.remainingSMS(aToken.username);
 			},
 			OnLogoff: function() {
 				$("#remining_sms").hide();
@@ -253,22 +253,25 @@ $.widget("jws.SMSGateway", {
 				.attr("onclick", "this.className='button onmouseover'");
 	},
 	disableAll: function() {
+		var lUrl = window.location.origin + "/products/userClient";
 		w.SMSGateway.disableButton(w.SMSGateway.eBtnSend);
 		w.SMSGateway.disableButton(w.SMSGateway.eBtnReport);
 		w.SMSGateway.eBtnUpdate.attr("disabled", true);
 		w.SMSGateway.eBtnUpdate.addClass("disabled");
 		w.SMSGateway.eImg.attr("src", "");
-		w.SMSGateway.gritterDialog = $.gritter.add({
-			// (string | mandatory) the heading of the notification
-			title: 'Welcome to jWebSocket SMS Gateway Demo',
-			// (string | mandatory) the text inside the notification
-			text: 'You must <a href="https://enapso.com/products/userClient#login" target="_parent">login</a> ' +
-					'or <a href="https://enapso.com/products/userClient#register" target="_parent">register</a> ' +
-					'first using our Website header buttons to be able to use this demo.',
-			class_name: 'gritter-light gritter-top_align',
-			sticky: true,
-			image: '../../res/img/information.png' // you can use warning.png, important.png, alert.png, error.png
-		});
+		
+		if(window.location.origin.indexOf("localhost") < 0){
+			w.SMSGateway.gritterDialog = $.gritter.add({
+				// (string | mandatory) the heading of the notification
+				title: 'Welcome to jWebSocket SMS Gateway Demo',
+				// (string | mandatory) the text inside the notification
+				text: 'You must login or <a href="' + lUrl + '#register" target="_parent">register</a> ' +
+						'first using our Website header buttons to be able to use this demo.',
+				class_name: 'gritter-light gritter-top_align',
+				sticky: true,
+				image: '../../res/img/information.png' // you can use warning.png, important.png, alert.png, error.png
+			});
+		}
 	},
 	enableAll: function() {
 		w.SMSGateway.enableButton(w.SMSGateway.eBtnSend);
