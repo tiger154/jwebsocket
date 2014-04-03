@@ -215,6 +215,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	}
 
 	/**
+	 * Deprecated, don't use this method anymore!
 	 *
 	 * @param aNS
 	 * @param aType
@@ -228,36 +229,52 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	}
 
 	/**
+	 * Adds a new listener to listen to requests from other endpoints. You can
+	 * only assign one request listener per name space / type combination. If
+	 * you register a listener that already exists, this will overwrite the
+	 * previous one. A request token usually contains a name space, a type, a
+	 * unique token-id an additional arbitrary payload. The entire token is
+	 * passed to the listener to process it according to the application needs.
 	 *
-	 * @param aNS
-	 * @param aType
-	 * @param aListener
+	 * @param aNS the name space of the request to listen on
+	 * @param aType the type of the request to listen on
+	 * @param aListener the actual listener instance, must implement the
+	 * IJWSMessageListener interface
 	 */
-	public void addRequestListener(String aNS, String aType, IJWSMessageListener aListener) {
+	public void addRequestListener(String aNS, String aType,
+			IJWSMessageListener aListener) {
 		mRequestListeners.put(aNS + "." + aType, aListener);
 	}
 
 	/**
+	 * Removes an existing request listener from the endpoint. After that the
+	 * listener is not invoked anymore, such that the application will not react
+	 * anymore on the specified requests.
 	 *
-	 * @param aNS
-	 * @param aType
-	 * @return
+	 * @param aNS the name space of the request to listen on
+	 * @param aType the type of the request to listen on
+	 * @return the reference the listener object if such, otherwise
+	 * <tt>null</tt>.
 	 */
 	public IJWSMessageListener removeRequestListener(String aNS, String aType) {
 		return mRequestListeners.remove(aNS + "." + aType);
 	}
 
 	/**
+	 * Checks if a request listener for a certain name space / type combination
+	 * is already registered for the endpoint.
 	 *
-	 * @param aNS
-	 * @param aType
-	 * @return
+	 * @param aNS the name space of the request to listen on
+	 * @param aType the type of the request to listen on
+	 * @return <tt>true</tt>if already a listener exists with the given name
+	 * space / type combination, otherwise <tt>false</tt>.
 	 */
 	public boolean hasRequestListener(String aNS, String aType) {
 		return mRequestListeners.containsKey(aNS + "." + aType);
 	}
 
 	/**
+	 * Deprecated, don't use this method anymore!
 	 *
 	 * @param aNS
 	 * @param aReqType
@@ -271,52 +288,73 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	}
 
 	/**
+	 * Adds a new listener to listen to responses from other endpoints. You can
+	 * only assign one response listener per name space / type combination. If
+	 * you register a listener that already exists, this will overwrite the
+	 * previous one. A response token usually contains a name space, a reqType,
+	 * a unique token-id, the type "response" and an additional arbitrary
+	 * payload. The entire token is passed to the listener to process it
+	 * according to the application needs.
 	 *
-	 * @param aNS
-	 * @param aReqType
-	 * @param aListener
+	 * @param aNS the name space of the request to listen on
+	 * @param aReqType the type of the response (type of the previous request)
+	 * to listen on
+	 * @param aListener the actual listener instance, must implement the
+	 * IJWSMessageListener interface
 	 */
 	public void addResponseListener(String aNS, String aReqType, IJWSMessageListener aListener) {
 		mResponseListeners.put(aNS + "." + aReqType, aListener);
 	}
 
 	/**
+	 * Removes an existing response listener from the endpoint. After that the
+	 * listener is not invoked anymore, such that the application will not react
+	 * anymore on the specified responses.
 	 *
-	 * @param aNS
-	 * @param aReqType
-	 * @return
+	 * @param aNS the name space of the request to listen on
+	 * @param aReqType the type of the response (type of the previous request)
+	 * to listen on
+	 * @return the reference the listener object if such, otherwise
+	 * <tt>null</tt>.
 	 */
 	public IJWSMessageListener removeResponseListener(String aNS, String aReqType) {
 		return mResponseListeners.remove(aNS + "." + aReqType);
 	}
 
 	/**
+	 * Checks if a response listener for a certain name space / type combination
+	 * is already registered for the endpoint.
 	 *
-	 * @param aNS
-	 * @param aReqType
-	 * @return
+	 * @param aNS the name space of the request to listen on
+	 * @param aReqType the type of the request to listen on
+	 * @return <tt>true</tt>if already a listener exists with the given name
+	 * space / type combination, otherwise <tt>false</tt>.
 	 */
 	public boolean hasResponseListener(String aNS, String aReqType) {
 		return mResponseListeners.containsKey(aNS + "." + aReqType);
 	}
 
 	/**
+	 * Adds a new listener to listen on any message from other endpoints. It is
+	 * up to the application to process the message, which can be a request, a
+	 * response or any other asynchronous message, e.g. a progress event. The
+	 * incoming token is passed to the listener instance.
 	 *
-	 * @param aListener
+	 * @param aListener the actual listener instance, must implement the
+	 * IJWSMessageListener interface
 	 */
 	public void addMessageListener(IJWSMessageListener aListener) {
 		mMessageListeners.add(aListener);
 	}
 
 	/**
+	 * Sends a token to the endpoint addressed by the given target-id.
 	 *
-	 * @param aTargetId
-	 * @param aToken
+	 * @param aTargetId the id of the target endpoint.
+	 * @param aToken the token to be send to the target endpoint.
 	 */
 	public void sendToken(String aTargetId, Token aToken) {
 		getSender().sendText(aTargetId, JSONProcessor.tokenToPacket(aToken).getUTF8());
 	}
-
-
 
 }
