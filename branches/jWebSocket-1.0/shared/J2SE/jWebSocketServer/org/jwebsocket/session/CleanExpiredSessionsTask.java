@@ -26,6 +26,7 @@ import org.jwebsocket.api.IStorageProvider;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.system.SystemPlugIn;
+import org.jwebsocket.storage.memory.MemoryStorage;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -47,17 +48,16 @@ public class CleanExpiredSessionsTask extends TimerTask {
 		mSessionIdsTrash = aSessionIdsTrash;
 		mStorageProvider = aStorageProvider;
 	}
-	
+
 	@Override
 	public void run() {
 		Iterator<String> lKeys = mSessionIdsTrash.keySet().iterator();
 		while (lKeys.hasNext()) {
-			String lKey = lKeys.next();
+			final String lKey = lKeys.next();
 			if (((Long) (mSessionIdsTrash.get(lKey)) < System.currentTimeMillis())) {
 				try {
 					if (null != mSessionIdsTrash.remove(lKey)) { // protection for clustering (DO NOT CHANGE)
 						IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(lKey);
-						mStorageProvider.removeStorage(lKey);
 
 						if (null != lStorage) {
 							final WebSocketSession lSession = new WebSocketSession(lKey);
@@ -71,6 +71,11 @@ public class CleanExpiredSessionsTask extends TimerTask {
 								@Override
 								public void run() {
 									SystemPlugIn.stopSession(lSession);
+									try {
+										mStorageProvider.removeStorage(lKey);
+									} catch (Exception lEx) {
+										mLog.error(lEx.toString() + " removing expired session storage");
+									}
 								}
 							});
 						}
