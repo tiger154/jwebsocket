@@ -57,7 +57,7 @@ import org.springframework.util.Assert;
  * The item storage plug-in allows to clients and internal applications the
  * management of item collections. The plug-in provides support for almost all
  * "storage" requirements on cloud platforms or services. This plug-in in
- * combination with the FileSystem and Channels plug-in guarantee mayor common
+ * combination with the FileSystem and Channels plug-in guarantee major common
  * cloud platforms requirements.
  *
  * @author Rolando Santamaria Maso
