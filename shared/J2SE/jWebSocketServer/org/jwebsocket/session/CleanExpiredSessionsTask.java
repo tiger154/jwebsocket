@@ -26,7 +26,6 @@ import org.jwebsocket.api.IStorageProvider;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.system.SystemPlugIn;
-import org.jwebsocket.storage.memory.MemoryStorage;
 import org.jwebsocket.util.Tools;
 
 /**
