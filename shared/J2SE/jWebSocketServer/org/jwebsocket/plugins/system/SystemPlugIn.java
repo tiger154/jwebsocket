@@ -355,9 +355,13 @@ public class SystemPlugIn extends TokenPlugIn {
 	 * @param aSession
 	 */
 	public static void startSession(WebSocketConnector aConnector, WebSocketSession aSession) {
-		Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
-		while (lServers.hasNext()) {
-			lServers.next().sessionStarted(aConnector, aSession);
+		try {
+			Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
+			while (lServers.hasNext()) {
+				lServers.next().sessionStarted(aConnector, aSession);
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying session started event"), lEx);
 		}
 	}
 
@@ -366,9 +370,13 @@ public class SystemPlugIn extends TokenPlugIn {
 	 * @param aSession
 	 */
 	public static void stopSession(WebSocketSession aSession) {
-		Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
-		while (lServers.hasNext()) {
-			lServers.next().sessionStopped(aSession);
+		try {
+			Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
+			while (lServers.hasNext()) {
+				lServers.next().sessionStopped(aSession);
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying session stopped event"), lEx);
 		}
 	}
 
@@ -1117,7 +1125,7 @@ public class SystemPlugIn extends TokenPlugIn {
 				aConnector.getSession().getSessionId(),
 				lResponse,
 				true);
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logon process finished successfully!");
 		}
