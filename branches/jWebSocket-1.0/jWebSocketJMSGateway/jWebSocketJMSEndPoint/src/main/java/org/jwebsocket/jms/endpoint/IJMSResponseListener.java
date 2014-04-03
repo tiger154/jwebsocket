@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - IJWSReponseTokenListener (Community Edition, CE)
+//	jWebSocket - IJMSResponseListener (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
@@ -19,16 +19,20 @@
 package org.jwebsocket.jms.endpoint;
 
 import javax.jms.Message;
-import org.jwebsocket.token.Token;
 
 /**
+ * Interface for listeners to responses on low level JMS requests. A response is
+ * assigned to a previous request by using the JMS Correlation ID. Messages with
+ * the same correlation id like the request are associated as responses to that
+ * request.
  *
- * @author Rolando Santamaria Maso
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public interface IJMSResponseListener {
 
 	/**
-	 * Called when a response token arrives.
+	 * Called when a response message arrives. The response is identified by the
+	 * same correlation id like the request.
 	 *
 	 * @param aReponse
 	 * @param aMessage
@@ -37,7 +41,7 @@ public interface IJMSResponseListener {
 
 	/**
 	 * Called when the sent token processing has timed out on the remote
-	 * endpoint
+	 * endpoint. No response message can be given here in the arguments.
 	 *
 	 */
 	void onTimeout();

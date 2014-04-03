@@ -48,14 +48,14 @@ public interface IJMSMessageListener {
 
 	/**
 	 * Listener for unclassified incoming messages, here the type of the message
-	 * is not yet parsed
+	 * is not yet parsed.
 	 *
 	 * @param aMessage
 	 */
 	void onMessage(Message aMessage);
 
 	/**
-	 * Listener for incoming byte messages.
+	 * Listener for incoming binary byte messages.
 	 *
 	 * @param aMessage
 	 */

@@ -60,7 +60,8 @@ public interface IJWSMessageListener {
 	 * @param aToken
 	 * @param aResponseListener
 	 */
-	void sendToken(String aSourceId, Token aToken, JWSResponseTokenListener aResponseListener);
+	void sendToken(String aSourceId, Token aToken, 
+			JWSResponseTokenListener aResponseListener);
 
 	/**
 	 *
@@ -69,6 +70,7 @@ public interface IJWSMessageListener {
 	 * @param aResponseListener
 	 * @param aTimeOut
 	 */
-	void sendToken(String aSourceId, Token aToken, JWSResponseTokenListener aResponseListener, long aTimeOut);
+	void sendToken(String aSourceId, Token aToken, 
+			JWSResponseTokenListener aResponseListener, long aTimeOut);
 
 }

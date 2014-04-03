@@ -25,13 +25,13 @@ import org.jwebsocket.token.Token;
 
 /**
  *
- * @author Rolando Santamaria Maso
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class JWSResponseTokenListener implements IJWSResponseListener {
 
 	static final Logger mLog = Logger.getLogger(JWSResponseTokenListener.class);
 	/**
-	 *
+	 * Name of the token field for elapsed time from request to response.
 	 */
 	public static final String RESP_TIME_FIELD = "$respTimeElapsed";
 	private String mResponseTimeField = null;
@@ -61,7 +61,6 @@ public class JWSResponseTokenListener implements IJWSResponseListener {
 		}
 		// calling token callbacks
 		onReponse(lResponseToken);
-		mLog.warn("#### Response ####: " + lResponseToken.toString());
 
 		if (null != lResponseToken) {
 			if ("event".equals(lResponseToken.getString("type"))
@@ -77,6 +76,9 @@ public class JWSResponseTokenListener implements IJWSResponseListener {
 	}
 
 	/**
+	 * Method fired in case of any response to a previous request. This methods
+	 * does not parse the message and does not distinguish between a successful
+	 * and a failing response.
 	 *
 	 * @param aReponse
 	 */
@@ -84,15 +86,25 @@ public class JWSResponseTokenListener implements IJWSResponseListener {
 	}
 
 	/**
+	 * Method fired in case of a successful response to a previous request.
+	 * Before this method gets called the response if parsed. It analyzes the
+	 * <tt>code</tt> field of the response token. If code equals 0 (zero) this
+	 * method is called.
 	 *
-	 * @param aReponse
+	 * @param aReponse The entire response token to be processed by the
+	 * application.
 	 */
 	public void onSuccess(Token aReponse) {
 	}
 
 	/**
+	 * Method fired in case of a failed response to a previous request. Before
+	 * this method gets called the response if parsed. It analyzes the
+	 * <tt>code</tt> field of the response token. If code does not equal 0
+	 * (zero) this method is called.
 	 *
-	 * @param aReponse
+	 * @param aReponse The entire response token to be processed by the
+	 * application.
 	 */
 	public void onFailure(Token aReponse) {
 	}
