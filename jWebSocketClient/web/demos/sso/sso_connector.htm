@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<title>jWebSocket SSO Connector</title>
 		<!--
 		//	****************************************************************************
 		//	jWebSocket SSO Connector (Community Edition, CE)
@@ -30,10 +31,10 @@
 			// document.write( "Session Cookie Wrapper on " + lHost + " for " + lHash + "<br>");
 			// document.write( "Cookie: " + document.cookie );
 			window.parent.postMessage(
-				'{"ns": "org.jwebsocket.docmsg",'
-				+ '"type": "sessioncookie",'
-				+ '"cookie": "' + document.cookie + '"}', 
-				lHash );
+					'{"ns": "org.jwebsocket.docmsg",'
+					+ '"type": "sessioncookie",'
+					+ '"cookie": "' + document.cookie + '"}',
+					lHash);
 		</script>
 	</body>
 </html>

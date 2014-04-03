@@ -14,6 +14,8 @@
 	<modules>
 		<!-- jWebSocket SQL -->
 		<module>jWebSocketDynamicSQL</module>
+		<!-- jWebSocket LDAP -->
+		<module>jWebSocketLDAP</module>
 		<!-- jWebSocket SSO -->
 		<module>jWebSocketSSO</module>
 		<!-- jWebSocket ActiveMQ plug-in for clustering support -->

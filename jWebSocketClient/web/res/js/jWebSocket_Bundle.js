@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC2 (build 40326)
+	//:const:*:VERSION:String:1.0.0 RC2 (build 40401)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 40326)",
+	VERSION: "1.0.0 RC2 (build 40401)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -10762,7 +10762,7 @@ jws.ReportingPlugIn = {
 				reportFields: aFields,
 				reportParams: aParams,
 				reportOutputType: aOptions.outputType || "pdf",
-				useJDBCConnection: aOptions.useConection || false,
+				useJDBCConnection: aOptions.useJDBCConnection || false,
 				nameJDBCCOnnection:aOptions.nameConnection || ""
 			};
 			this.sendToken(lToken, aOptions);

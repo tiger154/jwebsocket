@@ -37,20 +37,20 @@
 
 			var eUsername, ePassword;								// the elements for username and password
 
-			var APP_URL = "https://<host>.<tld>/sso/index.html";
+			var APP_URL = "https://hqdvalsap01.nvidia.com/sso/index.html";
 			var OAUTH_DEFAULT_TIMEOUT = 5000;						// the default timeout for request against the OAuth server
-			var OAUTH_APP_ID = "<id>";								// the application id
-			var OAUTH_APP_SECRET = "<secret>";
-																	// the application secret
-			var OAUTH_HOST = "https://<host>.<tld>";				// the OAuth host 
+			var OAUTH_APP_ID = "alsiusdev";							// the application id
+			var OAUTH_APP_SECRET = "ffdf1D56-5825-49e5-Afb9-335393a94606]";
+			// the application secret
+			var OAUTH_HOST = "https://aschulze-dt.nvidia.com";		// the OAuth host 
 			var OAUTH_AUTHSESSION_URL = "/auth/oauth/v2/token";		// the URL to authenticate a user by session id
 			var OAUTH_GETUSER_URL = "/use-token";					// the URL to obtain the user data by access token
 			var OAUTH_REFRESHTOKEN_URL = "/auth/oauth/v2/token";	// the URL to obtain a new access token by refresh token
 			var OAUTH_GETSESSION_URL = "/get-smsession";			// the URL to obtain a session id by user credentials
 			var OAUTH_INVALIDATETOKEN_URL = "/delete-token";		// the URL to invalidate an access token
 
-			var SSO_COOKIE_PAGE = "https://<host>.<tld>/getcookie/index.html";
-																	// URL to a SSO enabled web page, which provides the session cookie (session id)
+			var SSO_COOKIE_PAGE = "https://alsius.dev.nvidia.com/getcookie/index.html";
+			// URL to a SSO enabled web page, which provides the session cookie (session id)
 			var SSO_SESSION_COOKIE = "SMSESSION";					// the name of the SSO server's session cookie
 
 			// obtaining a session id from user credentials
@@ -135,7 +135,7 @@
 			// after this operation the access token cannot be used anymore
 			function invalidateToken() {
 				// refreshing an access token after its expiration
-				log("Refreshing access token...");
+				log("Invalidating access token...");
 				lWSC.ssoInvalidateAccessToken({
 					// timeout: 5000, // timeout in milliseconds, if required different from default
 					OnSuccess: function(aToken) {
@@ -264,6 +264,18 @@
 				lWSC.ssoSetSessionCookieName(SSO_SESSION_COOKIE);
 				lWSC.ssoSetAppURL(APP_URL);
 
+				lWSC.ssoSetRefreshTokenInterval(300 * 1000, { // 300 seconds = 5 min
+					OnSuccess: function(aToken) {
+						log("Refresh: Success: " + JSON.stringify(aToken));
+					},
+					OnFailure: function(aToken) {
+						log("Refresh: Failure: " + JSON.stringify(aToken));
+					},
+					OnTimeout: function() {
+						log("Refresh: Timeout!");
+					}
+				});
+
 				// Adding event handler to obtain message from embedded iframe
 				window.addEventListener("message", receiveMessage, false);
 
@@ -284,7 +296,7 @@
 		>
 		<!-- to obtain the SSO session id via the cookie, here we need to 
 			refer to a page which is accessible from an SSO enable host. -->
-		<iframe id="ifrSSO" style="display:none; width:99%; height:100px">
+		<iframe id="ifrSSO" style="display:block; width:99%; height:100px">
 		</iframe>
 		<!-- In case you require a proxy setting in the local web server
 			In Apache for instance you can use:

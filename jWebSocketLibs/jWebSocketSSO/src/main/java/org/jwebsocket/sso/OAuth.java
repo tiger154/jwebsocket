@@ -78,6 +78,13 @@ public class OAuth extends OAuthBase{
 		mDefaultTimeout = aDefaultTimeout;
 	}
 
+	public Map<String, Object> parseJSON(String aJSON) throws IOException {
+		ObjectMapper lMapper = new ObjectMapper();
+		Map<String, Object> lJSON;
+		lJSON = lMapper.readValue(aJSON, Map.class);
+		return lJSON;
+	}
+	
 	/**
 	 *
 	 * @param aUsername
@@ -97,8 +104,7 @@ public class OAuth extends OAuthBase{
 			String lJSONString = call2(mOAuthHost + mOAuthGetSessionURL, "GET",
 					lHeaders, lPostBody, aTimeout);
 
-			ObjectMapper lMapper = new ObjectMapper();
-			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class);
+			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mSessionId = (String) lJSON.get("smsession");
 			return lJSONString;
 		} catch (IOException lEx) {
@@ -128,9 +134,7 @@ public class OAuth extends OAuthBase{
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 			String lJSONString = call(mOAuthHost, "POST",
 					lHeaders, lPostBody, aTimeout);
-			ObjectMapper lMapper = new ObjectMapper();
-			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class
-			);
+			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mAccessToken = (String) lJSON.get("access_token");
 			mRefreshToken = (String) lJSON.get("refresh_token");
 			return lJSONString;
@@ -162,8 +166,7 @@ public class OAuth extends OAuthBase{
 							(getOAuthAppId() + ":" + getOAuthAppSecret()).getBytes("UTF-8")));
 			String lJSONString = call2(mOAuthHost + OAUTH_AUTHSESSION_URL, "POST",
 					lHeaders, lPostBody, aTimeout);
-			ObjectMapper lMapper = new ObjectMapper();
-			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class);
+			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mAccessToken = (String) lJSON.get("access_token");
 			mRefreshToken = (String) lJSON.get("refresh_token");
 			return lJSONString;
@@ -216,8 +219,7 @@ public class OAuth extends OAuthBase{
 
 			String lJSONString = call2(mOAuthHost + OAUTH_GETUSER_URL, "POST",
 					lHeaders, lPostBody, aTimeout);
-			ObjectMapper lMapper = new ObjectMapper();
-			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class);
+			Map<String, Object> lJSON = parseJSON(lJSONString);
 			if (null != lJSON) {
 				mUsername = (String) lJSON.get("login_name");
 				mFullname = (String) lJSON.get("full_user_name");
@@ -286,9 +288,7 @@ public class OAuth extends OAuthBase{
 
 			String lJSONString = call(mOAuthHost, "POST",
 					lHeaders, lPostBody, aTimeout);
-			ObjectMapper lMapper = new ObjectMapper();
-			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class
-			);
+			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mAccessToken = (String) lJSON.get("access_token");
 			return lJSONString;
 		} catch (IOException lEx) {
