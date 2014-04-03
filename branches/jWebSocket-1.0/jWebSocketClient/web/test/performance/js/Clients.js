@@ -48,7 +48,6 @@ openConnections = function(aClients) {
 				);
 				lWSC.setJMSCallbacks({
 					OnHandleJmsText: function(aToken) {
-						console.log(aToken);
 					}
 				});
 			}
