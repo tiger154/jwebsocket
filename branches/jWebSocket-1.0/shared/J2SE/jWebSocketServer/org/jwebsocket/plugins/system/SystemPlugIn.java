@@ -1593,6 +1593,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			// creating the event message to be sent
 			MapMessage lMsg = lMessageHub.buildMessage(getNamespace(), "logon");
 			lMsg.setStringProperty("connectorId", aConnector.getId());
+			lMsg.setStringProperty("username", aConnector.getUsername());
 
 			// sending event
 			lMessageHub.send(lMsg);
@@ -1610,6 +1611,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			// creating the event message to be sent
 			MapMessage lMsg = lMessageHub.buildMessage(getNamespace(), "logoff");
 			lMsg.setStringProperty("connectorId", aConnector.getId());
+			lMsg.setStringProperty("username", aConnector.getUsername());
 
 			// sending event
 			lMessageHub.send(lMsg);
