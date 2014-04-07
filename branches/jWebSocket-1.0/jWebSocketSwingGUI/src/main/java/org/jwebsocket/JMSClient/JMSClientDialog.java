@@ -35,14 +35,16 @@ public class JMSClientDialog extends javax.swing.JFrame {
 	private JWSEndPointMessageListener mListener;
 	private Thread mEndpointThreadRunner;
 	private boolean mIsThreadRunning = false;
-	private String TT_LOGIN = "login";
-	private String TT_USERNAME = "username";
-	private String TT_PASSWORD = "password";
+	private final String TT_LOGIN = "login";
+	private final String TT_USERNAME = "username";
+	private final String TT_PASSWORD = "password";
 	private String TT_DEFAULT_USERNAME = "root";
 	private String TT_DEFAULT_PASSWORD = "root";
-	private String TT_WELCOME = "welcome";
-	private String TT_PING = "ping";
-	private String TT_IDENTIFY = "identify";
+	String mUsername;
+	String mPassword;
+	private final String TT_WELCOME = "welcome";
+	private final String TT_PING = "ping";
+	private final String TT_IDENTIFY = "identify";
 	private final String NS_SYSTEM = "org.jwebsocket.plugins.system";
 	private Properties mProperties;
 
@@ -114,6 +116,15 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		mEndPointId = jtfEndpointID.getText();
 		mGatewayId = jtfGatewayID.getText();
 		mGatewayTopic = jtfTopic.getText();
+		mUsername = jtfUsername.getText();
+		mPassword = new String(jPFPassword.getPassword());
+
+		if (mUsername == null || mUsername.trim().equals("")) {
+			mUsername = TT_DEFAULT_USERNAME;
+		}
+		if (mPassword == null || mPassword.trim().equals("")) {
+			mPassword = TT_DEFAULT_PASSWORD;
+		}
 
 		log("Using: "
 				+ mBrokerURL + ", "
@@ -153,8 +164,8 @@ public class JMSClientDialog extends javax.swing.JFrame {
 					// create a login token...
 					log("Authenticating against jWebSocket...");
 					Token lToken = TokenFactory.createToken(NS_SYSTEM, TT_LOGIN);
-					lToken.setString(TT_USERNAME, TT_DEFAULT_USERNAME);
-					lToken.setString(TT_PASSWORD, TT_DEFAULT_PASSWORD);
+					lToken.setString(TT_USERNAME, mUsername);
+					lToken.setString(TT_PASSWORD, mPassword);
 					// and send it to the gateway (which is was the source of the message)
 					sendToken(aSourceId, lToken);
 				}
@@ -258,6 +269,8 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		jtfEndpointID.setEnabled(false);
 		jtfGatewayID.setEnabled(false);
 		jtfTopic.setEnabled(false);
+		jtfUsername.setEnabled(false);
+		jPFPassword.setEnabled(false);
 		jbIdentify.setEnabled(true);
 		jbOpen.setEnabled(false);
 		jbPing.setEnabled(true);
@@ -271,6 +284,8 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		jtfEndpointID.setEnabled(true);
 		jtfGatewayID.setEnabled(true);
 		jtfTopic.setEnabled(true);
+		jtfUsername.setEnabled(true);
+		jPFPassword.setEnabled(true);
 		jbIdentify.setEnabled(false);
 		jbOpen.setEnabled(true);
 		jbPing.setEnabled(false);
@@ -311,6 +326,11 @@ public class JMSClientDialog extends javax.swing.JFrame {
         jbIdentify = new javax.swing.JButton();
         jbSSO = new javax.swing.JButton();
         jbSendPayload = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jtfUsername = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jPFPassword = new javax.swing.JPasswordField();
+        jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("JMS Client Test");
@@ -410,7 +430,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.ipadx = 22;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -426,7 +446,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 0);
         getContentPane().add(jbShutdown, gridBagConstraints);
@@ -440,7 +460,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.ipadx = 28;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 0);
@@ -455,7 +475,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.ipadx = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 0);
@@ -465,7 +485,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
         jbSSO.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.ipadx = 28;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 0);
@@ -480,10 +500,57 @@ public class JMSClientDialog extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 8;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 19);
         getContentPane().add(jbSendPayload, gridBagConstraints);
+
+        jLabel5.setText("Username");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.insets = new java.awt.Insets(24, 31, 0, 0);
+        getContentPane().add(jLabel5, gridBagConstraints);
+
+        jtfUsername.setText("root");
+        jtfUsername.setToolTipText("Username to login in jWebSocketServer");
+        jtfUsername.setMinimumSize(null);
+        jtfUsername.setPreferredSize(new java.awt.Dimension(150, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(18, 29, 0, 0);
+        getContentPane().add(jtfUsername, gridBagConstraints);
+
+        jLabel6.setText("Password");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.insets = new java.awt.Insets(24, 31, 0, 0);
+        getContentPane().add(jLabel6, gridBagConstraints);
+
+        jPFPassword.setText("root");
+        jPFPassword.setToolTipText("Password to login in jWebSocket Server");
+        jPFPassword.setPreferredSize(new java.awt.Dimension(150, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(18, 29, 0, 0);
+        getContentPane().add(jPFPassword, gridBagConstraints);
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel7.setText("Authenticate your endpoint with jWebSocket Server to have access to JMS Services");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 9;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(19, 31, 0, 0);
+        getContentPane().add(jLabel7, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -593,6 +660,10 @@ public class JMSClientDialog extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JPasswordField jPFPassword;
     private javax.swing.JButton jbIdentify;
     private javax.swing.JButton jbOpen;
     private javax.swing.JButton jbPing;
@@ -603,5 +674,6 @@ public class JMSClientDialog extends javax.swing.JFrame {
     private javax.swing.JTextField jtfEndpointID;
     private javax.swing.JTextField jtfGatewayID;
     private javax.swing.JTextField jtfTopic;
+    private javax.swing.JTextField jtfUsername;
     // End of variables declaration//GEN-END:variables
 }
