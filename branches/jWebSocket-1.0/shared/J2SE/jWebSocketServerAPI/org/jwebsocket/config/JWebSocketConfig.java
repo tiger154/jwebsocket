@@ -19,8 +19,10 @@
 package org.jwebsocket.config;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -241,14 +243,14 @@ public class JWebSocketConfig implements Config {
 	 */
 	public static String adjustJWebSocketHome() {
 		if (!mJWebSocketHome.isEmpty()) {
-			// replace potential backslashes by normal slashes to be accepted in URLs
-			mJWebSocketHome = mJWebSocketHome.replace('\\', '/');
-			// add a trailing path separator
-			String lFileSep = "/";
-			if (!mJWebSocketHome.endsWith(lFileSep)) {
-				mJWebSocketHome += lFileSep;
+			try {
+				mJWebSocketHome = URLDecoder.decode(mJWebSocketHome, "utf-8");
+				mJWebSocketHome = new File(mJWebSocketHome).getPath() + File.separator;
+			} catch (UnsupportedEncodingException lEx) {
+				throw new RuntimeException(lEx);
 			}
 		}
+
 		return mJWebSocketHome;
 	}
 
@@ -278,7 +280,7 @@ public class JWebSocketConfig implements Config {
 		if (null != mJWebSocketHome
 				&& null == mConfigPath
 				&& null != aFilename) {
-			File lFile = new File(mJWebSocketHome + "conf/" + aFilename);
+			File lFile = new File(mJWebSocketHome + "conf" + File.separator + aFilename);
 			lPath = FilenameUtils.normalize(lFile.getAbsolutePath());
 			mConfigPath = lPath;
 		}
@@ -301,7 +303,7 @@ public class JWebSocketConfig implements Config {
 	private static String findBootstrapPath(String aFilename) {
 		if (null == mBootstrapPath && null != aFilename) {
 			mBootstrapPath = getJWebSocketHome()
-					+ "conf/Resources/" + aFilename;
+					+ "conf" + File.separator + "Resources" + File.separator + aFilename;
 		}
 		return mBootstrapPath;
 	}
@@ -416,7 +418,7 @@ public class JWebSocketConfig implements Config {
 				}
 			}
 		}
-		
+
 		// using env var if not '-home' param is provided
 		if (null == mJWebSocketHome) {
 			mJWebSocketHome = System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
@@ -871,7 +873,7 @@ public class JWebSocketConfig implements Config {
 			}
 
 			// file can to be located in %JWEBSOCKET_HOME%<folder>/
-			lPath = lJWebSocketHome + aSubFolder + "/"
+			lPath = lJWebSocketHome + aSubFolder + File.separator
 					+ (null != aFilename ? aFilename : "");
 			lFile = new File(lPath);
 			if (lFile.exists()) {
