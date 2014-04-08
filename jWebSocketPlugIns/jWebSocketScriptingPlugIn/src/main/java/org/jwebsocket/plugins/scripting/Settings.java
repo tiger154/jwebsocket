@@ -20,6 +20,7 @@ package org.jwebsocket.plugins.scripting;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.net.URLDecoder;
 import java.security.Permission;
 import java.security.Permissions;
 import java.util.ArrayList;
@@ -138,6 +139,10 @@ public class Settings {
 	 * @throws Exception
 	 */
 	public void initialize() throws Exception {
+		// fixing paths format
+		mExtensionsDirectoryPath = new File(URLDecoder.decode(mExtensionsDirectoryPath, "utf-8")).getPath();
+		mAppsDirectoryPath = new File(URLDecoder.decode(mAppsDirectoryPath, "utf-8")).getPath();
+		
 		File lAppsDirectory = new File(mAppsDirectoryPath);
 		Assert.isTrue(lAppsDirectory.isDirectory(), "The applications directory path does not exists!"
 				+ " Please check directory path or access permissions.");
