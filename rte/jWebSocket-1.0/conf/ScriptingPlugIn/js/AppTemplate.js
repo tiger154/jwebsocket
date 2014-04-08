@@ -148,6 +148,28 @@ var App = (function() {
 		unpublish: function(aObjectId) {
 			mAPI.remove(aObjectId);
 		},
+		getClientAPI: function() {
+			var lClientAPI = {};
+			var lIt = mAPI.keySet().iterator();
+			while (lIt.hasNext()) {
+				var lObjId = lIt.next();
+				var lObj = mAPI.get(lObjId);
+				var lObjAPI = {
+					methods: [],
+					description: lObj.description || null
+				};
+				for (var lMethod in lObj) {
+					lObjAPI.methods.push({
+						name: lMethod,
+						length: lObj[lMethod].length
+					});
+				}
+
+				lClientAPI[lObjId] = lObjAPI;
+			}
+			
+			return lClientAPI;
+		},
 		isPublished: function(aObjectId) {
 			return mAPI.containsKey(aObjectId);
 		},
