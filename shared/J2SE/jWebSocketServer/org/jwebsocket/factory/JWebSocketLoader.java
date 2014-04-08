@@ -108,7 +108,7 @@ public final class JWebSocketLoader {
 				lIS = new FileInputStream(lFile);
 			}
 			XMLInputFactory lFactory = XMLInputFactory.newInstance();
-			XMLStreamReader lStreamReader = null;
+			XMLStreamReader lStreamReader;
 			lStreamReader = lFactory.createXMLStreamReader(lIS);
 			lConfig = (JWebSocketConfig) mConfigHandler.processConfig(lStreamReader);
 			if (mLog.isInfoEnabled()) {
