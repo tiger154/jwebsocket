@@ -19,6 +19,7 @@ package org.jwebsocket.plugins.sample;
 
 import java.util.Date;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
@@ -112,7 +113,13 @@ public class SamplePlugIn extends TokenPlugIn {
 		WebSocketServerTokenListener lListener = new WebSocketServerTokenListener() {
 			@Override
 			public void processToken(WebSocketServerTokenEvent aEvent, Token aToken) {
-				processAllTokens(aEvent.getConnector(), aToken);
+				if (aToken.getNS().equals(NS_SAMPLE) && aToken.getType().equals("getCopyrightAndLicense")) {
+					Token lResponse = createResponse(aToken);
+					lResponse.setString("copyright", getCopyright());
+					lResponse.setString("license", getLicense());
+
+					sendToken(aEvent.getConnector(), lResponse);
+				}
 			}
 
 			@Override
@@ -142,15 +149,6 @@ public class SamplePlugIn extends TokenPlugIn {
 		super.engineStopped(aEngine);
 	}
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 */
-	public void processAllTokens(WebSocketConnector aConnector, Token aToken) {
-		//System.out.println(aToken.toString());
-	}
-
 	@Override
 	public void processToken(PlugInResponse aResponse,
 			WebSocketConnector aConnector, Token aToken) {
@@ -170,6 +168,8 @@ public class SamplePlugIn extends TokenPlugIn {
 				requestServerTime(aConnector, aToken);
 			} else if (lType.equals("processComplexObject")) {
 				processComplexObject(aConnector, aToken);
+			} else if (lType.equals("getTokenizable")) {
+				getTokenizable(aConnector, aToken);
 			} else if (lType.equals("getRandom")) {
 				getRandom(aConnector, aToken);
 			}
@@ -218,5 +218,34 @@ public class SamplePlugIn extends TokenPlugIn {
 
 		// send the response token back to the client
 		sendToken(aConnector, aConnector, lResponse);
+	}
+
+	class Person implements ITokenizable {
+
+		private String lName;
+		private String lEmail;
+
+		public Person(String aName, String aEmail) {
+			this.lName = aName;
+			this.lEmail = aEmail;
+		}
+
+		@Override
+		public void readFromToken(Token aToken) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public void writeToToken(Token aToken) {
+			aToken.setString("name", lName);
+			aToken.setString("email", lEmail);
+		}
+	}
+
+	private void getTokenizable(WebSocketConnector aConnector, Token aToken) {
+		Token lResponse = createResponse(aToken);
+		lResponse.setToken("data", new Person("Rolando SM", "rsantamaria@jwebsocket.org"));
+
+		sendToken(aConnector, lResponse);
 	}
 }

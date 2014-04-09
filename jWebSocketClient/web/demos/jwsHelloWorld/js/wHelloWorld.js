@@ -165,8 +165,8 @@ $.widget( "jws.helloWorld", {
 			var lToken = {
 				// ns: "my.namespace",
 				// type: "getInfo"
-				ns: "tld.domain.plugins.myplugin",
-				type: "mydemo_function"
+				ns: "org.jwebsocket.plugins.samples",
+				type: "getCopyrightAndLicense"
 			};
 			mWSC.sendToken( lToken, {
 				OnResponse: function( aToken ) {
@@ -185,14 +185,12 @@ $.widget( "jws.helloWorld", {
 		log( "Retreiving a tokenizable object from the server via a jWebSocket listener..." );
 		if ( mWSC.isConnected( ) ) {
 			var lToken = {
-				ns: "my.namespace",
+				ns: "org.jwebsocket.plugins.samples",
 				type: "getTokenizable"
 			};
 			mWSC.sendToken( lToken, {
 				OnResponse: function( aToken ) {
-					log( "Server responded: "
-							+ "aToken: " + aToken
-							);
+					log( "Server responded: " + "aToken: " + aToken);
 				}
 			} );
 		} else {
@@ -247,7 +245,7 @@ $.widget( "jws.helloWorld", {
 		// result from a server side plugin
 		log( "Requesting JDBC data via WebSockets..." );
 		// call the getTime method of the client side plug-in
-		var lRes = mWSC.jdbcQuerySQL( "select * from demo_master" );
+		var lRes = mWSC.jdbcQuerySQL( "select * from persons" );
 		// log error only, on success don't confuse the user
 		if ( lRes.code != 0 ) {
 			log( mWSC.resultToString( lRes ) );
