@@ -249,6 +249,14 @@ public class ChannelPlugIn extends ActionPlugIn {
 	 */
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		processLogoff(aConnector);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void processLogoff(WebSocketConnector aConnector) {
 		try {
 			// unsubscribe from the channel, if subscribed
 			Subscriber lSubscriber = mChannelManager.getSubscriber(aConnector.getId());
