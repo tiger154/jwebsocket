@@ -36,8 +36,9 @@ h1#header{
     padding: 10px 10px 10px 10px;
 }
 #jCaptchaDiv {
-    width: 37%;
+    /*width: 37%;*/
     float: left;
+	width:253px;
 }
 #messageDiv {
     width: 55%;
@@ -84,6 +85,23 @@ p.pText {
 	margin-top: 3px;
     float: left;
     border: none !important;
+}
+
+#remaining_sms{
+	display: none;
+	float:left; 
+	font-size: 8pt;
+	margin-top: 10px;
+	width:253px;
+}
+
+#remaining_sms div{
+	display: inline;
+}
+
+.container-fluid{
+	max-width: 276px;
+	float:left;
 }
 
 #wordType{
