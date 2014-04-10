@@ -17,7 +17,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.sample;
 
+import java.sql.Connection;
 import java.util.Date;
+import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.api.PluginConfiguration;
@@ -34,6 +36,9 @@ import org.jwebsocket.listener.WebSocketServerTokenListener;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
+import org.springframework.util.Assert;
 
 /**
  *
@@ -106,6 +111,58 @@ public class SamplePlugIn extends TokenPlugIn {
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		// this method is called every time when a client
 		// disconnected from the server
+	}
+
+	/**
+	 * Gets the JDBC plugin default database connection
+	 *
+	 * @param aAlias
+	 * @return
+	 * @throws Exception
+	 */
+	private Connection getJDBCConnection(String aAlias) throws Exception {
+		TokenPlugIn lJDBCPlugIn = (TokenPlugIn) getServer().getPlugInById("jws.jdbc");
+		Assert.notNull(lJDBCPlugIn, "The ReportingPlugin required JDBC plug-in enabled!");
+
+		Token lRequest = TokenFactory.createToken();
+		lRequest.setString("alias", aAlias);
+
+		Object lObject = Tools.invoke(lJDBCPlugIn, "getNativeDataSource", new Class[]{Token.class}, lRequest);
+		DataSource lDataSource = (DataSource) lObject;
+
+		return lDataSource.getConnection();
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		Connection lConnection = getJDBCConnection(null);
+		try {
+			lConnection.prepareStatement(
+					"CREATE TABLE jwebsocket_reporting_demo \n"
+					+ "(\n"
+					+ "  user_id int,\n"
+					+ "  name varchar(255),\n"
+					+ "  lastName varchar(255),\n"
+					+ "  age int,\n"
+					+ "  email varchar(255)\n"
+					+ ")\n").execute();
+			lConnection.prepareStatement(
+					"INSERT INTO jwebsocket_reporting_demo (user_id, name, lastName, age, email) VALUES\n"
+					+ "(1, 'Alexander', 'Schulze', 45, 'a.schulze@jwebsocket.org'),\n"
+					+ "(2, 'Rolando', 'Santamaria', 28,'rsantamaria@jwebsocket.org'),\n"
+					+ "(3, 'Lisdey', 'Perez', 27, 'lperez@jwebsocket.org'),\n"
+					+ "(4, 'Marcos', 'Gonzalez', 27, 'mgonzalez@jwebsocket.org'),\n"
+					+ "(5, 'Osvaldo', 'Aguilar', 27, 'oaguilar@jwebsocket.org'),\n"
+					+ "(6, 'Victor', 'Barzana', 27, 'vbarzana@jwebsocket.org'),\n"
+					+ "(7, 'Javier', 'Puentes', 26, 'jpuentes@jwebsocket.org')").execute();
+
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("JDBC 'jwebsocket_reporting_demo' database table for demos has been "
+						+ "created with sample data in JDBCPlugIn 'default' alias.");
+			}
+		} catch (Exception lEx) {
+			// DO NOT CAPTURE, table already exists!!!
+		}
 	}
 
 	@Override
