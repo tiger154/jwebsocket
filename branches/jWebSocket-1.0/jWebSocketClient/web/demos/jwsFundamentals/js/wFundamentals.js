@@ -28,13 +28,11 @@ $.widget( "jws.fundamentals", {
 		this.eBtnEcho			= this.element.find( "#echo_btn" );
 		this.eBtnThread			= this.element.find( "#thread_btn" );
 		this.eBtnConectivity	= this.element.find( "#connectivity_btn" );
-		this.eBtnAuth			= this.element.find( "#auth_btn" );
-		this.eBtnDeauth			= this.element.find( "#deauth_btn" );
 		this.eBtnGetAuth		= this.element.find( "#get_auth_btn" );
 		this.eCbAutoReconn		= this.element.find( "#auto_reconnect" );
 		this.eDemoBox			= $( "#demo_box" );
 		
-		this.mArgumentsOfThread	= [ "This was the passed argument" ];
+		this.mArgumentsOfThread	= [ "Hello WebWorkers" ];
 		
 		// Messages to be used
 		this.MSG_TypeYourMessage= "Type your message...";
@@ -94,8 +92,6 @@ $.widget( "jws.fundamentals", {
 		w.fund.eBtnThread.click( w.fund.thread );
 		w.fund.eBtnEcho.click( w.fund.echo );
 		w.fund.eBtnConectivity.click( w.fund.showReliabilityOptions );
-		w.fund.eBtnAuth.click( w.auth.auth );
-		w.fund.eBtnDeauth.click( w.auth.deauth );
 		w.fund.eBtnGetAuth.click( w.auth.getAuth );
 		
 	},
