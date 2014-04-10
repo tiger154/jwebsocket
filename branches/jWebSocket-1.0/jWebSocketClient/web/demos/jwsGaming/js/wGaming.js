@@ -101,6 +101,9 @@ $.widget( "jws.gaming", {
 				mWSC.channelSubscribe( w.gaming.mChannelId,
 					w.gaming.mChannelAccessKey );
 			},
+			OnLogoff: function(aToken){
+				w.gaming.destroy();
+			},
 			OnClose: function() {
 				w.gaming.destroy();
 			},
