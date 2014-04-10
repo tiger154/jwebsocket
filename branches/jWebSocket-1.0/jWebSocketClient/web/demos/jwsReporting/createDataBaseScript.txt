@@ -1,11 +1,11 @@
-CREATE TABLE jwebsocket_reporting_demo (
-  user_id int(11),
+CREATE TABLE jwebsocket_reporting_demo 
+(
+  user_id int,
   name varchar(255),
   lastName varchar(255),
-  age int(11),
-  email varchar(255));
-
-
+  age int,
+  email varchar(255)
+);
 INSERT INTO jwebsocket_reporting_demo (user_id, name, lastName, age, email) VALUES
 (1, 'Alexander', 'Schulze', 45, 'a.schulze@jwebsocket.org'),
 (2, 'Rolando', 'Santamaria', 28,'rsantamaria@jwebsocket.org'),
