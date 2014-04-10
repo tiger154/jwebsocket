@@ -79,7 +79,9 @@ $.widget("jws.auth", {
 		w.auth.eLogoffButton.click(
 				function( ) {
 					w.auth.deauth( );
-					w.auth.logout( );
+					if (w.auth.logout) {
+						w.auth.logout( );
+					}
 					// If there is not a connect button
 //					if (!w.auth.eConnectButton.attr("id")) {
 //						// logout and close the connection
@@ -201,7 +203,7 @@ $.widget("jws.auth", {
 			},
 			// OnMessage callback
 			OnMessage: function(aEvent, aToken) {
-				if(!aToken && aEvent && aEvent.type === "message" && aEvent.data){
+				if (!aToken && aEvent && aEvent.type === "message" && aEvent.data) {
 					aToken = JSON.parse(aEvent.data);
 				}
 				if (aToken && aToken.code === -1) {
