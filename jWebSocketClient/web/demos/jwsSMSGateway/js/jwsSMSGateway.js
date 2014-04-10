@@ -22,9 +22,8 @@
  */
 $.widget("jws.SMSGateway", {
 	_init: function() {
-		NS_SMS = jws.NS_BASE + ".plugins.sms";
-		NS_JCAPTCHA = jws.NS_BASE + ".plugins.jcaptcha";
-		NS_QUOTA = jws.NS_BASE + ".plugins.quota";
+		this.NS = jws.NS_BASE + ".plugins.sms";
+		this.NS_QUOTA = jws.NS_BASE + ".plugins.quota";
 		this.ePhoneNumber = this.element.find("#phoneNumberInput");
 		this.eInputFrom = this.element.find("#fromInput");
 		this.eInputSMS = this.element.find("#smsInput");
@@ -34,6 +33,8 @@ $.widget("jws.SMSGateway", {
 		this.eBtnSend = this.element.find("#send_button");
 		this.eBtnReport = this.element.find("#report_button");
 		this.eRSMS = this.element.find("#rsms");
+		this.eRemainingSMS = this.element.find("#remaining_sms");
+		this.eRemainingQuota = this.element.find("#remaining_quota");
 		this.eBSMS = this.element.find("#bsms");
 		this.eImg = this.element.find('#img');
 		this.eLoginArea = this.element.find('#login_area');
@@ -48,11 +49,11 @@ $.widget("jws.SMSGateway", {
 		this.mMSG_ERROR = "The following error has been encoutered: ";
 		this.mMSG_SMS_SENT = "Congratulations!, you have sent a free SMS" +
 				" using jWebSocket Framework";
-		w.SMSGateway = this;
+		w.SMS = this;
 		// Update the counter of characters for if any change in the html
-		w.SMSGateway.countCharacters();
-		w.SMSGateway.doWebSocketConnection();
-		w.SMSGateway.registerEvents();
+		w.SMS.countCharacters();
+		w.SMS.doWebSocketConnection();
+		w.SMS.registerEvents();
 
 	},
 	doWebSocketConnection: function() {
@@ -63,24 +64,23 @@ $.widget("jws.SMSGateway", {
 			OnWelcome: function(aToken) {
 				if (aToken.username !== "anonymous") {
 					// Ask for a new captcha image
-					w.SMSGateway.getCaptcha();
-					w.SMSGateway.remainingSMS(w.auth.mUsername);
+					w.SMS.remainingSMS(w.auth.mUsername);
 				} else {
-					w.SMSGateway.disableAll();
+					w.SMS.disableAll();
 				}
 			},
 			OnClose: function(aEvent) {
-				w.SMSGateway.eImg.attr("src", "css/images/blank.png");
-				$("#remining_sms").hide();
-				w.SMSGateway.disableAll();
+				w.SMS.eImg.attr("src", "css/images/blank.png");
+				w.SMS.eRemainingSMS.hide();
+				w.SMS.disableAll();
 			},
 			OnLogon: function(aToken) {
-				w.SMSGateway.enableAll();
-				w.SMSGateway.remainingSMS(aToken.username);
+				w.SMS.remainingSMS(aToken.username);
+				w.SMS.enableAll();
 			},
 			OnLogoff: function() {
-				$("#remining_sms").hide();
-				w.SMSGateway.disableAll();
+				w.SMS.eRemainingSMS.hide();
+				w.SMS.disableAll();
 			},
 			OnMessage: function(aEvent, aToken) {
 				// Listening to logon event broadcasting from useradmin plug-in,
@@ -98,8 +98,9 @@ $.widget("jws.SMSGateway", {
 		mWSC.captchaGenerate("jpg", {
 			OnSuccess: function(aToken) {
 				log("<b style='color:green;'>Getting a new captcha</b>");
-				w.SMSGateway.eImg.attr("src", "data:image/jpg;base64," + aToken.image);
-				w.SMSGateway.eTextCaptcha.focus();
+				w.SMS.eImg.attr("src", "data:image/jpg;base64," + aToken.image);
+				w.SMS.eTextCaptcha.focus();
+				w.SMS.eTextCaptcha.val("");
 			},
 			OnFailure: function(aToken) {
 				jwsDialog(aToken.msg, "Error from the server", true, "information");
@@ -107,24 +108,24 @@ $.widget("jws.SMSGateway", {
 		});
 	},
 	registerEvents: function() {
-		w.SMSGateway.eBtnUpdate.click(function() {
+		w.SMS.eBtnUpdate.click(function() {
 			if (!$(this).attr("disabled")) {
-				w.SMSGateway.getCaptcha();
+				w.SMS.getCaptcha();
 			}
 		});
-		w.SMSGateway.eTextCaptcha.bind({
+		w.SMS.eTextCaptcha.bind({
 			'click | focus': function() {
-				if ($(this).val() === w.SMSGateway.mTXT_CAPTCHA) {
+				if ($(this).val() === w.SMS.mTXT_CAPTCHA) {
 					$(this).val("");
 				}
 			},
 			blur: function() {
 				if ($(this).val() === "") {
-					$(this).val(w.SMSGateway.mTXT_CAPTCHA);
+					$(this).val(w.SMS.mTXT_CAPTCHA);
 				}
 			}
 		});
-		w.SMSGateway.eBtnReport.click(function() {
+		w.SMS.eBtnReport.click(function() {
 			if (!$(this).attr("disabled")) {
 				mWSC.smsGenerateReport();
 			}
@@ -139,35 +140,35 @@ $.widget("jws.SMSGateway", {
 			}
 		});
 
-		w.SMSGateway.eBtnSend.click(function() {
+		w.SMS.eBtnSend.click(function() {
 			if (!$(this).attr("disabled")) {
 				var lSMSToken = {
-					ns: NS_SMS,
+					ns: w.SMS.NS,
 					type: "sendSMS",
-					to: w.SMSGateway.ePhoneNumber.val(),
-					from: w.SMSGateway.eInputFrom.val(),
-					message: w.SMSGateway.eInputSMS.val(),
+					to: w.SMS.ePhoneNumber.val(),
+					from: w.SMS.eInputFrom.val(),
+					message: w.SMS.eInputSMS.val(),
 					state: $('input[name=messageRadio]:checked').val(),
-					captcha: w.SMSGateway.eTextCaptcha.val()
+					captcha: w.SMS.eTextCaptcha.val()
 				};
 				log("Sending SMS...");
 				var lCallbacks = {
 					OnSuccess: function(aToken) {
 						//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
-						jwsDialog(w.SMSGateway.mMSG_SMS_SENT, "SMS sent correctly",
+						jwsDialog(w.SMS.mMSG_SMS_SENT, "SMS sent correctly",
 								true, "alert", function() {
-									w.SMSGateway.remainingSMS(w.auth.mUsername);
+									w.SMS.remainingSMS(w.auth.mUsername);
 								});
-						w.SMSGateway.getCaptcha();
+						w.SMS.getCaptcha();
 					},
 					OnFailure: function(aToken) {
-						jwsDialog(w.SMSGateway.mMSG_ERROR + aToken.msg,
+						jwsDialog(w.SMS.mMSG_ERROR + aToken.msg,
 								"Error sending the SMS", true, "alert", function() {
 									$("#imgCaptcha").effect("shake", {
 										times: 3
 									}, 100);
-									w.SMSGateway.getCaptcha();
-									w.SMSGateway.eTextCaptcha.val("").focus();
+									w.SMS.getCaptcha();
+									w.SMS.eTextCaptcha.val("").focus();
 								});
 					}
 				};
@@ -175,25 +176,25 @@ $.widget("jws.SMSGateway", {
 			}
 		});
 		// Handle keydown and keyup of the textarea to count the characters
-		w.SMSGateway.eInputSMS.keydown(w.SMSGateway.updateCounter);
-		w.SMSGateway.eInputSMS.keyup(w.SMSGateway.updateCounter);
+		w.SMS.eInputSMS.keydown(w.SMS.updateCounter);
+		w.SMS.eInputSMS.keyup(w.SMS.updateCounter);
 	},
 	countCharacters: function() {
-		var lCount = w.SMSGateway.eInputSMS.val().length;
-		w.SMSGateway.mCount = lCount;
-		var lValue = w.SMSGateway.MAX_COUNT - lCount;
+		var lCount = w.SMS.eInputSMS.val().length;
+		w.SMS.mCount = lCount;
+		var lValue = w.SMS.MAX_COUNT - lCount;
 		// Update the counter
-		w.SMSGateway.eCCounter.text(lValue > 0 ? lValue : 0);
+		w.SMS.eCCounter.text(lValue > 0 ? lValue : 0);
 	},
 	// Updates the counter when a key is pressed
 	updateCounter: function(aEvent) {
-		w.SMSGateway.countCharacters();
-		if (w.SMSGateway.mCount >= w.SMSGateway.MAX_COUNT) {
-			w.SMSGateway.eInputSMS.val(w.SMSGateway.eInputSMS.val().substr(
-					0, w.SMSGateway.MAX_COUNT));
-			w.SMSGateway.eCCounterArea.attr("class", "error");
+		w.SMS.countCharacters();
+		if (w.SMS.mCount >= w.SMS.MAX_COUNT) {
+			w.SMS.eInputSMS.val(w.SMS.eInputSMS.val().substr(
+					0, w.SMS.MAX_COUNT));
+			w.SMS.eCCounterArea.attr("class", "error");
 		} else {
-			w.SMSGateway.eCCounterArea.attr("class", "");
+			w.SMS.eCCounterArea.attr("class", "");
 		}
 	},
 	remainingSMS: function(aUsername) {
@@ -203,15 +204,15 @@ $.widget("jws.SMSGateway", {
 		}
 
 		//not request for a quota if the user login exist in mQuotaNoApply array
-		if (-1 !== w.SMSGateway.mQuotaNoApply.indexOf(aUsername)) {
-			$("#remining_sms").hide();
+		if (-1 !== w.SMS.mQuotaNoApply.indexOf(aUsername)) {
+			w.SMS.eRemainingSMS.hide();
 			return;
 		}
 
 		var me = this;
 
 		var lQUOTAToken = {
-			ns: NS_QUOTA,
+			ns: w.SMS.NS_QUOTA,
 			type: 'getQuota',
 			identifier: 'CountDown',
 			namespace: 'org.jwebsocket.plugins.sms',
@@ -223,16 +224,16 @@ $.widget("jws.SMSGateway", {
 		var lCallbacks = {
 			OnSuccess: function(aToken) {
 				me.updateReminingSMS(aToken.value);
-				$("#remining_sms").show();
+				w.SMS.eRemainingSMS.show();
 			},
 			OnFailure: function(aToken) {
-				$("#remining_sms").hide();
+				w.SMS.eRemainingSMS.hide();
 			}
 		};
 		mWSC.sendToken(lQUOTAToken, lCallbacks);
 	},
 	updateReminingSMS: function(aValue) {
-		$("#remaining_quota").html(aValue);
+		w.SMS.eRemainingQuota.html(aValue);
 	},
 	disableButton: function(aButton) {
 		aButton.attr("disabled", "disabled")
@@ -254,14 +255,14 @@ $.widget("jws.SMSGateway", {
 	},
 	disableAll: function() {
 		var lUrl = window.location.origin + "/products/userClient";
-		w.SMSGateway.disableButton(w.SMSGateway.eBtnSend);
-		w.SMSGateway.disableButton(w.SMSGateway.eBtnReport);
-		w.SMSGateway.eBtnUpdate.attr("disabled", true);
-		w.SMSGateway.eBtnUpdate.addClass("disabled");
-		w.SMSGateway.eImg.attr("src", "");
-		
-		if(window.location.origin.indexOf("localhost") < 0){
-			w.SMSGateway.gritterDialog = $.gritter.add({
+		w.SMS.disableButton(w.SMS.eBtnSend);
+		w.SMS.disableButton(w.SMS.eBtnReport);
+		w.SMS.eBtnUpdate.attr("disabled", true);
+		w.SMS.eBtnUpdate.addClass("disabled");
+		w.SMS.eImg.attr("src", "");
+
+		if (window.location.origin.indexOf("localhost") < 0) {
+			w.SMS.gritterDialog = $.gritter.add({
 				// (string | mandatory) the heading of the notification
 				title: 'Welcome to jWebSocket SMS Gateway Demo',
 				// (string | mandatory) the text inside the notification
@@ -274,12 +275,13 @@ $.widget("jws.SMSGateway", {
 		}
 	},
 	enableAll: function() {
-		w.SMSGateway.enableButton(w.SMSGateway.eBtnSend);
-		w.SMSGateway.enableButton(w.SMSGateway.eBtnReport);
-		w.SMSGateway.eBtnUpdate.attr("disabled", false);
-		w.SMSGateway.eBtnUpdate.removeClass("disabled");
-		if (w.SMSGateway.gritterDialog) {
-			$.gritter.remove(w.SMSGateway.gritterDialog);
+		w.SMS.enableButton(w.SMS.eBtnSend);
+		w.SMS.enableButton(w.SMS.eBtnReport);
+		w.SMS.eBtnUpdate.attr("disabled", false);
+		w.SMS.eBtnUpdate.removeClass("disabled");
+		w.SMS.getCaptcha();
+		if (w.SMS.gritterDialog) {
+			$.gritter.remove(w.SMS.gritterDialog);
 		}
 	}
 });
