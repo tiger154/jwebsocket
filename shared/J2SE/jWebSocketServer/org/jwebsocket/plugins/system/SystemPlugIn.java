@@ -407,6 +407,9 @@ public class SystemPlugIn extends TokenPlugIn {
 			setUsername(aConnector, ANONYMOUS_USER);
 		}
 
+		// initializing connector UUID here to avoid concurrency issues
+		aConnector.getSession().getUUID();
+
 		// sending the welcome token
 		sendWelcome(aConnector);
 
