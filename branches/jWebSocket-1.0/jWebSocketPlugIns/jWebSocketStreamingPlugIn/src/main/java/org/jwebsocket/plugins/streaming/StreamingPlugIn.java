@@ -29,11 +29,12 @@ import org.jwebsocket.api.WebSocketStream;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.plugins.ActionPlugIn;
+import org.jwebsocket.plugins.annotations.Authenticated;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.springframework.util.Assert;
 
 /**
  * implements the stream control plug-in to manage the various underlying
@@ -43,19 +44,17 @@ import org.jwebsocket.token.Token;
  *
  * @author Alexander Schulze
  */
-public class StreamingPlugIn extends TokenPlugIn {
+public class StreamingPlugIn extends ActionPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
-	private final static String NS_STREAMING
-			= JWebSocketServerConstants.NS_BASE + ".plugins.streaming";
+	private final static String NS_STREAMING = JWebSocketServerConstants.NS_BASE + ".plugins.streaming";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket StreaminglugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket StreamingPlugIn - Community Edition";
-	private final Map<String, BaseStream> mStreams
-			= new FastMap<String, BaseStream>();
+	private final Map<String, BaseStream> mStreams = new FastMap<String, BaseStream>();
 	private boolean mStreamsInitialized = false;
 	private TimeStream mTimeStream = null;
 	private MonitorStream mMonitorStream = null;
@@ -203,29 +202,14 @@ public class StreamingPlugIn extends TokenPlugIn {
 		return mStreams.get(aStreamId);
 	}
 
-	@Override
-	public void processToken(PlugInResponse aAction, WebSocketConnector aConnector, Token aToken) {
-		String lType = aToken.getType();
-		String lNS = aToken.getNS();
-
-		if (lType != null && getNamespace().equals(lNS)) {
-			if (lType.equals("register")) {
-				registerConnector(aConnector, aToken);
-			} else if (lType.equals("unregister")) {
-				unregisterConnector(aConnector, aToken);
-			} else if (lType.equals("controlStream")) {
-				controlStream(aConnector, aToken);
-			}
-		}
-	}
-
 	/**
 	 * registers a connector at a certain stream.
 	 *
 	 * @param aConnector
 	 * @param aToken
 	 */
-	public void registerConnector(WebSocketConnector aConnector, Token aToken) {
+	@Authenticated
+	public void registerAction(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
@@ -234,26 +218,17 @@ public class StreamingPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'register'...");
 		}
 
-		BaseStream lStream = null;
-		String lStreamID = aToken.getString("stream");
-		if (lStreamID != null) {
-			lStream = mStreams.get(lStreamID);
-		}
+		// validating
+		String lStreamID = aToken.getString("stream", null);
+		Assert.notNull(lStreamID, "The 'stream' argument cannot be null!");
+		BaseStream lStream = mStreams.get(lStreamID);
+		Assert.notNull(lStream, "Stream '" + lStreamID + "' not found!");
+		Assert.isTrue(!lStream.isConnectorRegistered(aConnector), "Client already registered on stream '" + lStreamID + "'!");
 
-		if (lStream != null) {
-			if (!lStream.isConnectorRegistered(aConnector)) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Registering client at stream '" + lStreamID + "'...");
-				}
-				lStream.registerConnector(aConnector);
-			} else {
-				lResponse.setInteger("code", -1);
-				lResponse.setString("msg", "Client is already registered at stream '" + lStreamID + "'.");
-			}
-		} else {
-			lResponse.setInteger("code", -1);
-			lResponse.setString("msg", "Stream '" + lStreamID + "' not found.");
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Registering client on stream '" + lStreamID + "'...");
 		}
+		lStream.registerConnector(aConnector);
 
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);
@@ -265,7 +240,8 @@ public class StreamingPlugIn extends TokenPlugIn {
 	 * @param aConnector
 	 * @param aToken
 	 */
-	public void unregisterConnector(WebSocketConnector aConnector, Token aToken) {
+	@Authenticated
+	public void unregisterAction(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
@@ -274,65 +250,37 @@ public class StreamingPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'unregister'...");
 		}
 
-		BaseStream lStream = null;
-		String lStreamID = aToken.getString("stream");
-		if (lStreamID != null) {
-			lStream = mStreams.get(lStreamID);
-		}
+		// validating
+		String lStreamID = aToken.getString("stream", null);
+		Assert.notNull(lStreamID, "The 'stream' argument cannot be null!");
+		BaseStream lStream = mStreams.get(lStreamID);
+		Assert.notNull(lStream, "Stream '" + lStreamID + "' not found!");
+		Assert.isTrue(lStream.isConnectorRegistered(aConnector), "Client not registered on stream '" + lStreamID + "'!");
 
-		if (lStream != null) {
-			if (lStream.isConnectorRegistered(aConnector)) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Unregistering client from stream '" + lStreamID + "'...");
-				}
-				lStream.unregisterConnector(aConnector);
-			} else {
-				lResponse.setInteger("code", -1);
-				lResponse.setString("msg", "Client is not registered at stream '" + lStreamID + "'.");
-			}
-		} else {
-			lResponse.setInteger("code", -1);
-			lResponse.setString("msg", "Stream '" + lStreamID + "' not found.");
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Unregistering client from stream '" + lStreamID + "'...");
 		}
+		lStream.unregisterConnector(aConnector);
 
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);
 	}
 
-	/**
-	 * unregisters a connector from a certain stream.
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 */
-	public void controlStream(WebSocketConnector aConnector, Token aToken) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'controlStream'...");
-		}
-
-		TokenStream lStream = null;
-		String lStreamID = aToken.getString("stream");
-		if (lStreamID != null) {
-			lStream = (TokenStream) mStreams.get(lStreamID);
-		}
-
-		if (lStream != null) {
-			lStream.control(aToken);
-		}
-		// else...
-		// todo: error handling
-	}
-
 	@Override
-	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+	public void processLogoff(WebSocketConnector aConnector) {
 		// if a connector terminates, unregister it from all streams.
 		for (BaseStream lStream : mStreams.values()) {
 			try {
 				lStream.unregisterConnector(aConnector);
 			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping conncector"));
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "unregistering connector"));
 			}
 		}
+	}
+
+	@Override
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		processLogoff(aConnector);
 	}
 
 	@Override
