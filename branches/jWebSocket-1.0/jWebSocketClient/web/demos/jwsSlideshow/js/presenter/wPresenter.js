@@ -233,6 +233,7 @@ $.widget( "jws.presenter", {
 								
 								lData.viewers = lSubscribers - lPublishers;
 								lData.presenters = lPublishers;
+								w.presenter.updateData(lData);
 								if( w.presenter.mCurrSlide > 0 ) {
 									lData.slide = w.presenter.mCurrSlide;
 								}
