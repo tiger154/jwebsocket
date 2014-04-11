@@ -33,6 +33,7 @@ import org.jwebsocket.plugins.annotations.RequirePlugIn;
 import org.jwebsocket.plugins.annotations.RequirePlugIns;
 import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.annotations.Roles;
+import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.ConnectionManager;
@@ -75,7 +76,6 @@ public class ActionPlugIn extends TokenPlugIn {
 	 * @param aToken
 	 */
 	public void beforeExecuteAction(String aActionName, WebSocketConnector aConnector, Token aToken) {
-
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class ActionPlugIn extends TokenPlugIn {
 					}
 				}
 			} else if (lMethod.isAnnotationPresent(Authenticated.class)) {
-				if (null == aConnector.getUsername()) {
+				if (null == aConnector.getUsername() || SystemPlugIn.ANONYMOUS_USER.equals(aConnector.getUsername())) {
 					sendToken(aConnector, createAccessDenied(aToken));
 					return;
 				}
