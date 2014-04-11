@@ -139,7 +139,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static boolean BROADCAST_LOGOUT = true;
 	private static final String BROADCAST_LOGOUT_KEY = "broadcastLogoutEvent";
 	private static final String ALLOW_ANONYMOUS_KEY = "allowAnonymousLogin";
-	private static final String ANONYMOUS_USER = "anonymous";
+	public static final String ANONYMOUS_USER = "anonymous";
 	private static boolean ALLOW_ANONYMOUS_LOGIN = false;
 	private static final String ALLOW_AUTO_ANONYMOUS_KEY = "allowAutoAnonymous";
 	private static boolean ALLOW_AUTO_ANONYMOUS = false;
