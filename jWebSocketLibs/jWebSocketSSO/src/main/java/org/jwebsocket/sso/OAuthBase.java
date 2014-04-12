@@ -1,8 +1,26 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket OAuth implementation for Java, OAuthBase (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
+//	this plug-in is based on: 
+//	http://tools.ietf.org/html/rfc6749 - The OAuth 2.0 Authorization Framework
+//	http://tools.ietf.org/html/rfc6750 - The OAuth 2.0 Authorization Framework: Bearer Token Usage
+//	http://oauth.net/2/ - OAuth 2.0
+//	---------------------------------------------------------------------------
 package org.jwebsocket.sso;
 
 import java.io.DataInputStream;
@@ -13,8 +31,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -33,13 +49,15 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 /**
  *
- * @author aschulze
+ * @author Alexander Schulze
  */
-public class OAuthBase {
+public class OAuthBase implements IOAuth {
 
+	static final Logger mLog = Logger.getLogger(OAuthBase.class);
 	int mReturnCode = 0;
 	String mReturnMsg = "Ok";
 
@@ -213,12 +231,13 @@ public class OAuthBase {
 
 			// System.out.println("Resp Code:" + lConn.getResponseCode());
 			// System.out.println("Resp Message:" + lConn.getResponseMessage());
-			Timer lTimer = new Timer();
-			lTimer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-				}
-			}, aTimeout);
+			
+//			Timer lTimer = new Timer();
+//			lTimer.schedule(new TimerTask() {
+//				@Override
+//				public void run() {
+//				}
+//			}, aTimeout);
 
 			// get ready to read the response from the server 
 			DataInputStream lIS = new DataInputStream(lConn.getInputStream());
@@ -274,4 +293,13 @@ public class OAuthBase {
 		return mAccessToken;
 	}
 
+	@Override
+	public String getSSOSession(String aUsername, String aPassword, long aTimeout) throws SSOException {
+		throw new SSOException("Not implemented.");
+	}
+
+	@Override
+	public String authSession(String aSessionId, long aTimeout) throws SSOException {
+		throw new SSOException("Not implemented.");
+	}
 }

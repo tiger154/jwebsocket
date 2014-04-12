@@ -35,8 +35,7 @@ import org.codehaus.jackson.map.ObjectMapper;
  *
  * @author Alexander Schulze
  */
-public class OAuth extends OAuthBase{
-
+public class OAuth extends OAuthBase {
 
 	/**
 	 *
@@ -49,7 +48,7 @@ public class OAuth extends OAuthBase{
 	 * @param aHost
 	 */
 	public OAuth(String aHost) {
-		mOAuthHost = aHost;
+		setOAuthHost(aHost);
 	}
 
 	/**
@@ -84,7 +83,7 @@ public class OAuth extends OAuthBase{
 		lJSON = lMapper.readValue(aJSON, Map.class);
 		return lJSON;
 	}
-	
+
 	/**
 	 *
 	 * @param aUsername
@@ -92,6 +91,7 @@ public class OAuth extends OAuthBase{
 	 * @param aTimeout
 	 * @return
 	 */
+	@Override
 	public String getSSOSession(String aUsername, String aPassword, long aTimeout) {
 		String lPostBody;
 		try {
@@ -152,6 +152,7 @@ public class OAuth extends OAuthBase{
 	 * @param aTimeout
 	 * @return
 	 */
+	@Override
 	public String authSession(String aSessionId, long aTimeout) {
 		String lPostBody;
 		try {
