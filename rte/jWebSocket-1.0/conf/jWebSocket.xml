@@ -2002,6 +2002,45 @@
 			</server-assignments>
 		</plugin>
 		
+		<!-- FTP plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.ftp.FTPPlugIn</name>
+			<id>jWebSocketFTPPlugIn</id>
+			<jar>jWebSocketFTPPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/FTPPlugIn/ftp.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
+		<!-- TTS plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.tts.TTSPlugIn</name>
+			<id>jWebSocketTTSPlugIn</id>
+			<jar>jWebSocketTTSPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/TTSPlugIn/tts.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
+		<!-- Cloud plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.cloud.CloudPlugIn</name>
+			<id>jWebSocketCloudPlugIn</id>
+			<jar>jWebSocketCloudPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/CloudPlugIn/cloud.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
 		<!--
 		<plugin>
 		   <name>org.jwebsocket.plugins.events.EventsPlugIn</name>
@@ -2062,21 +2101,6 @@
 					<setting key="http_user">admin</setting>
 					<setting key="http_password">jmxadmin</setting>
 				</settings>
-		</plugin>
-		-->
-		<!--
-		<plugin>
-			<name>org.jwebsocket.plugins.scada.streaming.PointStreamingPlugIn</name>
-			<ns>org.jwebsocket.plugins.scada.streaming</ns>
-			<id>iwerks.ep</id>
-			<jars>
-				<jar>C:/svn/iwerks_ep/in/jWebsocketPointStreamingPlugIn-1.0/dist/jWebSocketPointStreamingPlugIn-1.0.jar</jar>
-			</jars>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
-			<settings>
-			</settings>
 		</plugin>
 		-->
 	</plugins>

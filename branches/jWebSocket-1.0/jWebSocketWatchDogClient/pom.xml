@@ -82,9 +82,9 @@
                             </descriptors>
                         </configuration>
                         <phase>install</phase>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
+						<goals>
+							<goal>single</goal>
+						</goals>
                     </execution>
                 </executions>
             </plugin>

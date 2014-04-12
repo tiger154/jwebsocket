@@ -2,10 +2,12 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
 	<bean id="org.jwebsocket.plugins.ftp.settings" class="org.jwebsocket.plugins.ftp.Settings">
-		<property name="field">
+		<!--
+		<property name="FTPHostAliases">
 			<map>
-				<entry key="key" value="value" />
+				<entry key="default" value="ftp.jwebsocket.org" />
 			</map>
 		</property>
+		-->
 	</bean>
 </beans>
