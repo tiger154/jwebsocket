@@ -15,9 +15,6 @@
 			<outputDirectory/>
 			<includes>
 				<include>${groupId}:${artifactId}</include>
-				<include>org.apache.ddlutils:ddlutils</include>
-				<include>com.healthmarketscience.common:common-util</include>
-				<include>com.healthmarketscience.sqlbuilder:sqlbuilder</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>
