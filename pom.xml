@@ -76,6 +76,7 @@
 		<module>jWebSocketPlugIns/jWebSocketScriptingPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketQuotaPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketJCRPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketTTSPlugIn</module>
 		<module>jWebSocketJMSGateway</module>
 		<module>jWebSocketSwingGUI</module>
 		<module>jWebSocketProxy</module>

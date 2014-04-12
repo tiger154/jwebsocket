@@ -86,7 +86,7 @@
 						</configuration>
 						<phase>install</phase>
 						<goals>
-							<goal>attached</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
