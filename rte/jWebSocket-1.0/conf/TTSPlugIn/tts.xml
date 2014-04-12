@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
+<beans>
+	<!-- SpeakAloudProvider works for Windows only! -->
+	<bean id="SpeakAloudProvider" class="org.jwebsocket.plugins.tts.SpeakAloudProvider">
+		<property name="exePath" value="C:\Program Files (x86)\Speak Aloud\SpeakAloud.exe"/>
+		<property name="textPath" value="C:\Program Files (x86)\Speak Aloud\"/>
+	</bean>
+
+	<bean id="org.jwebsocket.plugins.tts.settings" class="org.jwebsocket.plugins.tts.Settings">
+		<property name="TTSProvider" ref="SpeakAloudProvider"/>
+	</bean>
+</beans>
