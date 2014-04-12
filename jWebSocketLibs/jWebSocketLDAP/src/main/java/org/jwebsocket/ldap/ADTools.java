@@ -92,14 +92,14 @@ public class ADTools {
 
 	/**
 	 *
-	 * @param aLoginname
+	 * @param aUsername
 	 * @param aPassword
 	 * @return
 	 */
-	public DirContext login(String aLoginname, String aPassword) {
+	public DirContext login(String aUsername, String aPassword) {
 		Properties lEnv = new Properties();
 		lEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
-		lEnv.put(Context.SECURITY_PRINCIPAL, aLoginname);
+		lEnv.put(Context.SECURITY_PRINCIPAL, aUsername);
 		lEnv.put(Context.SECURITY_CREDENTIALS, aPassword);
 		lEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		lEnv.put(Context.PROVIDER_URL, mLDAP_URL);
@@ -117,14 +117,14 @@ public class ADTools {
 
 	/**
 	 *
-	 * @param aLoginname
+	 * @param aUsername
 	 * @param aPassword
 	 * @return
 	 */
-	public String authenticate(String aLoginname, String aPassword) {
+	public String authenticate(String aUsername, String aPassword) {
 		Properties lEnv = new Properties();
 		lEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
-		lEnv.put(Context.SECURITY_PRINCIPAL, aLoginname);
+		lEnv.put(Context.SECURITY_PRINCIPAL, aUsername);
 		lEnv.put(Context.SECURITY_CREDENTIALS, aPassword);
 		lEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		lEnv.put(Context.PROVIDER_URL, mLDAP_URL);
@@ -509,7 +509,7 @@ public class ADTools {
 
 		if (lGroupsQueryStr.length() > 0) {
 			lGroupsQueryStr = "(|" + lGroupsQueryStr + ")";
-			lBase = mDL_BASE_DN; // "OU=Groups,DC=nvidia,DC=com";
+			lBase = mDL_BASE_DN;
 			lFilter = "(&(ObjectClass=group)" + lGroupsQueryStr + ")";
 			String[] lGroupAttrs = {"distinguishedName", "sAMAccountName", "name", "memberOf"};
 			lResMap = (Map<String, Map<String, List<String>>>) query(lBase, lFilter, lGroupAttrs);

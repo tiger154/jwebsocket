@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javolution.util.FastList;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -56,8 +59,38 @@ public class Main {
 		PASSWORD = "...";
 		mTestDL0 = "...";
 		mTestDL1 = "...";
-		mTestUserNames = new String[] {"...", "...", "...", "..."};
-		
+		mTestUserNames = new String[]{"...", "...", "...", "..."};
+
+		mLog.info("jWebSocket LDAP examples");
+		Configuration lConfig = null;
+		boolean lConfigLoaded;
+		try {
+			// loading properties files
+			lConfig = new PropertiesConfiguration("private.properties");
+		} catch (ConfigurationException ex) {
+		}
+
+		if (null == lConfig) {
+			mLog.info("Configuration file could not be opened.");
+			return;
+		}
+
+		LDAP_URL = lConfig.getString("LDAPURL");
+		BASE_DN_GROUPS = lConfig.getString("BaseDNGroups");
+		BASE_DN_USERS = lConfig.getString("BaseDNUsers");
+		USERNAME = lConfig.getString("BindUsername");
+		PASSWORD = lConfig.getString("BindPassword");
+		mTestDL0 = lConfig.getString("TestDL0");
+		mTestDL1 = lConfig.getString("TestDL1");
+		mTestUserNames = lConfig.getStringArray("TestUserNames");
+
+		// TODO: Validate config data here!
+		lConfigLoaded = true;
+
+		if (!lConfigLoaded) {
+			mLog.error("Config not loaded.");
+			System.exit(1);
+		}
 	}
 
 	/**
@@ -97,10 +130,10 @@ public class Main {
 			mLog.info("DLs for '" + lDN_User2 + "':");
 			mLog.info("Group-Names: " + lDLs.keySet().toString());
 
-			boolean lAlexInUnityAnnouncement = aAD.isUserInDL(lTestUserId, mTestDL1, lDLs);
-			boolean lAlexInOtherDL = aAD.isUserInDL(lTestUserId, "ArbitraryDLNameForTest", lDLs);
-			mLog.info("In '" + mTestDL1 + "'?: " + lAlexInUnityAnnouncement);
-			mLog.info("In other DL?: " + lAlexInOtherDL);
+			boolean lUser0InTestTL1 = aAD.isUserInDL(lTestUserId, mTestDL1, lDLs);
+			boolean lUser0InOtherDL = aAD.isUserInDL(lTestUserId, "ArbitraryDLNameForTest", lDLs);
+			mLog.info("In '" + mTestDL1 + "'?: " + lUser0InTestTL1);
+			mLog.info("In other DL?: " + lUser0InOtherDL);
 
 			lDNs = aAD.getUserDLs(mTestUserNames[0]);
 			mLog.info("DLs for " + mTestUserNames[0] + ":");
@@ -176,7 +209,7 @@ public class Main {
 		lProps.setProperty("log4j.logger.org.jwebsocket", "DEBUG");
 		lProps.setProperty("log4j.appender.console.threshold", "DEBUG");
 		PropertyConfigurator.configure(lProps);
-		
+
 		init();
 		lADTools = new ADTools(
 				LDAP_URL, // URL to AD Server
@@ -212,12 +245,12 @@ public class Main {
 //				mLog.info(lADUser.getLoginName() + " [" + lADUser.getGUID() + "]");
 //			}
 //		}
-		mLog.info("aschulze: " + lADTools.getDNfromLoginname("aschulze"));
-		mLog.info("Unity-Implementation from DL: " + lADTools.getDNfromDL("Unity-Implementation"));
-		ADDistributionList lDL = lADTools.getDLfromName("Unity-Implementation");
-		mLog.info("Unity-Implementation from name: " + lDL.toString());
+		mLog.info(mTestUserNames[0] + ": " + lADTools.getDNfromLoginname(mTestUserNames[0]));
+		mLog.info(mTestDL1 + " from DL: " + lADTools.getDNfromDL(mTestDL1));
+		ADDistributionList lDL = lADTools.getDLfromName(mTestDL1);
+		mLog.info(mTestDL1 + " from name: " + lDL.toString());
 		lDL = lADTools.getDLfromGUID(lDL.getGUID());
-		mLog.info("Unity-Implementation from GUID: " + lDL.toString());
+		mLog.info(mTestDL1 +" from GUID: " + lDL.toString());
 
 		mLog.info("----------------------");
 
