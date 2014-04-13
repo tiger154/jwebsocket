@@ -16,7 +16,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.plugins.FTP;
+package org.jwebsocket.plugins.ftp;
 
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
@@ -24,10 +24,11 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.plugins.ftp.Settings;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.springframework.beans.BeansException;
@@ -126,10 +127,44 @@ public class FTPPlugIn extends TokenPlugIn {
 
 	@Override
 	public synchronized void engineStarted(WebSocketEngine aEngine) {
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Engine started.");
+//		}
 	}
 
 	@Override
 	public synchronized void engineStopped(WebSocketEngine aEngine) {
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Engine stopped.");
+//		}
+	}
+
+	@Override
+	public void connectorStarted(WebSocketConnector aConnector) {
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Connector started.");
+//		}
+	}
+
+	@Override
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Connector stopped.");
+//		}
+	}
+
+	@Override
+	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Session '" + aSession.getSessionId() + "' started.");
+//		}
+	}
+
+	@Override
+	public void sessionStopped(WebSocketSession aSession) {
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Session '" + aSession.getSessionId() + "' stopped.");
+//		}
 	}
 
 	@Override
