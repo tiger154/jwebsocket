@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - IJWSResponseListener (Community Edition, CE)
+//	jWebSocket - JMS EndPoint Exception (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
@@ -18,18 +18,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.endpoint;
 
-import org.jwebsocket.token.Token;
-
 /**
  *
  * @author Alexander Schulze
  */
-public interface IJWSResponseListener extends IJMSResponseListener {
+public class JMSEndpointException extends Exception {
 
-	/**
-	 * Called in case of an progress event of the remote endpoint
-	 *
-	 * @param aToken
-	 */
-	void onProgress(Token aToken);
 }

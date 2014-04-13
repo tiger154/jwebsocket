@@ -68,27 +68,25 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>tld.yourname.jms.client.JMSClient</mainClass>
-						</manifest>
-					</archive>		
-				</configuration>				
 				<executions>
 					<execution>
 						<id>Bundle</id>
 						<configuration>
 							<classifier>Bundle</classifier>
-							<finalName>jWebSocketJMSClientBundle</finalName>
+							<finalName>jWebSocketJMSClient</finalName>
 							<outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 							<descriptors>
 								<descriptor>src/assembly/one-jar.xml</descriptor>
 							</descriptors>
+							<archive>
+								<manifest>
+									<mainClass>tld.yourname.jms.client.JMSClient</mainClass>
+								</manifest>
+							</archive>
 						</configuration>
 						<phase>install</phase>
 						<goals>
-							<goal>attached</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -122,6 +120,11 @@
 			<groupId>org.apache.activemq</groupId> 
 			<artifactId>activemq-all</artifactId> 
 			<version>5.8.0</version> 
+		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId> 
+			<artifactId>commons-configuration</artifactId> 
+			<version>1.10</version> 
 		</dependency>
 		
 	</dependencies>
