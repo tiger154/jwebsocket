@@ -68,7 +68,17 @@ public class JMSEndPoint {
 	// flag to shutdown a non-self-termintaing console client
 	private boolean mShutDown = false;
 
-	private void init(String aBrokerURI, String aGatewayTopic,
+	/**
+	 *
+	 * @param aBrokerURI
+	 * @param aGatewayTopic
+	 * @param aGatewayId
+	 * @param aEndPointId
+	 * @param aThreadPoolSize
+	 * @param aDurable
+	 * @throws JMSException
+	 */
+	protected void init(String aBrokerURI, String aGatewayTopic,
 			String aGatewayId, String aEndPointId, int aThreadPoolSize,
 			boolean aDurable) throws JMSException {
 		// instantiate connection factory for ActiveMQ broker
@@ -104,12 +114,16 @@ public class JMSEndPoint {
 		lConsumer.setMessageListener(mListener);
 
 		// creating sender
-		mSender = new JMSEndPointSender(this);
+		// mSender = new JMSEndPointSender(this);
 	}
 
 	// private constructor, public API only allows contructors 
 	// with various arguments.
-	private JMSEndPoint() {
+
+	/**
+	 *
+	 */
+		protected JMSEndPoint() {
 	}
 
 	/**

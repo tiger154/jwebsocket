@@ -68,27 +68,24 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>tld.yourname.jms.server.JMSServer</mainClass>
-						</manifest>
-					</archive>		
-				</configuration>				
 				<executions>
 					<execution>
 						<id>Bundle</id>
 						<configuration>
-							<classifier>Bundle</classifier>
-							<finalName>jWebSocketJMSServerBundle</finalName>
+							<finalName>jWebSocketJMSServer</finalName>
 							<outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 							<descriptors>
 								<descriptor>src/assembly/one-jar.xml</descriptor>
 							</descriptors>
+							<archive>
+								<manifest>
+									<mainClass>tld.yourname.jms.server.JMSServer</mainClass>
+								</manifest>
+							</archive>
 						</configuration>
 						<phase>install</phase>
 						<goals>
-							<goal>attached</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -98,6 +95,11 @@
 
 	<!--  define all the dependencies here -->
 	<dependencies>
+		<dependency>
+			<groupId>commons-configuration</groupId> 
+			<artifactId>commons-configuration</artifactId> 
+			<version>1.10</version> 
+		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketCommon</artifactId>
@@ -118,12 +120,6 @@
 			<artifactId>jWebSocketLDAP</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.activemq</groupId> 
-			<artifactId>activemq-all</artifactId> 
-			<version>5.8.0</version> 
-		</dependency>
-		
 	</dependencies>
 
 	<!--  define repositories -->

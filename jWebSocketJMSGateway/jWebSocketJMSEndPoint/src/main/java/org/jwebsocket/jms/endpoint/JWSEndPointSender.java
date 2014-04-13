@@ -30,10 +30,10 @@ import org.jwebsocket.token.TokenFactory;
  * @author Alexander Schulze
  */
 public class JWSEndPointSender extends JMSEndPointSender {
-	
+
 	private static final Logger mLog = Logger.getLogger(JWSEndPointSender.class);
 	private static final AtomicInteger mUTID = new AtomicInteger(1);
-	
+
 	private int getUTID() {
 		mUTID.compareAndSet(Integer.MAX_VALUE, 1);
 		return mUTID.getAndIncrement();
@@ -92,7 +92,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 			JWSResponseTokenListener aResponseListener, long aTimeout) {
 		int lUTID = aToken.getInteger("utid", mUTID.getAndIncrement());
 		aToken.setInteger("utid", lUTID);
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Sending token to '" + aTargetId + "': "
 					+ (JMSLogging.isFullTextLogging()
@@ -137,7 +137,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	public void sendPayload(String aTargetId, String aNS, String aType,
 			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload,
 			JWSResponseTokenListener aResponseListener, long aTimeout) {
-		
+
 		Token lToken = TokenFactory.createToken();
 		lToken.setMap(aArgs);
 		lToken.setNS(aNS);
@@ -148,7 +148,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		if (null != aOriginId) {
 			lToken.setString("originId", aOriginId);
 		}
-		
+
 		sendToken(aTargetId, lToken, aResponseListener, aTimeout);
 	}
 
@@ -180,7 +180,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	public void sendPayload(String aTargetId, String aNS, String aType,
 			Map<String, Object> aArgs, String aPayload,
 			JWSResponseTokenListener aResponseListener, long aTimeout) {
-		
+
 		Token lToken = TokenFactory.createToken();
 		lToken.setMap(aArgs);
 		lToken.setNS(aNS);
@@ -268,7 +268,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	public void respondPayload(String aTargetId, String aNS, String aReqType,
 			Integer aUTID, int aCode, String aMsg, Map<String, Object> aArgs,
 			String aPayload) {
-		
+
 		Token lResponse = TokenFactory.createToken();
 		// set args map first, since setMap overwrites all other values
 		lResponse.setMap(aArgs);
@@ -280,7 +280,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		lResponse.setInteger("code", aCode);
 		lResponse.setString("msg", aMsg);
 		lResponse.setString("payload", aPayload);
-		
+
 		Token lEnvelope = TokenFactory.createToken(
 				"org.jwebsocket.plugins.system", "send");
 		lEnvelope.setString("sourceId", getEndPoint().getEndPointId());
@@ -304,7 +304,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	 */
 	public void respondPayload(String aTargetId, Token aRequest, int aCode,
 			String aMsg, Map<String, Object> aArgs, String aPayload) {
-		
+
 		Token lResponse = TokenFactory.createToken();
 		// set args map first, since setMap overwrites all other values
 		lResponse.setMap(aArgs);
@@ -316,7 +316,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		lResponse.setInteger("code", aCode);
 		lResponse.setString("msg", aMsg);
 		lResponse.setString("payload", aPayload);
-		
+
 		String lSourceId = aRequest.getString("sourceId");
 		if (null != lSourceId) {
 			lResponse.setString("sourceId", lSourceId);
@@ -325,14 +325,14 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		if (null != lOriginId) {
 			lResponse.setString("originId", lOriginId);
 		}
-		
+
 		Token lEnvelope = TokenFactory.createToken(
 				"org.jwebsocket.plugins.system", "send");
 		// the sourceId of this message is the endpoint id of this instance
 		lEnvelope.setString("sourceId", getEndPoint().getEndPointId());
 		// the target id is the endpoint id of the target (websocket or MQ)
 		lEnvelope.setString("targetId", aTargetId);
-		
+
 		lEnvelope.setString("action", "forward.json");
 		lEnvelope.setBoolean("responseRequested", false);
 		lEnvelope.setString("data", JSONProcessor.tokenToPacket(lResponse).getUTF8());
@@ -342,8 +342,22 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		if (null == lTargetId) {
 			lTargetId = getEndPoint().getGatewayId();
 		}
-		
+
 		sendToken(lTargetId, lEnvelope);
+	}
+
+	/**
+	 *
+	 * @param aRequest
+	 * @param aCode
+	 * @param aMsg
+	 * @param aArgs
+	 * @param aPayload
+	 */
+	public void respondPayload(Token aRequest, int aCode, String aMsg,
+			Map<String, Object> aArgs, String aPayload) {
+		respondPayload(aRequest.getString("sourceId"), aRequest, aCode,
+				aMsg, aArgs, aPayload);
 	}
 
 	/**
@@ -394,11 +408,12 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		lResponse.setNS(aRequest.getNS());
 		lResponse.setType("event");
 		lResponse.setString("name", "progress");
-		lResponse.setInteger("utid", -aRequest.getInteger("utid", 0));
+		// lResponse.setInteger("utid", -aRequest.getInteger("utid", 0));
+		lResponse.setInteger("utid", aRequest.getInteger("utid", 0));
 		lResponse.setDouble("percent", aPercent);
 		lResponse.setString("msg", aMessage);
 		lResponse.setInteger("code", aCode);
-		
+
 		String lSourceId = aRequest.getString("sourceId");
 		if (null != lSourceId) {
 			lResponse.setString("sourceId", lSourceId);
@@ -407,14 +422,14 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		if (null != lOriginId) {
 			lResponse.setString("originId", lOriginId);
 		}
-		
+
 		Token lEnvelope = TokenFactory.createToken(
 				"org.jwebsocket.plugins.system", "send");
 		// the sourceId of this message is the endpoint id of this instance
 		lEnvelope.setString("sourceId", getEndPoint().getEndPointId());
 		// the target id is the endpoint id of the target (websocket or MQ)
 		lEnvelope.setString("targetId", aTargetId);
-		
+
 		lEnvelope.setString("action", "forward.json");
 		lEnvelope.setBoolean("responseRequested", false);
 		lEnvelope.setString("data", JSONProcessor.tokenToPacket(lResponse).getUTF8());
@@ -424,8 +439,8 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		if (null == lTargetId) {
 			lTargetId = getEndPoint().getGatewayId();
 		}
-		
+
 		sendToken(lTargetId, lEnvelope);
 	}
-	
+
 }

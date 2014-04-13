@@ -71,7 +71,7 @@ public class JMSEndPointSender {
 			}
 
 			@Override
-			
+
 			public void onMessage(Message aMessage) {
 			}
 
@@ -83,22 +83,18 @@ public class JMSEndPointSender {
 			public void onTextMessage(final TextMessage aMessage) {
 				try {
 					boolean lIsProgressEvent = false;
-					// getting the correlation ID
+					// try to get the correlation id (utid) directly from the message
 					String lKey = aMessage.getJMSCorrelationID();
 
-					// TODO: fix this temporary patch in the future, using only the JMSCorrelationID
+					// if no correllation id (utid) found try to get it from token
 					if (null == lKey) {
 						Token lToken = JSONProcessor.JSONStringToToken(aMessage.getText());
-						if (null != lToken && lToken.getMap().containsKey("utid")) {
+						if (null != lToken) {
 							lKey = String.valueOf(lToken.getInteger("utid"));
+							lIsProgressEvent = 
+									"event".equals(lToken.getString("type")) 
+									&& "progress".equals(lToken.getString("name"));
 						}
-					}
-					
-					// in case of progress events the utid is negative
-					if (null != lKey && lKey.startsWith("-")) {
-						lIsProgressEvent = true;
-						// cut leading "-"
-						lKey = lKey.substring(1);
 					}
 
 					if (null != lKey) {
@@ -109,33 +105,84 @@ public class JMSEndPointSender {
 						} else {
 							lRespListener = mResponseListeners.remove(lKey);
 						}
-						mLog.warn("#### Message A: " + aMessage.getText());
-
+		
 						// if listener exists
 						if (null != lRespListener) {
 							// getting the response text
 							final String lResponse = aMessage.getText();
-							// invoke "onResponse" callback out of this thread 
-							Tools.getThreadPool().submit(new Runnable() {
+							Thread lThread = new Thread() {
 								@Override
 								public void run() {
-									mLog.warn("#### Message B: " + lResponse);
 									lRespListener.onReponse(lResponse, aMessage);
 								}
-							});
+							};
+							lThread.setName("JMSEndPointSender Worker");
+							// invoke "onResponse" callback out of this thread 
+							Tools.getThreadPool().submit(lThread);
 						}
 					}
 
 				} catch (JMSException lEx) {
 				}
+				
+				
+//				try {
+//					boolean lIsProgressEvent = false;
+//					// getting the correlation ID
+//					String lKey = aMessage.getJMSCorrelationID();
+//
+//					// TODO: fix this temporary patch in the future, using only the JMSCorrelationID
+//					if (null == lKey) {
+//						Token lToken = JSONProcessor.JSONStringToToken(aMessage.getText());
+//						if (null != lToken && lToken.getMap().containsKey("utid")) {
+//							lKey = String.valueOf(lToken.getInteger("utid"));
+//						}
+//					}
+//
+//					// in case of progress events the utid is negative
+//					if (null != lKey && lKey.startsWith("-")) {
+//						lIsProgressEvent = true;
+//						// cut leading "-"
+//						lKey = lKey.substring(1);
+//					}
+//
+//					if (null != lKey) {
+//						// trying to get available response listener
+//						final IJMSResponseListener lRespListener;
+//						if (lIsProgressEvent) {
+//							lRespListener = mResponseListeners.get(lKey);
+//						} else {
+//							lRespListener = mResponseListeners.remove(lKey);
+//						}
+//						mLog.warn("#### Message A: " + aMessage.getText());
+//
+//						// if listener exists
+//						if (null != lRespListener) {
+//							// getting the response text
+//							final String lResponse = aMessage.getText();
+//							// invoke "onResponse" callback out of this thread 
+//							Tools.getThreadPool().submit(new Runnable() {
+//								@Override
+//								public void run() {
+//									mLog.warn("#### Message B: " + lResponse);
+//									lRespListener.onReponse(lResponse, aMessage);
+//								}
+//							});
+//						}
+//					}
+//
+//				} catch (JMSException lEx) {
+//				}
 			}
 
 			@Override
-			public void onMapMessage(MapMessage aMessage) {
+			public void onMapMessage(MapMessage aMessage
+			) {
 			}
 
 			@Override
-			public void onObjectMessage(ObjectMessage aMessage) {
+			public void onObjectMessage(ObjectMessage aMessage
+			) {
 			}
 		});
 	}
@@ -204,15 +251,18 @@ public class JMSEndPointSender {
 				Tools.getTimer().schedule(new TimerTask() {
 					@Override
 					public void run() {
-						Tools.getThreadPool().submit(new Runnable() {
+						Thread lThread = new Thread() {
 							@Override
 							public void run() {
-								IJMSResponseListener lListener = mResponseListeners.remove(aCorrelationID);
+								IJMSResponseListener lListener 
+										= mResponseListeners.remove(aCorrelationID);
 								if (null != lListener) {
 									lListener.onTimeout();
 								}
 							}
-						});
+						};
+						lThread.setName("JMSEndPointSender Timeout Thread");
+						Tools.getThreadPool().submit(lThread);
 					}
 				}, aTimeout);
 			}

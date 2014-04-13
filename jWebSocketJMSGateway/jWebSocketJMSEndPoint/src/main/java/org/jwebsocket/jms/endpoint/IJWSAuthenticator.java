@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - IJWSResponseListener (Community Edition, CE)
+//	jWebSocket - JMS EndPoint Authenticator Interface (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
@@ -24,12 +24,26 @@ import org.jwebsocket.token.Token;
  *
  * @author Alexander Schulze
  */
-public interface IJWSResponseListener extends IJMSResponseListener {
+public interface IJWSAuthenticator {
 
 	/**
-	 * Called in case of an progress event of the remote endpoint
+	 *
+	 * @throws JMSEndpointException
+	 */
+	public void initialize() throws JMSEndpointException;
+
+	/**
 	 *
 	 * @param aToken
+	 * @return
+	 * @throws org.jwebsocket.jms.endpoint.JMSEndpointException
 	 */
-	void onProgress(Token aToken);
+	public String authenticate(Token aToken) throws JMSEndpointException;
+
+	/**
+	 *
+	 * @throws JMSEndpointException
+	 */
+	public void shutdown() throws JMSEndpointException;
+
 }

@@ -24,35 +24,45 @@ import java.util.Properties;
 import java.util.UUID;
 import javax.jms.JMSException;
 import javolution.util.FastMap;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.io.FileUtils;
 import org.jwebsocket.jms.endpoint.JMSEndPoint;
+import org.jwebsocket.jms.endpoint.JMSEndpointException;
 import org.jwebsocket.jms.endpoint.JMSLogging;
+import org.jwebsocket.jms.endpoint.JWSAutoSelectAuthenticator;
+import org.jwebsocket.jms.endpoint.JWSEndPoint;
 import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
 import org.jwebsocket.jms.endpoint.JWSEndPointSender;
+import org.jwebsocket.jms.endpoint.JWSLDAPAuthenticator;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
+import org.jwebsocket.jms.endpoint.JWSOAuthAuthenticator;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 
 /**
- * JMS Gateway Demo Client
+ * JMS Gateway Demo Server
  *
  * @author Alexander Schulze
  */
 public class JMSServer {
 
 	static final Logger mLog = Logger.getLogger(JMSServer.class);
-	private JMSEndPoint lJMSEndPoint;
+	private static JWSEndPoint lJWSEndPoint;
+	private static JWSEndPointMessageListener lListener;
+	private static JWSEndPointSender lSender;
 
 	/**
 	 *
 	 * @param aArgs
 	 * @return
 	 */
-	public JMSEndPoint start(String[] aArgs) {
+	public JWSEndPoint start(String[] aArgs) {
 		// set up log4j logging
 		// later this should be read from a shared log4j properties or xml file!
 		Properties lProps = new Properties();
@@ -73,44 +83,106 @@ public class JMSServer {
 		lProps.setProperty("log4j.appender.console.threshold", "DEBUG");
 		PropertyConfigurator.configure(lProps);
 
-		JMSLogging.setFullTextLogging(false);
+		final JWSAutoSelectAuthenticator lAuthenticator = new JWSAutoSelectAuthenticator();
+		final JWSOAuthAuthenticator lOAuthAuthenticator = new JWSOAuthAuthenticator();
+		final JWSLDAPAuthenticator lLDAPAuthenticator = new JWSLDAPAuthenticator();
 
-		String lBrokerURL = "failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false";
-		// the name of the JMD Gateway topic
-		String lGatewayTopic = "org.jwebsocket.jms.gateway"; // topic name of JMS Gateway
-		String lGatewayId = "org.jwebsocket.jms.gateway"; // endpoint id of JMS Gateway
-		String lEndPointId = UUID.randomUUID().toString();
-
-		// String lOAuthHostURL = "https://<yourhost>.com/as/token.oauth2";
-		// String lOAuthSecret = "<your secret>";
-		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
-		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		mLog.info("jWebSocket JMS Gateway Server Endpoint");
+		Configuration lConfig = null;
+		boolean lConfigLoaded;
+		try {
+			// loading properties files
+			lConfig = new PropertiesConfiguration("private.properties");
+		} catch (ConfigurationException ex) {
+		}
 
-		if (null != aArgs && aArgs.length >= 3) {
-			lBrokerURL = aArgs[0];
-			lGatewayTopic = aArgs[1];
-			lGatewayId = aArgs[2];
-			if (aArgs.length >= 4) {
-				lEndPointId = aArgs[3];
-			}
-			mLog.info("Using: "
-					+ lBrokerURL + ", "
-					+ "topic: " + lGatewayTopic + ", "
-					+ "gateway-id: " + lGatewayId + ", "
-					+ "endpoint-id: " + lEndPointId);
-		} else {
-			mLog.info("Usage: java -jar jWebSocketJMSServer-<ver>.jar URL gateway-topic gateway-id [node-id]");
-			mLog.info("Example: java -jar jWebSocketJMSServerBundle-1.0.jar tcp://172.20.116.68:61616 " + lGatewayTopic + " " + lGatewayId + " [your node id]");
+		if (null == lConfig) {
+			mLog.info("Configuration file could not be opened.");
+			return null;
+		}
+
+		// the URL of the message broker
+		String lBrokerURL = lConfig.getString("BrokerURL", "tcp://127.0.0.1:61616");
+		// "failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false";
+		// the name of the JMS Gateway topic
+		String lGatewayTopic = lConfig.getString("GatewayTopic", "org.jwebsocket.jms.gateway");
+		// endpoint id of JMS Gateway
+		String lGatewayId = lConfig.getString("GatewayId", "org.jwebsocket.jms.gateway");
+		String lEndPointId = lConfig.getString("EndPointId", UUID.randomUUID().toString());
+
+		// get authentication information against jWebSocket
+		final String lJWSUsername = lConfig.getString("JWSUsername");
+		final String lJWSPassword = lConfig.getString("JWSPassword");
+
+		// set up OAuth Authenticator
+		boolean lUseOAuth = lConfig.getBoolean("UseOAuth", false);
+
+		String lOAuthHost = lConfig.getString("OAuthHost");
+		String lOAuthAppId = lConfig.getString("OAuthAppId");
+		String lOAuthAppSecret = lConfig.getString("OAuthAppSecret");
+		String lOAuthUsername = lConfig.getString("OAuthUsername");
+		String lOAuthPassword = lConfig.getString("OAuthPassword");
+		long lOAuthTimeout = lConfig.getLong("OAuthTimeout", 5000);
+
+		lUseOAuth = lUseOAuth
+				&& null != lOAuthHost
+				&& null != lOAuthAppId
+				&& null != lOAuthAppSecret
+				&& null != lOAuthUsername
+				&& null != lOAuthPassword;
+
+		if (lUseOAuth) {
+			lOAuthAuthenticator.init(
+					lOAuthHost,
+					lOAuthAppId,
+					lOAuthAppSecret,
+					lOAuthUsername,
+					lOAuthPassword,
+					lOAuthTimeout
+			);
+			lAuthenticator.addAuthenticator(lAuthenticator);
+		}
+
+		// set up LDAP Authenticator
+		boolean lUseLDAP = lConfig.getBoolean("UseLDAP", false);
+
+		String lLDAPURL = lConfig.getString("LDAPURL");
+		String lBaseDNGroups = lConfig.getString("BaseDNGroups");
+		String lBaseDNUsers = lConfig.getString("BaseDNUsers");
+		String lBindUsername = lConfig.getString("BindUsername");
+		String lBindPassword = lConfig.getString("BindPassword");
+
+		if (lUseLDAP) {
+			lLDAPAuthenticator.init(
+					lLDAPURL,
+					lBaseDNGroups,
+					lBaseDNUsers,
+					lBindUsername,
+					lBindPassword
+			);
+			lAuthenticator.addAuthenticator(lLDAPAuthenticator);
+		}
+
+		// TODO: Validate config data here!
+		lConfigLoaded = true;
+
+		if (!lConfigLoaded) {
+			mLog.error("Config not loaded.");
 			System.exit(1);
 		}
+
+		mLog.info("Using: "
+				+ lBrokerURL + ", "
+				+ "topic: " + lGatewayTopic + ", "
+				+ "gateway-id: " + lGatewayId + ", "
+				+ "endpoint-id: " + lEndPointId);
 
 		// todo: Comment that for production purposes
 		JMSLogging.setFullTextLogging(true);
 
 		// instantiate a new jWebSocket JMS Gateway Client
 		try {
-			lJMSEndPoint = JMSEndPoint.getInstance(
+			lJWSEndPoint = JWSEndPoint.getInstance(
 					lBrokerURL,
 					lGatewayTopic, // gateway topic
 					lGatewayId, // gateway endpoint id
@@ -123,21 +195,17 @@ public class JMSServer {
 			System.exit(0);
 		}
 
-		JWSEndPointMessageListener lListener = new JWSEndPointMessageListener(lJMSEndPoint);
-		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
+		lListener = new JWSEndPointMessageListener(lJWSEndPoint);
+		lSender = new JWSEndPointSender(lJWSEndPoint);
 
-		// integrate OAuth library 
-		// final OAuth lOAuth = new OAuth(lOAuthHostURL, lOAuthSecret);
-		// on welcome message from jWebSocket, authenticate against jWebSocket
 		lListener.addRequestListener(
 				"org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
 					@Override
-					public void processToken(String aSourceId, Token aToken
-					) {
+					public void processToken(String aSourceId, Token aToken) {
 						mLog.info("Received 'welcome', authenticating against jWebSocket...");
 						Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.system", "login");
-						lToken.setString("username", "root");
-						lToken.setString("password", "root");
+						lToken.setString("username", lJWSUsername);
+						lToken.setString("password", lJWSPassword);
 						sendToken(aSourceId, lToken);
 					}
 				}
@@ -171,20 +239,6 @@ public class JMSServer {
 						if (mLog.isInfoEnabled()) {
 							mLog.info("Processing 'getUser'...");
 						}
-						/*
-						 Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
-						 String lAccessToken = aToken.getString("accessToken");
-						 String lJSON = lOAuth.getUser(lAccessToken);
-						 String lUsername = lOAuth.getUsername();
-						 lAdditionalResults.put("username", lUsername);
-						 lSender.respondPayload(
-						 aToken.getString("sourceId"),
-						 aToken,
-						 lOAuth.getReturnCode(), // return code
-						 lOAuth.getReturnMsg(), // return message
-						 lAdditionalResults, // here you can add additional results beside the payload
-						 "{}");
-						 */
 					}
 				}
 		);
@@ -204,7 +258,6 @@ public class JMSServer {
 						// lAdditionalResults.remove("sourceId");
 						lAdditionalResults.remove("payload");
 						lSender.respondPayload(
-								aToken.getString("sourceId"),
 								aToken,
 								0, // return code
 								"Ok", // return message
@@ -219,7 +272,7 @@ public class JMSServer {
 				"org.jwebsocket.plugins.jmsdemo", "testProgress", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
-						int lMax = 1;
+						int lMax = 10;
 						for (int lIdx = 0; lIdx < lMax; lIdx++) {
 							lSender.sendProgress(
 									aSourceId, aToken,
@@ -231,12 +284,71 @@ public class JMSServer {
 							}
 						}
 						lSender.respondPayload(
-								aToken.getString("sourceId"),
 								aToken,
 								0, // return code
 								"Ok", // return message
 								null,
 								aToken.getString("payload"));
+					}
+				}
+		);
+
+		// on response of the login...
+		lListener.addRequestListener(
+				"org.jwebsocket.plugins.jmsdemo", "testOAuth", new JWSMessageListener(lSender) {
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+
+						Map<String, Object> lArgs = new FastMap<String, Object>();
+
+						String lUsername = null;
+						int lCode = 0;
+						String lMessage = "Ok";
+						try {
+							lUsername = lOAuthAuthenticator.authenticate(aToken);
+							if (null == lUsername) {
+								lCode = -1;
+								lMessage = "User could not be authenticated!";
+							} else {
+								lArgs.put("username", lUsername);
+							}
+						} catch (JMSEndpointException ex) {
+							lCode = -1;
+							lMessage = ex.getClass().getSimpleName()
+							+ " on authentication!";
+						}
+
+						lSender.respondPayload(
+								aToken,
+								lCode, // return code
+								lMessage, // return message
+								lArgs, // additional result fields
+								null); // payload
+					}
+				}
+		);
+
+		// on response of the login...
+		lListener.addRequestListener(
+				"org.jwebsocket.plugins.jmsdemo", "testLDAP", new JWSMessageListener(lSender) {
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+
+						String lUsername = null;
+						try {
+							lUsername = lAuthenticator.authenticate(aToken);
+						} catch (JMSEndpointException ex) {
+						}
+
+						Map<String, Object> lArgs = new FastMap<String, Object>();
+						lArgs.put("username", lUsername);
+
+						lSender.respondPayload(
+								aToken,
+								0, // return code
+								"Ok", // return message
+								lArgs, // additional result fields
+								null); // payload
 					}
 				}
 		);
@@ -292,19 +404,19 @@ public class JMSServer {
 		);
 
 		// add a high level listener to listen in coming messages
-		lJMSEndPoint.addListener(lListener);
+		lJWSEndPoint.addListener(lListener);
 
 		// start the endpoint all all listener have been assigned
-		lJMSEndPoint.start();
-		return lJMSEndPoint;
+		lJWSEndPoint.start();
+		return lJWSEndPoint;
 	}
 
 	/**
 	 *
 	 */
 	public void shutdown() {
-		if (lJMSEndPoint != null) {
-			lJMSEndPoint.shutdown();
+		if (lJWSEndPoint != null) {
+			lJWSEndPoint.shutdown();
 		}
 	}
 
@@ -313,7 +425,7 @@ public class JMSServer {
 	 * @return
 	 */
 	public JMSEndPoint getJMSEndPoint() {
-		return lJMSEndPoint;
+		return lJWSEndPoint;
 	}
 
 	/**
