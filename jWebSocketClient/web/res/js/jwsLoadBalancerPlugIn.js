@@ -24,10 +24,12 @@
 //:d:en:This client-side plug-in provides the API to access the features of the _
 //:d:en:Load Balancer plug-in on the jWebSocket server.
 jws.LoadBalancerPlugIn = {
+
 	//:const:*:NS:String:org.jwebsocket.plugins.loadbalancer (jws.NS_BASE + ".plugins.loadbalancer")
 	//:d:en:Namespace for the [tt]LoadBalancerPlugIn[/tt] class.
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.loadbalancer",
+	
 	//:m:*:lbClustersInfo
 	//:d:en:Gets a list (of maps) with the information about all clusters.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
@@ -43,6 +45,7 @@ jws.LoadBalancerPlugIn = {
 		}
 		return lRes;
 	},
+	
 	//:m:*:lbStickyRoutes
 	//:d:en:Gets a list of all sticky routes managed by the load balancer.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
@@ -58,6 +61,7 @@ jws.LoadBalancerPlugIn = {
 		}
 		return lRes;
 	},
+	
 	//:m:*:lbChangeAlgorithm
 	//:d:en:Changes the type of algorithm used by the load balancer.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
@@ -77,6 +81,7 @@ jws.LoadBalancerPlugIn = {
 		}
 		return lRes;
 	},
+	
 	//:m:*:lbRegisterServiceEndPoint
 	//:d:en:Registers a new service endpoint in specific cluster.
 	//:a:en::aPassword:String:Password to verify privileges.
@@ -101,6 +106,7 @@ jws.LoadBalancerPlugIn = {
 		}
 		return lRes;
 	},
+	
 	//:m:*:lbDeregisterServiceEndPoint
 	//:d:en:De-registers a connected service endpoint.
 	//:a:en::aPassword:String:Password to verify privileges.
@@ -129,6 +135,7 @@ jws.LoadBalancerPlugIn = {
 		}
 		return lRes;
 	},
+	
 	//:m:*:lbShutdownEndPoint
 	//:d:en:Should send a message to the referenced endpoint to gracefully shutdown.
 	//:a:en::aPassword:String:Password to verify privileges.
@@ -157,6 +164,7 @@ jws.LoadBalancerPlugIn = {
 		}
 		return lRes;
 	},
+	
 	//:m:*:lbCreateResponse
 	//:d:en:Create token response with all necessary data to send to remote client.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
@@ -172,6 +180,7 @@ jws.LoadBalancerPlugIn = {
 
 		return lResponse;
 	},
+	
 	//:m:*:lbSampleService
 	//:d:en:Create a new sample service endpoint.
 	//:a:en::aPassword:String:Password to verify privileges.
@@ -184,36 +193,32 @@ jws.LoadBalancerPlugIn = {
 		var lServiceEndPoint = new jws.jWebSocketJSONClient();
 		var lURL = aOptions.connectionURL ||
 		"ws://localhost:8787/jWebSocket/jWebSocket?sessionCookieName=sSessionId" + new Date().getTime();
+		
 		lServiceEndPoint.open(lURL, {
 			OnWelcome: function() {
-				lServiceEndPoint.login(aOptions.connectionUsername || "root", aOptions.connectionPassword || "root", {
-					OnSuccess: function(){
-						lServiceEndPoint.lbRegisterServiceEndPoint(aPassword, aOptions);
-						lServiceEndPoint.addPlugIn({
-							processToken: function(aToken) {
-								if (aToken.ns == aOptions.nameSpace) {
-									if ('test' == aToken.type) {
-										var lResponse = lServiceEndPoint.lbCreateResponse(aToken);
-										lServiceEndPoint.sendToken(lResponse);
-									}
-								}
-
-								if (aToken.ns == jws.LoadBalancerPlugIn.NS) {
-									if ('shutdown' == aToken.type) {
-										lServiceEndPoint.close();
-									}
-								}
+				if(lServiceEndPoint.isLoggedIn() != "root"){
+					lServiceEndPoint.login(aOptions.connectionUsername || "root", aOptions.connectionPassword || "root"); 
+				}
+					
+				lServiceEndPoint.lbRegisterServiceEndPoint(aPassword, aOptions);
+				lServiceEndPoint.addPlugIn({
+					processToken: function(aToken) {
+						if (aToken.ns == aOptions.nameSpace) {
+							if ('test' == aToken.type) {
+								var lResponse = lServiceEndPoint.lbCreateResponse(aToken);
+								lServiceEndPoint.sendToken(lResponse);
 							}
-						});
-					}, OnFailure: function(aResponse){
-						if (aOptions.OnFailure){
-							aOptions.OnFailure(aResponse);
-						} else if (aOptions.OnReponse){
-							aOptions.OnResponse(aResponse);
+						}
+
+						if (aToken.ns == jws.LoadBalancerPlugIn.NS) {
+							if ('shutdown' == aToken.type) {
+								lServiceEndPoint.close();
+							}
 						}
 					}
 				});
-			},
+			}, 
+			
 			OnMessage: function(aMessage) {
 				if ('function' == typeof log){
 					log('Message "' + aMessage.data + '" received on endpoint: ' 
@@ -223,8 +228,6 @@ jws.LoadBalancerPlugIn = {
 				}
 			}
 		});
-		
-		return lServiceEndPoint;
 	}
 };
 
