@@ -1,7 +1,8 @@
 /*-------------- DEMO_DESCRIPTION ------------*/
 #demo_box_description{
 	margin: 0 0 5px 0;
-	padding: 10px 10px 0 10px;
+	padding: 20px 10px 0 10px;
+	width: 70%;
 }
 
 #demo_box_description p{
@@ -29,6 +30,13 @@
     float: left;
     margin-right: 14px;
 	width: 215px;
+}
+
+#clockDivContainer{
+	float: right;
+	width: 110px;
+	margin-top: 5px;
+	margin-right: 50px;
 }
 
 #scenario_container .gaugesDivs.last{

@@ -38,5 +38,6 @@
 	color: white !important;
 }
 .ui-content{
-	padding-top: 25px !ie7;
+	/* For IE 6/7 you can use the properties with a "*property" */
+	*padding-top: 25px;
 }

@@ -1,7 +1,7 @@
 /*
  * Bindows Gauges Library version 1.1beta3
  * http://www.bindows.net/
- * Copyright © 2003-2010 MB Technologies
+ * Copyright © 2003-2013 MB Technologies
  *
  * Bindows(TM) and the Bindows Gauges Library belong to MB Technologies (Georgia, USA). All rights reserved.
  *
