@@ -21,7 +21,7 @@ jws.tests.System = {
 
 	title: "System plug-in",
 	description: "jWebSocket server system plug-in. " 
-			+ "Required for correct server execution.",
+	+ "Required for correct server execution.",
 	category: "System",
 	priority: 1,
 
@@ -33,16 +33,14 @@ jws.tests.System = {
 			// we need to "control" the server to broadcast to all connections here
 			var lConn = new jws.jWebSocketJSONClient();
 			var lResponse = {};
-
 			// open a separate control connection
-			lConn.logon( jws.getDefaultServerURL(), "guest", "guest", {
-				OnToken: function ( aToken ) {
-					if( "org.jwebsocket.plugins.system" === aToken.ns
-						&& "login" === aToken.reqType) {
+			lConn.logon( jws.getDefaultServerURL() + ";sessionId=" + "tests" + new Date().getTime()
+				, "guest", "guest", {
+					OnResponse: function ( aToken ) {
+						console.log(aToken);
 						lResponse = aToken;
 					}
-				}
-			});
+				});
 
 			waitsFor(
 				function() {
@@ -54,6 +52,7 @@ jws.tests.System = {
 
 			runs( function() {
 				expect( lResponse.code ).toEqual( 0 );
+				lConn.logout();
 				lConn.close();
 			});
 		});
@@ -70,12 +69,9 @@ jws.tests.System = {
 			var lResponse = {};
 
 			// open a separate control connection
-			lConn.logon( jws.getDefaultServerURL(), "InVaLiD", "iNvAlId", {
-				OnToken: function ( aToken ) {
-					if( "org.jwebsocket.plugins.system" === aToken.ns
-						&& "login" === aToken.reqType) {
-						lResponse = aToken;
-					}
+			lConn.logon( jws.getDefaultServerURL() + ";sessionId=" + "tests" + new Date().getTime(), "InVaLiD", "iNvAlId", {
+				OnResponse: function ( aToken ) {
+					lResponse = aToken;
 				}
 			});
 
@@ -89,6 +85,7 @@ jws.tests.System = {
 
 			runs( function() {
 				expect( lResponse.code ).toEqual( -1 );
+				lConn.logout();
 				lConn.close();
 			});
 		});
