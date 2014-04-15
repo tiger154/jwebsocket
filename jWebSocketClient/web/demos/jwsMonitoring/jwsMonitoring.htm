@@ -41,7 +41,6 @@
         <script type="text/javascript" src="../../lib/bindows_gauges/bindows_gauges.js"></script>
         <script type="text/javascript" src="../../lib/bindows_gauges/gauge2.js"></script>
         <!--[if IE]><script type="text/javascript" src="../../lib/bindows_gauges/gauge2.ie.js"></script><![endif]-->
-		
 
         <!-- JQUERY DEPENDENCIES -->
 		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
@@ -55,6 +54,7 @@
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
+		<script type="text/javascript" src="../../res/js/jwsStreamingPlugIn.js"></script>
 
 		<!--  MAIN JAVASCRIPT FILE   -->
 		<script type="text/javascript" src='js/bindows/wMonitoring.js'></script>
@@ -104,8 +104,9 @@
 						clients and automatically sends warnings in the case of 
 						reaching critical values.</p>
                 </div>
-
-
+				<div id="clockDivContainer" title="jWebSocket Server Time">
+					<div id="clockDiv" style="width:100px; height:100px;"></div>
+				</div>
                 <!--       SCENARIO          -->
                 <div id="scenario_container" class="box">
                     <div id="cpuGaugesDiv" class="gaugesDivs">
@@ -120,7 +121,6 @@
                         <p class="resourcesTitles">Hard disc information</p>
                         <div id="hddDiv" style="width: 100%; height: 90%;"></div>
                     </div>
-
                     <!--       LOG BOX           -->
                     <div id="log_box" class="box">
                         <div id="log_box_header">

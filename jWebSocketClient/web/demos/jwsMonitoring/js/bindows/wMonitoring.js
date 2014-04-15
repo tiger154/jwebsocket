@@ -23,11 +23,14 @@
 $.widget("jws.monitoring", {
 	_init: function( ) {
 		this.NS = jws.NS_BASE + ".plugins.monitoring";
+		this.NS_STREAMING = jws.NS_BASE + ".plugins.streaming";
 		this.TT_REGISTER = "register";
+		this.TT_UNREGISTER = "unregister";
 		this.TT_INFO = "computerInfo";
 		this.mMemGauge = bindows.loadGaugeIntoDiv("js/bindows/gauges/g_memoryRam_memorySwap.xml", "memDiv");
 		this.mCPUGauge = bindows.loadGaugeIntoDiv("js/bindows/gauges/g_cpu.xml", "cpuDiv");
 		this.mHDDGauge = bindows.loadGaugeIntoDiv("js/bindows/gauges/g_hdd.xml", "hddDiv");
+		this.mClockGauge = bindows.loadGaugeIntoDiv("js/bindows/gauges/g_clock.xml", "clockDiv");
 		w.monitoring = this;
 		w.monitoring.doWebSocketConnection( );
 	},
@@ -41,7 +44,10 @@ $.widget("jws.monitoring", {
 			OnClose: function() {
 				w.monitoring.resetGauges();
 			},
-			OnWelcome: function(aToken) {
+			OnLogon: function() {
+				if (mWSC && mWSC.streaming) {
+					mWSC.streaming.registerStream("timeStream");
+				}
 				// Registering to the monitoring stream
 				var lRegisterToken = {
 					ns: w.monitoring.NS,
@@ -51,11 +57,34 @@ $.widget("jws.monitoring", {
 				// Sending the register token
 				mWSC.sendToken(lRegisterToken);
 			},
+			OnLogoff: function() {
+				mWSC.streaming.unregisterStream("timeStream");
+				var lUnregisterToken = {
+					ns: w.monitoring.NS,
+					type: w.monitoring.TT_UNREGISTER,
+					interest: w.monitoring.TT_INFO
+				};
+				// Sending the register token
+				mWSC.sendToken(lUnregisterToken);
+				w.monitoring.resetGauges();
+			},
+			OnWelcome: function(aToken) {
+				if (aToken.username !== "anonymous") {
+					this.OnLogon(aToken);
+				}
+			},
 			OnMessage: function(aEvent, aToken) {
 				if (w.monitoring.NS === aToken.ns &&
 						w.monitoring.TT_INFO === aToken.type) {
 					w.monitoring.updateGauge(aToken);
 				}
+
+				if (w.monitoring.NS_STREAMING === aToken.ns) {
+					if (aToken.type === "event" && aToken.name === "stream" && aToken.streamID === "timeStream") {
+						w.monitoring.updateTime(aToken);
+					}
+				}
+
 				var lDate = "";
 				if (aToken.date_val) {
 					lDate = jws.tools.ISO2Date(aToken.date_val);
@@ -83,7 +112,7 @@ $.widget("jws.monitoring", {
 
 		//hdd 
 		var IUsed;
-		if (aToken.totalHddSpace.substr(-3) != aToken.usedHddSpace.substr(-3)) {
+		if (aToken.totalHddSpace.substr(-3) !== aToken.usedHddSpace.substr(-3)) {
 			IUsed = parseInt(aToken.usedHddSpace) / 1000;
 		}
 		else {
@@ -93,6 +122,13 @@ $.widget("jws.monitoring", {
 		w.monitoring.mHDDGauge.label2.setText(aToken.usedHddSpace);
 		w.monitoring.mHDDGauge.needle.setValue(IUsed);
 		w.monitoring.mHDDGauge.maxValue.setEndValue(parseInt(aToken.totalHddSpace));
+	},
+	updateTime: function(aToken) {
+		if (aToken) {
+			w.monitoring.mClockGauge.needleMinutes.setValue(aToken.minutes);
+			w.monitoring.mClockGauge.needleSeconds.setValue(aToken.seconds);
+			w.monitoring.mClockGauge.needleHours.setValue(aToken.hours);
+		}
 	},
 	//Reset gauges when the server is disconnect
 	resetGauges: function() {

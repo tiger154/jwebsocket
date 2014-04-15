@@ -179,7 +179,8 @@ label{
 }
 
 #basic,#gold, #direct, #sms_actions label, #smsType {
-    padding-top: 3px !ie7; 
+	/* For IE 6/7 you can use the properties with a "*property" */
+    *padding-top: 3px; 
     margin-top: 0; 
 }
 
