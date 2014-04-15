@@ -96,122 +96,6 @@ jws.tests.Reporting = {
 			});
 		});
 	},
-	testCreateTable: function() {
-
-		var lSpec = "create table (admin)";
-		it(lSpec, function() {
-
-			// init response
-			var lResponse = {};
-
-			// perform the native create table...
-			jws.Tests.getAdminTestConn().jdbcExecSQL(
-				"create table jwebsocket_reporting_demo ( \n\
-						user_id int, \n\
-						name varchar(255), \n\
-						lastName varchar(255), \n\
-						age int, \n\
-						email varchar(255))",
-				{
-					OnResponse: function(aToken) {
-						lResponse = aToken;
-					}
-				}
-				);
-
-			// wait for result, consider reasonable timeout
-			waitsFor(
-				function() {
-					// check response
-					return(lResponse.msg !== undefined);
-				},
-				lSpec,
-				1500
-				);
-
-			// check result if ok
-			runs(function() {
-				expect(lResponse.msg).toEqual("ok");
-			});
-
-		});
-	},
-	testInsertSQL: function() {
-
-		var lSpec = "insertSQL (admin)";
-		it(lSpec, function() {
-
-			// init response
-			var lResponse = {};
-
-			// perform the native insert...
-			jws.Tests.getAdminTestConn().jdbcUpdateSQL(
-				"insert into jwebsocket_reporting_demo (user_id, name, lastName, age, email) values \n\
-						(1, 'Alexander', 'Schulze', 40, 'a.schulze@jwebsocket.org'),\n\
-						(2, 'Rolando', 'Santamaria', 27,'rsantamaria@jwebsocket.org'),\n\
-						(3, 'Lisdey', 'Perez', 27, 'lperez@jwebsocket.org'),\n\
-						(4, 'Marcos', 'Gonzalez', 27, 'mgonzalez@jwebsocket.org'),\n\
-						(5, 'Osvaldo', 'Aguilar', 27, 'oaguilar@jwebsocket.org'),\n\
-						(6, 'Victor', 'Barzana', 27, 'vbarzana@jwebsocket.org'),\n\
-						(7, 'Javier Alejandro', 'Puentes Serrano', 26, 'jpuentes@jwebsocket.org')",
-				{
-					OnResponse: function(aToken) {
-						lResponse = aToken;
-					}
-				}
-				);
-			// wait for result, consider reasonable timeout
-			waitsFor(
-				function() {
-					return(lResponse.code !== undefined);
-				},
-				lSpec,
-				1500
-				);
-
-			// check result if ok
-			runs(function() {
-				expect(lResponse.msg).toEqual("ok");
-				expect(lResponse.rowsAffected[0]>=1);
-			});
-
-		});
-	},
-	testDropTable: function() {
-
-		var lSpec = "drop table (admin)";
-		it(lSpec, function() {
-
-			// init response
-			var lResponse = {};
-
-			// perform the native drop table...
-			jws.Tests.getAdminTestConn().jdbcExecSQL(
-				"drop table jwebsocket_reporting_demo",
-				{
-					OnResponse: function(aToken) {
-						lResponse = aToken;
-					}
-				}
-				);
-
-			// wait for result, consider reasonable timeout
-			waitsFor(
-				function() {
-					// check response
-					return(lResponse.msg !== undefined);
-				},
-				lSpec,
-				1500
-				);
-
-			// check result if ok
-			runs(function() {
-				expect(lResponse.msg).toEqual("ok");
-			});
-
-		});
-	},
 	testGenerateJDBCReport: function(aReportName, aParams, aFields) {
 
 		var lSpec = "generateReport(" + aReportName + "," + aFields + "," + aParams + ")";
@@ -317,13 +201,7 @@ jws.tests.Reporting = {
 		// generate report with jdbc connection
 		lReportName = "JDBCExampleReport";
 
-		// creating a table to run the test
-		this.testCreateTable();
-		// inserting data on table to load in the report
-		this.testInsertSQL();
 		// generating/creating the report
 		this.testGenerateJDBCReport(lReportName, null, null);
-		//cleaning the database erasing the table 
-		this.testDropTable();
 	}
 };
