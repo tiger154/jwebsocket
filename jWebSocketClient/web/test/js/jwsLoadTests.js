@@ -110,8 +110,13 @@ jws.tests.Load = {
 
 	runSpecs: function() {
 		// jws.tests.System.testEcho();
+        
+        // considering that IE only supports 6 concurrent WebSocket connections
+        var lConcurrentConnections = (jws.isIExplorer())? (4 - ($('#tls_set').val() === 'wss'? 2 : 0)) : 20;
+        
+        // creating connections
 		for( var lIdx = 0; lIdx < 10; lIdx++ ) {
-			jws.tests.Load.testConcurrentConnections( 20 );
+			jws.tests.Load.testConcurrentConnections( lConcurrentConnections );
 		}
 	}
 };
