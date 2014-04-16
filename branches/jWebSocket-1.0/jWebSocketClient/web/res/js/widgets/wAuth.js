@@ -356,7 +356,7 @@ $.widget("jws.auth", {
 					lPassword = w.auth.ePassword.val( );
 				}
 
-				if (lUsername.trim() === "" || lPassword.trim() === "") {
+				if (lUsername === "" || lPassword === "") {
 					if (mLog.isDebugEnabled) {
 						log("<font color='red'>User or password can not be empty," +
 								"please check your login information.</font>");
