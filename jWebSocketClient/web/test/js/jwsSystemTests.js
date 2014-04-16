@@ -52,6 +52,9 @@ jws.tests.System = {
                 lConn.logout({
                     OnResponse: function() {
                         lConn.close();
+                    },
+                    OnTimeout: function() {
+                        lConn.close();
                     }
                 });
             });
@@ -85,6 +88,9 @@ jws.tests.System = {
                 expect(lResponse.code).toEqual(-1);
                 lConn.logout({
                     OnResponse: function() {
+                        lConn.close();
+                    },
+                    OnTimeout: function() {
                         lConn.close();
                     }
                 });
