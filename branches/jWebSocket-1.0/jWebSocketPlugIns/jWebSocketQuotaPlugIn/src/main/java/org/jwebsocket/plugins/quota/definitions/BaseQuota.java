@@ -157,8 +157,12 @@ public abstract class BaseQuota implements IQuota {
 
 		List<IQuotaSingleInstance> lQuotasNs
 				= mQuotaStorage.getQuotasByNs(mQuotaIdentifier, aNameSpace);
+                
+                //if there is not quota for this namespace there will not a quota for the instance.
+                if (lQuotasNs.size() == 0 )
+                    return lQuotasNs;
+                
 		lQuotas = (FastList<IQuotaSingleInstance>) findQuotasByInstance(lQuotasNs, aInstance);
-
 		return lQuotas;
 	}
 
@@ -173,7 +177,7 @@ public abstract class BaseQuota implements IQuota {
 
 		List<IQuotaSingleInstance> lQResult = new FastList<IQuotaSingleInstance>();
 
-		if (null != aQuotas) {
+		if ( aQuotas.size() > 0 ) {
 			IQuotaSingleInstance lQtmp = null;
 			for (Iterator<IQuotaSingleInstance> it = aQuotas.iterator(); it.hasNext();) {
 				IQuotaSingleInstance lQuotaSingle = it.next();

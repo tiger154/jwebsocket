@@ -30,6 +30,7 @@ import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.plugins.quota.api.IQuotaStorage;
 import org.jwebsocket.plugins.quota.utils.QuotaHelper;
 import org.jwebsocket.plugins.quota.utils.QuotaProvider;
+import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaAlreadyExist;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.springframework.context.ApplicationContext;
@@ -73,11 +74,14 @@ public class QuotaServices {
 	public Token createQuotaAction(Token aToken) {
 
 		Token lResult = TokenFactory.createToken(aToken.getMap());
+                String lNS = "";
+                String lInstance = "";
+                String lQuotaIdentifier = "";
 		try {
-			String lNS = aToken.getString("namespace");
-			String lInstance = aToken.getString("instance");
+			lNS = aToken.getString("namespace");
+			lInstance = aToken.getString("instance");
 			String lInstanceType = aToken.getString("instance_type");
-			String lQuotaIdentifier = aToken.getString("identifier");
+			lQuotaIdentifier = aToken.getString("identifier");
 			String lQuotActions = aToken.getString("actions");
 			//This parameter is optional
 			String lUuid = null;
@@ -96,16 +100,26 @@ public class QuotaServices {
 			}
 
 			lQuota.create(lInstance, lNS, lUuid, lValue,
-					lInstanceType, lQuotaType, lQuotaIdentifier, lQuotActions);
+					lInstanceType, lQuotaType, lQuotaIdentifier,
+                                        lQuotActions);
 			lResult.setString("message", "Quota created succesfully");
 			lResult.setString("uuid", lUuid);
 			lResult.setCode(0);
 
 			return lResult;
-		} catch (Exception aException) {
-			mLog.error("Error creating Quota");
-			return getErrorToken("Error creating the quota, ",
-					lResult);
+                
+		} catch (ExceptionQuotaAlreadyExist aExpAlreadyExist) {
+			mLog.error("Error creating the "+lQuotaIdentifier+
+                                " quota, for namespace: "+lNS+ "already exists.");
+			return getErrorToken("Error creating the "+lQuotaIdentifier+
+                                " quota, for namespace: "+lNS+ "already exists.",
+                                lResult);
+		}catch (Exception aExp) {
+			mLog.error("Error creating the "+lQuotaIdentifier+
+                                " quota, for namespace: "+lNS);
+			return getErrorToken("Error creating the "+lQuotaIdentifier+
+                                " quota, for namespace: "+lNS,
+                                lResult);
 		}
 	}
 
@@ -115,11 +129,14 @@ public class QuotaServices {
 	 * @return
 	 */
 	public Token registerQuotaAction(Token aToken) {
-		try {
-			String lUuid = aToken.getString("uuid");
-			String lInstance = aToken.getString("instance");
+		String lInstance = "";
+                String lUuid = "";
+                String lQuotaIdentifier = "";
+                try {
+			lUuid = aToken.getString("uuid");
+			lInstance = aToken.getString("instance");
 			String lInstanceType = aToken.getString("instance_type");
-			String lQuotaIdentifier = aToken.getString("identifier");
+			lQuotaIdentifier = aToken.getString("identifier");
 
 			Token lResult = TokenFactory.createToken(aToken.getMap());
 			IQuota lQuota = quotaByIdentifier(lQuotaIdentifier);
@@ -129,10 +146,20 @@ public class QuotaServices {
 			lResult.setCode(0);
 
 			return lResult;
+                } catch (ExceptionQuotaAlreadyExist aExpAlreadyExist) {
+			mLog.error("Error registering the instance: "+lInstance
+                                +" to the "+lQuotaIdentifier +" quota with uuid: "
+                                +lUuid+" this instance is already register to "
+                                + "this quota"  );
+                               
+			return getErrorToken("Error registering the instance: "+
+                                lInstance +" to the "+lQuotaIdentifier +" quota with uuid: "+lUuid,
+                                aToken);
 		} catch (Exception aException) {
-			mLog.error("Error creating"
-					+ "Quota" + aException.getMessage());
-			return getErrorToken("Error register the quota, " + aException.getMessage(),
+			mLog.error("Error registering quota for user:"
+					+ lInstance+" to the quota with uuid: "+lUuid);
+			return getErrorToken("Error registering quota for user:"
+					+ lInstance+" to the quota with uuid: "+lUuid,
 					aToken);
 		}
 	}
