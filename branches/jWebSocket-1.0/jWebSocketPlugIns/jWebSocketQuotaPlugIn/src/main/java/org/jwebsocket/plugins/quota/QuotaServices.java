@@ -110,9 +110,9 @@ public class QuotaServices {
                 
 		} catch (ExceptionQuotaAlreadyExist aExpAlreadyExist) {
 			mLog.error("Error creating the "+lQuotaIdentifier+
-                                " quota, for namespace: "+lNS+ "already exists.");
+                                " quota, for namespace: "+lNS+ " already exists.");
 			return getErrorToken("Error creating the "+lQuotaIdentifier+
-                                " quota, for namespace: "+lNS+ "already exists.",
+                                " quota, for namespace: "+lNS+ " already exists.",
                                 lResult);
 		}catch (Exception aExp) {
 			mLog.error("Error creating the "+lQuotaIdentifier+
@@ -156,9 +156,9 @@ public class QuotaServices {
                                 lInstance +" to the "+lQuotaIdentifier +" quota with uuid: "+lUuid,
                                 aToken);
 		} catch (Exception aException) {
-			mLog.error("Error registering quota for user:"
+			mLog.error("Error registering quota for user: "
 					+ lInstance+" to the quota with uuid: "+lUuid);
-			return getErrorToken("Error registering quota for user:"
+			return getErrorToken("Error registering quota for user: "
 					+ lInstance+" to the quota with uuid: "+lUuid,
 					aToken);
 		}
