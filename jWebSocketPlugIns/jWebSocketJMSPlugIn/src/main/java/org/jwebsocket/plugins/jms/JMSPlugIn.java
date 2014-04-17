@@ -124,7 +124,7 @@ public class JMSPlugIn extends TokenPlugIn {
 					"-", // max connection stretegy
 					false, // notify on system stopping
 					null // settings
-					);
+			);
 			mJMSEngine = new JMSEngine(lEngineCfg);
 
 			// Advisory listener
@@ -155,8 +155,8 @@ public class JMSPlugIn extends TokenPlugIn {
 				// of the jWebSocket server instance.
 				mConsumer = // mSession.createDurableSubscriber(
 						mSession.createConsumer(
-						lGatewayTopic,
-						"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
+								lGatewayTopic,
+								"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
 				mListener = new JMSListener(mJMSEngine, mSender);
 				mConsumer.setMessageListener(mListener);
 
@@ -330,13 +330,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		}
 		executeAction(createActionInput(aConnector, aToken,
 				"Successfully unlisten JMS listener"), new ActionCommand() {
-			@Override
-			void execute(ActionInput aInput) throws Exception {
-				if (null != mJmsManager) {
-					mJmsManager.deregisterConnectorFromMessageListener(aInput);
-				}
-			}
-		});
+					@Override
+					void execute(ActionInput aInput) throws Exception {
+						if (null != mJmsManager) {
+							mJmsManager.deregisterConnectorFromMessageListener(aInput);
+						}
+					}
+				});
 	}
 
 	private void listen(WebSocketConnector aConnector, Token aToken) {
@@ -346,13 +346,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"Successfully got JMS listener", RightJms.LISTEN,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-			@Override
-			void execute(ActionInput aInput) throws Exception {
-				if (null != mJmsManager) {
-					mJmsManager.registerConnectorWithListener(aInput, JMSPlugIn.this);
-				}
-			}
-		});
+					@Override
+					void execute(ActionInput aInput) throws Exception {
+						if (null != mJmsManager) {
+							mJmsManager.registerConnectorWithListener(aInput, JMSPlugIn.this);
+						}
+					}
+				});
 	}
 
 	private void listenMessage(WebSocketConnector aConnector, Token aToken) {
@@ -362,13 +362,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"Successfully got JMS message listener", RightJms.LISTEN,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-			@Override
-			void execute(ActionInput aInput) throws Exception {
-				if (null != mJmsManager) {
-					mJmsManager.registerConnectorWithMessageListener(aInput, JMSPlugIn.this);
-				}
-			}
-		});
+					@Override
+					void execute(ActionInput aInput) throws Exception {
+						if (null != mJmsManager) {
+							mJmsManager.registerConnectorWithMessageListener(aInput, JMSPlugIn.this);
+						}
+					}
+				});
 	}
 
 	private void sendText(WebSocketConnector aConnector, Token aToken) {
@@ -394,13 +394,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"JMS text message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-			@Override
-			void execute(ActionInput aInput) throws Exception {
-				if (null != mJmsManager) {
-					mJmsManager.sendTextMessage(aInput);
-				}
-			}
-		});
+					@Override
+					void execute(ActionInput aInput) throws Exception {
+						if (null != mJmsManager) {
+							mJmsManager.sendTextMessage(aInput);
+						}
+					}
+				});
 	}
 
 	private void sendMap(WebSocketConnector aConnector, Token aToken) {
@@ -409,14 +409,14 @@ public class JMSPlugIn extends TokenPlugIn {
 		}
 		executeAction(
 				createActionInput(aConnector, aToken, "Map message successfully sent", RightJms.SEND,
-				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-			@Override
-			void execute(ActionInput aInput) throws Exception {
-				if (null != mJmsManager) {
-					mJmsManager.sendMap(aInput);
-				}
-			}
-		});
+						RightJms.SEND_AND_LISTEN), new ActionCommand() {
+					@Override
+					void execute(ActionInput aInput) throws Exception {
+						if (null != mJmsManager) {
+							mJmsManager.sendMap(aInput);
+						}
+					}
+				});
 	}
 
 	private void sendMapMessage(WebSocketConnector aConnector, Token aToken) {
@@ -426,13 +426,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"JMS map message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-			@Override
-			void execute(ActionInput aInput) throws Exception {
-				if (null != mJmsManager) {
-					mJmsManager.sendMapMessage(aInput);
-				}
-			}
-		});
+					@Override
+					void execute(ActionInput aInput) throws Exception {
+						if (null != mJmsManager) {
+							mJmsManager.sendMapMessage(aInput);
+						}
+					}
+				});
 	}
 
 	private void executeAction(ActionInput aInput, ActionCommand aCommand) {
@@ -466,11 +466,15 @@ public class JMSPlugIn extends TokenPlugIn {
 		sendToken(aInput);
 	}
 
-	private void sendNotConnectedToken(WebSocketConnector aConnector, Token aToken) {
+	private void sendErrorToken(WebSocketConnector aConnector, Token aToken,
+			String aMessage) {
 		Token lResponseToken = createResponse(aToken);
-		setCodeAndMsg(lResponseToken, -1,
-				"not connected to message queue or topic");
+		setCodeAndMsg(lResponseToken, -1, aMessage);
 		sendToken(aConnector, aConnector, lResponseToken);
+	}
+
+	private void sendNotConnectedToken(WebSocketConnector aConnector, Token aToken) {
+		sendErrorToken(aConnector, aToken, "not connected to message queue or topic");
 	}
 
 	private void sendMissingJmsManagerResponseToken(WebSocketConnector aConnector, Token aToken) {
@@ -571,12 +575,17 @@ public class JMSPlugIn extends TokenPlugIn {
 	private void ping(WebSocketConnector aConnector, Token aToken) {
 		if (null != mSender) {
 			String lTargetId = aToken.getString("targetId");
-			String lUTID = aToken.getString("utid");
+			Integer lUTID = aToken.getInteger("utid");
 			Token lToken = TokenFactory.createToken("org.jwebsocket.jms.gateway", "ping");
 			lToken.setString("sourceId", aConnector.getId());
 			lToken.setString("gatewayId", mEndPointId);
-			lToken.setString("utid", lUTID);
-			mSender.sendText(lTargetId, JSONProcessor.tokenToPacket(lToken).getUTF8());
+			lToken.setInteger("utid", lUTID);
+			try {
+				mSender.sendText(lTargetId, JSONProcessor.tokenToPacket(lToken).getUTF8());
+			} catch (JMSException lEx) {
+				mLog.debug(Logging.getSimpleExceptionMessage(lEx, "ping"));
+				sendErrorToken(aConnector, aToken, lEx.getMessage() + "on ping");
+			}
 		} else {
 			sendNotConnectedToken(aConnector, aToken);
 		}
@@ -585,12 +594,17 @@ public class JMSPlugIn extends TokenPlugIn {
 	private void identify(WebSocketConnector aConnector, Token aToken) {
 		if (null != mSender) {
 			String lTargetId = aToken.getString("targetId");
-			String lUTID = aToken.getString("utid");
+			Integer lUTID = aToken.getInteger("utid");
 			Token lToken = TokenFactory.createToken("org.jwebsocket.jms.gateway", "identify");
 			lToken.setString("sourceId", aConnector.getId());
 			lToken.setString("gatewayId", mEndPointId);
-			lToken.setString("utid", lUTID);
-			mSender.sendText(lTargetId, JSONProcessor.tokenToPacket(lToken).getUTF8());
+			lToken.setInteger("utid", lUTID);
+			try {
+				mSender.sendText(lTargetId, JSONProcessor.tokenToPacket(lToken).getUTF8());
+			} catch (JMSException lEx) {
+				mLog.debug(Logging.getSimpleExceptionMessage(lEx, "identify"));
+				sendErrorToken(aConnector, aToken, lEx.getMessage() + "on identify");
+			}
 		} else {
 			sendNotConnectedToken(aConnector, aToken);
 		}

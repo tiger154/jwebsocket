@@ -54,9 +54,7 @@ public class JMSClient {
 
 	static final Logger mLog = Logger.getLogger(JMSClient.class);
 
-	private static JMSEndPoint lJWSEndPoint;
-	private static JWSEndPointMessageListener lListener;
-	private static JWSEndPointSender lSender;
+	private static JWSEndPoint lJWSEndPoint;
 
 	private static String lTargetEndPointId = null;
 
@@ -68,9 +66,9 @@ public class JMSClient {
 		Map<String, Object> lArgs = new FastMap<String, Object>();
 
 		// test progress events on login
-		lSender.sendPayload(
+		lJWSEndPoint.getSender().sendPayload(
 				lTargetEndPointId, // target
-				"org.jwebsocket.plugins.jmsdemo", // ns
+				"org.jwebsocket.jms.demo", // ns
 				"testProgress", // type
 				lArgs,
 				null, // no payload
@@ -107,9 +105,9 @@ public class JMSClient {
 
 		lArgs.put("accessToken", lOAuthAuthenticator.getAccessToken());
 
-		lSender.sendPayload(
+		lJWSEndPoint.getSender().sendPayload(
 				lTargetEndPointId, // target
-				"org.jwebsocket.plugins.jmsdemo", // ns
+				"org.jwebsocket.jms.demo", // ns
 				"testOAuth", // type
 				lArgs,
 				null, // no payload
@@ -282,10 +280,9 @@ public class JMSClient {
 				5, // thread pool size, messages being processed concurrently
 				JMSEndPoint.TEMPORARY // temporary (for clients)
 		);
-		// instantiate a high level JWSEndPointMessageListener
-		lListener = new JWSEndPointMessageListener(lJWSEndPoint);
-		// instantiate a high level JWSEndPointSender
-		lSender = new JWSEndPointSender(lJWSEndPoint);
+
+		final JWSEndPointMessageListener lListener = lJWSEndPoint.getListener();
+		final JWSEndPointSender lSender = lJWSEndPoint.getSender();
 
 		// on welcome message from jWebSocket, authenticate against jWebSocket
 		lListener.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
@@ -600,9 +597,6 @@ public class JMSClient {
 						lSender.getEndPoint().shutdown();
 					}
 				});
-
-		// add a high level listener to listen in coming messages
-		lJWSEndPoint.addListener(lListener);
 
 		// start the endpoint all all listener have been assigned
 		lJWSEndPoint.start();

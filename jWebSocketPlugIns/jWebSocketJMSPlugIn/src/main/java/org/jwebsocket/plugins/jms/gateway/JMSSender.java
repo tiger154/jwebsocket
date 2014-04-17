@@ -52,8 +52,9 @@ public class JMSSender {
 	 *
 	 * @param aTargetId
 	 * @param aText
+	 * @throws javax.jms.JMSException
 	 */
-	public void sendText(final String aTargetId, final String aText) {
+	public void sendText(final String aTargetId, final String aText) throws JMSException {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Sending text: "
 					+ "[content suppressed, length="
@@ -70,7 +71,8 @@ public class JMSSender {
 			lMsg.setStringProperty("targetId", aTargetId);
 			mProducer.send(lMsg);
 		} catch (JMSException lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + " sending message.");
+			mLog.error(lEx.getClass().getSimpleName() + " sending message: " + lEx.getMessage());
+			throw new JMSException(lEx.getMessage());
 		}
 	}
 

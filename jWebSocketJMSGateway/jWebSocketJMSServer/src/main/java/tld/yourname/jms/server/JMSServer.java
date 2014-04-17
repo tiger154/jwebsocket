@@ -54,8 +54,6 @@ public class JMSServer {
 
 	static final Logger mLog = Logger.getLogger(JMSServer.class);
 	private static JWSEndPoint lJWSEndPoint;
-	private static JWSEndPointMessageListener lListener;
-	private static JWSEndPointSender lSender;
 
 	/**
 	 *
@@ -195,10 +193,10 @@ public class JMSServer {
 			System.exit(0);
 		}
 
-		lListener = new JWSEndPointMessageListener(lJWSEndPoint);
-		lSender = new JWSEndPointSender(lJWSEndPoint);
+		final JWSEndPointMessageListener lListener = lJWSEndPoint.getListener();
+		final JWSEndPointSender lSender = lJWSEndPoint.getSender();
 
-		lListener.addRequestListener(
+		lJWSEndPoint.addRequestListener(
 				"org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
@@ -212,7 +210,7 @@ public class JMSServer {
 		);
 
 		// on response of the login...
-		lListener.addResponseListener(
+		lJWSEndPoint.addResponseListener(
 				"org.jwebsocket.plugins.system", "login", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
@@ -230,7 +228,7 @@ public class JMSServer {
 		);
 
 		// on response of the login...
-		lListener.addRequestListener(
+		lJWSEndPoint.addRequestListener(
 				"org.jwebsocket.jms.demo", "getUser", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
@@ -244,8 +242,8 @@ public class JMSServer {
 		);
 
 		// on response of the login...
-		lListener.addRequestListener(
-				"org.jwebsocket.plugins.jmsdemo", "echo", new JWSMessageListener(lSender) {
+		lJWSEndPoint.addRequestListener(
+				"org.jwebsocket.jms.demo", "echo", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
 					) {
@@ -268,8 +266,8 @@ public class JMSServer {
 		);
 
 		// on response of the login...
-		lListener.addRequestListener(
-				"org.jwebsocket.plugins.jmsdemo", "testProgress", new JWSMessageListener(lSender) {
+		lJWSEndPoint.addRequestListener(
+				"org.jwebsocket.jms.demo", "testProgress", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 						int lMax = 10;
@@ -293,9 +291,58 @@ public class JMSServer {
 				}
 		);
 
+		// ...
+		lJWSEndPoint.addRequestListener(
+				"org.jwebsocket.jms.demo", "testCaughtException", new JWSMessageListener(lSender) {
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+						// provoke null pointer exception and DO catch it for test purposes
+						int a = 1;
+						int b = 0;
+						try {
+							int c = a / b;
+							lSender.respondPayload(
+									aToken,
+									0, // return code
+									"Ok", // return message
+									null,
+									aToken.getString("payload"));
+						} catch (Exception Ex) {
+							lSender.respondPayload(
+									aToken,
+									-1, // return code
+									Ex.getClass().getSimpleName() + ": "
+									+ Ex.getMessage(), // return message
+									null,
+									aToken.getString("payload"));
+						}
+					}
+				}
+		);
+
+		// ...
+		lJWSEndPoint.addRequestListener(
+				"org.jwebsocket.jms.demo", "testUncaughtException", new JWSMessageListener(lSender) {
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+						// provoke null pointer exception and do NOT catch it for test purposes
+						int a = 1;
+						int b = 0;
+						int c = a / b;
+
+						lSender.respondPayload(
+								aToken,
+								0, // return code
+								"Ok", // return message
+								null,
+								aToken.getString("payload"));
+					}
+				}
+		);
+
 		// on response of the login...
-		lListener.addRequestListener(
-				"org.jwebsocket.plugins.jmsdemo", "testOAuth", new JWSMessageListener(lSender) {
+		lJWSEndPoint.addRequestListener(
+				"org.jwebsocket.jms.demo", "testOAuth", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 
@@ -329,7 +376,7 @@ public class JMSServer {
 		);
 
 		// on response of the login...
-		lListener.addRequestListener(
+		lJWSEndPoint.addRequestListener(
 				"org.jwebsocket.plugins.jmsdemo", "testLDAP", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
@@ -353,7 +400,7 @@ public class JMSServer {
 				}
 		);
 
-		lListener.addRequestListener(
+		lJWSEndPoint.addRequestListener(
 				"tld.yourname.jms", "transferFile", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
@@ -386,7 +433,7 @@ public class JMSServer {
 		);
 
 		// add a high level listener to listen in coming messages
-		lListener.addRequestListener(
+		lJWSEndPoint.addRequestListener(
 				"org.jwebsocket.jms.demo", "helloWorld", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
@@ -402,9 +449,6 @@ public class JMSServer {
 					}
 				}
 		);
-
-		// add a high level listener to listen in coming messages
-		lJWSEndPoint.addListener(lListener);
 
 		// start the endpoint all all listener have been assigned
 		lJWSEndPoint.start();

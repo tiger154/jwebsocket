@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.filters.system;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
@@ -40,7 +39,7 @@ import org.jwebsocket.util.Tools;
  */
 public class SystemFilter extends TokenFilter {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private static final List<String> mSupportedEncodings;
 
 	static {
@@ -84,15 +83,14 @@ public class SystemFilter extends TokenFilter {
 					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
 		}
 
-		if (!aConnector.isInternal()) {
+		if (null != aConnector && !aConnector.isInternal()) {
 			// processing decoding
 			Map<String, String> lEnc = aToken.getMap("enc");
 			if (null != lEnc && !lEnc.isEmpty()) {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Processing decoding...");
 				}
-				for (Iterator<String> lIt = lEnc.keySet().iterator(); lIt.hasNext();) {
-					String lAttr = lIt.next();
+				for (String lAttr : lEnc.keySet()) {
 					String lFormat = lEnc.get(lAttr);
 					String lValue = aToken.getString(lAttr);
 
@@ -144,8 +142,7 @@ public class SystemFilter extends TokenFilter {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Processing encoding...");
 				}
-				for (Iterator<String> lIt = lEnc.keySet().iterator(); lIt.hasNext();) {
-					String lAttr = lIt.next();
+				for (String lAttr : lEnc.keySet()) {
 					String lFormat = lEnc.get(lAttr);
 					Object lValue = aToken.getObject(lAttr);
 
@@ -176,7 +173,7 @@ public class SystemFilter extends TokenFilter {
 					} catch (Exception lEx) {
 						mLog.error(Logging.getSimpleExceptionMessage(lEx,
 								"trying to encode '" + lAttr + "' value to '"
-								+ lFormat + "' format..."));
+										+ lFormat + "' format..."));
 						aResponse.rejectMessage();
 					}
 				}

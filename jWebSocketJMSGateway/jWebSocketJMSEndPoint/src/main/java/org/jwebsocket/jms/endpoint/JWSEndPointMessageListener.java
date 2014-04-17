@@ -121,7 +121,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 							lPayload);
 					lListener.processToken(lSourceId, lToken);
 				}
-			// is it an event?
+				// is it an event?
 			} else if ("event".equals(lType)) {
 			} else {
 				// check for "ping" request with in the gateway's name space
@@ -194,7 +194,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 						}
 					}
 				}
-				
+
 				// listeners for all messages
 				IJWSMessageListener lListener;
 				Iterator<IJWSMessageListener> lIterator = mMessageListeners.iterator();
@@ -206,11 +206,23 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 						mLog.error(lEx.getClass().getSimpleName() + " processing message.");
 					}
 				}
-				
+
 				// listeners for all requests
 				lListener = mRequestListeners.get(lNS + "." + lType);
 				if (null != lListener) {
-					lListener.processToken(lSourceId, lToken);
+					try {
+						lListener.processToken(lSourceId, lToken);
+					} catch (Exception lEx) {
+						if (getSender() instanceof JWSEndPointSender) {
+							((JWSEndPointSender) getSender()).respondPayload(
+									lToken,
+									-1, // return code
+									lEx.getClass().getSimpleName() + ": "
+									+ lEx.getMessage(), // return message
+									null,
+									null);
+						}
+					}
 				}
 			}
 

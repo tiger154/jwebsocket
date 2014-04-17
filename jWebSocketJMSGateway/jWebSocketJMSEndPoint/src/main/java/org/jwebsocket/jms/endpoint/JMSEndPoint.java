@@ -61,8 +61,6 @@ public class JMSEndPoint {
 	private String mGatewayId;
 	// id to address a certain node on the JMS topic
 	private String mEndPointId;
-	// the publishing component
-	private JMSEndPointSender mSender = null;
 	// the subscriber component
 	private JMSEndPointListener mListener;
 	// flag to shutdown a non-self-termintaing console client
@@ -112,9 +110,7 @@ public class JMSEndPoint {
 		mListener = new JMSEndPointListener(aThreadPoolSize);
 		// pass the listener to the JMS consumer object
 		lConsumer.setMessageListener(mListener);
-
-		// creating sender
-		// mSender = new JMSEndPointSender(this);
+		
 	}
 
 	// private constructor, public API only allows contructors 
@@ -226,8 +222,6 @@ public class JMSEndPoint {
 	 * @param aListener
 	 */
 	public void addListener(IJMSMessageListener aListener) {
-		// assign the sender to the listener to easily allow to answer messages.
-		aListener.setSender(mSender);
 		// add the listener
 		mListener.addMessageListener(aListener);
 	}
