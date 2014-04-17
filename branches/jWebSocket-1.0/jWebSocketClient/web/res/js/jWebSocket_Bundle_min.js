@@ -17,7 +17,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC2 (build 40401)",NS_BASE:"org.jwebsocket",
+if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC2 (build 40416)",NS_BASE:"org.jwebsocket",
 NS_SYSTEM:"org.jwebsocket.plugins.system",MSG_WS_NOT_SUPPORTED:
 "Unfortunately your browser does neither natively support WebSockets\n"+"nor you have the Adobe Flash-PlugIn 10+ installed.\n"+
 "Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer, "+
@@ -1042,7 +1042,7 @@ break;}case jws.FileSystemPlugIn.INVALID_MODIFICATION_ERR:{dm="INVALID_MODIFICAT
 case jws.FileSystemPlugIn.QUOTA_EXCEEDED_ERR:{dm="QUOTA_EXCEEDED_ERR";break;}case jws.FileSystemPlugIn.TYPE_MISMATCH_ERR:{dm=
 "TYPE_MISMATCH_ERR";break;}case jws.FileSystemPlugIn.PATH_EXISTS_ERR:{dm="PATH_EXISTS_ERR";break;}}return dm;},fileLoadLocal:
 function(ds,ax){var bj={code:0,msg:"ok"};if(!ds|| !ds.files){return{code: -1,msg:"No input file element passed."};}if(undefined===
-window.FileReader){return{code: -1,msg:"Your browser does not yet support the HTML5 File lf."};}if(!ax){ax={};}ax.encoding="base64";
+window.FileReader){return{code: -1,msg:"Your browser does not yet support the HTML5 File jZ."};}if(!ax){ax={};}ax.encoding="base64";
 var cH=ds.files;if(!cH|| !cH.length){return{code: -1,msg:"No files selected."};}for(var db=0,dB=cH.length;db<dB;db++){var dw=cH[db];
 var dh=new FileReader();var dJ=this;dh.onload=(function(cw){return function(cz){if(dJ.OnLocalFileRead||ax.OnSuccess){var cg={
 encoding:ax.encoding,fileName:(cw.fileName?cw.fileName:cw.name),fileSize:(cw.fileSize?cw.fileSize:cw.size),type:cw.type,
@@ -1357,16 +1357,16 @@ return bj;},setSamplesCallbacks:function(ci){if(!ci){ci={};}if(ci.OnSamplesServe
 ci.OnSamplesServerTime;}}};jws.oop.addPlugIn(jws.jWebSocketTokenClient,jws.SamplesPlugIn);jws.ScriptingPlugIn={NS:jws.NS_BASE+
 '.plugins.scripting',callScriptAppMethod:function(eE,io,jB,bl,ax){ax=this.ja(ax);var bj=this.checkConnected();if(0===bj.code){
 var cg={ns:jws.ScriptingPlugIn.NS,type:'callMethod',method:jB,objectId:io,app:eE,args:bl};this.sendToken(cg,ax);}return bj;},ja:
-function(lb){var kp=lb;if('function'==typeof lb){var ls=lb;kp={OnSuccess:function(km){ls(km);},OnFailure:function(km){ls(new Error(
-km.msg));},OnTimeout:function(){ls(new Error('timeout'));}};}return kp;},ll:function(eE,ky,jK){var kd=this;var iW={};iW.getName=
-function(){return eE;};iW.sendToken=function(aR,ax){kd.sendScriptAppToken(eE,aR,ax);};iW.jZ=function(ax){kd.getScriptAppVersion(eE,
-ax);};iW.kQ=function(ax){kd.getScriptAppManifest(eE,ax);};this.jS(eE,{OnSuccess:function(km){var kj=km.lf;for(var kH in kj){var kD={
-};var jX=kj[kH];kD.description=jX.description;kD.name=kH;for(var cI in jX.le){var bu=jX.le[cI].name;var fq=jX.le[cI].length;eval(
-'kD["'+bu+'"] = function() {kd.callScriptAppMethod("'+eE+'","'+kH+'","'+bu+'",Array.prototype.slice.call(arguments, 0,'+fq+'),'+
-'arguments['+fq+']);};');}iW[kH]=kD;}ky(iW);},OnFailure:function(aR){jK(aR);}});return iW;},reloadScriptApp:function(eE,iF,ax){ax=
+function(kQ){var kG=kQ;if('function'==typeof kQ){var jJ=kQ;kG={OnSuccess:function(km){jJ(km);},OnFailure:function(km){jJ(new Error(
+km.msg));},OnTimeout:function(){jJ(new Error('timeout'));}};}return kG;},ko:function(eE,lb,lg){var kT=this;var iW={};iW.getName=
+function(){return eE;};iW.sendToken=function(aR,ax){kT.sendScriptAppToken(eE,aR,ax);};iW.kn=function(ax){kT.getScriptAppVersion(eE,
+ax);};iW.kI=function(ax){kT.getScriptAppManifest(eE,ax);};this.lq(eE,{OnSuccess:function(km){var jU=km.jZ;for(var jP in jU){var kF={
+};var jH=jU[jP];kF.description=jH.description;kF.name=jP;for(var cI in jH.kx){var bu=jH.kx[cI].name;var fq=jH.kx[cI].length;eval(
+'kF["'+bu+'"] = function() {kT.callScriptAppMethod("'+eE+'","'+jP+'","'+bu+'",Array.prototype.slice.call(arguments, 0,'+fq+'),'+
+'arguments['+fq+']);};');}iW[jP]=kF;}lb(iW);},OnFailure:function(aR){lg(aR);}});return iW;},reloadScriptApp:function(eE,iF,ax){ax=
 this.ja(ax);var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'reloadApp',hotReload:iF,app:eE};
 this.sendToken(cg,ax);}return bj;},getScriptAppVersion:function(eE,ax){ax=this.ja(ax);var bj=this.checkConnected();if(0===bj.code){
-var cg={ns:jws.ScriptingPlugIn.NS,type:'jZ',app:eE};this.sendToken(cg,ax);}return bj;},jS:function(eE,ax){ax=this.ja(ax);var bj=
+var cg={ns:jws.ScriptingPlugIn.NS,type:'kn',app:eE};this.sendToken(cg,ax);}return bj;},lq:function(eE,ax){ax=this.ja(ax);var bj=
 this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'getClientAPI',app:eE};this.sendToken(cg,ax);}
 return bj;},sendScriptAppToken:function(eE,aR,ax){ax=this.ja(ax);var bj=this.checkConnected();if(0===bj.code&&aR){this.sendToken({
 app:eE,ns:jws.ScriptingPlugIn.NS,type:'token',token:aR},ax);}return bj;},deployScriptApp:function(hQ,ib,ax){ax=this.ja(ax);var bj=
@@ -1376,7 +1376,7 @@ ax.userOnly||false;var hU=ax.namesOnly||true;var bj=this.checkConnected();if(0==
 'listApps',userOnly:iJ,namesOnly:hU};this.sendToken(cg,ax);}return bj;},undeployScriptApp:function(eE,ax){ax=this.ja(ax);var bj=
 this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,type:'undeploy',app:eE};this.sendToken(cg,ax);}return bj;},
 getScriptAppManifest:function(eE,ax){ax=this.ja(ax);var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.ScriptingPlugIn.NS,
-type:'kQ',app:eE};this.sendToken(cg,ax);}return bj;}};jws.oop.addPlugIn(jws.jWebSocketTokenClient,jws.ScriptingPlugIn);
+type:'kI',app:eE};this.sendToken(cg,ax);}return bj;}};jws.oop.addPlugIn(jws.jWebSocketTokenClient,jws.ScriptingPlugIn);
 jws.SharedObjectsPlugIn={NS:jws.NS_BASE+".plugins.sharedObjs",DATA_TYPES:["number","string","boolean","object","set","list","map",
 "table"],cb:{},processToken:function(aR){if(aR.ns==jws.SharedObjectsPlugIn.NS){if(aR.name=="created"){if(this.OnSharedObjectCreated)
 {this.OnSharedObjectCreated(aR);}}else if(aR.name=="destroyed"){if(this.OnSharedObjectDestroyed){this.OnSharedObjectDestroyed(aR);}}

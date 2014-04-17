@@ -20,6 +20,7 @@ package org.jwebsocket.plugins.jms.gateway;
 
 import java.util.Map;
 import java.util.UUID;
+import javax.jms.JMSException;
 import javolution.util.FastMap;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
@@ -86,6 +87,10 @@ public class JMSConnector extends BaseConnector {
 	
 	@Override
 	public void sendPacket(final WebSocketPacket aDataPacket) {
-		mJMSSender.sendText(mTargetId, aDataPacket.getUTF8());
+		try{
+			mJMSSender.sendText(mTargetId, aDataPacket.getUTF8());
+		} catch(JMSException lEx) {
+			// TODO: Process exception
+		}
 	}
 }

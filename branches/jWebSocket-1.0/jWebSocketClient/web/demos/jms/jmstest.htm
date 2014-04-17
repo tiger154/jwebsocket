@@ -35,123 +35,215 @@
 
 		<script type="text/javascript" language="JavaScript">
 
-			var	eArgs, eNS, eType, eGatewayId, eTargetId, eAccessToken;
-			
+			var eArgs, eNS, eType, eGatewayId, eTargetId, eAccessToken;
+
 			function sendJMSRequest() {
-				log( "Sending JMS request..." );
+				log("Sending JMS request...");
 				lWSC.forwardJSON(
-					// "hqdvptas134", 
-					// "com.ptc.windchill",
-					// "createBOM", 
-					eTargetId.value, // target
-					"org.jwebsocket.svcep.demo", //	aNS, 
-					"sso1", //	aType, 
-					{
-						accessToken: "invalidToken"
-					}, //	aArgs, 
-					"{}",	//	aJSON payload, 
-					{
-					OnSuccess: function( aToken ) {
-						log( "Success: " + JSON.stringify( aToken ) );
-					},
-					OnFailure: function( aToken ) {
-						log("Failure: " + JSON.stringify( aToken ) );
-					}
-				});
+						// "hqdvptas134", 
+						// "com.ptc.windchill",
+						// "createBOM", 
+						eTargetId.value, // target
+						"org.jwebsocket.svcep.demo", //	aNS, 
+						"sso1", //	aType, 
+						{
+							accessToken: "invalidToken"
+						}, //	aArgs, 
+				"{}", //	aJSON payload, 
+						{
+							OnSuccess: function(aToken) {
+								log("Success: " + JSON.stringify(aToken));
+							},
+							OnFailure: function(aToken) {
+								log("Failure: " + JSON.stringify(aToken));
+							}
+						});
 			}
 
 			function jmsPing() {
-				log( "Sending 'Ping'..." );
-				lWSC.jmsPing( eTargetId.value, {
-					OnSuccess: function( aToken ) {
-						log( "Ping success: " + aToken.sourceId );
+				log("Sending 'Ping'...");
+				lWSC.jmsPing(eTargetId.value, {
+					OnSuccess: function(aToken) {
+						log("Ping success: " + aToken.sourceId);
 					},
-					OnFailure: function( aToken ) {
-						log("Ping failure: " + aToken.msg );
-					}
+					OnFailure: function(aToken) {
+						log("Ping failure: " + aToken.msg);
+					},
+					OnTimeout: function() {
+						log("Ping timeout!");
+					},
+					timeout: 2000
 				});
 			}
 
 			function jmsIdentify() {
-				log( "Sending 'Identify'..." );
-				lWSC.jmsIdentify( eTargetId.value, {
-					OnSuccess: function( aToken ) {
-						log( "Identify success: " + aToken.sourceId + ", " + aToken.canonicalHostname);
+				log("Sending 'Identify'...");
+				lWSC.jmsIdentify(eTargetId.value, {
+					OnSuccess: function(aToken) {
+						log("Identify success: " + aToken.sourceId + ", " + aToken.canonicalHostname);
 					},
-					OnFailure: function( aToken ) {
-						log("Identify failure: " + aToken.msg );
-					}
+					OnFailure: function(aToken) {
+						log("Identify failure: " + aToken.msg);
+					},
+					OnTimeout: function() {
+						log("Identify timeout!");
+					},
+					timeout: 2000
 				});
 			}
 
 			function jmsEcho() {
-				log( "Sending 'Echo' to '" + eTargetId.value + "'..." );
-				lWSC.jmsEcho( eTargetId.value, "This is my payload", {
-					OnSuccess: function( aToken ) {
-						log( "Echo success: " + aToken.sourceId);
+				log("Sending 'Echo' to '" + eTargetId.value + "'...");
+				lWSC.jmsEcho(eTargetId.value, "This is my payload", {
+					OnSuccess: function(aToken) {
+						log("Echo success: " + aToken.sourceId);
 					},
-					OnFailure: function( aToken ) {
-						log("Echo failure: " + aToken.msg );
-					}
+					OnFailure: function(aToken) {
+						log("Echo failure: " + aToken.msg);
+					},
+					OnTimeout: function() {
+						log("Echo timeout!");
+					},
+					timeout: 2000
 				});
 			}
 
 			function jmsHelloWorld() {
-				log( "Sending 'Hello World' to '" + eTargetId.value + "'..." );
+				log("Sending 'Hello World' to '" + eTargetId.value + "'...");
 				lWSC.forwardJSON(
-					eTargetId.value, 
-					"org.jwebsocket.jms.demo", 
-					"helloWorld", 
-					{}, //
-					"", // JSON
-					{	OnSuccess: function( aToken ) {
-							log( "Hello success: " + aToken.sourceId);
-						},
-						OnFailure: function( aToken ) {
-							log("Echo failure: " + aToken.msg );
+						eTargetId.value,
+						"org.jwebsocket.jms.demo",
+						"helloWorld",
+						{}, //
+						"", // JSON
+						{OnSuccess: function(aToken) {
+								log("Hello success: " + aToken.sourceId);
+							},
+							OnFailure: function(aToken) {
+								log("Echo failure: " + aToken.msg);
+							}
 						}
-					}	
 				);
 			}
 
 			function jmsSSOGetUser() {
-				log( "Sending 'SSO GetUser' to '" + eTargetId.value + "'..." );
+				log("Sending 'SSO GetUser' to '" + eTargetId.value + "'...");
 				lWSC.forwardJSON(
-					eTargetId.value, 
-					"org.jwebsocket.jms.demo", 
-					"getUser", 
-					{	accessToken: eAccessToken.value
-					}, 
-					"", // JSON
-					{	OnSuccess: function( aToken ) {
-							log( "Hello success: " + aToken.sourceId);
+						eTargetId.value,
+						"org.jwebsocket.jms.demo",
+						"getUser",
+						{accessToken: eAccessToken.value
 						},
-						OnFailure: function( aToken ) {
-							log("Echo failure: " + aToken.msg );
+				"", // JSON
+						{OnSuccess: function(aToken) {
+								log("Hello success: " + aToken.sourceId);
+							},
+							OnFailure: function(aToken) {
+								log("Echo failure: " + aToken.msg);
+							}
 						}
-					}	
+				);
+			}
+
+			function jmsTestAuth() {
+				log("Sending 'Test Auth' to '" + eTargetId.value + "'...");
+				lWSC.forwardJSON(
+						eTargetId.value,
+						"org.jwebsocket.jms.demo",
+						"testAuth",
+						{}, //
+						"", // JSON
+						{OnSuccess: function(aToken) {
+								log("Auth success: " + aToken.sourceId);
+							},
+							OnFailure: function(aToken) {
+								log("Auth failure: " + aToken.msg);
+							}
+						}
+				);
+			}
+
+			function jmsTestProgress() {
+				log("Sending 'Test Progress' to '" + eTargetId.value + "'...");
+				lWSC.forwardJSON(
+						eTargetId.value,
+						"org.jwebsocket.jms.demo",
+						"testProgress",
+						{}, //
+						"", // JSON
+						{OnSuccess: function(aToken) {
+								log("Progress success: " + aToken.sourceId);
+							},
+							OnFailure: function(aToken) {
+								log("Progress failure: " + aToken.msg);
+							}
+						}
+				);
+			}
+
+			function jmsTestCaughtException() {
+				log("Sending 'TestCaughtException' to '" + eTargetId.value + "'...");
+				lWSC.forwardJSON(
+						eTargetId.value,
+						"org.jwebsocket.jms.demo",
+						"testCaughtException",
+						{}, //
+						"", // JSON
+						{OnSuccess: function(aToken) {
+								log("TestCaughtException success: " + aToken.sourceId);
+							},
+							OnFailure: function(aToken) {
+								log("TestCaughtException failure: " + aToken.msg);
+							},
+							OnTimeout: function() {
+								log("TestCaughtException timeout!");
+							},
+							timeout: 2000
+						}
+				);
+			}
+
+			function jmsTestUncaughtException() {
+				log("Sending 'TestUncaughtException' to '" + eTargetId.value + "'...");
+				lWSC.forwardJSON(
+						eTargetId.value,
+						"org.jwebsocket.jms.demo",
+						"testUncaughtException",
+						{}, //
+						"", // JSON
+						{OnSuccess: function(aToken) {
+								log("TestUncaughtException success: " + aToken.sourceId);
+							},
+							OnFailure: function(aToken) {
+								log("TestUncaughtException failure: " + aToken.msg);
+							},
+							OnTimeout: function() {
+								log("TestUncaughtException timeout!");
+							},
+							timeout: 2000
+						}
 				);
 			}
 
 			function initPage() {
-				eArgs = jws.$( "stxfArgs" );
-				eNS = jws.$( "stxfNS" );
-				eType = jws.$( "stxfType" );
-				eGatewayId = jws.$( "stxfGatewayId" );
-				eTargetId = jws.$( "stxfTargetId" );
-				eAccessToken = jws.$( "stxfAccessToken" );
-				
+				eArgs = jws.$("stxfArgs");
+				eNS = jws.$("stxfNS");
+				eType = jws.$("stxfType");
+				eGatewayId = jws.$("stxfGatewayId");
+				eTargetId = jws.$("stxfTargetId");
+				eAccessToken = jws.$("stxfAccessToken");
+
 				lWSC.setJMSCallbacks({
-					OnPing: function( aToken ) {
+					OnPing: function(aToken) {
 						log("<b>Pong from: " + aToken.sourceId + "</b>");
 					},
-					OnIdentify: function( aToken ) {
+					OnIdentify: function(aToken) {
 						log("<b>Identity from: " + aToken.sourceId + ", " + aToken.hostname + ", " + aToken.ip + "</b>");
 					}
 				});
-				
-				jws.console.setActive( true );
-				jws.console.setLevel( jws.console.DEBUG );
+
+				jws.console.setActive(true);
+				jws.console.setLevel(jws.console.DEBUG);
 			}
 
 			function exitPage() {
@@ -174,7 +266,7 @@
 			processInitPage();
 		</script>
 
-		
+
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 				<tr class="strDlg">
@@ -187,7 +279,7 @@
 					<td class="stdDlg" width="5">Target&#8209;Id
 					</td>
 					<td class="stdDlg" width="">
-						<input class="stxfDlg" id="stxfTargetId" type="text" value="jWebSocketJMSService" style="width:99%"
+						<input class="stxfDlg" id="stxfTargetId" type="text" value="JMSServer" style="width:99%"
 							   title="The endpoint id of the JMS target.">
 					</td>
 				</tr>
@@ -225,6 +317,19 @@
 							   title="Requests an username from a given OAuth access token.">
 						<input class="sbtnDlg" id="sbtnSendRequest" type="button" value="JMS Request" onclick="sendJMSRequest();"
 							   title="Send a request using the access token to the JMS demo server.">
+					</td>
+				</tr>
+				<tr class="strDlg">
+					<td colspan="6" width="">
+						<input class="sbtnDlg" id="sbtnAuth" type="button" value="Auto Auth" onclick="jmsTestAuth();"
+							   title="Tests the automatic endpoint authentication.">
+						<input class="sbtnDlg" id="sbtnProgress" type="button" value="Progress" onclick="jmsTestProgress();"
+							   title="Tests the server side progress events.">
+
+						<input class="sbtnDlg" id="sbtnTestCaughtException" type="button" value="Caught Ex." onclick="jmsTestCaughtException();"
+							   title="Tests the server side caught exception processing.">
+						<input class="sbtnDlg" id="sbtnTestUncaughtException" type="button" value="Uncaught Ex." onclick="jmsTestUncaughtException();"
+							   title="Tests the server side uncaught exception processing.">
 					</td>
 				</tr>
 			</table>
