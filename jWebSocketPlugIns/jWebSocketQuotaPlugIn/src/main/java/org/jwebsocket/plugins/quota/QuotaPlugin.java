@@ -141,7 +141,7 @@ public class QuotaPlugin extends ActionPlugIn {
 						if (lCode == -1) {
 							return;
 						}
-
+                                                
 						Map<String, IQuota> lQuotas = mQuotaProvider.getActiveQuotas();
 
 						for (Map.Entry<String, IQuota> entry : lQuotas.entrySet()) {

@@ -73,7 +73,11 @@ public class QuotaFilter extends TokenFilter {
 		String lUsername = aConnector.getUsername();
 
 		//Only proccess when the token not come for the SystemPlugin
-		if (!SystemPlugIn.NS_SYSTEM.equals(lNS) || !isIgnoredUser(lUsername)) {
+		if (!SystemPlugIn.NS_SYSTEM.equals(lNS)) {
+                        
+                        if (isIgnoredUser(lUsername)){
+                            return;
+                        }
 			Map<String, IQuota> lQuotas = mQuotaProvider.getActiveQuotas();
 
 			for (Map.Entry<String, IQuota> entry : lQuotas.entrySet()) {
