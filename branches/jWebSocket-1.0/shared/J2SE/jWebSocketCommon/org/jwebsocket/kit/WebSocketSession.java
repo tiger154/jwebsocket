@@ -103,9 +103,7 @@ public class WebSocketSession {
 	public void setCreatedAt() {
 		if (null == getCreatedAt()) {
 			mStorage.put(CREATED_AT, System.currentTimeMillis());
-		} else {
-			throw new UnsupportedOperationException("The session 'createdAt' property is in read-only state!");
-		}
+		} 
 	}
 
 	/**
