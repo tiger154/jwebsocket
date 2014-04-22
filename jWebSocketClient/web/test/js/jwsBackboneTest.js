@@ -164,6 +164,29 @@ jws.tests.Backbone = {
             });
         });
     },
+    testLogoff: function() {
+        var lSpec = "Logging off user: " + jws.tests.Backbone.getConn().getUsername() + ".";
+        it(lSpec, function() {
+			var lResponse = null;
+			jws.tests.Backbone.getConn().logout({
+				OnResponse: function(aResponse){
+					lResponse = aResponse;
+				}
+			});
+
+
+            waitsFor(
+                    function() {
+                        return(lResponse != null);
+                    },
+                    lSpec,
+                    3000
+                    );
+            runs(function() {
+                expect(lResponse.code).toEqual(0);
+            });
+        });
+    },
     runSpecs: function() {
 
         var lUser = {
@@ -188,6 +211,6 @@ jws.tests.Backbone = {
                 "sendSMS", 0, this.refObject);
 
         this.testRemoveUser(lUser, 0);
-
+		this.testLogoff();
     }
 };
