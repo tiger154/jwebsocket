@@ -119,7 +119,7 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		// impactss
 		Tools.getTimer().scheduleAtFixedRate(
 				new CleanExpiredSessionsTask(
-						getSessionIdsTrash(), getStorageProvider()), 0, 6000);
+				getSessionIdsTrash(), getStorageProvider()), 0, 6000);
 	}
 
 	@Override
@@ -128,7 +128,11 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 
 	@Override
 	public boolean isExpired(String aSessionId) {
-		return (mSessionIdsTrash.containsKey(aSessionId)
-				&& (Long) mSessionIdsTrash.get(aSessionId) < System.currentTimeMillis());
+		try {
+			return (mSessionIdsTrash.containsKey(aSessionId)
+					&& (Long) mSessionIdsTrash.get(aSessionId) < System.currentTimeMillis());
+		} catch (Exception lEx) {
+			return true;
+		}
 	}
 }
