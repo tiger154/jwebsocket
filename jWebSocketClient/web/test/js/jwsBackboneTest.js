@@ -134,7 +134,7 @@ jws.tests.Backbone = {
             var lResponse = {};
             // open a separate control connection
             if (jws.tests.Backbone.getConn().isOpened()) {
-                jws.tests.Backbone.getConn().systemLogon(aUsername, aPassword, {
+                jws.tests.Backbone.getConn().login(aUsername, aPassword, {
                     OnResponse: function(aToken) {
                         lResponse = aToken;
                     }
@@ -143,7 +143,7 @@ jws.tests.Backbone = {
                 jws.tests.Backbone.getConn().open(jws.getDefaultServerURL()
                         + ";sessionCookieName=myUserAdminSession", {
                     OnWelcome: function(aToken) {
-                        jws.tests.Backbone.getConn().systemLogon(aUsername, aPassword, {
+                        jws.tests.Backbone.getConn().login(aUsername, aPassword, {
                             OnResponse: function(aToken) {
                                 lResponse = aToken;
                             }
@@ -165,7 +165,7 @@ jws.tests.Backbone = {
         });
     },
     testLogoff: function() {
-        var lSpec = "Logging off user: " + jws.tests.Backbone.getConn().getUsername() + ".";
+        var lSpec = "Logging off test user";
         it(lSpec, function() {
 			var lResponse = null;
 			jws.tests.Backbone.getConn().logout({
