@@ -83,7 +83,7 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws Exception
 	 */
 	public String subscribe(Object aCallback) throws JMSException, Exception {
-		return subscribe(getDefaultDestination(), aCallback);
+		return subscribeTo(getDefaultDestination(), aCallback);
 	}
 
 	/**
@@ -95,8 +95,8 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public String subscribe(String aDestination, Object aCallback) throws JMSException, Exception {
-		return subscribe(aDestination, aCallback, null);
+	public String subscribeTo(String aDestination, Object aCallback) throws JMSException, Exception {
+		return subscribeTo(aDestination, aCallback, null);
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class JMSManagerAbstraction extends JMSManager {
 	 */
 	public String subscribe(Object aCallback,
 			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
-		return subscribe(getDefaultDestination(), aCallback, aDurableSubscription, aSubscriptionId);
+		return subscribeTo(getDefaultDestination(), aCallback, aDurableSubscription, aSubscriptionId);
 	}
 
 	/**
@@ -125,9 +125,9 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public String subscribe(String aDestination, Object aCallback,
+	public String subscribeTo(String aDestination, Object aCallback,
 			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
-		return subscribe(aDestination, aCallback, null, aDurableSubscription, aSubscriptionId);
+		return subscribeTo(aDestination, aCallback, null, aDurableSubscription, aSubscriptionId);
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws Exception
 	 */
 	public String subscribe(Object aCallback, String aSelector) throws JMSException, Exception {
-		return subscribe(getDefaultDestination(), aCallback, aSelector);
+		return subscribeTo(getDefaultDestination(), aCallback, aSelector);
 	}
 
 	/**
@@ -153,9 +153,9 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public String subscribe(String aDestination, Object aCallback,
+	public String subscribeTo(String aDestination, Object aCallback,
 			String aSelector) throws JMSException, Exception {
-		return subscribe(aDestination, aCallback, aSelector, false, null);
+		return subscribeTo(aDestination, aCallback, aSelector, false, null);
 	}
 
 	/**
@@ -171,7 +171,7 @@ public class JMSManagerAbstraction extends JMSManager {
 	 */
 	public String subscribe(Object aCallback, String aSelector,
 			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
-		return subscribe(getDefaultDestination(), aCallback, aSelector,
+		return subscribeTo(getDefaultDestination(), aCallback, aSelector,
 				aDurableSubscription, aSubscriptionId);
 	}
 
@@ -187,7 +187,7 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public String subscribe(String aDestination, Object aCallback, String aSelector,
+	public String subscribeTo(String aDestination, Object aCallback, String aSelector,
 			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
 		return super.subscribe(aDestination, (MessageListener) mScriptApp.cast(aCallback,
 				MessageListener.class), aSelector, aDurableSubscription, aSubscriptionId);
