@@ -1,7 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket - jWebSocket Quota Filter (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.quota.utils;
 
 import java.util.UUID;
@@ -17,29 +31,27 @@ import org.jwebsocket.util.Tools;
  */
 public class QuotaHelper {
 
-	/**
-	 *
-	 * @return
-	 */
-	public static String generateQuotaUUID() {
+    /**
+     *
+     * @return
+     */
+    public static String generateQuotaUUID() {
         return Tools.getMD5(UUID.randomUUID().toString());
     }
 
-    // to do with map
-
-	/**
-	 *
-	 * @param aValue
-	 * @param aInstance
-	 * @param aUuid
-	 * @param aNamesPace
-	 * @param aQuotaType
-	 * @param aQuotaIdentifier
-	 * @param aInstanceType
-	 * @param aActions
-	 * @return
-	 */
-	    public static IQuotaSingleInstance factorySingleInstance(long aValue, String aInstance,
+    /**
+     *
+     * @param aValue
+     * @param aInstance
+     * @param aUuid
+     * @param aNamesPace
+     * @param aQuotaType
+     * @param aQuotaIdentifier
+     * @param aInstanceType
+     * @param aActions
+     * @return
+     */
+    public static IQuotaSingleInstance factorySingleInstance(long aValue, String aInstance,
             String aUuid, String aNamesPace, String aQuotaType, String aQuotaIdentifier,
             String aInstanceType, String aActions) {
 
@@ -53,11 +65,11 @@ public class QuotaHelper {
 
     }
 
-	/**
-	 *
-	 * @return
-	 */
-	public static FastList<String> ignoredUsers() {
+    /**
+     *
+     * @return
+     */
+    public static FastList<String> ignoredUsers() {
         FastList<String> lIgnoredUsers = new FastList<String>();
         lIgnoredUsers.add("anonymous");
         return lIgnoredUsers;
