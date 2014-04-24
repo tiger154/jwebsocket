@@ -24,6 +24,7 @@
 		</property>
 	</bean>
 
+	<!-- itemStorage settings -->
 	<bean id="quotaItemStorage" class="org.jwebsocket.plugins.quota.storage.ItemStorageQuota">
 		<property name="collectionQuotaName" value="jws_plugins_quota_quota"/>
 		<property name="collectionQuotaInstanceName" value="jws_plugins_quota_quotaInstance"/>
@@ -64,7 +65,7 @@
 			</map>
 		</property>
 	</bean>
-
+	<!-- End of itemStorage settings -->
 
 	
 	<!-- all QuotaCountDown here -->
@@ -161,7 +162,6 @@
 			<map>
 				<!--The key must be the same value of their quota identifier -->
 				<entry key="CountDown" value-ref="quotaCountDown" />
-                                <entry key="DiskSpace" value-ref="quotaDiskSpace" />
 				<!--entry key="CountDownReduce5" value-ref="quotaCountDownReduce5" />
 				<entry key="IntervalDaily" value-ref="quotaIntervalDaily" /-->
 			</map>
@@ -172,6 +172,13 @@
 				<entry key="quotaItemStorage" value-ref="quotaItemStorage" />           
 			</map>	
 		</constructor-arg>
+	</bean>
+	
+	<bean id="quotaCacheManager" class="org.jwebsocket.plugins.quota.utils.QuotaCacheManager">
+		<!-- This propertie give and expired time for cache items elemnts -->
+		<property name="expiredTime"> 
+			<value>120000</value>
+		</property>
 	</bean>
 	
 	
