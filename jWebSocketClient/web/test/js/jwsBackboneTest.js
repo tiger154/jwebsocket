@@ -141,7 +141,7 @@ jws.tests.Backbone = {
                 });
             } else {
                 jws.tests.Backbone.getConn().open(jws.getDefaultServerURL()
-                        + ";sessionCookieName=myUserAdminSession", {
+                        + ";sessionCookieName=myBackboneSession", {
                     OnWelcome: function(aToken) {
                         jws.tests.Backbone.getConn().login(aUsername, aPassword, {
                             OnResponse: function(aToken) {
