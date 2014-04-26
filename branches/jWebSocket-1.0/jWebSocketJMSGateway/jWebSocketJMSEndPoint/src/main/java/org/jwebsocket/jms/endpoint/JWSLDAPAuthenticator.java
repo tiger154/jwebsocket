@@ -36,6 +36,9 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 	private String mBindUsername;
 	private String mBindPassword;
 
+	/**
+	 *
+	 */
 	public JWSLDAPAuthenticator() {
 
 	}
@@ -64,6 +67,14 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 		}
 	}
 
+	/**
+	 *
+	 * @param aLDAPURL
+	 * @param aBaseDNGroups
+	 * @param aBaseDNUsers
+	 * @param aBindUsername
+	 * @param aBindPassword
+	 */
 	public void init(String aLDAPURL, String aBaseDNGroups,
 			String aBaseDNUsers, String aBindUsername, String aBindPassword) {
 		mADTools = new ADTools(

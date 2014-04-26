@@ -24,6 +24,10 @@ package org.jwebsocket.jms.endpoint;
  */
 public class JMSEndpointException extends Exception {
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	public JMSEndpointException(String aMessage) {
 		super(aMessage);
 	}

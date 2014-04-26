@@ -36,6 +36,9 @@ public class JWSOAuthAuthenticator implements IJWSAuthenticator {
 	private String mOAuthSessionId = null;
 	private long mDefautTimeout = 10000;
 
+	/**
+	 *
+	 */
 	public JWSOAuthAuthenticator() {
 	}
 

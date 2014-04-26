@@ -481,7 +481,7 @@ public class JMSClient {
 						// lSender.forwardPayload("aschulze-dt", "org.jwebsocket.jms.demo",
 						//		"forwardPayload", "4711", lArgs, null);
 						// send the payload to the target (here the JMS demo service)
-						lSender.sendPayload("HQDVPTAS110", "com.ptc.windchill",
+						lJWSEndPoint.sendPayload("HQDVPTAS110", "com.ptc.windchill",
 								"getLibraryPart", lArgs, "{}");
 					}
 				});
@@ -541,8 +541,8 @@ public class JMSClient {
 				});
 
 		// process response of the get data response...
-		lListener.addResponseListener("tld.yourname.jms", "getData",
-				new JWSMessageListener(lSender) {
+		lJWSEndPoint.addResponseListener("tld.yourname.jms", "getData",
+				new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 						int lCode = aToken.getInteger("code", -1);

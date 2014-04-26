@@ -216,6 +216,90 @@ public class JWSEndPoint extends JMSEndPoint {
 	/**
 	 *
 	 * @param aTargetId
+	 * @param aNS
+	 * @param aType
+	 * @param aUTID
+	 * @param aOriginId
+	 * @param aArgs
+	 * @param aPayload
+	 * @param aResponseListener
+	 */
+	public void sendPayload(String aTargetId, String aNS, String aType,
+			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload,
+			JWSResponseTokenListener aResponseListener) {
+		getSender().sendPayload(aTargetId, aNS, aType, aUTID, aOriginId,
+				aArgs, aPayload, aResponseListener, 1000 * 10);
+	}
+
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aNS
+	 * @param aType
+	 * @param aUTID
+	 * @param aOriginId
+	 * @param aArgs
+	 * @param aPayload
+	 * @param aResponseListener
+	 * @param aTimeout
+	 */
+	public void sendPayload(String aTargetId, String aNS, String aType,
+			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload,
+			JWSResponseTokenListener aResponseListener, long aTimeout) {
+		getSender().sendPayload(aTargetId, aNS, aType,
+				aUTID, aOriginId, aArgs, aPayload,
+				aResponseListener, aTimeout);
+	}
+
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aNS
+	 * @param aType
+	 * @param aUTID
+	 * @param aOriginId
+	 * @param aArgs
+	 * @param aPayload
+	 */
+	public void sendPayload(String aTargetId, String aNS, String aType,
+			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload) {
+		getSender().sendPayload(aTargetId, aNS, aType, aUTID, aOriginId, aArgs, aPayload, null);
+	}
+
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aNS
+	 * @param aType
+	 * @param aArgs
+	 * @param aPayload
+	 * @param aResponseListener
+	 * @param aTimeout
+	 */
+	public void sendPayload(String aTargetId, String aNS, String aType,
+			Map<String, Object> aArgs, String aPayload,
+			JWSResponseTokenListener aResponseListener, long aTimeout) {
+		getSender().sendPayload(aTargetId, aNS, aType,
+				aArgs, aPayload, aResponseListener, aTimeout);
+	}
+
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aNS
+	 * @param aType
+	 * @param aArgs
+	 * @param aPayload
+	 */
+	public void sendPayload(String aTargetId, String aNS, String aType,
+			Map<String, Object> aArgs, String aPayload) {
+		getSender().sendPayload(aTargetId, aNS, aType,
+				aArgs, aPayload);
+	}
+
+	/**
+	 *
+	 * @param aTargetId
 	 * @param aRequest
 	 * @param aCode
 	 * @param aMsg
@@ -242,12 +326,29 @@ public class JWSEndPoint extends JMSEndPoint {
 				aMsg, aArgs, aPayload);
 	}
 
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aRequest
+	 * @param aPercent
+	 * @param aCode
+	 * @param aMessage
+	 * @param aArgs
+	 */
 	public void sendProgress(String aTargetId, Token aRequest, double aPercent,
 			int aCode, String aMessage, Map aArgs) {
 		getSender().sendProgress(aTargetId, aRequest, aPercent,
 				aCode, aMessage, aArgs);
 	}
 
+	/**
+	 *
+	 * @param aRequest
+	 * @param aPercent
+	 * @param aCode
+	 * @param aMessage
+	 * @param aArgs
+	 */
 	public void sendProgress(Token aRequest, double aPercent,
 			int aCode, String aMessage, Map aArgs) {
 		getSender().sendProgress(aRequest.getString("sourceId"), aRequest, aPercent,
