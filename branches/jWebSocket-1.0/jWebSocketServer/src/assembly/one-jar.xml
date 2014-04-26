@@ -21,6 +21,7 @@
 			<includes>
 				<include>${groupId}:${artifactId}</include>
 
+				<include>org.jwebsocket:jWebSocketDynamicSQL</include>
 				<!-- from jWebSocketDynamicSQL -->
 				<include>org.apache.ddlutils:ddlutils</include>
 				<include>com.healthmarketscience.common:common-util</include>
@@ -42,8 +43,8 @@
 				<include>org.jwebsocket:jWebSocketServerAPI</include>
 				<include>${groupId}:${artifactId}</include>
 				
+				<!-- commented out to prevent slf4j double binding issue -->
 				<!-- <include>org.slf4j:slf4j-api</include> -->
-				<!-- prevent slf4j double binding issue -->
 				<!-- <include>org.slf4j:slf4j-log4j12</include> -->
 				<!-- <include>org.slf4j:slf4j-simple</include> -->
 				

@@ -36,8 +36,17 @@ public class JWSMessageListener implements IJWSMessageListener {
 	 *
 	 * @param aSender
 	 */
+	@Deprecated
 	public JWSMessageListener(JWSEndPointSender aSender) {
 		mSender = aSender;
+	}
+
+	/**
+	 *
+	 * @param aEndPoint
+	 */
+	public JWSMessageListener(JWSEndPoint aEndPoint) {
+		mSender = aEndPoint.getSender();
 	}
 
 	@Override

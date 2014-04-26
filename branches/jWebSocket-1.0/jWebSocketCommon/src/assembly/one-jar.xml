@@ -2,7 +2,7 @@
 <assembly>
 	<!-- jWebSocketCommon -->
 	<!-- this id is appended to filename given in pom.xml -->
-	<id>${project.version}</id>
+	<id>Bundle-${project.version}</id>
 	<formats>
 		<format>jar</format>
 	</formats>
@@ -25,6 +25,7 @@
 				<include>org.apache.commons:commons-compress</include>
 				<include>org.apache.activemq:activemq-all</include>
 				<include>org.jwebsocket:jWebSocketDynamicSQL</include>
+
 				<!-- from jWebSocketDynamicSQL -->
 				<include>org.apache.ddlutils:ddlutils</include>
 				<include>com.healthmarketscience.common:common-util</include>

@@ -1,5 +1,5 @@
 @echo off
-echo Starting the jWebSocket JMS Server...
+echo Starting the jWebSocket JMS Client...
 echo (C) Copyright 2010-2014 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
 echo.
 rem if JWEBSOCKET_HOME not set try to create a temporary one
@@ -10,6 +10,6 @@ popd
 
 :start
 
-java -jar ..\libs\jWebSocketJMSServer-Bundle-1.0.jar
+java -jar ..\libs\jWebSocketJMSClient-Bundle-1.0.jar
 
 pause

@@ -24,4 +24,7 @@ package org.jwebsocket.jms.endpoint;
  */
 public class JMSEndpointException extends Exception {
 
+	public JMSEndpointException(String aMessage) {
+		super(aMessage);
+	}
 }

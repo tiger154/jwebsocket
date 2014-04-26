@@ -138,7 +138,7 @@ public class JMSServer {
 					lOAuthPassword,
 					lOAuthTimeout
 			);
-			lAuthenticator.addAuthenticator(lAuthenticator);
+			lAuthenticator.addAuthenticator(lOAuthAuthenticator);
 		}
 
 		// set up LDAP Authenticator
@@ -193,11 +193,8 @@ public class JMSServer {
 			System.exit(0);
 		}
 
-		final JWSEndPointMessageListener lListener = lJWSEndPoint.getListener();
-		final JWSEndPointSender lSender = lJWSEndPoint.getSender();
-
 		lJWSEndPoint.addRequestListener(
-				"org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 						mLog.info("Received 'welcome', authenticating against jWebSocket...");
@@ -211,7 +208,7 @@ public class JMSServer {
 
 		// on response of the login...
 		lJWSEndPoint.addResponseListener(
-				"org.jwebsocket.plugins.system", "login", new JWSMessageListener(lSender) {
+				"org.jwebsocket.plugins.system", "login", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
 					) {
@@ -229,7 +226,7 @@ public class JMSServer {
 
 		// on response of the login...
 		lJWSEndPoint.addRequestListener(
-				"org.jwebsocket.jms.demo", "getUser", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.demo", "getUser", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
 					) {
@@ -243,7 +240,7 @@ public class JMSServer {
 
 		// on response of the login...
 		lJWSEndPoint.addRequestListener(
-				"org.jwebsocket.jms.demo", "echo", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.demo", "echo", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
 					) {
@@ -255,7 +252,7 @@ public class JMSServer {
 						lAdditionalResults.putAll(aToken.getMap());
 						// lAdditionalResults.remove("sourceId");
 						lAdditionalResults.remove("payload");
-						lSender.respondPayload(
+						lJWSEndPoint.respondPayload(
 								aToken,
 								0, // return code
 								"Ok", // return message
@@ -267,21 +264,23 @@ public class JMSServer {
 
 		// on response of the login...
 		lJWSEndPoint.addRequestListener(
-				"org.jwebsocket.jms.demo", "testProgress", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.demo", "testProgress", new JWSMessageListener(lJWSEndPoint) {
 					@Override
+					@SuppressWarnings("SleepWhileInLoop")
 					public void processToken(String aSourceId, Token aToken) {
 						int lMax = 10;
 						for (int lIdx = 0; lIdx < lMax; lIdx++) {
-							lSender.sendProgress(
-									aSourceId, aToken,
-									((lIdx + 1.0) / lMax) * 100, 0,
-									"Iteration #" + lIdx, null);
+							mLog.debug("Progress iteration " + lIdx + "...");
 							try {
-								Thread.sleep(1000);
+								Thread.sleep(333);
 							} catch (InterruptedException lEx) {
 							}
+							lJWSEndPoint.sendProgress(
+									aToken,
+									((lIdx + 1.0) / lMax) * 100, 0,
+									"Iteration #" + lIdx, null);
 						}
-						lSender.respondPayload(
+						lJWSEndPoint.respondPayload(
 								aToken,
 								0, // return code
 								"Ok", // return message
@@ -293,22 +292,23 @@ public class JMSServer {
 
 		// ...
 		lJWSEndPoint.addRequestListener(
-				"org.jwebsocket.jms.demo", "testCaughtException", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.demo", "testCaughtException", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
+						mLog.debug("Testing caught exception...");
 						// provoke null pointer exception and DO catch it for test purposes
 						int a = 1;
 						int b = 0;
 						try {
 							int c = a / b;
-							lSender.respondPayload(
+							lJWSEndPoint.respondPayload(
 									aToken,
 									0, // return code
 									"Ok", // return message
 									null,
 									aToken.getString("payload"));
 						} catch (Exception Ex) {
-							lSender.respondPayload(
+							lJWSEndPoint.respondPayload(
 									aToken,
 									-1, // return code
 									Ex.getClass().getSimpleName() + ": "
@@ -322,15 +322,16 @@ public class JMSServer {
 
 		// ...
 		lJWSEndPoint.addRequestListener(
-				"org.jwebsocket.jms.demo", "testUncaughtException", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.demo", "testUncaughtException", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
+						mLog.debug("Testing uncaught exception...");
 						// provoke null pointer exception and do NOT catch it for test purposes
 						int a = 1;
 						int b = 0;
 						int c = a / b;
 
-						lSender.respondPayload(
+						lJWSEndPoint.respondPayload(
 								aToken,
 								0, // return code
 								"Ok", // return message
@@ -340,9 +341,9 @@ public class JMSServer {
 				}
 		);
 
-		// on response of the login...
+		// test for the OAuth interface
 		lJWSEndPoint.addRequestListener(
-				"org.jwebsocket.jms.demo", "testOAuth", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.demo", "testOAuth", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 
@@ -365,7 +366,7 @@ public class JMSServer {
 							+ " on authentication!";
 						}
 
-						lSender.respondPayload(
+						lJWSEndPoint.respondPayload(
 								aToken,
 								lCode, // return code
 								lMessage, // return message
@@ -375,9 +376,9 @@ public class JMSServer {
 				}
 		);
 
-		// on response of the login...
+		// test for the LDAP interface
 		lJWSEndPoint.addRequestListener(
-				"org.jwebsocket.plugins.jmsdemo", "testLDAP", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.demo", "testLDAP", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 
@@ -390,7 +391,7 @@ public class JMSServer {
 						Map<String, Object> lArgs = new FastMap<String, Object>();
 						lArgs.put("username", lUsername);
 
-						lSender.respondPayload(
+						lJWSEndPoint.respondPayload(
 								aToken,
 								0, // return code
 								"Ok", // return message
@@ -400,8 +401,44 @@ public class JMSServer {
 				}
 		);
 
+		// test for the auto authentication interface
 		lJWSEndPoint.addRequestListener(
-				"tld.yourname.jms", "transferFile", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.demo", "testAuth", new JWSMessageListener(lJWSEndPoint) {
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+
+						mLog.debug("Testing auto authenticator...");
+						Map<String, Object> lArgs = new FastMap<String, Object>();
+						
+						String lUsername = null;
+						int lCode = 0;
+						String lMessage = "Ok";
+						try {
+							lUsername = lAuthenticator.authenticate(aToken);
+							if (null == lUsername) {
+								lCode = -1;
+								lMessage = "User could not be authenticated!";
+							} else {
+								lArgs.put("username", lUsername);
+							}
+						} catch (JMSEndpointException lEx) {
+							lCode = -1;
+							lMessage = lEx.getClass().getSimpleName()
+							+ " on auto authentication: " + lEx.getMessage();
+						}
+
+						lJWSEndPoint.respondPayload(
+								aToken,
+								lCode, // return code
+								lMessage, // return message
+								lArgs, // additional result fields
+								null); // payload
+					}
+				}
+		);
+
+		lJWSEndPoint.addRequestListener(
+				"tld.yourname.jms", "transferFile", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
 					) {
@@ -434,12 +471,12 @@ public class JMSServer {
 
 		// add a high level listener to listen in coming messages
 		lJWSEndPoint.addRequestListener(
-				"org.jwebsocket.jms.demo", "helloWorld", new JWSMessageListener(lSender) {
+				"org.jwebsocket.jms.demo", "helloWorld", new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken
 					) {
 						mLog.info("Received 'helloWorld'...");
-						lSender.respondPayload(
+						lJWSEndPoint.respondPayload(
 								aToken.getString("sourceId"),
 								aToken,
 								0, // return code
