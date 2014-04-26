@@ -16,7 +16,7 @@
 			<includes>
 				<include>${groupId}:${artifactId}</include>
 				<include>log4j:log4j</include>
-				<include>org.apache.activemq:activemq-all</include>
+				<include>org.apache.activemq:activemq-core</include>
 				<include>org.jwebsocket:jWebSocketCommon</include>
 				<include>javolution:javolution</include>
 				<include>org.codehaus.jackson:jackson-core-asl</include>

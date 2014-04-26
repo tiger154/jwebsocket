@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.endpoint;
 
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
 import org.apache.log4j.Logger;
 import org.jwebsocket.ldap.ADTools;
 import org.jwebsocket.token.Token;
@@ -72,7 +74,7 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 		// ldap binding is done in initialize method
 		mBindUsername = aBindUsername;
 		mBindPassword = aBindPassword;
-		
+
 		if (null != mADTools) {
 			mLog.debug("Binding to LDAP...");
 			if (null != mADTools.login(mBindUsername, mBindPassword)) {
@@ -85,7 +87,7 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 
 	/**
 	 *
-	 * @return
+	 * @return the username if authentication successful, otherwise null
 	 */
 	@Override
 	public String authenticate(Token aToken) throws JMSEndpointException {
@@ -94,8 +96,14 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 		if (null == lUsername && null == lPassword) {
 			return null;
 		}
-		String lMessage = mADTools.authenticate(lUsername, lPassword);
-		return lMessage;
+		try {
+			mADTools.getDirContext(lUsername, lPassword);
+			return lUsername;
+		} catch (NamingException lEx) {
+			// "sometimes" spaces are returned as 0x00 characters,
+			//  replace these to avoid subsequent JSON parse errors!
+			throw new JMSEndpointException(lEx.getMessage().replace((char)0, (char)32));
+		}
 	}
 
 }

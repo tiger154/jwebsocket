@@ -147,11 +147,48 @@
 
 			function jmsTestAuth() {
 				log("Sending 'Test Auth' to '" + eTargetId.value + "'...");
+				/*				
+				 lWSC.forwardJSON(
+				 eTargetId.value,
+				 "org.jwebsocket.jms.demo",
+				 "testAuth",
+				 {}, //
+				 "", // JSON
+				 {OnSuccess: function(aToken) {
+				 log("Auth success: " + aToken.sourceId);
+				 },
+				 OnFailure: function(aToken) {
+				 log("Auth failure: " + aToken.msg);
+				 }
+				 }
+				 );
+				 */
 				lWSC.forwardJSON(
 						eTargetId.value,
 						"org.jwebsocket.jms.demo",
 						"testAuth",
-						{}, //
+						{username: eUsername.value,
+							password: ePassword.value
+						},
+				"", // JSON
+						{OnSuccess: function(aToken) {
+								log("Auth success: " + aToken.sourceId);
+							},
+							OnFailure: function(aToken) {
+								log("Auth failure: " + aToken.msg);
+							}
+						}
+				);
+			}
+
+			function jmsTestSSOAuth() {
+				log("Sending 'Test SSO Auth' to '" + eTargetId.value + "'...");
+				lWSC.forwardJSON(
+						eTargetId.value,
+						"org.jwebsocket.jms.demo",
+						"testAuth",
+						{accessToken: eAccessToken.value
+						},
 						"", // JSON
 						{OnSuccess: function(aToken) {
 								log("Auth success: " + aToken.sourceId);
@@ -159,6 +196,30 @@
 							OnFailure: function(aToken) {
 								log("Auth failure: " + aToken.msg);
 							}
+						}
+				);
+			}
+
+			function jmsTestLDAPAuth() {
+				log("Sending 'Test LDAP Auth' to '" + eTargetId.value + "'...");
+				lWSC.forwardJSON(
+						eTargetId.value,
+						"org.jwebsocket.jms.demo",
+						"testAuth",
+						{username: eUsername.value,
+							password: ePassword.value
+						},
+						"", // JSON
+						{OnSuccess: function(aToken) {
+								log("SSO Auth success: " + aToken.sourceId);
+							},
+							OnFailure: function(aToken) {
+								log("SSO Auth failure: " + aToken.msg);
+							},
+							OnTimeout: function() {
+								log("TestCaughtException timeout!");
+							},
+							timeout: 2000
 						}
 				);
 			}
@@ -321,8 +382,12 @@
 				</tr>
 				<tr class="strDlg">
 					<td colspan="6" width="">
-						<input class="sbtnDlg" id="sbtnAuth" type="button" value="Auto Auth" onclick="jmsTestAuth();"
+						<input class="sbtnDlg" id="sbtnAutoAuth" type="button" value="Auto Auth" onclick="jmsTestAuth();"
 							   title="Tests the automatic endpoint authentication.">
+						<input class="sbtnDlg" id="sbtnSSOAuth" type="button" value="SSO Auth" onclick="jmsTestSSOAuth();"
+							   title="Tests the SSO/OAuth endpoint authentication.">
+						<input class="sbtnDlg" id="sbtnLDAPAuth" type="button" value="LDAP Auth" onclick="jmsTestLDAPAuth();"
+							   title="Tests the LDAP endpoint authentication.">
 						<input class="sbtnDlg" id="sbtnProgress" type="button" value="Progress" onclick="jmsTestProgress();"
 							   title="Tests the server side progress events.">
 

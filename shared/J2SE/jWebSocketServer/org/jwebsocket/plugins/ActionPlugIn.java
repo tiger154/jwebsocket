@@ -19,7 +19,6 @@
 package org.jwebsocket.plugins;
 
 import java.lang.reflect.Method;
-import javax.annotation.security.RolesAllowed;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;

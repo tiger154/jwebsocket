@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import javax.jms.JMSException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -271,21 +272,22 @@ public class JMSClient {
 		// todo: Comment that for production purposes
 		JMSLogging.setFullTextLogging(true);
 
-		// instantiate a new jWebSocket JMS Gateway Client
-		lJWSEndPoint = new JWSEndPoint(
-				lBrokerURL,
-				lGatewayTopic, // gateway topic
-				lGatewayId, // gateway endpoint id
-				lEndPointId, // unique node id
-				5, // thread pool size, messages being processed concurrently
-				JMSEndPoint.TEMPORARY // temporary (for clients)
-		);
-
-		final JWSEndPointMessageListener lListener = lJWSEndPoint.getListener();
-		final JWSEndPointSender lSender = lJWSEndPoint.getSender();
+		try {
+			lJWSEndPoint = JWSEndPoint.getInstance(
+					lBrokerURL,
+					lGatewayTopic, // gateway topic
+					lGatewayId, // gateway endpoint id
+					lEndPointId, // unique node id
+					5, // thread pool size, messages being processed concurrently
+					JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
+			);
+		} catch (JMSException lEx) {
+			mLog.fatal("JMSEndpoint could not be instantiated: " + lEx.getMessage());
+			System.exit(0);
+		}
 
 		// on welcome message from jWebSocket, authenticate against jWebSocket
-		lListener.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
+		lJWSEndPoint.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lJWSEndPoint) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
 				mLog.info("Received 'welcome' from '" + aSourceId + ".");
@@ -375,8 +377,8 @@ public class JMSClient {
 //			}
 //		});
 		// process response of the JMS Gateway login...
-		lListener.addResponseListener("org.jwebsocket.plugins.system", "login",
-				new JWSMessageListener(lSender) {
+		lJWSEndPoint.addResponseListener("org.jwebsocket.plugins.system", "login",
+				new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 						mLog.info("Login successful, initiating client communication process...");
@@ -399,7 +401,7 @@ public class JMSClient {
 						}
 
 						lArgs.put("echo", "This is the echo message");
-						lSender.sendPayload(
+						lJWSEndPoint.sendPayload(
 								"jWebSocketJMSService",
 								// "org.jwebsocket.jms.gateway", // target id
 								"org.jwebsocket.plugins.jmsdemo", // ns
@@ -434,7 +436,7 @@ public class JMSClient {
 
 						// lSender.ping("server-aschulze-dt");
 						// lSender.getIdentification("*");
-						lSender.sendPayload(
+						lJWSEndPoint.sendPayload(
 								"org.jwebsocket.jms.gateway", // target id
 								"org.jwebsocket.plugins.jmsdemo", // ns
 								"echo", // type
@@ -451,7 +453,7 @@ public class JMSClient {
 						// lSender.sendPayload("wcslv01.dev.nvdia.com", "com.ptc.windchill",
 						//	"getNewPartRequest", lArgs, "{}"); // getLibraryPart, getManufacturerPart "wcslv01.dev.nvidia.com"
 						mLog.info("Sending getLibraryPart");
-						lSender.sendPayload("hqdvptas134", "com.ptc.windchill",
+						lJWSEndPoint.sendPayload("hqdvptas134", "com.ptc.windchill",
 								"getLibraryPart", lArgs, "{}");
 						/*
 						 lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
@@ -485,8 +487,8 @@ public class JMSClient {
 				});
 
 		// process response echo request to the JMS demo plug-in...
-		lListener.addResponseListener("org.jwebsocket.plugins.jmsdemo", "echo",
-				new JWSMessageListener(lSender) {
+		lJWSEndPoint.addResponseListener("org.jwebsocket.plugins.jmsdemo", "echo",
+				new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 						mLog.info("Response from '" + aSourceId
@@ -499,8 +501,8 @@ public class JMSClient {
 				});
 
 		// process response of the JMS Gateway login...
-		lListener.addResponseListener("org.jwebsocket.svcep.demo", "sso1",
-				new JWSMessageListener(lSender) {
+		lJWSEndPoint.addResponseListener("org.jwebsocket.svcep.demo", "sso1",
+				new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 						int lCode = aToken.getInteger("code", -1);
@@ -515,8 +517,8 @@ public class JMSClient {
 		// on welcome message from jWebSocket, authenticate against jWebSocket
 		// lListener.addResponseListener("org.jwebsocket.jms.demo", "forwardPayload",
 		// 		new JWSMessageListener(lSender) {
-		lListener.addResponseListener("com.ptc.windchill", "getLibraryPart",
-				new JWSMessageListener(lSender) {
+		lJWSEndPoint.addResponseListener("com.ptc.windchill", "getLibraryPart",
+				new JWSMessageListener(lJWSEndPoint) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 						mLog.info("Received 'forwardPayload'.");
@@ -588,13 +590,13 @@ public class JMSClient {
 							lArgs.put("arg2", "value2");
 
 							// send the payload to the target (here the JMS demo service)
-							lSender.sendPayload("JMSServer", "tld.yourname.jms",
+							lJWSEndPoint.sendPayload("JMSServer", "tld.yourname.jms",
 									"transferFile", lArgs, lPayload);
 						}
 
 						// and shut down the client
 						mLog.info("Gracefully shutting down...");
-						lSender.getEndPoint().shutdown();
+						lJWSEndPoint.shutdown();
 					}
 				});
 

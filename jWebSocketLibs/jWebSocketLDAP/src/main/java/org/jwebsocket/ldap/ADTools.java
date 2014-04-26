@@ -115,7 +115,23 @@ public class ADTools {
 		}
 	}
 
+	public DirContext getDirContext(String aUsername, String aPassword) throws NamingException {
+		Properties lEnv = new Properties();
+		lEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
+		lEnv.put(Context.SECURITY_PRINCIPAL, aUsername);
+		lEnv.put(Context.SECURITY_CREDENTIALS, aPassword);
+		lEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		lEnv.put(Context.PROVIDER_URL, mLDAP_URL);
+		lEnv.put(Context.REFERRAL, "follow");
+		lEnv.put("java.naming.ldap.attributes.binary", "objectguid");
+
+		// try to open context
+		DirContext lCtx = new InitialDirContext(lEnv);
+		return lCtx;
+	}
+
 	/**
+	 * 
 	 *
 	 * @param aUsername
 	 * @param aPassword

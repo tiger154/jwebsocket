@@ -18,7 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.endpoint;
 
+import java.util.Map;
 import javax.jms.JMSException;
+import org.jwebsocket.token.Token;
 
 /**
  *
@@ -86,18 +88,34 @@ public class JWSEndPoint extends JMSEndPoint {
 		return lEP;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public JWSEndPointMessageListener getListener() {
 		return mListener;
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public void setListener(JWSEndPointMessageListener aListener) {
 		mListener = aListener;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public JWSEndPointSender getSender() {
 		return mSender;
 	}
 
+	/**
+	 *
+	 * @param aSender
+	 */
 	public void setSender(JWSEndPointSender aSender) {
 		mSender = aSender;
 	}
@@ -193,6 +211,47 @@ public class JWSEndPoint extends JMSEndPoint {
 	 */
 	public boolean hasResponseListener(String aNS, String aReqType) {
 		return mListener.hasResponseListener(aNS, aReqType);
+	}
+
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aRequest
+	 * @param aCode
+	 * @param aMsg
+	 * @param aArgs
+	 * @param aPayload
+	 */
+	public void respondPayload(String aTargetId, Token aRequest, int aCode,
+			String aMsg, Map<String, Object> aArgs, String aPayload) {
+		getSender().respondPayload(aTargetId, aRequest, aCode,
+				aMsg, aArgs, aPayload);
+	}
+
+	/**
+	 *
+	 * @param aRequest
+	 * @param aCode
+	 * @param aMsg
+	 * @param aArgs
+	 * @param aPayload
+	 */
+	public void respondPayload(Token aRequest, int aCode, String aMsg,
+			Map<String, Object> aArgs, String aPayload) {
+		getSender().respondPayload(aRequest.getString("sourceId"), aRequest, aCode,
+				aMsg, aArgs, aPayload);
+	}
+
+	public void sendProgress(String aTargetId, Token aRequest, double aPercent,
+			int aCode, String aMessage, Map aArgs) {
+		getSender().sendProgress(aTargetId, aRequest, aPercent,
+				aCode, aMessage, aArgs);
+	}
+
+	public void sendProgress(Token aRequest, double aPercent,
+			int aCode, String aMessage, Map aArgs) {
+		getSender().sendProgress(aRequest.getString("sourceId"), aRequest, aPercent,
+				aCode, aMessage, aArgs);
 	}
 
 }

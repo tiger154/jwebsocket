@@ -18,6 +18,7 @@
 package org.jwebsocket.plugins.sample;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import javax.sql.DataSource;
 import org.apache.log4j.Logger;
@@ -160,7 +161,7 @@ public class SamplePlugIn extends TokenPlugIn {
 				mLog.debug("JDBC 'jwebsocket_reporting_demo' database table for demos has been "
 						+ "created with sample data in JDBCPlugIn 'default' alias.");
 			}
-		} catch (Exception lEx) {
+		} catch (SQLException lEx) {
 			// DO NOT CAPTURE, table already exists!!!
 		}
 	}
@@ -170,7 +171,8 @@ public class SamplePlugIn extends TokenPlugIn {
 		WebSocketServerTokenListener lListener = new WebSocketServerTokenListener() {
 			@Override
 			public void processToken(WebSocketServerTokenEvent aEvent, Token aToken) {
-				if (aToken.getNS().equals(NS_SAMPLE) && aToken.getType().equals("getCopyrightAndLicense")) {
+				if (NS_SAMPLE.equals(aToken.getNS())
+						&& "getCopyrightAndLicense".equals(aToken.getType())) {
 					Token lResponse = createResponse(aToken);
 					lResponse.setString("copyright", getCopyright());
 					lResponse.setString("license", getLicense());
@@ -279,8 +281,8 @@ public class SamplePlugIn extends TokenPlugIn {
 
 	class Person implements ITokenizable {
 
-		private String lName;
-		private String lEmail;
+		private final String lName;
+		private final String lEmail;
 
 		public Person(String aName, String aEmail) {
 			this.lName = aName;

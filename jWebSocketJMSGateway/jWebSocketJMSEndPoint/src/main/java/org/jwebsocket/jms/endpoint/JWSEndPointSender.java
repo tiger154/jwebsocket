@@ -443,4 +443,22 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		sendToken(lTargetId, lEnvelope);
 	}
 
+	/**
+	 *
+	 * @param aRequest
+	 * @param aPercent
+	 * @param aCode
+	 * @param aMessage
+	 * @param aArgs
+	 */
+	public void sendProgress(Token aRequest, double aPercent,
+			int aCode, String aMessage, Map aArgs) {
+		if (null != aRequest) {
+			String lTargetId = aRequest.getString("sourceId");
+			if (null != lTargetId) {
+				sendProgress(lTargetId, aRequest, aPercent,
+						aCode, aMessage, aArgs);
+			}
+		}
+	}
 }
