@@ -356,7 +356,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
         lQuery.put("ns", aNameSpace);
         lQuery.put("instance", aInstance);
         lQuery.put("instanceType", aInstanceType);
-        lQuery.put("instanceType", aActions);
+        lQuery.put("actions", aActions);
 
         DBObject lResponse = mCollection.findOne(lQuery);
         String lUuid;
