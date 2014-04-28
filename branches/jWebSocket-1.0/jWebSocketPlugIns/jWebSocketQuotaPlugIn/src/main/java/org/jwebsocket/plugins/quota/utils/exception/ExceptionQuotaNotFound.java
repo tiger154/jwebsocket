@@ -24,16 +24,16 @@ package org.jwebsocket.plugins.quota.utils.exception;
  */
 public class ExceptionQuotaNotFound extends Exception {
 
-	/**
-	 *
-	 */
-	public static String MMESSAGE = "Quota not found";
+    /**
+     *
+     */
+    public static String MMESSAGE = "Quota not found";
 
-	/**
-	 *
-	 * @param aUuid
-	 */
-	public ExceptionQuotaNotFound(String aUuid) {
+    /**
+     *
+     * @param aUuid
+     */
+    public ExceptionQuotaNotFound(String aUuid) {
         super(MMESSAGE + " with id " + aUuid);
     }
 }

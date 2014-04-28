@@ -127,7 +127,6 @@ public class ItemStorageQuota implements IQuotaStorage {
         IItemFactory lItemFactory = lCollectionProvider.getItemStorageProvider().getItemFactory();
         // checking if quota collection already exists
 
-
         if (!lCollectionProvider.collectionExists(mCollectionQuotaName)) {
             // check if definition already exists
             if (!lItemFactory.supportsType(mQuotaDefinition.getType())) {
@@ -143,7 +142,6 @@ public class ItemStorageQuota implements IQuotaStorage {
                 lQuotaCollection = lCollectionProvider
                         .getCollection(mCollectionQuotaName, mQuotaDefinition.getType());
             }
-
 
             lQuotaCollection.setAccessPassword(Tools.getMD5(mCollectionAccessPassword));
             lQuotaCollection.setSecretPassword(Tools.getMD5(mCollectionSecretPassword));
@@ -164,11 +162,11 @@ public class ItemStorageQuota implements IQuotaStorage {
             try {
                 lQuotaInstCollection = lCollectionProvider
                         .getCollection(mCollectionQuotaInstanceName,
-                        mquotaInstanceDefinition.getType());
+                                mquotaInstanceDefinition.getType());
             } catch (Exception exp) {
                 lQuotaInstCollection = lCollectionProvider
                         .getCollection(mCollectionQuotaInstanceName,
-                        mquotaInstanceDefinition.getType());
+                                mquotaInstanceDefinition.getType());
             }
 
             lQuotaInstCollection.setAccessPassword(Tools.getMD5(mCollectionAccessPassword));
@@ -180,7 +178,6 @@ public class ItemStorageQuota implements IQuotaStorage {
 
         mCollectionQuota = lCollectionProvider.getCollection(mCollectionQuotaName);
         mCollectionQuotaInstance = lCollectionProvider.getCollection(mCollectionQuotaInstanceName);
-
     }
 
     /**
@@ -705,10 +702,7 @@ public class ItemStorageQuota implements IQuotaStorage {
         try {
             List<IItem> lQChilds = mCollectionQuotaInstance.
                     getItemStorage().find("uuidQuota",
-                    aObjQuota.get("uuid"));
-
-
-
+                            aObjQuota.get("uuid"));
 
             for (IItem lObjInstance : lQChilds) {
                 //adding quota Child of this quota.

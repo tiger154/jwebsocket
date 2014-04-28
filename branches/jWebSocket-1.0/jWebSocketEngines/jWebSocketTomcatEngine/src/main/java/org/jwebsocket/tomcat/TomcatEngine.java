@@ -86,10 +86,6 @@ public class TomcatEngine extends BaseEngine {
 		if (lContext == null) {
 			lContext = "/";
 		}
-		String lServlet = aConfiguration.getServlet();
-		if (lServlet == null) {
-			lServlet = "/*";
-		}
 		try {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Instantiating embedded Tomcat server"
@@ -178,20 +174,14 @@ public class TomcatEngine extends BaseEngine {
 	@Override
 	public void startEngine() throws WebSocketException {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Starting Tomcat '" + mTomcatVersion + "' engine '"
-					+ getId()
-					+ "...");
+			mLog.debug("Starting Tomcat '" + mTomcatVersion + "' engine '" + getId() + "...");
 		}
 
 		mIsRunning = true;
 		super.startEngine();
 
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Tomcat '"
-					+ mTomcatVersion
-					+ "' engine '"
-					+ getId()
-					+ "' started.");
+			mLog.info("Tomcat '" + mTomcatVersion + "' engine '" + getId() + "' started.");
 		}
 
 		// fire the engine start event
@@ -199,13 +189,9 @@ public class TomcatEngine extends BaseEngine {
 	}
 
 	@Override
-	public void stopEngine(CloseReason aCloseReason)
-			throws WebSocketException {
+	public void stopEngine(CloseReason aCloseReason) throws WebSocketException {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Stopping Tomcat '"
-					+ mTomcatVersion
-					+ "' engine '"
-					+ getId() + "...");
+			mLog.debug("Stopping Tomcat '" + mTomcatVersion	+ "' engine '" + getId() + "...");
 		}
 
 		// resetting "isRunning" causes engine listener to terminate

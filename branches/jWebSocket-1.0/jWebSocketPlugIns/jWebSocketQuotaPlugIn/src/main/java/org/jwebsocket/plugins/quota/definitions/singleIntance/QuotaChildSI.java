@@ -32,80 +32,80 @@ public class QuotaChildSI implements ITokenizable {
     String mUuid;
     String mInstanceType;
 
-	/**
-	 *
-	 * @param mInstance
-	 * @param mUuid
-	 * @param mInstanceType
-	 */
-	public QuotaChildSI(String mInstance, String mUuid, String mInstanceType) {
+    /**
+     *
+     * @param mInstance
+     * @param mUuid
+     * @param mInstanceType
+     */
+    public QuotaChildSI(String mInstance, String mUuid, String mInstanceType) {
         this.mInstance = mInstance;
         this.mUuid = mUuid;
         this.mInstanceType = mInstanceType;
         mValue = 0;
     }
 
-	/**
-	 *
-	 * @return
-	 */
-	public long getValue() {
+    /**
+     *
+     * @return
+     */
+    public long getValue() {
         return mValue;
     }
 
-	/**
-	 *
-	 * @return
-	 */
-	public String getInstance() {
+    /**
+     *
+     * @return
+     */
+    public String getInstance() {
         return mInstance;
     }
 
-	/**
-	 *
-	 * @return
-	 */
-	public String getUuid() {
+    /**
+     *
+     * @return
+     */
+    public String getUuid() {
         return mUuid;
     }
 
-	/**
-	 *
-	 * @return
-	 */
-	public String getInstanceType() {
+    /**
+     *
+     * @return
+     */
+    public String getInstanceType() {
         return mInstanceType;
     }
 
-	/**
-	 *
-	 * @param aValue
-	 */
-	public void setValue(long aValue) {
+    /**
+     *
+     * @param aValue
+     */
+    public void setValue(long aValue) {
         this.mValue = aValue;
     }
 
-	/**
-	 *
-	 * @param aInstance
-	 */
-	public void setInstance(String aInstance) {
+    /**
+     *
+     * @param aInstance
+     */
+    public void setInstance(String aInstance) {
         this.mInstance = aInstance;
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 */
-	public void setUuid(String aUuid) {
+    /**
+     *
+     * @param aUuid
+     */
+    public void setUuid(String aUuid) {
         this.mUuid = aUuid;
     }
 
-	/**
-	 *
-	 * @param aInstanceType
-	 */
-	public void setInstanceType(String aInstanceType) {
+    /**
+     *
+     * @param aInstanceType
+     */
+    public void setInstanceType(String aInstanceType) {
         this.mInstanceType = aInstanceType;
     }
 

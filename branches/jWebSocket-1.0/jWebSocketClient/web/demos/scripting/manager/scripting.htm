@@ -141,8 +141,8 @@
 			
 			function fillAppsSelect(){
 				var select = document.getElementById("appsselect");
-				while (select.length > 0){
-					select.remove();
+				while (select.options.length > 0){
+					select.options.remove(select.options.length - 1);
 				}
 				
 				lWSC.listScriptApps({ userOnly: true, namesOnly: true,

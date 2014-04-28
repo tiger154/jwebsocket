@@ -50,92 +50,92 @@ public class QuotaDiskSpace extends BaseQuota {
      */
     public static final String PUBLIC_NAMESPACE = "public";
 
-	@Override
-	public long reduceQuota(String aInstance, String aNameSpace,
-			String aInstanceType, String aActions, long aAmount) {
+    @Override
+    public long reduceQuota(String aInstance, String aNameSpace,
+            String aInstanceType, String aActions, long aAmount) {
 
-		long lQuota = getQuota(aInstance, aNameSpace, aInstanceType, aActions).getvalue();
-		if (lQuota <= 0) {
-			return -1;
-		}
+        long lQuota = getQuota(aInstance, aNameSpace, aInstanceType, aActions).getvalue();
+        if (lQuota <= 0) {
+            return -1;
+        }
 
-		String lFolder = "";
-		if (aNameSpace.equals(PRIVATE_NAMESPACE)) {
-			lFolder = PRIVATE_DIR_DEF + aInstance;
-		} else if (aNameSpace.equals(PUBLIC_NAMESPACE)) {
-			lFolder = PUBLIC_DIR_DEF;
-		}
+        String lFolder = "";
+        if (aNameSpace.equals(PRIVATE_NAMESPACE)) {
+            lFolder = PRIVATE_DIR_DEF + aInstance;
+        } else if (aNameSpace.equals(PUBLIC_NAMESPACE)) {
+            lFolder = PUBLIC_DIR_DEF;
+        }
 
-		long lUsedSpace = 0;
-		try {
-			lUsedSpace = getDirectorySpace(lFolder);
-		} catch (Exception ex) {
-			mLog.error(ex.getMessage());
-		}
-		long lAvailableSpace = evaluateQuotaDisk(lQuota, lUsedSpace, aAmount);
-		return lAvailableSpace;
-	}
+        long lUsedSpace = 0;
+        try {
+            lUsedSpace = getDirectorySpace(lFolder);
+        } catch (Exception ex) {
+            mLog.error(ex.getMessage());
+        }
+        long lAvailableSpace = evaluateQuotaDisk(lQuota, lUsedSpace, aAmount);
+        return lAvailableSpace;
+    }
 
-	@Override
-	public long reduceQuota(String aUuid, long aAmount) {
+    @Override
+    public long reduceQuota(String aUuid, long aAmount) {
 
-		long lQuota = getQuota(aUuid).getvalue();
+        long lQuota = getQuota(aUuid).getvalue();
 
-		if (lQuota <= 0) {
-			return -1;
-		}
+        if (lQuota <= 0) {
+            return -1;
+        }
 
-		IQuotaSingleInstance lQuotaSI = this.mQuotaStorage.getQuotaByUuid(aUuid);
+        IQuotaSingleInstance lQuotaSI = this.mQuotaStorage.getQuotaByUuid(aUuid);
 
-		long lAvailableSpace = reduceQuota(lQuotaSI.getInstance(),
-				lQuotaSI.getNamespace(), lQuotaSI.getInstanceType(),
-				lQuotaSI.getActions(), aAmount);
+        long lAvailableSpace = reduceQuota(lQuotaSI.getInstance(),
+                lQuotaSI.getNamespace(), lQuotaSI.getInstanceType(),
+                lQuotaSI.getActions(), aAmount);
 
-		return lAvailableSpace;
-	}
+        return lAvailableSpace;
+    }
 
-	private long evaluateQuotaDisk(long aQuota, long aUsedSpace, long aAmount) {
+    private long evaluateQuotaDisk(long aQuota, long aUsedSpace, long aAmount) {
 
-		long lUsedSpace = inMeasureMB(aUsedSpace);
-		long lFreeSpace = aQuota - lUsedSpace;
-		if (lFreeSpace < aAmount) {
-			return -1;
-		} else {
-			return lFreeSpace - aAmount;
-		}
-	}
+        long lUsedSpace = inMeasureMB(aUsedSpace);
+        long lFreeSpace = aQuota - lUsedSpace;
+        if (lFreeSpace < aAmount) {
+            return -1;
+        } else {
+            return lFreeSpace - aAmount;
+        }
+    }
 
-	private long getDirectorySpace(String aDirectory) throws Exception {
+    private long getDirectorySpace(String aDirectory) throws Exception {
 
-		File lFiles = new File(aDirectory);
-		long lUsedSpace = 0;
-		if (lFiles.exists() && lFiles.isDirectory()) {
-			lUsedSpace = FileUtils.sizeOfDirectory(lFiles);
-		} else {
-			throw new Exception("Directory: " + aDirectory + " not found");
-		}
-		return lUsedSpace;
-	}
+        File lFiles = new File(aDirectory);
+        long lUsedSpace = 0;
+        if (lFiles.exists() && lFiles.isDirectory()) {
+            lUsedSpace = FileUtils.sizeOfDirectory(lFiles);
+        } else {
+            throw new Exception("Directory: " + aDirectory + " not found");
+        }
+        return lUsedSpace;
+    }
 
-	private long inMeasureMB(long value) {
-		return (value / 1000 / 1000); //"in MB"
-	}
+    private long inMeasureMB(long value) {
+        return (value / 1000 / 1000); //"in MB"
+    }
 
-	@Override
-	public void create(String aInstance, String aNameSpace, String aUuid, long aAmount,
-			String aInstanceType, String aQuotaType, String aQuotaIdentifier, String aActions) throws Exception {
+    @Override
+    public void create(String aInstance, String aNameSpace, String aUuid, long aAmount,
+            String aInstanceType, String aQuotaType, String aQuotaIdentifier, String aActions) throws Exception {
 
-		if (!aNameSpace.equals(PRIVATE_NAMESPACE) && !aNameSpace.equals(PUBLIC_NAMESPACE)) {
-			throw new Exception("The quota diskspace just accept as namespace:("
-					+ PRIVATE_NAMESPACE + " and " + PUBLIC_NAMESPACE + "), " + aNameSpace + " is not a valid"
-					+ "namespace for a quotaDiskSpace");
-		}
+        if (!aNameSpace.equals(PRIVATE_NAMESPACE) && !aNameSpace.equals(PUBLIC_NAMESPACE)) {
+            throw new Exception("The quota diskspace just accept as namespace:("
+                    + PRIVATE_NAMESPACE + " and " + PUBLIC_NAMESPACE + "), " + aNameSpace + " is not a valid"
+                    + "namespace for a quotaDiskSpace");
+        }
 
         if (mQuotaStorage.quotaExist(aNameSpace, aQuotaIdentifier, aInstance, aActions)) {
 
             throw new ExceptionQuotaAlreadyExist(mQuotaStorage.
                     getUuid(aQuotaIdentifier, aNameSpace, aInstance,
-                    aInstanceType, aActions));
+                            aInstanceType, aActions));
         }
 
         IQuotaSingleInstance lSingleQuota;
@@ -143,5 +143,5 @@ public class QuotaDiskSpace extends BaseQuota {
                 aQuotaIdentifier, aInstanceType, aActions);
         mQuotaStorage.save(lSingleQuota);
 
-	}
+    }
 }

@@ -27,7 +27,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -35,51 +34,57 @@ import org.jwebsocket.util.Tools;
  */
 public class EhCacheManager {
 
-	private static CacheManager mInstance = null;
-	private static final Logger mLog = Logging.getLogger();
+    private static CacheManager mInstance = null;
+    private static final Logger mLog = Logging.getLogger();
 
-	/**
-	 * Default constructor, cannot be called from outside this class.
-	 */
-	private EhCacheManager() {
-	}
+    public static void shutdown() {
+        if (null != mInstance) {
+            getInstance().shutdown();
+        }
+    }
 
-	/**
-	 * Static method, returns the one and only instance
-	 *
-	 * @return
-	 */
-	public static CacheManager getInstance() {
-		if (mInstance == null) {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Instantiating EhCache Manager...");
-			}
-			ClassLoader lClassLoader = Thread.currentThread().getContextClassLoader();
-			try {
-				String lContent = FileUtils.readFileToString(
-						new File(JWebSocketConfig.getConfigFolder("ehcache.xml", lClassLoader)), "UTF-8");
-				lContent = JWebSocketConfig.expandEnvVarsAndProps(lContent);
-				mInstance = new CacheManager(new ByteArrayInputStream(lContent.getBytes("UTF-8")));
-				if (mLog.isInfoEnabled()) {
-					mLog.info("EhCache Manager successfully instantiated, "
-							+ mInstance.getCacheNames().length
-							+ " caches configured at '"
-							+ mInstance.getDiskStorePath() + "'.");
-				}
-			} catch (IOException lIOEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lIOEx, "Instantiating EhCache Manager"));
-			}
-		}
-		return mInstance;
-	}
+    /**
+     * Default constructor, cannot be called from outside this class.
+     */
+    private EhCacheManager() {
+    }
 
-	/**
-	 * Static method, returns the one and only instance
-	 *
-	 * @param aName
-	 * @return
-	 */
-	public static Cache getCache(String aName) {
-		return getInstance().getCache(aName);
-	}
+    /**
+     * Static method, returns the one and only instance
+     *
+     * @return
+     */
+    public static CacheManager getInstance() {
+        if (mInstance == null) {
+            if (mLog.isDebugEnabled()) {
+                mLog.debug("Instantiating EhCache Manager...");
+            }
+            ClassLoader lClassLoader = Thread.currentThread().getContextClassLoader();
+            try {
+                String lContent = FileUtils.readFileToString(
+                        new File(JWebSocketConfig.getConfigFolder("ehcache.xml", lClassLoader)), "UTF-8");
+                lContent = JWebSocketConfig.expandEnvVarsAndProps(lContent);
+                mInstance = new CacheManager(new ByteArrayInputStream(lContent.getBytes("UTF-8")));
+                if (mLog.isInfoEnabled()) {
+                    mLog.info("EhCache Manager successfully instantiated, "
+                            + mInstance.getCacheNames().length
+                            + " caches configured at '"
+                            + mInstance.getDiskStorePath() + "'.");
+                }
+            } catch (IOException lIOEx) {
+                mLog.error(Logging.getSimpleExceptionMessage(lIOEx, "Instantiating EhCache Manager"));
+            }
+        }
+        return mInstance;
+    }
+
+    /**
+     * Static method, returns the one and only instance
+     *
+     * @param aName
+     * @return
+     */
+    public static Cache getCache(String aName) {
+        return getInstance().getCache(aName);
+    }
 }

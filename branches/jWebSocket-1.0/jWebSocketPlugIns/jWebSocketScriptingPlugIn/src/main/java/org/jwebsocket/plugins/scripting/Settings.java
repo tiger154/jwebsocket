@@ -247,10 +247,6 @@ public class Settings {
 	 * @return
 	 */
 	public Permissions getAppPermissions(String aAppName, String aAppPath) {
-		if (mCachedAppPermissions.containsKey(aAppName)) {
-			return mCachedAppPermissions.get(aAppName);
-		}
-
 		Permissions lPerms = new Permissions();
 		Permission lPermission;
 
@@ -279,8 +275,6 @@ public class Settings {
 				}
 			}
 		}
-
-		mCachedAppPermissions.put(aAppName, lPerms);
 
 		return lPerms;
 	}

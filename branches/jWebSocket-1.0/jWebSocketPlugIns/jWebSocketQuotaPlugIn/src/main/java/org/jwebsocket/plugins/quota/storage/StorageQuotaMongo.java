@@ -55,79 +55,79 @@ public class StorageQuotaMongo implements IQuotaStorage {
     DBCollection mCollectionInstance;
     private static final Logger mLog = Logging.getLogger();
 
-	/**
-	 *
-	 * @param aUser
-	 */
-	public void setUser(String aUser) {
+    /**
+     *
+     * @param aUser
+     */
+    public void setUser(String aUser) {
         this.mUser = aUser;
     }
 
-	/**
-	 *
-	 * @return
-	 */
-	public DB getDBconn() {
+    /**
+     *
+     * @return
+     */
+    public DB getDBconn() {
         return mDBconn;
     }
 
-	/**
-	 *
-	 * @param aPassword
-	 */
-	public void setPassword(String aPassword) {
+    /**
+     *
+     * @param aPassword
+     */
+    public void setPassword(String aPassword) {
         this.mPassword = aPassword;
     }
 
-	/**
-	 *
-	 * @param aHost
-	 */
-	public void setHost(String aHost) {
+    /**
+     *
+     * @param aHost
+     */
+    public void setHost(String aHost) {
         this.mHost = aHost;
     }
 
-	/**
-	 *
-	 * @param aPort
-	 */
-	public void setPort(Integer aPort) {
+    /**
+     *
+     * @param aPort
+     */
+    public void setPort(Integer aPort) {
         this.mPort = aPort;
     }
 
-	/**
-	 *
-	 * @param aDB
-	 */
-	public void setDatabaseName(String aDB) {
+    /**
+     *
+     * @param aDB
+     */
+    public void setDatabaseName(String aDB) {
         this.mDatabaseName = aDB;
     }
 
-	/**
-	 *
-	 * @throws UnknownHostException
-	 */
-	public StorageQuotaMongo() throws UnknownHostException {
-        
+    /**
+     *
+     * @throws UnknownHostException
+     */
+    public StorageQuotaMongo() throws UnknownHostException {
+
     }
 
-	/**
-	 *
-	 * @throws Exception
-	 */
-	public void initialize() throws Exception {
+    /**
+     *
+     * @throws Exception
+     */
+    public void initialize() throws Exception {
         mConnection = new MongoClient(mHost);
         mDBconn = this.mConnection.getDB("quotaPlugin");
         mCollection = mDBconn.getCollection("quota");
         mCollectionInstance = mDBconn.getCollection("quotaInstance");
     }
 
-	/**
-	 *
-	 * @param aQuota
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuota
+     * @return
+     */
+    @Override
     public boolean save(IQuotaSingleInstance aQuota) {
 
         try {
@@ -149,13 +149,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
     }
 
 //remove
-
-	/**
-	 *
-	 * @param aChildSI
-	 * @return
-	 */
-	    @Override
+    /**
+     *
+     * @param aChildSI
+     * @return
+     */
+    @Override
     public boolean save(QuotaChildSI aChildSI) {
 
         try {
@@ -173,12 +172,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return true;
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @param aInstance
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @param aInstance
+     */
+    @Override
     public void remove(String aUuid, String aInstance) {
 
         BasicDBObject lWhere = new BasicDBObject();
@@ -190,11 +189,11 @@ public class StorageQuotaMongo implements IQuotaStorage {
         mCollectionInstance.remove(lWhere);
     }
 
-	/**
-	 *
-	 * @param aQuotaChild
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaChild
+     */
+    @Override
     public void remove(QuotaChildSI aQuotaChild) {
         BasicDBObject lWhere = new BasicDBObject();
         lWhere.put("uuidQuota", aQuotaChild.getUuid());
@@ -203,13 +202,13 @@ public class StorageQuotaMongo implements IQuotaStorage {
 
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @param aValue
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @param aValue
+     * @return
+     */
+    @Override
     public long update(String aUuid, Long aValue) {
 
         BasicDBObject lWhere = new BasicDBObject();
@@ -222,12 +221,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
 
     }
 
-	/**
-	 *
-	 * @param aChildSI
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aChildSI
+     * @return
+     */
+    @Override
     public long update(QuotaChildSI aChildSI) {
 
         BasicDBObject lWhere = new BasicDBObject();
@@ -240,12 +239,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
 
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @return
+     */
+    @Override
     public String getActions(String aUuid) {
 
         String lAction = "*";
@@ -259,12 +258,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lAction;
     }
 
-	/**
-	 *
-	 * @param aQuotaType
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaType
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType) {
 
         FastList<IQuotaSingleInstance> lResult;
@@ -276,12 +275,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lResult;
     }
 
-	/**
-	 *
-	 * @param aIdentifier
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aIdentifier
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier) {
 
         FastList<IQuotaSingleInstance> lResult;
@@ -293,14 +292,14 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lResult;
     }
 
-	/**
-	 *
-	 * @param aIdentifier
-	 * @param aNameSpace
-	 * @param aInstanceType
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aIdentifier
+     * @param aNameSpace
+     * @param aInstanceType
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotasByIdentifierNSInstanceType(String aIdentifier,
             String aNameSpace, String aInstanceType) {
 
@@ -317,14 +316,14 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lResult;
     }
 
-	/**
-	 *
-	 * @param aQuotaType
-	 * @param aNs
-	 * @param aInstance
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaType
+     * @param aNs
+     * @param aInstance
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs,
             String aInstance) {
         FastList<IQuotaSingleInstance> lResult;
@@ -338,19 +337,19 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lResult;
     }
 
-	/**
-	 *
-	 * @param aQuotaIdentifier
-	 * @param aNameSpace
-	 * @param aInstance
-	 * @param aInstanceType
-	 * @param aActions
-	 * @return
-	 * @throws ExceptionQuotaNotFound
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaIdentifier
+     * @param aNameSpace
+     * @param aInstance
+     * @param aInstanceType
+     * @param aActions
+     * @return
+     * @throws ExceptionQuotaNotFound
+     */
+    @Override
     public String getUuid(String aQuotaIdentifier, String aNameSpace, String aInstance,
-            String aInstanceType, String aActions ) throws ExceptionQuotaNotFound {
+            String aInstanceType, String aActions) throws ExceptionQuotaNotFound {
 
         BasicDBObject lQuery = new BasicDBObject();
         lQuery.put("quotaIdentifier", aQuotaIdentifier);
@@ -371,13 +370,13 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lUuid;
     }
 
-	/**
-	 *
-	 * @param aQuotaType
-	 * @param aInstance
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaType
+     * @param aInstance
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType,
             String aInstance) {
         FastList<IQuotaSingleInstance> lResult;
@@ -390,13 +389,13 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lResult;
     }
 
-	/**
-	 *
-	 * @param aQuotaType
-	 * @param aNs
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aQuotaType
+     * @param aNs
+     * @return
+     */
+    @Override
     public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType,
             String aNs) {
         FastList<IQuotaSingleInstance> lResult;
@@ -409,12 +408,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lResult;
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @return
+     */
+    @Override
     public boolean quotaExist(String aUuid) {
         BasicDBObject lQuery = new BasicDBObject();
         lQuery.put("uuid", aUuid);
@@ -426,17 +425,17 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return false;
     }
 
-	/**
-	 *
-	 * @param aNameSpace
-	 * @param aQuotaIdentifier
-	 * @param aInstance
-	 * @param aActions
-	 * @return
-	 */
-	@Override
-    public boolean quotaExist(String aNameSpace, String aQuotaIdentifier, 
-                                String aInstance, String aActions ) {
+    /**
+     *
+     * @param aNameSpace
+     * @param aQuotaIdentifier
+     * @param aInstance
+     * @param aActions
+     * @return
+     */
+    @Override
+    public boolean quotaExist(String aNameSpace, String aQuotaIdentifier,
+            String aInstance, String aActions) {
         BasicDBObject lQuery = new BasicDBObject();
 
         lQuery.put("ns", aNameSpace);
@@ -450,12 +449,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return false;
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @return
+     */
+    @Override
     public IQuotaSingleInstance getQuotaByUuid(String aUuid) {
 
         IQuotaSingleInstance lSingle = null;
@@ -518,13 +517,13 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lQuota;
     }
 
-	/**
-	 *
-	 * @param aUuid
-	 * @param aInstance
-	 * @return
-	 */
-	@Override
+    /**
+     *
+     * @param aUuid
+     * @param aInstance
+     * @return
+     */
+    @Override
     public Map<String, Object> getRawQuota(String aUuid, String aInstance) {
 
         BasicDBObject lObject = new BasicDBObject();
@@ -542,13 +541,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
     }
 
     // to see for change the method's name
-
-	/**
-	 *
-	 * @param aUuid
-	 * @param aResetDate
-	 */
-	    @Override
+    /**
+     *
+     * @param aUuid
+     * @param aResetDate
+     */
+    @Override
     public void updateIntervalResetDate(String aUuid, String aResetDate) {
         BasicDBObject lWhere = new BasicDBObject();
         BasicDBObject lSetValue = new BasicDBObject();

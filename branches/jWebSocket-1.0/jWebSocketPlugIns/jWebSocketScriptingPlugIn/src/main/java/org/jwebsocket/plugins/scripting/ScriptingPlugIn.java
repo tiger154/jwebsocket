@@ -171,7 +171,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading '" + lAppName + "' application"));
 			}
 		}
-
+        
 		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STARTED, new Object[0]);
 		try {
 			// registering on message hub if running on a cluster
