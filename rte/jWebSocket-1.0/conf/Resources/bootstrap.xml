@@ -29,7 +29,7 @@
 		-->
 	</bean>
 	<bean id="jmsConnection0" factory-bean="jmsConnectionFactory" factory-method="createConnection" 
-		  init-method="start">
+		  init-method="start" destroy-method="close">
 		<property name="clientID" value="jws_server_shared_conn_01" />
 	</bean>
 					
