@@ -82,6 +82,9 @@ App.on('appLoaded', function() {
 		},
 		toList: function() {
 			return App.toList(["white", "black", "blue"]);
+		},
+		toMap: function() {
+			return App.toMap({name: "Rolando SM", email: "rsantamaria@jwebsocket.org", age: 28});
 		}
 	});
 
