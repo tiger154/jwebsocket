@@ -26,30 +26,30 @@ import java.util.Map;
  */
 public interface IQuotaProvider {
 
-	/**
-	 *
-	 * @param aType
-	 * @return
-	 * @throws Exception
-	 */
-	public IQuota getQuotaByIdentifier(String aType) throws Exception;
+    /**
+     *
+     * @param aType
+     * @return
+     * @throws Exception
+     */
+    public IQuota getQuotaByIdentifier(String aType) throws Exception;
 
-	/**
-	 *
-	 * @return
-	 */
-	public Map<String, IQuota> getActiveQuotas();
+    /**
+     *
+     * @return
+     */
+    public Map<String, IQuota> getActiveQuotas();
 
-	/**
-	 *
-	 * @return
-	 */
-	public Map<String, IQuotaStorage> getActiveStorages();
+    /**
+     *
+     * @return
+     */
+    public Map<String, IQuotaStorage> getActiveStorages();
 
-	/**
-	 *
-	 * @param aPos
-	 * @return
-	 */
-	public String getIdentifier(int aPos);
+    /**
+     *
+     * @param aPos
+     * @return
+     */
+    public String getIdentifier(int aPos);
 }

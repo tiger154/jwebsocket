@@ -36,6 +36,7 @@ import org.jwebsocket.logging.Logging;
 /**
  *
  * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class TomcatConnector extends BaseConnector {
 
