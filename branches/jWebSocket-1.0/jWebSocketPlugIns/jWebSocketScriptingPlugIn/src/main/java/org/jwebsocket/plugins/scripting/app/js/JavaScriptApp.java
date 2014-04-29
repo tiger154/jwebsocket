@@ -79,7 +79,6 @@ public class JavaScriptApp extends BaseScriptApp {
 	 */
 	@Override
 	public void notifyEvent(final String aEventName, final Object[] aArgs) {
-		mLog.debug("Notifying '" + aEventName + "' event in '" + getName() + "' js app...");
 		Settings lSettings = (Settings) JWebSocketBeanFactory.getInstance(ScriptingPlugIn.NS)
 				.getBean("org.jwebsocket.plugins.scripting.settings");
 
