@@ -27,14 +27,14 @@
 		-->
 		<meta http-equiv="Content-Language" content="en">
 		<title>jWebSocket ScriptingPlugIn Demo</title>
-		<link rel="stylesheet" type="text/css" href="../../../res/css/jwebsocket.css">
+		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
 
-		<script src="../../../lib/stomp/stomp.js" type="text/javascript"></script>
-		<script src="../../../res/js/jWebSocket.js" type="text/javascript"></script>
+		<script src="../../lib/stomp/stomp.js" type="text/javascript"></script>
+		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
 		<!--<script src="../../../res/js/jWebSocketStomp.js" type="text/javascript"></script>-->
-		<script src="../../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
-		<script src="../../../res/js/jwsScriptingPlugIn.js" type="text/javascript"></script>
-		<script src="../../../res/js/jwsFilesystemPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsScriptingPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsFilesystemPlugIn.js" type="text/javascript"></script>
 
 		<script type="text/javascript" language="JavaScript">
 			
@@ -165,6 +165,10 @@
 							if (aToken.reqType == 'login'){
 								// fill app names in select
 								fillAppsSelect();
+							} else if (aToken.reqType == 'welcome'){
+								if (aToken.username != 'anonymous')
+								// fill app names in select
+									fillAppsSelect();
 							}
 						}
 					}
