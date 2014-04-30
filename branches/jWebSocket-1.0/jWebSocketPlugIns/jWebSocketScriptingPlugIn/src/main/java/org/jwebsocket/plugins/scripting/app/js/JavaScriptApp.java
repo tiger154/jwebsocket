@@ -66,11 +66,22 @@ public class JavaScriptApp extends BaseScriptApp {
 				throw new RuntimeException("The JavaScript application template does not exists in expected location: "
 						+ lAppTemplate.getPath() + "!");
 			}
-			// loading app
-			aScriptApp.eval(FileUtils.readFileToString(lAppTemplate));
+
+			eval(lAppTemplate.getPath());
 			mApp = aScriptApp.get("App");
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx);
+		}
+	}
+
+	@Override
+	public Object eval(String aScriptFile) throws Exception {
+		// loading app
+		if (getScriptApp().getFactory().getEngineName().toLowerCase().contains("nashorn")) {
+			// nashorn file load 
+			return getScriptApp().eval("load(\"" + aScriptFile.replace("\\", "/") + "\");");
+		} else {
+			return getScriptApp().eval(FileUtils.readFileToString(new File(aScriptFile)));
 		}
 	}
 
@@ -157,7 +168,7 @@ public class JavaScriptApp extends BaseScriptApp {
 
 		return lVersion;
 	}
-	
+
 	/**
 	 * {@inheritDoc }
 	 *

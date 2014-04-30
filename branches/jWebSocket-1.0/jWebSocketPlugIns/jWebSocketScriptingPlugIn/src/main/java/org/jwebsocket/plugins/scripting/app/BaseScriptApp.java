@@ -377,11 +377,18 @@ abstract public class BaseScriptApp {
 				+ File.separator + getScriptLanguageExt() + File.separator);
 
 		// add the script extension (example: .js)
-		String lFile = FileUtils.readFileToString(new File(aFile + "." + getScriptLanguageExt()));
-
-		// evaluate target file content
-		mScriptApp.eval(lFile);
+		String lScriptPath = aFile + "." + getScriptLanguageExt();
+		eval(lScriptPath);
 	}
+
+	/**
+	 * Evaluate an script file into the app script engine.
+	 * 
+	 * @param aScriptFilePath The script file path to evaluate.
+	 * @return
+	 * @throws Exception 
+	 */
+	public abstract Object eval(String aScriptFilePath) throws Exception;
 
 	/**
 	 * Send a token to a given connector.
