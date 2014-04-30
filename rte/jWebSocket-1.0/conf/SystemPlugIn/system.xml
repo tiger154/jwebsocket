@@ -82,7 +82,8 @@
 		<!-- optional if you intent to use EhCache to cache user repository -->
 		<!-- <property name="userCache" ref="authUserCache"/> -->
 	</bean>
-
+	
+	<!-- Datasource for MySQL authentication database acces -->
 	<bean id="jdbcAuthDataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
 		<property name="url" value="jdbc:mysql://localhost:3306/jwebsocket"/>
@@ -97,13 +98,13 @@
 		<property name="enableAuthorities" value="true"/>
 		<property name="authoritiesByUsernameQuery" value="
 			select users.loginname, roles.name
-			from demo_user_roles dur 
-			left join demo_roles roles on roles.role_id = dur.role_id 
-			left join demo_users users on users.user_id = dur.user_id 
+			from itemStorageDataSourceuser_roles dur 
+			left join itemStorageDataSourceroles roles on roles.role_id = dur.role_id 
+			left join itemStorageDataSourceusers users on users.user_id = dur.user_id 
 			where users.loginname = ?"/>
 		<property name="usersByUsernameQuery" value="
 			select loginname, password, enabled
-			from demo_users where loginname = ?"/>
+			from itemStorageDataSourceusers where loginname = ?"/>
 	</bean>	
 
 	<!-- authentication with groups only, RECOMMENDED for jWebSocket Plug-ins -->
@@ -113,20 +114,20 @@
 		<property name="enableAuthorities" value="false"/>
 		<property name="groupAuthoritiesByUsernameQuery" value="
 			select roles.role_id, roles.name, rights.name
-			from demo_users users
-			left join demo_user_roles ur on users.user_id = ur.user_id
-			left join demo_roles_rights rr on ur.role_id = rr.role_id
-			left join demo_roles roles on roles.role_id = rr.role_id
-			left join demo_rights rights on rights.right_id = rr.right_id
+			from users users
+			left join user_roles ur on users.user_id = ur.user_id
+			left join roles_rights rr on ur.role_id = rr.role_id
+			left join roles roles on roles.role_id = rr.role_id
+			left join rights rights on rights.right_id = rr.right_id
 			where users.loginname = ?"/>
 		<property name="authoritiesByUsernameQuery" value="
 			select users.loginname, roles.name
-			from demo_user_roles dur
-			left join demo_roles roles on roles.role_id = dur.role_id
-			left join demo_users users on users.user_id = dur.user_id
+			from user_roles dur
+			left join roles roles on roles.role_id = dur.role_id
+			left join users users on users.user_id = dur.user_id
 			where users.loginname = ?"/>
 		<property name="usersByUsernameQuery" value="
-			select loginname, password, enabled from demo_users
+			select loginname, password, enabled from users
 			where loginname = ?"/>
 	</bean>	
    
@@ -164,9 +165,9 @@
 		<property name="providers">
 			<list>
 				<!-- Select here the authentication provider -->
-				<!-- <ref local="ldapAuthProvider"/> -->
-				<!--<ref local="jdbcAuthProvider"/> -->
-				<ref local="staticAuthProvider"/>
+				<!-- <ref local="ldapAuthProvider"/> -->				 
+				<ref local="jdbcAuthProvider"/>
+				<!-- <ref local="staticAuthProvider"/> -->
 			</list>
 		</property>
 		<property name="eraseCredentialsAfterAuthentication" value="false" />
