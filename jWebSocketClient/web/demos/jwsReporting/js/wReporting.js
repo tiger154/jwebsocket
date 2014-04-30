@@ -66,7 +66,7 @@ $.widget("jws.reporting", {
 				});
 			},
 			OnWelcome: function(aEvent) {
-
+			
 			},
 			OnClose: function() {
 			},
@@ -96,7 +96,7 @@ $.widget("jws.reporting", {
 		w.reporting.eBtnUpTemplate.click(w.reporting.uploadTemplate);
 		w.reporting.eBtnCreateReport.click(w.reporting.createReport);
 		// DOM component events
-
+		
 		$("#report_list_cb").change(function() {
 			if (w.reporting.eCbReportList.value == "JDBCExampleReport") {
 				w.reporting.eTxaReportFields.disabled = true;
@@ -122,7 +122,7 @@ $.widget("jws.reporting", {
 			{name: 'Javier Alejandro', lastName: 'Puentes Serrano', age: 27, email: 'jpuentes@jwebsocket.org'}]";
 			w.reporting.eTxaReportParams.value = "{reportTitle: 'JWebSocket Contact Report'}";
 		}
-
+		
 		$("#demo_box").auth(lCallbacks);
 	},
 	/**
@@ -212,7 +212,7 @@ $.widget("jws.reporting", {
 			&& w.reporting.eTxaReportParams.value == "") {
 			if ((mWSC.isConnected())) {
 				if ("anonymous" != mWSC.getUsername() || null == mWSC.getUsername()) {
-
+					
 					var lReportName = "jWebSocketContactReport";
 					var lParams = {
 						reportTitle: 'JWebSocket Contact Report', 
@@ -225,42 +225,42 @@ $.widget("jws.reporting", {
 						age: 40, 
 						email: 'a.schulze@jwebsocket.org'
 					},
-
+					
 					{
 						name: 'Rolando', 
 						lastName: 'Santamaria Maso', 
 						age: 27, 
 						email: 'r.santamaria@jwebsocket.org'
 					},
-
+					
 					{
 						name: 'Lisdey', 
 						lastName: 'Perez', 
 						age: 27, 
 						email: 'l.perez@jwebsocket.org'
 					},
-
+					
 					{
 						name: 'Marcos', 
 						lastName: 'Gonzalez', 
 						age: 27, 
 						email: 'm.gonzalez@jwebsocket.org,'
 					},
-
+					
 					{
 						name: 'Osvaldo', 
 						lastName: 'Aguilar', 
 						age: 27, 
 						email: 'o.aguilar@jwebsocket.org,'
 					},
-
+					
 					{
 						name: 'Victor', 
 						lastName: 'Barzana', 
 						age: 27, 
 						email: 'v.barzana@jwebsocket.org,'
 					},
-
+					
 					{
 						name: 'Javier Alejandro', 
 						lastName: 'Puentes Serrano', 
@@ -334,11 +334,10 @@ $.widget("jws.reporting", {
 				true, "alert");
 		} else {
 			mWSC.fileLoad(aToken.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
+				decode: true,
 				OnSuccess: function(aToken) {
-					if (w.reporting.eReportFormat == "pdf")
-						window.open("data:application/pdf;base64," + aToken.data, "_blank");
-					else
-						window.open("data:application/zip;base64," + aToken.data, "_blank");
+					aToken.mime = "application/pdf";
+					saveData( aToken.filename, aToken.data, aToken.mime, (aToken['__binaryData'] ? 'base64' : 'plain'));   
 				}
 			});
 		}
@@ -370,3 +369,24 @@ $.widget("jws.reporting", {
 		}
 	}
 });
+
+function saveData(aFilename, aData, aMime) {  
+	// This code has been reused from:
+	// http://jwebsocket.org/jwsForum219/posts/list/15848.page
+	var aSaveLink = $('#saveLink').get(0) || $('<a id="saveLink" download=' + aFilename + '>').appendTo('body').get(0),    
+	lExceptionRef,    
+	lBlob,    
+	lURL;    
+	try {    
+		lBlob = jws.tools.b64toBlob(aData, aMime);   
+		lURL = (window.URL || window.webkitURL).createObjectURL(lBlob);  
+		if (lURL !== lURL + '') {    
+			return alert('createObjectURL returned ' + lURL);    
+		}    
+		
+		aSaveLink.href = lURL;    
+		aSaveLink.click();  
+	} catch (aException) {    
+		alert(lExceptionRef || aException);    
+	}    
+}   
