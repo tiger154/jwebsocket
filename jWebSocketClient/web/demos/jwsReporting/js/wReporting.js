@@ -337,7 +337,7 @@ $.widget("jws.reporting", {
 				decode: true,
 				OnSuccess: function(aToken) {
 					aToken.mime = "application/pdf";
-					saveData( aToken.filename, aToken.data, aToken.mime, (aToken['__binaryData'] ? 'base64' : 'plain'));   
+					saveData( aToken.filename, aToken.data, aToken.mime);   
 				}
 			});
 		}
