@@ -166,8 +166,8 @@
 			<list>
 				<!-- Select here the authentication provider -->
 				<!-- <ref local="ldapAuthProvider"/> -->				 
-				<ref local="jdbcAuthProvider"/>
-				<!-- <ref local="staticAuthProvider"/> -->
+				<!-- <ref local="jdbcAuthProvider"/> -->
+				<ref local="staticAuthProvider"/>
 			</list>
 		</property>
 		<property name="eraseCredentialsAfterAuthentication" value="false" />
