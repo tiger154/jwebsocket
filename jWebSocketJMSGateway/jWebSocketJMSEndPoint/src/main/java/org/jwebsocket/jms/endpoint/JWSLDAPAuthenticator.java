@@ -19,7 +19,6 @@
 package org.jwebsocket.jms.endpoint;
 
 import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
 import org.apache.log4j.Logger;
 import org.jwebsocket.ldap.ADTools;
 import org.jwebsocket.token.Token;
@@ -56,6 +55,17 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 		init(aLDAPURL, aBaseDNGroups, aBaseDNUsers, aBindUsername, aBindPassword);
 	}
 
+	/**
+	 *
+	 * @param aLDAPURL
+	 * @param aBaseDNGroups
+	 * @param aBaseDNUsers
+	 */
+	public JWSLDAPAuthenticator(String aLDAPURL, String aBaseDNGroups,
+			String aBaseDNUsers) {
+		init(aLDAPURL, aBaseDNGroups, aBaseDNUsers, null, null);
+	}
+
 	@Override
 	public void initialize() throws JMSEndpointException {
 	}
@@ -85,14 +95,38 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 		// ldap binding is done in initialize method
 		mBindUsername = aBindUsername;
 		mBindPassword = aBindPassword;
+	}
 
+	/**
+	 *
+	 * @param aLDAPURL
+	 * @param aBaseDNGroups
+	 * @param aBaseDNUsers
+	 */
+	public void init(String aLDAPURL, String aBaseDNGroups,
+			String aBaseDNUsers) {
+		init(aLDAPURL, aBaseDNGroups, aBaseDNUsers, null, null);
+	}
+
+	/**
+	 *
+	 * @param aUsername
+	 * @param aPassword
+	 * @return
+	 * @throws JMSEndpointException
+	 */
+	public boolean bind(String aUsername, String aPassword) throws JMSEndpointException {
 		if (null != mADTools) {
 			mLog.debug("Binding to LDAP...");
-			if (null != mADTools.login(mBindUsername, mBindPassword)) {
-				mLog.info(mBindUsername + " successfully bound to LDAP server.");
+			if (null != mADTools.login(aUsername, aPassword)) {
+				mLog.info(aUsername + " successfully bound to LDAP server.");
+				return true;
 			} else {
-				mLog.error(mBindUsername + " could not be bound to LDAP server.");
+				mLog.error(aUsername + " could not be bound to LDAP server.");
+				return false;
 			}
+		} else {
+			throw new JMSEndpointException("LDAP library not (yet) initialized.");
 		}
 	}
 
@@ -109,11 +143,16 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 		}
 		try {
 			mADTools.getDirContext(lUsername, lPassword);
+			// cut potential trailing @domain, return pure username
+			int lIdx = lUsername.indexOf("@");
+			if( lIdx > 0 ) {
+				lUsername = lUsername.substring(0, lIdx);
+			}
 			return lUsername;
 		} catch (NamingException lEx) {
 			// "sometimes" spaces are returned as 0x00 characters,
 			//  replace these to avoid subsequent JSON parse errors!
-			throw new JMSEndpointException(lEx.getMessage().replace((char)0, (char)32));
+			throw new JMSEndpointException(lEx.getMessage().replace((char) 0, (char) 32));
 		}
 	}
 

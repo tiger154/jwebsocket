@@ -258,6 +258,16 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketSSO</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketLDAP</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketCommon</artifactId>
 			<version>${project.version}</version>
 		</dependency>

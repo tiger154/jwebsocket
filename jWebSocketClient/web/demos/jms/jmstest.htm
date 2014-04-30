@@ -134,7 +134,7 @@
 						"getUser",
 						{accessToken: eAccessToken.value
 						},
-				"", // JSON
+						"", // JSON
 						{OnSuccess: function(aToken) {
 								log("Hello success: " + aToken.sourceId);
 							},
@@ -186,16 +186,20 @@
 				lWSC.forwardJSON(
 						eTargetId.value,
 						"org.jwebsocket.jms.demo",
-						"testAuth",
+						"testOAuth",
 						{accessToken: eAccessToken.value
 						},
 						"", // JSON
 						{OnSuccess: function(aToken) {
-								log("Auth success: " + aToken.sourceId);
+								log("SSO Auth success: " + aToken.sourceId);
 							},
 							OnFailure: function(aToken) {
-								log("Auth failure: " + aToken.msg);
-							}
+								log("SSO Auth failure: " + aToken.msg);
+							},
+							OnTimeout: function(aToken) {
+								log("SSO Auth timeout");
+							},
+							timeout: 3000
 						}
 				);
 			}
@@ -205,21 +209,21 @@
 				lWSC.forwardJSON(
 						eTargetId.value,
 						"org.jwebsocket.jms.demo",
-						"testAuth",
+						"testLDAP",
 						{username: eUsername.value,
 							password: ePassword.value
 						},
 						"", // JSON
 						{OnSuccess: function(aToken) {
-								log("SSO Auth success: " + aToken.sourceId);
+								log("LDAP Auth success: " + aToken.sourceId);
 							},
 							OnFailure: function(aToken) {
-								log("SSO Auth failure: " + aToken.msg);
+								log("LDAP Auth failure: " + aToken.msg);
 							},
 							OnTimeout: function() {
-								log("TestCaughtException timeout!");
+								log("LDAP timeout!");
 							},
-							timeout: 2000
+							timeout: 3000
 						}
 				);
 			}
