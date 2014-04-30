@@ -89,10 +89,10 @@ public class JMSListener implements MessageListener {
 		// TODO: and what happens if none of the above types?
 
 		try {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("JMS Gateway incoming message :'" + lJSON + "'");
-			}
 			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("JMS Gateway incoming message :'" + lToken.getLogString() + "'");
+			}
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();
 			if ("org.jwebsocket.jms.gateway".equals(lNS)) {

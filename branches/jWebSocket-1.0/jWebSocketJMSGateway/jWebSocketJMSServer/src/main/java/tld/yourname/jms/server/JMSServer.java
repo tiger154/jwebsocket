@@ -35,8 +35,6 @@ import org.jwebsocket.jms.endpoint.JMSEndpointException;
 import org.jwebsocket.jms.endpoint.JMSLogging;
 import org.jwebsocket.jms.endpoint.JWSAutoSelectAuthenticator;
 import org.jwebsocket.jms.endpoint.JWSEndPoint;
-import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
-import org.jwebsocket.jms.endpoint.JWSEndPointSender;
 import org.jwebsocket.jms.endpoint.JWSLDAPAuthenticator;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
 import org.jwebsocket.jms.endpoint.JWSOAuthAuthenticator;
@@ -89,13 +87,23 @@ public class JMSServer {
 		Configuration lConfig = null;
 		boolean lConfigLoaded;
 		try {
-			// loading properties files
-			lConfig = new PropertiesConfiguration("private.properties");
+			// try to load properties files from local folder or jar
+			String lPath ="JMSServer.properties";
+			mLog.debug("Tring to read properties from: " + lPath);
+			lConfig = new PropertiesConfiguration(lPath);
 		} catch (ConfigurationException ex) {
 		}
-
 		if (null == lConfig) {
-			mLog.info("Configuration file could not be opened.");
+			try {
+				// try to load properties files from JWEBSOCKET_HOME/conf/JMSPlugIn
+				String lPath = Tools.expandEnvVarsAndProps("${JWEBSOCKET_HOME}conf/JMSPlugIn/JMSServerPrivate.properties");
+				mLog.debug("Tring to read properties from: " + lPath);
+				lConfig = new PropertiesConfiguration(lPath);
+			} catch (ConfigurationException ex) {
+			}
+		}
+		if (null == lConfig) {
+			mLog.error("Configuration file could not be opened.");
 			return null;
 		}
 
@@ -111,6 +119,7 @@ public class JMSServer {
 		// get authentication information against jWebSocket
 		final String lJWSUsername = lConfig.getString("JWSUsername");
 		final String lJWSPassword = lConfig.getString("JWSPassword");
+		final boolean lFullTextLogging = lConfig.getBoolean("FullTextLogging", false);
 
 		// set up OAuth Authenticator
 		boolean lUseOAuth = lConfig.getBoolean("UseOAuth", false);
@@ -176,7 +185,7 @@ public class JMSServer {
 				+ "endpoint-id: " + lEndPointId);
 
 		// todo: Comment that for production purposes
-		JMSLogging.setFullTextLogging(true);
+		JMSLogging.setFullTextLogging(lFullTextLogging);
 
 		// instantiate a new jWebSocket JMS Gateway Client
 		try {
@@ -349,7 +358,7 @@ public class JMSServer {
 
 						Map<String, Object> lArgs = new FastMap<String, Object>();
 
-						String lUsername = null;
+						String lUsername;
 						int lCode = 0;
 						String lMessage = "Ok";
 						try {
@@ -384,7 +393,7 @@ public class JMSServer {
 
 						String lUsername = null;
 						try {
-							lUsername = lAuthenticator.authenticate(aToken);
+							lUsername = lLDAPAuthenticator.authenticate(aToken);
 						} catch (JMSEndpointException ex) {
 						}
 
@@ -409,8 +418,8 @@ public class JMSServer {
 
 						mLog.debug("Testing auto authenticator...");
 						Map<String, Object> lArgs = new FastMap<String, Object>();
-						
-						String lUsername = null;
+
+						String lUsername;
 						int lCode = 0;
 						String lMessage = "Ok";
 						try {

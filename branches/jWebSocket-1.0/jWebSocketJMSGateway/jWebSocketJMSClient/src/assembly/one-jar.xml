@@ -26,7 +26,6 @@
 				<include>org.netbeans.external:json-2</include>
 				<include>commons-lang:commons-lang</include>
 				<include>commons-logging:commons-logging</include>
-			
 				<include>commons-codec:commons-codec</include>
 				<include>commons-configuration:commons-configuration</include>
 				<include>org.apache.commons:commons-compress</include>

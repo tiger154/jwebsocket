@@ -222,9 +222,18 @@ public class OAuth extends OAuthBase {
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			if (null != lJSON) {
-				mUsername = (String) lJSON.get("login_name");
-				mFullname = (String) lJSON.get("full_user_name");
-				mEmail = (String) lJSON.get("email");
+				String lError = (String) lJSON.get("error");
+				if( null != lError) {
+					mReturnCode = -1;
+					mReturnMsg = lError + " on validating access token: " 
+							+ (String) lJSON.get("error_description");
+					return "{\"code\":-1, \"msg\":\""
+						+ mReturnMsg + "\"}";
+				} else {
+					mUsername = (String) lJSON.get("login_name");
+					mFullname = (String) lJSON.get("full_user_name");
+					mEmail = (String) lJSON.get("email");
+				}	
 			}
 			return lJSONString;
 		} catch (IOException lEx) {

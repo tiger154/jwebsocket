@@ -39,6 +39,7 @@ import javolution.util.FastMap;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.jwebsocket.jms.endpoint.JMSEndpointException;
 import org.jwebsocket.jms.endpoint.JMSLogging;
 import org.jwebsocket.jms.endpoint.JWSAutoSelectAuthenticator;
 import org.jwebsocket.jms.endpoint.JWSEndPoint;
@@ -174,20 +175,30 @@ public class JMSClient {
 		lProps.setProperty("log4j.appender.console.threshold", "DEBUG");
 		PropertyConfigurator.configure(lProps);
 
-		JMSLogging.setFullTextLogging(false);
-
+		// only for debug purposes
+		// JMSLogging.setFullTextLogging(true);
 		mLog.info("jWebSocket JMS Gateway Demo Client");
 
 		Configuration lConfig = null;
 		boolean lConfigLoaded;
 		try {
-			// loading properties files
-			lConfig = new PropertiesConfiguration("private.properties");
+			// try to load properties files from local folder or jar
+			String lPath ="JMSClient.properties";
+			mLog.debug("Tring to read properties from: " + lPath);
+			lConfig = new PropertiesConfiguration(lPath);
 		} catch (ConfigurationException ex) {
 		}
-
 		if (null == lConfig) {
-			mLog.info("Configuration file could not be opened.");
+			try {
+				// try to load properties files from JWEBSOCKET_HOME/conf/JMSPlugIn
+				String lPath = Tools.expandEnvVarsAndProps("${JWEBSOCKET_HOME}conf/JMSPlugIn/JMSClientPrivate.properties");
+				mLog.debug("Tring to read properties from: " + lPath);
+				lConfig = new PropertiesConfiguration(lPath);
+			} catch (ConfigurationException ex) {
+			}
+		}
+		if (null == lConfig) {
+			mLog.error("Configuration file could not be opened.");
 			return;
 		}
 
@@ -205,6 +216,7 @@ public class JMSClient {
 		// get authentication information against jWebSocket
 		final String lJWSUsername = lConfig.getString("JWSUsername");
 		final String lJWSPassword = lConfig.getString("JWSPassword");
+		final boolean lFullTextLogging = lConfig.getBoolean("FullTextLogging", false);
 
 		// set up OAuth Authenticator
 		boolean lUseOAuth = lConfig.getBoolean("UseOAuth", false);
@@ -232,6 +244,12 @@ public class JMSClient {
 					lOAuthPassword,
 					lOAuthTimeout
 			);
+			try{
+				lOAuthAuthenticator.authDirect(lOAuthUsername, lOAuthPassword);
+			} catch(JMSEndpointException lEx) {
+				mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: " 
+						+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+			}
 			lAuthenticator.addAuthenticator(lAuthenticator);
 		}
 
@@ -248,10 +266,15 @@ public class JMSClient {
 			lLDAPAuthenticator.init(
 					lLDAPURL,
 					lBaseDNGroups,
-					lBaseDNUsers,
-					lBindUsername,
-					lBindPassword
+					lBaseDNUsers
 			);
+			// to authenticatie the client, if required
+			try{
+				lLDAPAuthenticator.bind(lBindUsername, lBindPassword);
+			} catch(JMSEndpointException lEx) {
+				mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: " 
+						+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+			}
 			lAuthenticator.addAuthenticator(lLDAPAuthenticator);
 		}
 
@@ -270,7 +293,7 @@ public class JMSClient {
 				+ "endpoint-id: " + lEndPointId);
 
 		// todo: Comment that for production purposes
-		JMSLogging.setFullTextLogging(true);
+		JMSLogging.setFullTextLogging(lFullTextLogging);
 
 		try {
 			lJWSEndPoint = JWSEndPoint.getInstance(

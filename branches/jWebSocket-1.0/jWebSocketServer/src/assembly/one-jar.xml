@@ -21,12 +21,20 @@
 			<includes>
 				<include>${groupId}:${artifactId}</include>
 
-				<include>org.jwebsocket:jWebSocketDynamicSQL</include>
 				<!-- from jWebSocketDynamicSQL -->
+				<include>org.jwebsocket:jWebSocketDynamicSQL</include>
 				<include>org.apache.ddlutils:ddlutils</include>
 				<include>com.healthmarketscience.common:common-util</include>
 				<include>com.healthmarketscience.sqlbuilder:sqlbuilder</include>
-				
+
+				<!-- from jWebSocketSSO -->
+				<include>org.jwebsocket:jWebSocketSSO</include>
+				<include>org.apache.httpcomponents:httpclient</include>
+				<include>org.apache.httpcomponents:httpcore</include>
+
+				<!-- from jWebSocketLDAP -->
+				<include>org.jwebsocket:jWebSocketLDAP</include>
+																																				
 				<!-- from org.jwebsocket:jWebSocketCommon -->
 				<include>org.jwebsocket:jWebSocketCommon</include>
 				<include>javolution:javolution</include>

@@ -83,7 +83,15 @@ public class JWSOAuthAuthenticator implements IJWSAuthenticator {
 		mOAuth.setOAuthAppId(aOAuthAppId);
 		mOAuth.setOAuthAppSecret(aOAuthAppSecret);
 		mOAuth.setDefaultTimeout(aDefaultTimeout);
+	}
 
+	/**
+	 *
+	 * @param aUsername
+	 * @param aPassword
+	 * @throws org.jwebsocket.jms.endpoint.JMSEndpointException
+	 */
+	public void authDirect(String aUsername, String aPassword) throws JMSEndpointException {
 		mOAuthSessionId = mOAuth.getSSOSession(aUsername, aPassword, mDefautTimeout);
 		mLog.debug("Getting Session Cookie: " + mOAuthSessionId);
 		String lJSON = mOAuth.authSession(mOAuth.getSessionId(), mDefautTimeout);
