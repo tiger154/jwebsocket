@@ -1233,6 +1233,38 @@ String.prototype.getBytes = function () {
 //:d:en:Implements some required JavaScript tools.
 jws.tools = {
 	
+	//:m:*:b64toBlob
+	//:d:en:Converts a Base64 string to Blob
+	//:a:en::aBase64Data:String:The Base64 string
+	//:a:en::aContentType:String:The blob content type (MIME)
+	//:a:en::aSliceSize:Integer:The size of base64 string chunks for the Blob content
+	//:r:*:::Blob:The generated Blob object
+	b64toBlob: function (aBase64Data, aContentType, aSliceSize) {
+		// This code has been reused from:
+		// http://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+		aContentType = aContentType || '';
+		aSliceSize = aSliceSize || 512;
+
+		var lByteChars = atob(aBase64Data);
+		var lByteArrays = [];
+
+		for (var lOffset = 0; lOffset < lByteChars.length; lOffset += aSliceSize) {
+			var lSlice = lByteChars.slice(lOffset, lOffset + aSliceSize);
+
+			var lByteNumbers = new Array(lSlice.length);
+			for (var lIndex = 0; lIndex < lSlice.length; lIndex++) {
+				lByteNumbers[lIndex] = lSlice.charCodeAt(lIndex);
+			}
+
+			var lByteArray = new Uint8Array(lByteNumbers);
+
+			lByteArrays.push(lByteArray);
+		}
+
+		var lBlob = new Blob(lByteArrays, {type: aContentType});
+		return lBlob;
+	},
+	
 	//:m:*:str2bytes
 	//:d:en:Converts a string to byte array
 	//:a:en::aString:String:The string value to be converted to byte array
