@@ -637,6 +637,9 @@ public class TCPConnector extends BaseConnector {
 						lClose.setFrameType(WebSocketFrameType.CLOSE);
 						sendPacket(lClose);
 						// the streams are closed in the run method
+					} else if (WebSocketFrameType.PONG.equals(lPacket.getFrameType())){
+						// do nothing
+						// special support for IE issue
 					} else {
 						mLog.error("Unknown frame type '" + lPacket.getFrameType() + "' (" + mLogInfo + "), ignoring frame.");
 					}
