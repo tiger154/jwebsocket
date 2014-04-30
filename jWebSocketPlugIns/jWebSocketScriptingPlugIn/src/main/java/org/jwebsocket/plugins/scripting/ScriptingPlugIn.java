@@ -171,7 +171,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading '" + lAppName + "' application"));
 			}
 		}
-        
+
 		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STARTED, new Object[0]);
 		try {
 			// registering on message hub if running on a cluster
@@ -395,7 +395,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		if (aHotLoad && mApps.containsKey(aAppName)) {
 			try {
 				// loading app
-				mApps.get(aAppName).getEngine().eval(FileUtils.readFileToString(lBootstrap));
+				mApps.get(aAppName).eval(lBootstrap.getPath());
 			} catch (ScriptException lEx) {
 				mLog.error("Script applicaton '" + aAppName + "' failed to start: " + lEx.getMessage());
 				mApps.remove(aAppName);
@@ -426,14 +426,15 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				throw new Exception(lMsg);
 			}
 
+			final BaseScriptApp lApp = mApps.get(aAppName);
 			// loading application into security sandbox
 			Tools.doPrivileged(mSettings.getAppPermissions(aAppName, aAppPath),
 					new PrivilegedAction<Object>() {
 						@Override
 						public Object run() {
 							try {
-								// evaluating app content
-								lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
+								// loading app
+								lApp.eval(lBootstrap.getPath());
 								return null;
 							} catch (Exception lEx) {
 								mLog.error("Script applicaton '" + aAppName + "' failed to start: " + lEx.getMessage());
