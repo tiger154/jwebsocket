@@ -90,7 +90,8 @@ jws.tests.Reporting = {
 
 				jws.Tests.getAdminTestConn().fileLoad(lResponse.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
 					OnSuccess: function(aToken) {
-						window.open("data:application/pdf;base64," + aToken.data, "_blank");
+						aToken.mime = "application/pdf";
+						saveData( aToken.filename, aToken.data, aToken.mime);   
 					}
 				});
 			});
@@ -133,7 +134,8 @@ jws.tests.Reporting = {
 
 				jws.Tests.getAdminTestConn().fileLoad(lResponse.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
 					OnSuccess: function(aToken) {
-						window.open("data:application/pdf;base64," + aToken.data, "_blank");
+						aToken.mime = "application/pdf";
+						saveData( aToken.filename, aToken.data, aToken.mime);   
 					}
 				});
 			});
@@ -205,3 +207,24 @@ jws.tests.Reporting = {
 		this.testGenerateJDBCReport(lReportName, null, null);
 	}
 };
+
+function saveData(aFilename, aData, aMime) {  
+	// This code has been reused from:
+	// http://jwebsocket.org/jwsForum219/posts/list/15848.page
+	var aSaveLink = $('#saveLink').get(0) || $('<a id="saveLink" download=' + aFilename + '>').appendTo('body').get(0),    
+	lExceptionRef,    
+	lBlob,    
+	lURL;    
+	try {    
+		lBlob = jws.tools.b64toBlob(aData, aMime);   
+		lURL = (window.URL || window.webkitURL).createObjectURL(lBlob);  
+		if (lURL !== lURL + '') {    
+			return alert('createObjectURL returned ' + lURL);    
+		}    
+		
+		aSaveLink.href = lURL;    
+		aSaveLink.click();  
+	} catch (aException) {    
+		alert(lExceptionRef || aException);    
+	}    
+}   
