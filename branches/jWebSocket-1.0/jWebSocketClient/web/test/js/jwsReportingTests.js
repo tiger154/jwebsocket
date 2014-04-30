@@ -80,7 +80,7 @@ jws.tests.Reporting = {
 					return(null != lResponse);
 				},
 				lSpec,
-				1500
+				5000
 				);
 
 			// check the result 
@@ -123,7 +123,7 @@ jws.tests.Reporting = {
 					return(null != lResponse);
 				},
 				lSpec,
-				1500
+				5000
 				);
 
 			// check the result 
