@@ -126,7 +126,6 @@ public class ItemStorageQuota implements IQuotaStorage {
         // getting the item definitions factory
         IItemFactory lItemFactory = lCollectionProvider.getItemStorageProvider().getItemFactory();
         // checking if quota collection already exists
-
         if (!lCollectionProvider.collectionExists(mCollectionQuotaName)) {
             // check if definition already exists
             if (!lItemFactory.supportsType(mQuotaDefinition.getType())) {
@@ -138,9 +137,9 @@ public class ItemStorageQuota implements IQuotaStorage {
             try {
                 lQuotaCollection = lCollectionProvider
                         .getCollection(mCollectionQuotaName, mQuotaDefinition.getType());
-            } catch (Exception exp) {
-                lQuotaCollection = lCollectionProvider
-                        .getCollection(mCollectionQuotaName, mQuotaDefinition.getType());
+            } catch (Exception aExp) {
+                mLog.error("Error getting the "+mCollectionQuotaName+" collection "
+                        + "the server return the following error:" + aExp.getMessage());
             }
 
             lQuotaCollection.setAccessPassword(Tools.getMD5(mCollectionAccessPassword));
@@ -163,10 +162,9 @@ public class ItemStorageQuota implements IQuotaStorage {
                 lQuotaInstCollection = lCollectionProvider
                         .getCollection(mCollectionQuotaInstanceName,
                                 mquotaInstanceDefinition.getType());
-            } catch (Exception exp) {
-                lQuotaInstCollection = lCollectionProvider
-                        .getCollection(mCollectionQuotaInstanceName,
-                                mquotaInstanceDefinition.getType());
+            } catch (Exception aExp) {
+                mLog.error("Error getting the "+mCollectionQuotaInstanceName+" collection "
+                        + "the server return the following error:" + aExp.getMessage());
             }
 
             lQuotaInstCollection.setAccessPassword(Tools.getMD5(mCollectionAccessPassword));
