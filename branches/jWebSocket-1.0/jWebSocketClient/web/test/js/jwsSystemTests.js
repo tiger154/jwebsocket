@@ -58,6 +58,9 @@ jws.tests.System = {
                     }
                 });
             });
+			waitsFor( function(){
+				return lConn.isConnected() == false;
+			});
         });
     },
     // this spec tests the login function of the system plug-in
@@ -95,6 +98,9 @@ jws.tests.System = {
                     }
                 });
             });
+			waitsFor( function(){
+				return lConn.isConnected() == false;
+			});
         });
     },
     // this spec tests the send method of the system plug-in by sending
@@ -178,11 +184,15 @@ jws.tests.System = {
                     lSpec,
                     aOpenTimeout + 500
                     );
-
             runs(function() {
                 expect(lStatus).toEqual(aExpectedResult);
-                lConn.close();
+                lConn.close({
+					forceClose: true
+				});
             });
+			waitsFor( function(){
+				return lConn.isConnected() == false;
+			});
         });
     },
     // this spec tests the response timeout behaviour of the client

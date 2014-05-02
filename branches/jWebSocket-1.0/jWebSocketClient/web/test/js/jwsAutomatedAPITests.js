@@ -49,6 +49,7 @@ jws.tests.AutomatedAPI = {
 								OnResponse: function(aServerPlugIn) {
 									jws.tests.AutomatedAPI.mSpecs =
 											lAPIPlugIn.createSpecFromAPI(lConn, aServerPlugIn);
+									lConn.close();
 									lDone = true;
 								},
 								OnTimeout: function() {
