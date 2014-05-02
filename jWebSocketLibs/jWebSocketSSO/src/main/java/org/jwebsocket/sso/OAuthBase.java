@@ -293,11 +293,26 @@ public class OAuthBase implements IOAuth {
 		return mAccessToken;
 	}
 
+	/**
+	 *
+	 * @param aUsername
+	 * @param aPassword
+	 * @param aTimeout
+	 * @return
+	 * @throws SSOException
+	 */
 	@Override
 	public String getSSOSession(String aUsername, String aPassword, long aTimeout) throws SSOException {
 		throw new SSOException("Not implemented.");
 	}
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @param aTimeout
+	 * @return
+	 * @throws SSOException
+	 */
 	@Override
 	public String authSession(String aSessionId, long aTimeout) throws SSOException {
 		throw new SSOException("Not implemented.");

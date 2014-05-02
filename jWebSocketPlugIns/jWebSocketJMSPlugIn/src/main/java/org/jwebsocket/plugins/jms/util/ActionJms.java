@@ -25,45 +25,45 @@ package org.jwebsocket.plugins.jms.util;
 public enum ActionJms {
 
 	/**
-	 *
+	 * Listen, subscribe
 	 */
 	LISTEN("listenJms"),
 	/**
-	 *
+	 * Listen message, subscribe
 	 */
 	LISTEN_MESSAGE("listenJmsMessage"),
 	/**
-	 *
+	 * Un-subscribe
 	 */
 	UNLISTEN("unlistenJms"),
 	/**
-	 *
+	 * send text
 	 */
 	SEND_TEXT("sendJmsText"),
 	/**
-	 *
+	 * send JMS text message
 	 */
 	SEND_TEXT_MESSAGE("sendJmsTextMessage"),
 	/**
-	 *
+	 * send JMS map
 	 */
 	SEND_MAP("sendJmsMap"),
 	/**
-	 *
+	 * send JMS map message
 	 */
 	SEND_MAP_MESSAGE("sendJmsMapMessage"),
 	/**
-	 *
+	 * identify, usually send as broadcast ping expecting pongs
 	 */
 	IDENTIFY("identify"),
 	/**
-	 *
+	 * ping, expecting pong
 	 */
 	PING("ping");
 	private final String mValue;
 
-	private ActionJms(String value) {
-		this.mValue = value;
+	private ActionJms(String aValue) {
+		mValue = aValue;
 	}
 
 	/**

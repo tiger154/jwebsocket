@@ -77,6 +77,12 @@ public class OAuth extends OAuthBase {
 		mDefaultTimeout = aDefaultTimeout;
 	}
 
+	/**
+	 *
+	 * @param aJSON
+	 * @return
+	 * @throws IOException
+	 */
 	public Map<String, Object> parseJSON(String aJSON) throws IOException {
 		ObjectMapper lMapper = new ObjectMapper();
 		Map<String, Object> lJSON;

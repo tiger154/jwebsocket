@@ -138,7 +138,7 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 	public String authenticate(Token aToken) throws JMSEndpointException {
 		String lUsername = aToken.getString("username");
 		String lPassword = aToken.getString("password");
-		if (null == lUsername && null == lPassword) {
+		if (null == lUsername || null == lPassword) {
 			return null;
 		}
 		try {

@@ -32,6 +32,10 @@ public class Main {
 
 	static final Logger mLog = Logger.getLogger(Main.class);
 
+	/**
+	 *
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
 		// set up log4j logging
