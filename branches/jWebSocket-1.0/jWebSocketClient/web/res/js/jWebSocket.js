@@ -2534,31 +2534,26 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	forceClose: function( aOptions ) {
 		// if client closes usually no event is fired
 		// here you optionally can fire it if required in your app!
-		var lFireClose = false;
+		var lFireClose = (aOptions || {}).fireClose || false;
 		// turn on isExplicitClose flag to not auto re-connect in case
 		// of an explicit, i.e. desired client side close operation
 		if( this.fReliabilityOptions ) {
 			this.fReliabilityOptions.isExplicitClose = true;
 		}
+		if( this.fConn ) {
+			if( this.fConn.readyState === jws.OPEN
+				|| this.fConn.readyState === jws.CONNECTING ) {
+				this.fConn.close();
+				this.processClosed();
+			}
+		}
 		if( aOptions ) {
-			if( aOptions.fireClose && this.fConn.onclose ) {
+			if( lFireClose && this.fConn.onclose ) {
 				// TODO: Adjust to event fields 
 				// if such are delivered in real event
 				var lEvent = {};
 				this.fConn.onclose( lEvent );
 			}
-		}
-		if( this.fConn ) {
-			// reset listeners to prevent any kind of potential memory leaks.
-			this.fConn.onopen = null;
-			this.fConn.onmessage = null;
-			this.fConn.onclose = null;
-			if( this.fConn.readyState === jws.OPEN
-				|| this.fConn.readyState === jws.CONNECTING ) {
-				this.fConn.close();
-			}
-			// TODO: should be called only if client was really opened before
-			this.processClosed();
 		}
 		// explicitely reset fConn to "null"
 		this.fConn = null;
