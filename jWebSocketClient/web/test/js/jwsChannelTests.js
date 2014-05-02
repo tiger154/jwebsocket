@@ -494,7 +494,9 @@ jws.tests.Channels = {
 							}
 					);
 				}
-
+				
+				expect(lPubsCreated).toEqual(lPubCnt);
+				
 				for (var lSubIdx = 0; lSubIdx < lSubCnt; lSubIdx++) {
 					var lChId = "ch_" + (lSubIdx + 1);
 					jws.console.log("Closing subscriber ch_" + lChId + "...");
@@ -502,10 +504,29 @@ jws.tests.Channels = {
 						timeout: 1000
 					});
 				}
-
-				expect(lPubsCreated).toEqual(lPubCnt);
+				for (var lPubIdx = 0; lPubIdx < lPubCnt; lPubIdx++) {
+					var lChId = "ch_" + (lPubIdx + 1);
+					jws.console.log("Closing publisher ch_" + lChId + "...");
+					lPubs[ lPubIdx ].client.close({
+						timeout: 1000
+					});
+				}
 			});
-
+			
+			waitsFor(function(){
+				for (var lSubIdx = 0; lSubIdx < lSubCnt; lSubIdx++) {
+					if (lSubs[ lSubIdx ].client.isConnected()){
+						return false;
+					}
+				}
+				for (var lPubIdx = 0; lPubIdx < lPubCnt; lPubIdx++) {
+					if (lPubs[ lPubIdx ].client.isConnected())
+						return false;
+				}
+				
+				return true;
+			}, 'closing channels connections',
+			5000);
 		});
 	},
 	// this spec tests the create method for a new channel
