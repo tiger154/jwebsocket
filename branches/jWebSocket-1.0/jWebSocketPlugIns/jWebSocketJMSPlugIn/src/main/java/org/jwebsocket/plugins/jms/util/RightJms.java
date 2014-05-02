@@ -25,15 +25,15 @@ package org.jwebsocket.plugins.jms.util;
 public enum RightJms {
 
 	/**
-	 *
+	 * Right to send JMS messages (write only)
 	 */
 	SEND("send"),
 	/**
-	 *
+	 * Right to listen on JMS messages (read only)
 	 */
 	LISTEN("listen"),
 	/**
-	 *
+	 * Right to send to and listen on JMS messages (read/write)
 	 */
 	SEND_AND_LISTEN("sendAndListen");
 	private final String mValue;

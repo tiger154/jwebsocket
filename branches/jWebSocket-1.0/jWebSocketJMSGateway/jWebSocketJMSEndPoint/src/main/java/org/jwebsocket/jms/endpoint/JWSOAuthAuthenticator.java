@@ -71,18 +71,33 @@ public class JWSOAuthAuthenticator implements IJWSAuthenticator {
 	 * @param aOAuthHost
 	 * @param aOAuthAppId
 	 * @param aOAuthAppSecret
-	 * @param aUsername
-	 * @param aPassword
 	 * @param aDefaultTimeout
 	 */
 	public void init(String aOAuthHost, String aOAuthAppId,
-			String aOAuthAppSecret, String aUsername, String aPassword,
+			String aOAuthAppSecret,
 			long aDefaultTimeout) {
 		mOAuth = new OAuth();
 		mOAuth.setOAuthHost(aOAuthHost);
 		mOAuth.setOAuthAppId(aOAuthAppId);
 		mOAuth.setOAuthAppSecret(aOAuthAppSecret);
 		mOAuth.setDefaultTimeout(aDefaultTimeout);
+	}
+
+	/**
+	 *
+	 * @param aOAuthHost
+	 * @param aOAuthAppId
+	 * @param aOAuthAppSecret
+	 * @param aUsername
+	 * @param aPassword
+	 * @param aDefaultTimeout
+	 * @deprecated
+	 */
+	@Deprecated
+	public void init(String aOAuthHost, String aOAuthAppId,
+			String aOAuthAppSecret, String aUsername, String aPassword,
+			long aDefaultTimeout) {
+		init(aOAuthHost, aOAuthAppId, aOAuthAppSecret, aDefaultTimeout);
 	}
 
 	/**

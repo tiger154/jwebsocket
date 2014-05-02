@@ -143,8 +143,6 @@ public class JMSServer {
 					lOAuthHost,
 					lOAuthAppId,
 					lOAuthAppSecret,
-					lOAuthUsername,
-					lOAuthPassword,
 					lOAuthTimeout
 			);
 			lAuthenticator.addAuthenticator(lOAuthAuthenticator);
@@ -156,16 +154,12 @@ public class JMSServer {
 		String lLDAPURL = lConfig.getString("LDAPURL");
 		String lBaseDNGroups = lConfig.getString("BaseDNGroups");
 		String lBaseDNUsers = lConfig.getString("BaseDNUsers");
-		String lBindUsername = lConfig.getString("BindUsername");
-		String lBindPassword = lConfig.getString("BindPassword");
 
 		if (lUseLDAP) {
 			lLDAPAuthenticator.init(
 					lLDAPURL,
 					lBaseDNGroups,
-					lBaseDNUsers,
-					lBindUsername,
-					lBindPassword
+					lBaseDNUsers
 			);
 			lAuthenticator.addAuthenticator(lLDAPAuthenticator);
 		}
@@ -391,19 +385,29 @@ public class JMSServer {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 
-						String lUsername = null;
+						Map<String, Object> lArgs = new FastMap<String, Object>();
+						
+						String lUsername;
+						int lCode = 0;
+						String lMessage = "Ok";
 						try {
 							lUsername = lLDAPAuthenticator.authenticate(aToken);
+							if (null == lUsername) {
+								lCode = -1;
+								lMessage = "User could not be authenticated!";
+							} else {
+								lArgs.put("username", lUsername);
+							}
 						} catch (JMSEndpointException ex) {
+							lCode = -1;
+							lMessage = ex.getClass().getSimpleName()
+							+ " on authentication!";
 						}
-
-						Map<String, Object> lArgs = new FastMap<String, Object>();
-						lArgs.put("username", lUsername);
-
+						
 						lJWSEndPoint.respondPayload(
 								aToken,
-								0, // return code
-								"Ok", // return message
+								lCode, // return code
+								lMessage, // return message
 								lArgs, // additional result fields
 								null); // payload
 					}

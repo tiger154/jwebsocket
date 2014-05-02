@@ -25,92 +25,91 @@ package org.jwebsocket.plugins.jms.util;
 public enum FieldJms {
 
 	/**
-	 *
+	 * connectionFactoryName
 	 */
 	CONNECTION_FACTORY_NAME("connectionFactoryName"),
 	/**
-	 *
+	 * destinationName
 	 */
 	DESTINATION_NAME("destinationName"),
 	/**
-	 *
+	 * pubSubDomain
 	 */
 	PUB_SUB_DOMAIN("pubSubDomain"),
 	/**
-	 *
+	 * text
 	 */
 	TEXT("text"),
 	/**
-	 *
+	 * map
 	 */
 	MAP("map"),
 	/**
-	 *
+	 * JMSCorrelationID
 	 */
 	JMS_HEADER_CORRELATION_ID("JMSCorrelationID"),
 	/**
-	 *
+	 * JMSReplyTo
 	 */
-	JMS_HEADER_REPLY_TO(
-			"JMSReplyTo"),
+	JMS_HEADER_REPLY_TO("JMSReplyTo"),
 	/**
-	 *
+	 * JMSType
 	 */
 	JMS_HEADER_TYPE("JMSType"),
 	/**
-	 *
+	 * JMSDestination
 	 */
 	JMS_HEADER_DESTINATION("JMSDestination"),
 	/**
-	 *
+	 * JMSMessageID
 	 */
 	JMS_HEADER_MESSAGE_ID("JMSMessageID"),
 	/**
-	 *
+	 * JMSDeliveryMode
 	 */
 	JMS_HEADER_DELIVERY_MODE("JMSDeliveryMode"),
 	/**
-	 *
+	 * JMSTimestamp
 	 */
 	JMS_HEADER_TIMESTAMP("JMSTimestamp"),
 	/**
-	 *
+	 * JMSRedelivered
 	 */
 	JMS_HEADER_REDELIVERED("JMSRedelivered"),
 	/**
-	 *
+	 * JMSExpiration
 	 */
 	JMS_HEADER_EXPIRATION("JMSExpiration"),
 	/**
-	 *
+	 * JMSPriority
 	 */
 	JMS_HEADER_PRIORITY("JMSPriority"),
 	/**
-	 *
+	 * msgPayLoad
 	 */
 	MESSSAGE_PAYLOAD("msgPayLoad"),
 	/**
-	 *
+	 * name
 	 */
 	NAME("name"),
 	/**
-	 *
+	 * code
 	 */
 	CODE("code"),
 	/**
-	 *
+	 * msg
 	 */
 	MSG("msg"),
 	/**
-	 *
+	 * event
 	 */
 	EVENT("event"),
 	/**
-	 *
+	 * jmsHeaderProperties
 	 */
 	JMS_HEADER_PROPERTIES("jmsHeaderProperties"),
 	/**
-	 *
+	 * destinationIdentifier
 	 */
 	DESTINATION_IDENTIFIER("destinationIdentifier");
 	private final String mValue;

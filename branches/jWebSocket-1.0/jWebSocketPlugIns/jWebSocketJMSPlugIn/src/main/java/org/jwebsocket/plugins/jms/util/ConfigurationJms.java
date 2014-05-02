@@ -25,41 +25,41 @@ package org.jwebsocket.plugins.jms.util;
 public enum ConfigurationJms {
 
 	/**
-	 *
+	 * connectionFactory
 	 */
 	CF_PREFIX("connectionFactory:"),
 	/**
-	 *
+	 * destination
 	 */
 	DESTINATION_PREFIX("destination:"),
 	/**
-	 *
+	 * name
 	 */
 	NAME("name"),
 	/**
-	 *
+	 * cfName
 	 */
 	CONNECTION_FACTORY_NAME("cfName"),
 	/**
-	 *
+	 * pubSubDomain
 	 */
 	PUB_SUB_DOMAIN("pubSubDomain"),
 	/**
-	 *
+	 * sessionAckMode
 	 */
 	SESSION_ACKNOWLEDGE_MODE("sessionAckMode"),
 	/**
-	 *
+	 * sessionTransacted
 	 */
 	SESSION_TRANSACTED("sessionTransacted"),
 	/**
-	 *
+	 * deliveryPersistent
 	 */
 	DELIVERY_PERSISTENT("deliveryPersistent");
 	private final String mValue;
 
-	private ConfigurationJms(String value) {
-		this.mValue = value;
+	private ConfigurationJms(String aValue) {
+		mValue = aValue;
 	}
 
 	/**

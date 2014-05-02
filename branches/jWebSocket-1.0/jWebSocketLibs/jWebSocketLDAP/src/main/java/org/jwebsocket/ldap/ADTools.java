@@ -115,6 +115,13 @@ public class ADTools {
 		}
 	}
 
+	/**
+	 *
+	 * @param aUsername
+	 * @param aPassword
+	 * @return
+	 * @throws NamingException
+	 */
 	public DirContext getDirContext(String aUsername, String aPassword) throws NamingException {
 		Properties lEnv = new Properties();
 		lEnv.put(Context.SECURITY_AUTHENTICATION, "simple");

@@ -29,7 +29,23 @@ package org.jwebsocket.sso;
  */
 public interface IOAuth {
 
+	/**
+	 *
+	 * @param aUsername
+	 * @param aPassword
+	 * @param aTimeout
+	 * @return
+	 * @throws SSOException
+	 */
 	String getSSOSession (String aUsername, String aPassword, long aTimeout) throws SSOException;
+
+	/**
+	 *
+	 * @param aSessionId
+	 * @param aTimeout
+	 * @return
+	 * @throws SSOException
+	 */
 	String authSession(String aSessionId, long aTimeout) throws SSOException;
 
 }

@@ -29,6 +29,10 @@ package org.jwebsocket.sso;
  */
 public class SSOException extends Exception {
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	public SSOException(String aMessage) {
 		super(aMessage);
 	}
