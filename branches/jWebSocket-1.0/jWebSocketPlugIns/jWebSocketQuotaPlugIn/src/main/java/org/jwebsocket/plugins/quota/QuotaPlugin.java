@@ -111,16 +111,16 @@ public class QuotaPlugin extends ActionPlugIn {
         }
 
         mSpringAppContext = getConfigBeanFactory();
-        mQuotaProvider = (QuotaProvider) mSpringAppContext.getBean("quotaProv"
-                + "ider");
-
-        mQuotaService = new QuotaServices(NS, mSpringAppContext);
     }
 
     @Override
     public void systemStarted() throws Exception {
         super.systemStarted();
-
+        
+        mQuotaProvider = (QuotaProvider) mSpringAppContext.getBean("quotaProv"
+                + "ider");
+        mQuotaService = new QuotaServices(NS, mSpringAppContext);
+        
         //listening the sent message
         try {
             // The initialization of the messageHub must be in a try because 

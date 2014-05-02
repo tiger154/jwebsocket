@@ -53,17 +53,22 @@ public class QuotaFilter extends TokenFilter {
     public QuotaFilter(FilterConfiguration configuration) {
         super(configuration);
 
-        mQuotaProvider = (QuotaProvider) JWebSocketBeanFactory.getInstance().getBean("quotaProvider");
-        mCache = (QuotaCacheManager) JWebSocketBeanFactory.getInstance().getBean("quotaCacheManager");
-
         if (mLog.isInfoEnabled()) {
             mLog.info("Quota Filter successfully instantiated.");
         }
     }
 
     @Override
+    public void systemStarted() throws Exception {
+        super.systemStarted(); 
+
+        mQuotaProvider = (QuotaProvider) JWebSocketBeanFactory.getInstance().getBean("quotaProvider");
+        mCache = (QuotaCacheManager) JWebSocketBeanFactory.getInstance().getBean("quotaCacheManager");
+    }
+
+    @Override
     public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-        super.processTokenIn(aResponse, aConnector, aToken); //To change body of generated methods, choose Tools | Templates.
+        super.processTokenIn(aResponse, aConnector, aToken); 
 
         String lNS = aToken.getNS();
         String lType = aToken.getType();
@@ -121,13 +126,16 @@ public class QuotaFilter extends TokenFilter {
                     if (lQValue <= 0) {
                         Token lResponse = getServer().createResponse(aToken);
                         lResponse.setCode(-1);
-                        lResponse.setString("msg", "Acces not allowed due to quota limmitation exceed");
+                        lResponse.setString("msg", "Acces not allowed to " + lNS
+                                + " due to quota limmitation exceed for user: "
+                                + lUsername);
                         getServer().sendToken(aConnector, lResponse);
                         aResponse.rejectMessage();
 
                         if (mLog.isDebugEnabled()) {
-                            mLog.debug("Quota(" + lQuotaObj.getType() + ") limit exceeded for user: "
-                                    + lUsername + ", on namespace:" + lNS + ". Access not allowed!");
+                            mLog.debug("Quota(" + lQuotaObj.getType() + ") limit"
+                                    + " exceeded for user: " + lUsername
+                                    + ", on namespace:" + lNS + ". Access not allowed!");
                         }
 
                     }

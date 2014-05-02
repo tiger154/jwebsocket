@@ -129,8 +129,9 @@ public abstract class BaseQuota implements IQuota {
         this.mQuotaStorage = aQuotaStorage;
         try {
             this.mQuotaStorage.initialize();
-        } catch (Exception e) {
-            mLog.error("Error to initialize the quota storage");
+        } catch (Exception aExp) {
+            mLog.error("Error to initialize the quota storage, the following"
+                    + " error was capture on the server: "+aExp.getMessage());
         }
     }
 
