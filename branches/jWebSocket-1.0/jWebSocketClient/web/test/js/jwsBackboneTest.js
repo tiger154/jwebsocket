@@ -108,7 +108,7 @@ jws.tests.Backbone = {
 
             var lResponse = null;
             var lToken = {id: aUser.id};
-            lToken.ns = jws.tests.UseradminEE.NS;
+            lToken.ns = jws.tests.Backbone.UseradminEE_NS;
             lToken.type = "removeUser";
             jws.tests.Backbone.getConn().sendToken(lToken, {
                 OnResponse: function(aToken) {
