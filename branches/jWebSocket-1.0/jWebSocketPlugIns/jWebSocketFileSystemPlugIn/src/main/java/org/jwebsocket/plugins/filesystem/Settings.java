@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.filesystem;
 
+import java.io.File;
 import java.util.Map;
 import javolution.util.FastMap;
 import org.jwebsocket.config.JWebSocketConfig;
@@ -30,67 +31,69 @@ import org.jwebsocket.config.JWebSocketConfig;
  */
 public class Settings {
 
-	private Map<String, String> mAliases = new FastMap<String, String>();
+    private Map<String, String> mAliases = new FastMap<String, String>();
 
-	/**
-	 * Gets the FSP aliases information (Map). Includes alias name and alias
-	 * directory path.
-	 *
-	 * @return the aliases
-	 */
-	public Map<String, String> getAliases() {
-		return mAliases;
-	}
+    /**
+     * Gets the FSP aliases information (Map). Includes alias name and alias
+     * directory path.
+     *
+     * @return the aliases
+     */
+    public Map<String, String> getAliases() {
+        return mAliases;
+    }
 
-	/**
-	 * Sets the FSP aliases information.
-	 *
-	 * @param aAliases the aliases to set
-	 */
-	public void setAliases(Map<String, String> aAliases) {
-		mAliases = aAliases;
-	}
+    /**
+     * Sets the FSP aliases information.
+     *
+     * @param aAliases the aliases to set
+     */
+    public void setAliases(Map<String, String> aAliases) {
+        mAliases = aAliases;
+    }
 
-	/**
-	 * Gets the directory path of a given alias name.
-	 *
-	 * @param aAliasName
-	 * @return
-	 */
-	public String getAliasPath(String aAliasName) {
-		return JWebSocketConfig.expandEnvVarsAndProps(mAliases.get(aAliasName));
-	}
+    /**
+     * Gets the directory path of a given alias name.
+     *
+     * @param aAliasName
+     * @return
+     */
+    public String getAliasPath(String aAliasName) {
+        return JWebSocketConfig.expandEnvVarsAndProps(mAliases.get(aAliasName));
+    }
 
-	/**
-	 * Gets the alias name of a given directory path.
-	 *
-	 * @param aPath
-	 * @return
-	 */
-	public String getAliasName(String aPath) {
-		for (Map.Entry<String, String> lEntry : mAliases.entrySet()) {
-			if (aPath.startsWith(lEntry.getValue())
-					|| aPath.startsWith(JWebSocketConfig.expandEnvVarsAndProps(lEntry.getValue()))) {
-				return lEntry.getKey();
-			}
-		}
+    /**
+     * Gets the alias name of a given directory path.
+     *
+     * @param aPath
+     * @return
+     */
+    public String getAliasName(String aPath) {
+        for (Map.Entry<String, String> lEntry : mAliases.entrySet()) {
+            String lAlias = lEntry.getValue().replace("/", File.separator);
+            String lExpandedAlias = JWebSocketConfig.expandEnvVarsAndProps(lAlias).replace("/", File.separator);
+            if (aPath.startsWith(lAlias)
+                    || aPath.startsWith(lExpandedAlias)) {
+                return lEntry.getKey();
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Gets the directory path of a given alias allowing to pass a default value
-	 * if data is not present.
-	 *
-	 * @param aAliasName
-	 * @param aDefaultValue
-	 * @return
-	 */
-	public String getAliasPath(String aAliasName, String aDefaultValue) {
-		String lValue = mAliases.get(aAliasName);
-		if (null == lValue) {
-			return aDefaultValue;
-		}
-		return lValue;
-	}
+    /**
+     * Gets the directory path of a given alias allowing to pass a default value
+     * if data is not present.
+     *
+     * @param aAliasName
+     * @param aDefaultValue
+     * @return
+     */
+    public String getAliasPath(String aAliasName, String aDefaultValue) {
+        String lValue = mAliases.get(aAliasName);
+        if (null == lValue) {
+            return aDefaultValue;
+        }
+        return lValue;
+    }
 }
