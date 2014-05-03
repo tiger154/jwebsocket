@@ -228,6 +228,8 @@ jws.LoadBalancerPlugIn = {
 				}
 			}
 		});
+		
+		return lServiceEndPoint;
 	}
 };
 
