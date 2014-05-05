@@ -220,3 +220,9 @@
 	height:5px;
 	border:solid;
 }
+#pdf_area{
+	margin-top: 40px;
+	margin-bottom: -80px;
+	width: 99.5%;
+    height: 300px;
+}
