@@ -2750,6 +2750,10 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	
 	registerFilters: function( ) {
 		var self = this;
+		// We need to remove the filters before adding them twice
+		if(this.fFilters && this.fFilters.length > 0){
+			this.fFilters = [];
+		}
 		this.addFilter({
 			
 			filterTokenOut: function( aToken ) {
