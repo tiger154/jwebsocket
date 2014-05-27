@@ -190,16 +190,16 @@ jws.tests.Backbone = {
     runSpecs: function() {
 
         var lUser = {
-            "firstname": "Firstname",
-            "lastname": "Lastname",
-            "email": "backbone_user@gmail.com",
-            "mobile": "+53 406 0012",
-            "username": "backbone_user",
-            "password": "Backbone_user00",
-            "securityQuestion": "Color",
-            "securityAnswer": "black",
-            "myInterest": "interest_02",
-            "subscriptions": [{"subscription": "sub_01", "media": "media_01"}, {"subscription": "sub_02", "media": "media_03"}]
+            firstname: "Firstname",
+            lastname: "Lastname",
+            email: "backbone_user@gmail.com",
+            mobile: "+53 406 0012",
+            username: "backbone_user",
+            password: "Backbone_user00",
+            securityQuestion: "Color",
+            securityAnswer: "black",
+            myInterest: "interest_02",
+            subscriptions: [{"subscription": "sub_01", "media": "media_01"}, {"subscription": "sub_02", "media": "media_03"}]
         };
 
         this.testLogon("alexander", "A.schulze0");
