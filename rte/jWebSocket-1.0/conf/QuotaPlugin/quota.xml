@@ -2,184 +2,193 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
 	
-	<bean id="quotaMongoStorage" class="org.jwebsocket.plugins.quota.storage.StorageQuotaMongo">
-		<property name="host">
-			<value>localhost</value>
-		</property>
+    <bean id="quotaMongoStorage" class="org.jwebsocket.plugins.quota.storage.StorageQuotaMongo">
+        <property name="host">
+            <value>localhost</value>
+        </property>
 		
-		<property name="port">
-			<value>27017</value>
-		</property>
+        <property name="port">
+            <value>27017</value>
+        </property>
 		
-		<property name="databaseName">
-			<value>quotaPlugin</value>
-		</property>
+        <property name="databaseName">
+            <value>quotaPlugin</value>
+        </property>
 		
-		<property name="user">
-			<value>adminmongo</value>
-		</property>
+        <property name="user">
+            <value>adminmongo</value>
+        </property>
 		
-		<property name="password">
-			<value>adminmongo..</value>
-		</property>
-	</bean>
+        <property name="password">
+            <value>adminmongo..</value>
+        </property>
+    </bean>
 
-	<!-- itemStorage settings -->
-	<bean id="quotaItemStorage" class="org.jwebsocket.plugins.quota.storage.ItemStorageQuota">
-		<property name="collectionQuotaName" value="jws_plugins_quota_quota"/>
-		<property name="collectionQuotaInstanceName" value="jws_plugins_quota_quotaInstance"/>
-		<property name="quotaDefinition" ref="quotaDefinition" />
-		<property name="quotaInstanceDefinition" ref="quotaInstanceDefinition" />
-		<property name="rootUser" value="root"/>
-		<property name="collectionAccessPassword" value="root"/>
-		<property name="collectionSecretPassword" value="root"/>
-	</bean>
+    <!-- itemStorage settings -->
+    <bean id="quotaItemStorage" class="org.jwebsocket.plugins.quota.storage.ItemStorageQuota">
+        <property name="collectionQuotaName" value="jws_plugins_quota_quota"/>
+        <property name="collectionQuotaInstanceName" value="jws_plugins_quota_quotaInstance"/>
+        <property name="quotaDefinition" ref="quotaDefinition" />
+        <property name="quotaInstanceDefinition" ref="quotaInstanceDefinition" />
+        <property name="rootUser" value="root"/>
+        <property name="collectionAccessPassword" value="root"/>
+        <property name="collectionSecretPassword" value="root"/>
+    </bean>
 
 
-	<bean id="quotaDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
-		<property name="type" value="org.jwebsocket.plugins.quota.Quota" />
-		<property name="primaryKeyAttribute" value="id" />
-		<property name="attributeTypes">
-			<map>
-				<entry key="uuid" value="string"/>
-				<entry key="ns" value="string"/>
-				<entry key="quotaType" value="string"/>
-				<entry key="quotaIdentifier" value="string"/>
-				<entry key="value" value="long"/>
-				<entry key="actions" value="string"/>
-				<entry key="instance" value="string"/>
-				<entry key="instanceType" value="string"/>
-			</map>
-		</property>
-	</bean>
+    <bean id="quotaDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
+        <property name="type" value="org.jwebsocket.plugins.quota.Quota" />
+        <property name="primaryKeyAttribute" value="id" />
+        <property name="attributeTypes">
+            <map>
+                <entry key="uuid" value="string"/>
+                <entry key="ns" value="string"/>
+                <entry key="quotaType" value="string"/>
+                <entry key="quotaIdentifier" value="string"/>
+                <entry key="value" value="long"/>
+                <entry key="actions" value="string"/>
+                <entry key="instance" value="string"/>
+                <entry key="instanceType" value="string"/>
+            </map>
+        </property>
+    </bean>
 
-	<bean id="quotaInstanceDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
-		<property name="type" value="org.jwebsocket.plugins.quota.QuotaInstance" />
-		<property name="primaryKeyAttribute" value="id" />
-		<property name="attributeTypes">
-			<map>
-				<entry key="uuidQuota" value="string"/>
-				<entry key="instance" value="string"/>
-				<entry key="instanceType" value="string"/>
-				<entry key="value" value="long"/>
-			</map>
-		</property>
-	</bean>
-	<!-- End of itemStorage settings -->
-
+    <bean id="quotaInstanceDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
+        <property name="type" value="org.jwebsocket.plugins.quota.QuotaInstance" />
+        <property name="primaryKeyAttribute" value="id" />
+        <property name="attributeTypes">
+            <map>
+                <entry key="uuidQuota" value="string"/>
+                <entry key="instance" value="string"/>
+                <entry key="instanceType" value="string"/>
+                <entry key="value" value="long"/>
+            </map>
+        </property>
+    </bean>
+    <!-- End of itemStorage settings -->
+    <!-- ItemStorageQuotaLogs this feature will be activated after the RC2 release. 
+    <bean id="LogsManager" class="org.jwebsocket.plugins.quota.utils.LogsManager">
+        <property name="storageQuotaLogs" ref="quotaLogsItemStorage" />
+    </bean>
+    <bean id="quotaLogsItemStorage" class="org.jwebsocket.plugins.quota.storage.ItemStorageLogQuota">
+        <property name="collectionQuotaLogsName" value="jws_plugins_quota_logs"/>
+        <property name="quotaLogsDefinition" ref="quotaLogsDefinition" />
+        <property name="rootUser" value="root"/>
+        <property name="collectionAccessPassword" value="root"/>
+        <property name="collectionSecretPassword" value="root"/>
+    </bean>
 	
-	<!-- all QuotaCountDown here -->
-	<bean id="quotaCountDown" class="org.jwebsocket.plugins.quota.definitions.QuotaCountdown">
-		<property name="storage" ref="quotaItemStorage" />
-		<property name="quotaType">
-			<value>CountDown</value>
-		</property>
-		<property name="quotaIdentifier">
-			<value>CountDown</value>
-		</property>
-		<property name="defaultReduceValue">
-			<value>1</value>
-		</property>
-		<property name="defaultIncreaseValue"> 
-			<value>1</value>
-		</property>		
-	</bean>
-	
-	<bean id="quotaCountDownReduce5" class="org.jwebsocket.plugins.quota.definitions.QuotaCountdown">
-		<property name="storage" ref="quotaMongoStorage" />
-		<property name="quotaType">
-			<value>CountDown</value>
-		</property>
-		<property name="quotaIdentifier">
-			<!-- This value is the quota Identifier -->
-			<value>CountDownReduce5</value>
-		</property>
-		<property name="defaultReduceValue">
-			<value>5</value>
-		</property>
-		<property name="defaultIncreaseValue"> 
-			<value>5</value>
-		</property>		
-	</bean>
-	<!-- End definition of QuotaCoundDown -->
+    <bean id="quotaLogsDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
+        <property name="type" value="org.jwebsocket.plugins.quota.logs" />
+        <property name="primaryKeyAttribute" value="id" />
+        <property name="attributeTypes">
+            <map>
+                <entry key="instance" value="string"/>
+                <entry key="namespace" value="string"/>
+                <entry key="action" value="string"/>
+                <entry key="date" value="string"/>
+                <entry key="code" value="string"/>
+                
+            </map>
+        </property>
+    </bean>
+	-->
+    <!-- End of ItemStorageQuotaLogs settings -->
+    
+    <!-- all QuotaCountDown here -->
+    <bean id="quotaCountDown" class="org.jwebsocket.plugins.quota.definitions.QuotaCountdown">
+        <property name="storage" ref="quotaItemStorage" />
+        <property name="quotaType">
+            <value>CountDown</value>
+        </property>
+        <property name="quotaIdentifier">
+            <value>CountDown</value>
+        </property>
+        <property name="defaultReduceValue">
+            <value>1</value>
+        </property>
+        <property name="defaultIncreaseValue"> 
+            <value>1</value>
+        </property>		
+    </bean>
 	
         
-	<!-- QuotaInterval definition here -->
-	<bean id="quotaIntervalDaily" class="org.jwebsocket.plugins.quota.definitions.QuotaInterval">
-		<property name="storage" ref="quotaMongoStorage" />
-		<property name="quotaType">
-			<value>Interval</value>
-		</property>
-		<property name="quotaIdentifier">
-			<!-- This value is the quota Identifier -->
-			<value>IntervalDaily</value>
-		</property>
-		<property name="defaultReduceValue">
-			<value>1</value>
-		</property>
-		<property name="defaultIncreaseValue"> 
-			<value>1</value>
-		</property>
-		<property name="interval" >
-			<bean class="org.jwebsocket.plugins.quota.utils.Interval">
-				<property name="startDate">
-					<value>2</value>
-				</property>
-				<property name="endDate">
-					<value>16</value>
-				</property>
-				<property name="strTointervalType">
-					<value>Daily</value>
-				</property>
-			</bean>
-		</property> 
-	</bean>
-	<!-- End definitions for QuotaInterval -->
+    <!-- QuotaInterval definition here -->
+    <bean id="quotaIntervalDaily" class="org.jwebsocket.plugins.quota.definitions.QuotaInterval">
+        <property name="storage" ref="quotaItemStorage" />
+        <property name="quotaType">
+            <value>Interval</value>
+        </property>
+        <property name="quotaIdentifier">
+            <!-- This value is the quota Identifier -->
+            <value>IntervalDaily</value>
+        </property>
+        <property name="defaultReduceValue">
+            <value>1</value>
+        </property>
+        <property name="defaultIncreaseValue"> 
+            <value>1</value>
+        </property>
+        <property name="interval" >
+            <bean class="org.jwebsocket.plugins.quota.utils.Interval">
+                <property name="startDate">
+                    <value>2</value>
+                </property>
+                <property name="endDate">
+                    <value>16</value>
+                </property>
+                <property name="strTointervalType">
+                    <value>Daily</value>
+                </property>
+            </bean>
+        </property> 
+    </bean>
+    <!-- End definitions for QuotaInterval -->
         
-	<!-- Quota Diskspace definition -->
+    <!-- Quota Diskspace definition -->
         
-	<bean id="quotaDiskSpace" class="org.jwebsocket.plugins.quota.definitions.QuotaDiskSpace">
-		<property name="storage" ref="quotaItemStorage" />
-		<property name="quotaType">
-			<value>DiskSpace</value>
-		</property>
-		<property name="quotaIdentifier">
-			<value>DiskSpace</value>
-		</property>
-		<property name="defaultReduceValue">
-			<value>100</value>
-		</property>
-		<property name="defaultIncreaseValue">
-			<!--Increase the Quota value in 500 MB -->
-			<value>100</value>
-		</property>		
-	</bean>
-	<!-- End definitions for Diskspace  -->
+    <bean id="quotaDiskSpace" class="org.jwebsocket.plugins.quota.definitions.QuotaDiskSpace">
+        <property name="storage" ref="quotaItemStorage" />
+        <property name="quotaType">
+            <value>DiskSpace</value>
+        </property>
+        <property name="quotaIdentifier">
+            <value>DiskSpace</value>
+        </property>
+        <property name="defaultReduceValue">
+            <value>100</value>
+        </property>
+        <property name="defaultIncreaseValue">
+            <!--Increase the Quota value in 500 MB -->
+            <value>100</value>
+        </property>		
+    </bean>
+    <!-- End definitions for Diskspace  -->
         
-	<bean id="quotaProvider" class="org.jwebsocket.plugins.quota.utils.QuotaProvider">	
-		<constructor-arg>
-			<!-- In this place the administrator must especifie all the active Quota  -->
-			<map>
-				<!--The key must be the same value of their quota identifier -->
-				<entry key="CountDown" value-ref="quotaCountDown" />
-				<!--entry key="CountDownReduce5" value-ref="quotaCountDownReduce5" />
-				<entry key="IntervalDaily" value-ref="quotaIntervalDaily" /-->
-			</map>
-		</constructor-arg>
-		<constructor-arg>
-			<map>
-				<!-- add here every Storage used by any one quota -->
-				<entry key="quotaItemStorage" value-ref="quotaItemStorage" />           
-			</map>	
-		</constructor-arg>
-	</bean>
+    <bean id="quotaProvider" class="org.jwebsocket.plugins.quota.utils.QuotaProvider">	
+        <constructor-arg>
+            <!-- In this place the administrator must especifie all the active Quota  -->
+            <map>
+                <!--The key must be the same value of their quota identifier -->
+                <entry key="CountDown" value-ref="quotaCountDown" />
+                <!--entry key="CountDownReduce5" value-ref="quotaCountDownReduce5" />
+                <entry key="IntervalDaily" value-ref="quotaIntervalDaily" /-->
+            </map>
+        </constructor-arg>
+        <constructor-arg>
+            <map>
+                <!-- add here every Storage used by any one quota -->
+                <entry key="quotaItemStorage" value-ref="quotaItemStorage" />           
+            </map>	
+        </constructor-arg>
+    </bean>
 	
-	<bean id="quotaCacheManager" class="org.jwebsocket.plugins.quota.utils.QuotaCacheManager">
-		<!-- This propertie give and expired time for cache items elemnts -->
-		<property name="expiredTime"> 
-			<value>120000</value>
-		</property>
-	</bean>
+    <bean id="quotaCacheManager" class="org.jwebsocket.plugins.quota.utils.QuotaCacheManager">
+        <!-- This propertie give and expired time for cache items elemnts -->
+        <property name="expiredTime"> 
+            <value>120000</value>
+        </property>
+    </bean>
 	
 	
 </beans>
