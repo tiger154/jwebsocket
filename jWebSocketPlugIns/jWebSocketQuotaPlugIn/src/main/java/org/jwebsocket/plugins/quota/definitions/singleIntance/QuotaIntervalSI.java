@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket Quota Filter (Community Edition, CE)
+//	jWebSocket - jWebSocket Quota Interval Single Instance (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)

@@ -52,9 +52,7 @@ public class QuotaPlugin extends ActionPlugIn {
     private QuotaServices mQuotaService;
     private JMSManager mMessageHub;
 
-    /**
-     *
-     */
+
     public static final String NS = JWebSocketServerConstants.NS_BASE + ".plugins.quota";
     private final static String VERSION = "1.0.0";
     private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
@@ -99,7 +97,8 @@ public class QuotaPlugin extends ActionPlugIn {
     }
 
     /**
-     *
+     * Constructor
+     * 
      * @param aConfiguration
      */
     public QuotaPlugin(PluginConfiguration aConfiguration) {
@@ -113,14 +112,20 @@ public class QuotaPlugin extends ActionPlugIn {
         mSpringAppContext = getConfigBeanFactory();
     }
 
+    /**
+     * Creating the listener to get the tokens or packet successfully 
+     * processed using JMSManager
+     * 
+     * @throws Exception 
+     */
     @Override
     public void systemStarted() throws Exception {
         super.systemStarted();
-        
+
         mQuotaProvider = (QuotaProvider) mSpringAppContext.getBean("quotaProv"
                 + "ider");
         mQuotaService = new QuotaServices(NS, mSpringAppContext);
-        
+
         //listening the sent message
         try {
             // The initialization of the messageHub must be in a try because 
@@ -165,7 +170,7 @@ public class QuotaPlugin extends ActionPlugIn {
 
                                 //if the actual token or action is not limited by the quota pass to the other quotaType
                                 if (!lActions.equals("*")) {
-                                    if (lActions.indexOf(lType) == -1) {
+                                    if (-1 == lActions.indexOf(lType)) {
                                         continue;
                                     }
                                 }
@@ -198,72 +203,77 @@ public class QuotaPlugin extends ActionPlugIn {
     @Override
     public Token invoke(WebSocketConnector aConnector, Token aToken) {
         String lType = aToken.getType();
-
         if (lType.equals("createQuota")) {
-            return mQuotaService.createQuotaAction(aToken);
+            return mQuotaService.createQuotaAction(aToken,aConnector);
         } else if (lType.equals("registerQuota")) {
-            return mQuotaService.registerQuotaAction(aToken);
+            return mQuotaService.registerQuotaAction(aToken,aConnector);
         } else if (lType.equals("unregisterQuota")) {
-            return mQuotaService.unregisterQuotaAction(aToken);
+            return mQuotaService.unregisterQuotaAction(aToken,aConnector);
         } else if (lType.equals("query")) {
-            return mQuotaService.queryAction(aToken);
+            return mQuotaService.queryAction(aToken,aConnector);
         } else if (lType.equals("getQuota")) {
-            return mQuotaService.getQuotaAction(aToken);
+            return mQuotaService.getQuotaAction(aToken,aConnector);
         } else if (lType.equals("getActivesQuota")) {
-            return mQuotaService.getActivesQuotaAction(aToken);
+            return mQuotaService.getActivesQuotaAction(aToken,aConnector);
         } else if (lType.equals("reduceQuota")) {
-            return mQuotaService.reduceQuotaAction(aToken);
+            return mQuotaService.reduceQuotaAction(aToken,aConnector);
         } else if (lType.equals("setQuota")) {
-            return mQuotaService.setQuotaAction(aToken);
+            return mQuotaService.setQuotaAction(aToken,aConnector);
         } else if (lType.equals("increaseQuota")) {
-            return mQuotaService.increaseQuotaAction(aToken);
+            return mQuotaService.increaseQuotaAction(aToken,aConnector);
         }
         return null;
     }
 
     /**
-     *
+     *Create one quota
+     * 
      * @param aConnector
      * @param aToken
      */
     @Role(name = NS + ".quota_create")
     public void createQuotaAction(WebSocketConnector aConnector, Token aToken) {
-        Token lResult = mQuotaService.createQuotaAction(aToken);
+        
+        Token lResult = mQuotaService.createQuotaAction(aToken , aConnector);
         getServer().sendToken(aConnector, lResult);
     }
 
     /**
-     *
+     * Register a new instance to an existent quota
+     * 
      * @param aConnector
      * @param aToken
      */
     @Role(name = NS + ".quota_create")
     public void registerQuotaAction(WebSocketConnector aConnector, Token aToken) {
-        Token lResult = mQuotaService.registerQuotaAction(aToken);
+        Token lResult = mQuotaService.registerQuotaAction(aToken,aConnector);
         getServer().sendToken(aConnector, lResult);
     }
 
     /**
-     *
+     * Unregister it is used as to delete a quota as to unregister an instance 
+     * to an existent quota. 
+     * 
      * @param aConnector
      * @param aToken
      */
     @Role(name = NS + ".quota_remove")
     public void unregisterQuotaAction(WebSocketConnector aConnector, Token aToken) {
-        Token lResult = mQuotaService.unregisterQuotaAction(aToken);
+        Token lResult = mQuotaService.unregisterQuotaAction(aToken,aConnector);
         getServer().sendToken(aConnector, lResult);
 
     }
 
     /**
-     *
+     * Allow make query over quota by severals attributes. 
+     * 
      * @param aConnector
      * @param aToken
      */
     @Role(name = NS + ".quota_query")
     public void queryAction(WebSocketConnector aConnector, Token aToken) {
         Token lResult = createResponse(aToken);
-        Token lToken = mQuotaService.queryAction(aToken);
+        Token lToken = mQuotaService.queryAction(aToken,aConnector);
         lResult.setInteger("totalCount", lToken.getInteger("totalCount"));
         lResult.setList("data", lToken.getList("data"));
         lResult.setCode(lToken.getCode());
@@ -271,46 +281,50 @@ public class QuotaPlugin extends ActionPlugIn {
     }
 
     /**
-     *
+     * Get a quota object
+     * 
      * @param aConnector
      * @param aToken
      */
     @Role(name = NS + ".quota_query")
     public void getQuotaAction(WebSocketConnector aConnector, Token aToken) {
-        Token lResult = mQuotaService.getQuotaAction(aToken);
+        Token lResult = mQuotaService.getQuotaAction(aToken,aConnector);
         getServer().sendToken(aConnector, lResult);
     }
 
     /**
-     *
+     * Get all active quotas
+     * 
      * @param aConnector
      * @param aToken
      */
     @Role(name = NS + ".quota_query")
     public void getActivesQuotaAction(WebSocketConnector aConnector, Token aToken) {
         Token lResult = createResponse(aToken);
-        Token lToken = mQuotaService.getActivesQuotaAction(aToken);
+        Token lToken = mQuotaService.getActivesQuotaAction(aToken,aConnector);
         lResult.setList("data", lToken.getList("data"));
         lResult.setCode(lToken.getCode());
         getServer().sendToken(aConnector, lResult);
     }
 
     /**
-     *
+     * Reduce the value to one quota.
+     * 
      * @param aConnector
      * @param aToken
      */
     @Role(name = NS + ".quota_update")
     public void reduceQuotaAction(WebSocketConnector aConnector, Token aToken) {
         Token lResult = createResponse(aToken);
-        Token lToken = mQuotaService.reduceQuotaAction(aToken);
+        Token lToken = mQuotaService.reduceQuotaAction(aToken,aConnector);
         lResult.setLong("value", lToken.getLong("value"));
         lResult.setCode(lToken.getCode());
         getServer().sendToken(aConnector, lResult);
     }
 
     /**
-     *
+     * Set the value to one quota.
+     * 
      * @param aConnector
      * @param aToken
      */
@@ -318,21 +332,22 @@ public class QuotaPlugin extends ActionPlugIn {
     public void setQuotaAction(WebSocketConnector aConnector, Token aToken) {
 
         Token lResult = createResponse(aToken);
-        Token lToken = mQuotaService.setQuotaAction(aToken);
+        Token lToken = mQuotaService.setQuotaAction(aToken,aConnector);
         lResult.setLong("value", lToken.getLong("value"));
         lResult.setCode(lToken.getCode());
         getServer().sendToken(aConnector, lResult);
     }
 
     /**
-     *
+     * Increase de quota value.
+     * 
      * @param aConnector
      * @param aToken
      */
     @Role(name = NS + ".quota_update")
     public void increaseQuotaAction(WebSocketConnector aConnector, Token aToken) {
         Token lResult = createResponse(aToken);
-        Token lToken = mQuotaService.increaseQuotaAction(aToken);
+        Token lToken = mQuotaService.increaseQuotaAction(aToken,aConnector);
         lResult.setLong("value", lToken.getLong("value"));
         lResult.setCode(lToken.getCode());
         getServer().sendToken(aConnector, lResult);

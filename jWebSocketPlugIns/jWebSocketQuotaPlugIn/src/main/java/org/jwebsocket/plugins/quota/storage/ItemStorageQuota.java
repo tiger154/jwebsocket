@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket Quota Filter (Community Edition, CE)
+//	jWebSocket - jWebSocket ItemStorage Quota  (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
@@ -138,7 +138,7 @@ public class ItemStorageQuota implements IQuotaStorage {
                 lQuotaCollection = lCollectionProvider
                         .getCollection(mCollectionQuotaName, mQuotaDefinition.getType());
             } catch (Exception aExp) {
-                mLog.error("Error getting the "+mCollectionQuotaName+" collection "
+                mLog.error("Error getting the " + mCollectionQuotaName + " collection "
                         + "the server return the following error:" + aExp.getMessage());
             }
 
@@ -163,7 +163,7 @@ public class ItemStorageQuota implements IQuotaStorage {
                         .getCollection(mCollectionQuotaInstanceName,
                                 mquotaInstanceDefinition.getType());
             } catch (Exception aExp) {
-                mLog.error("Error getting the "+mCollectionQuotaInstanceName+" collection "
+                mLog.error("Error getting the " + mCollectionQuotaInstanceName + " collection "
                         + "the server return the following error:" + aExp.getMessage());
             }
 
@@ -174,8 +174,10 @@ public class ItemStorageQuota implements IQuotaStorage {
             lCollectionProvider.saveCollection(lQuotaInstCollection);
         }
 
-        mCollectionQuota = lCollectionProvider.getCollection(mCollectionQuotaName);
-        mCollectionQuotaInstance = lCollectionProvider.getCollection(mCollectionQuotaInstanceName);
+        mCollectionQuota
+                = lCollectionProvider.getCollection(mCollectionQuotaName);
+        mCollectionQuotaInstance
+                = lCollectionProvider.getCollection(mCollectionQuotaInstanceName);
     }
 
     /**
@@ -186,7 +188,8 @@ public class ItemStorageQuota implements IQuotaStorage {
     @Override
     public boolean save(IQuotaSingleInstance aQuota) {
         try {
-            ItemCollectionUtils.saveItem(mRootUser, mCollectionQuota, new MapAppender()
+            ItemCollectionUtils.saveItem(mRootUser, mCollectionQuota,
+                    new MapAppender()
                     .append("uuid", aQuota.getUuid())
                     .append("ns", aQuota.getNamespace())
                     .append("quotaType", aQuota.getQuotaType())
@@ -217,6 +220,7 @@ public class ItemStorageQuota implements IQuotaStorage {
                     .append("value", aQuota.getValue())
                     .getMap());
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
         return true;
