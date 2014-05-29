@@ -142,10 +142,14 @@ $.widget("jws.SMSGateway", {
 
 		w.SMS.eBtnSend.click(function() {
 			if (!$(this).attr("disabled")) {
+				var lPhoneNr = w.SMS.ePhoneNumber.val();
+				if(lPhoneNr){
+					lPhoneNr = lPhoneNr.trim().replace(" ", "");
+				}
 				var lSMSToken = {
 					ns: w.SMS.NS,
 					type: "sendSMS",
-					to: w.SMS.ePhoneNumber.val(),
+					to: lPhoneNr,
 					from: w.SMS.eInputFrom.val(),
 					message: w.SMS.eInputSMS.val(),
 					state: $('input[name=messageRadio]:checked').val(),
