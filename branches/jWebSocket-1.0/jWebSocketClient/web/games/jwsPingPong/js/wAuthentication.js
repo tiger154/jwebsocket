@@ -58,6 +58,9 @@ $.widget("jws.authentication", {
 		if (jws.browserSupportsWebSockets(  )) {
 			mWSC = new jws.jWebSocketJSONClient(  );
 			$.jws.setTokenClient(mWSC);
+			$.jws.on("open", function(){
+				mWSC.startKeepAlive();
+			});
 			w.auth.open(  );
 		} else {
 			var lMsg = jws.MSG_WS_NOT_SUPPORTED;
