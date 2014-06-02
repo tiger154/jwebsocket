@@ -27,7 +27,7 @@
     <!-- itemStorage settings -->
     <bean id="quotaItemStorage" class="org.jwebsocket.plugins.quota.storage.ItemStorageQuota">
         <property name="collectionQuotaName" value="jws_plugins_quota_quota"/>
-        <property name="collectionQuotaInstanceName" value="jws_plugins_quota_quotaInstance"/>
+        <property name="collectionQuotaInstanceName" value="jws_plugins_quota_quotainstance"/>
         <property name="quotaDefinition" ref="quotaDefinition" />
         <property name="quotaInstanceDefinition" ref="quotaInstanceDefinition" />
         <property name="rootUser" value="root"/>
@@ -54,11 +54,11 @@
     </bean>
 
     <bean id="quotaInstanceDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
-        <property name="type" value="org.jwebsocket.plugins.quota.QuotaInstance" />
+        <property name="type" value="org.jwebsocket.plugins.quota.Quotainstance" />
         <property name="primaryKeyAttribute" value="id" />
         <property name="attributeTypes">
             <map>
-                <entry key="uuidQuota" value="string"/>
+                <entry key="uuidquota" value="string"/>
                 <entry key="instance" value="string"/>
                 <entry key="instanceType" value="string"/>
                 <entry key="value" value="long"/>
