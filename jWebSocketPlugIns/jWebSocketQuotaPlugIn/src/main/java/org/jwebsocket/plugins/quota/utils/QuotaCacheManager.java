@@ -31,14 +31,28 @@ public class QuotaCacheManager {
             = new HashMap<String, QuotaCacheItem>();
     long mExpiredTime;
 
+    /**
+     * 
+     * @return 
+     */
     public long getExpiredTime() {
         return mExpiredTime;
     }
 
+    /**
+     * 
+     * @param mExpiredTime 
+     */
     public void setExpiredTime(long mExpiredTime) {
         this.mExpiredTime = mExpiredTime;
     }
 
+    /**
+     * and a new entry for the map that is used to manage the cache. 
+     * 
+     * @param aCacheId
+     * @param aHasQuota 
+     */
     public void add(String aCacheId, boolean aHasQuota) {
 
         Date lNow = new Date();
@@ -46,6 +60,17 @@ public class QuotaCacheManager {
         mCache.put(aCacheId, lItem);
     }
 
+    /**
+     * check if there is a previously request was made, in the quota plugin
+     * the 
+     * cacheId it is create using: ns+instance+quotaIdentifier,
+     * So if a previous request was make for this issues
+     * and was fail and time has not expired the result is taken 
+     * from the cache. 
+     * 
+     * @param aCacheId
+     * @return 
+     */
     public boolean checkForAvailableQuota(String aCacheId) {
         //getting the actual time to check with the expired time
         Date lNow = new Date();

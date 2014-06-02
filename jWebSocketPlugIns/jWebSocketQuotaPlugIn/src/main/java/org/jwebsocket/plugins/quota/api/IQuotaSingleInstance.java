@@ -29,8 +29,8 @@ import org.jwebsocket.token.Token;
 public interface IQuotaSingleInstance {
 
     /**
-     *
-     * @return the quota value
+     * the quota value
+     * @return 
      */
     public long getvalue();
 
@@ -43,20 +43,20 @@ public interface IQuotaSingleInstance {
     public String getInstance();
 
     /**
-     *
-     * @return the quota unique ID
+     * the quota unique ID
+     * @return 
      */
     public String getUuid();
 
     /**
-     *
-     * @return the namespace of the feature that the quota is apply to
+     * the namespace of the feature that the quota is apply to
+     * @return 
      */
     public String getNamespace();
 
     /**
-     *
-     * @return the quota type
+     *  the quota type
+     * @return
      */
     public String getQuotaType();
 
@@ -68,39 +68,45 @@ public interface IQuotaSingleInstance {
     public String getInstanceType();
 
     /**
-     *
+     * add a registered quota to the quota child list of each parent quota
+     * 
      * @param aChildQuota
      * @return
      */
     public boolean addChildQuota(QuotaChildSI aChildQuota);
 
     /**
-     *
+     * aeach quota object instance has their own quota list that are the 
+     * quota registed to this quota. This method return the quota child list
+     * 
      * @param aInstance
      * @return
      */
     public QuotaChildSI getChildQuota(String aInstance);
 
     /**
-     *
+     * retun the quota identifier
+     * 
      * @return
      */
     public String getQuotaIdentifier();
 
     /**
-     *
+     * return the quota action.
      * @return
      */
     public String getActions();
 
     /**
-     *
+     * write the quota to their token represantation. 
+     * 
      * @param lAuxToken
      */
     public void writeToToken(Token lAuxToken);
 
     /**
-     *
+     * Write the quota to their map representation.
+     *  
      * @return
      */
     public FastMap<String, Object> writeToMap();

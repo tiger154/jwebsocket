@@ -135,6 +135,15 @@ public abstract class BaseQuota implements IQuota {
         }
     }
 
+    /**
+     * 
+     * 
+     * @param aInstance
+     * @param aNameSpace
+     * @param aInstanceType
+     * @param aActions
+     * @return 
+     */
     @Override
     public IQuotaSingleInstance getQuota(String aInstance, String aNameSpace, String aInstanceType, String aActions) {
 
@@ -164,6 +173,13 @@ public abstract class BaseQuota implements IQuota {
         }
     }
 
+    /**
+     * 
+     * @param aInstance
+     * @param aNameSpace
+     * @param aInstanceType
+     * @return 
+     */
     @Override
     public List<IQuotaSingleInstance> getQuotas(String aInstance, String aNameSpace,
             String aInstanceType) {
@@ -259,6 +275,11 @@ public abstract class BaseQuota implements IQuota {
         return null;
     }
 
+    /**
+     * 
+     * @param aUuid
+     * @return 
+     */
     @Override
     public IQuotaSingleInstance getQuota(String aUuid) {
 
@@ -267,6 +288,12 @@ public abstract class BaseQuota implements IQuota {
 
     }
 
+    /**
+     * 
+     * @param aUuid
+     * @param aInstance
+     * @return 
+     */
     @Override
     public IQuotaSingleInstance getQuota(String aUuid, String aInstance) {
 
@@ -291,14 +318,33 @@ public abstract class BaseQuota implements IQuota {
         return null;
     }
 
+    /**
+     * 
+     * @return 
+     */
     @Override
     public String getIdentifier() {
         return mQuotaIdentifier;
     }
 
+    /**
+     * 
+     * @param aUuid
+     * @param aAmount
+     * @return 
+     */
     @Override
     abstract public long reduceQuota(String aUuid, long aAmount);
 
+    /**
+     * 
+     * @param aInstance
+     * @param aNameSpace
+     * @param aInstanceType
+     * @param aActions
+     * @param aAmount
+     * @return 
+     */
     @Override
     public long reduceQuota(String aInstance, String aNameSpace,
             String aInstanceType, String aActions, long aAmount) {
@@ -318,17 +364,36 @@ public abstract class BaseQuota implements IQuota {
         return lResult;
     }
 
+    /**
+     * 
+     * @param aUuid
+     * @return 
+     */
     @Override
     public long reduceQuota(String aUuid) {
         return reduceQuota(aUuid, mDefaultReduceValue);
     }
 
+    /**
+     * 
+     * @param aUuid
+     * @return 
+     */
     @Override
     public String getActions(String aUuid) {
         String lActions = this.getStorage().getActions(aUuid);
         return lActions;
     }
 
+    /**
+     * 
+     * @param aInstance
+     * @param aNameSpace
+     * @param aInstanceType
+     * @param aActions
+     * @param aAmount
+     * @return 
+     */
     @Override
     public long increaseQuota(String aInstance, String aNameSpace,
             String aInstanceType, String aActions, long aAmount) {
@@ -343,12 +408,27 @@ public abstract class BaseQuota implements IQuota {
 
     }
 
+    /**
+     * 
+     * @param aUuid
+     * @param aAmount
+     * @return 
+     */
     @Override
     public long increaseQuota(String aUuid, long aAmount) {
         long lValue = getQuota(aUuid).getvalue();
         return getStorage().update(aUuid, lValue + aAmount);
     }
 
+    /**
+     * 
+     * @param aInstance
+     * @param aNameSpace
+     * @param aInstanceType
+     * @param aActions
+     * @param aAmount
+     * @return 
+     */
     @Override
     public long setQuota(String aInstance, String aNameSpace,
             String aInstanceType, String aActions, long aAmount) {
@@ -382,11 +462,24 @@ public abstract class BaseQuota implements IQuota {
         }
     }
 
+    /**
+     * 
+     * @param aUuid
+     * @param aAmount
+     * @return 
+     */
     @Override
     public long setQuota(String aUuid, long aAmount) {
         return getStorage().update(aUuid, aAmount);
     }
 
+    /**
+     * 
+     * @param aUuid
+     * @param aInstance
+     * @param aInstanceType
+     * @throws Exception 
+     */
     @Override
     public void register(String aUuid, String aInstance,
             String aInstanceType) throws Exception {
@@ -418,14 +511,23 @@ public abstract class BaseQuota implements IQuota {
         if (lResult == true) {
             lResult = mQuotaStorage.save(lChildQuota);
 
-            if (lResult == false) {
-                throw new Exception("Error saving the quota.");
-            }
         } else {
             throw new ExceptionQuotaAlreadyExist(aInstance);
         }
     }
 
+    /**
+     * 
+     * @param aInstance
+     * @param aNameSpace
+     * @param aUuid
+     * @param aAmount
+     * @param aInstanceType
+     * @param aQuotaType
+     * @param aQuotaIdentifier
+     * @param aActions
+     * @throws Exception 
+     */
     @Override
     public void create(String aInstance, String aNameSpace, String aUuid,
             long aAmount, String aInstanceType, String aQuotaType,
@@ -445,6 +547,12 @@ public abstract class BaseQuota implements IQuota {
 
     }
 
+    /**
+     * 
+     * @param aInstance
+     * @param aUuid
+     * @throws ExceptionQuotaNotFound 
+     */
     @Override
     public void unregister(String aInstance, String aUuid)
             throws ExceptionQuotaNotFound {
@@ -465,6 +573,14 @@ public abstract class BaseQuota implements IQuota {
 
     }
 
+    /**
+     * 
+     * @param aInstance
+     * @param aNameSpace
+     * @param aInstanceType
+     * @param aActions
+     * @throws ExceptionQuotaNotFound 
+     */
     @Override
     public void unregister(String aInstance,
             String aNameSpace, String aInstanceType, String aActions)
@@ -475,16 +591,36 @@ public abstract class BaseQuota implements IQuota {
         unregister(lUuid, aInstance);
     }
 
+    /**
+     * 
+     * @param aNamespace
+     * @param aId
+     * @return 
+     */
     @Override
     public List<String> getRegisteredInstances(String aNamespace, String aId) {
         return new FastList<String>();
     }
 
+    /**
+     * 
+     * @param aNamespace
+     * @return 
+     */
     @Override
     public List<String> getRegisterdQuotas(String aNamespace) {
         return new FastList<String>();
     }
 
+    /**
+     * 
+     * @param aQuotaIdentifier
+     * @param aNamespace
+     * @param aInstance
+     * @param aInstanceType
+     * @param aActions
+     * @return 
+     */
     @Override
     public String getQuotaUuid(String aQuotaIdentifier, String aNamespace,
             String aInstance, String aInstanceType, String aActions) {

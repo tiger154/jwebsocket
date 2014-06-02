@@ -32,7 +32,8 @@ import org.jwebsocket.util.Tools;
 public class QuotaHelper {
 
     /**
-     *
+     * method used to generate a uuid for each new parent quota. 
+     * 
      * @return
      */
     public static String generateQuotaUUID() {
@@ -40,7 +41,8 @@ public class QuotaHelper {
     }
 
     /**
-     *
+     * return a quota Single object for a quota, given all the quota attributes
+     * 
      * @param aValue
      * @param aInstance
      * @param aUuid
@@ -66,7 +68,8 @@ public class QuotaHelper {
     }
 
     /**
-     *
+     * return a ingnored users by the quota plugin. 
+     * 
      * @return
      */
     public static FastList<String> ignoredUsers() {
