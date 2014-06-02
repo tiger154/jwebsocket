@@ -35,6 +35,7 @@ public interface IQuota {
 
     /**
      *
+     * 
      * @return
      */
     public String getIdentifier();
@@ -75,20 +76,25 @@ public interface IQuota {
             String aInstanceType);
 
     /**
-     *
+     * return the default reduce value on the quota settings
+     * 
      * @return
      */
     public long getDefaultReduceValue();
 
     /**
-     *
+     * return the parent quota object Instance.
+     * by their uuid
+     * 
      * @param aUuid
      * @return
      */
     public IQuotaSingleInstance getQuota(String aUuid);
 
     /**
-     *
+     * return an object Instance of one particular quota.
+     * depend of the given instance
+     * 
      * @param aUuid
      * @param aInstance
      * @return
@@ -122,7 +128,8 @@ public interface IQuota {
     public long reduceQuota(String aUuid);
 
     /**
-     *
+     * Reduce the quota value by a given amount
+     * 
      * @param aUuid
      * @param aAmount
      * @return
@@ -144,7 +151,7 @@ public interface IQuota {
             String aInstanceType, String aActions, long aAmount);
 
     /**
-     *
+     * increase the quota value by a given amount
      * @param aUuid
      * @param aAmount
      * @return
@@ -166,7 +173,8 @@ public interface IQuota {
             String aInstanceType, String aActions, long aAmount);
 
     /**
-     *
+     * set the quota value by a given amount
+     * 
      * @param aUuid
      * @param aAmount
      * @return
@@ -261,14 +269,17 @@ public interface IQuota {
     public List<String> getRegisteredInstances(String aNamespace, String aId);
 
     /**
-     *
+     * return and string list with all quota registed to a given namespace
+     * 
      * @param aNamespace
      * @return
      */
     public List<String> getRegisterdQuotas(String aNamespace);
 
     /**
-     *
+     * return the quota uuid for the given parrameters.
+     * All parameters are mandatory
+     * 
      * @param aQuotaIdentifier
      * @param aNamespace
      * @param aInstance
