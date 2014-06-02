@@ -213,14 +213,21 @@ public class ItemStorageQuota implements IQuotaStorage {
     @Override
     public boolean save(QuotaChildSI aQuota) {
         try {
-            ItemCollectionUtils.saveItem(mRootUser, mCollectionQuotaInstance, new MapAppender()
-                    .append("uuidQuota", aQuota.getUuid())
+            
+            MapAppender lTemMap;
+            
+            lTemMap = new MapAppender()
+                    .append("uuidquota", aQuota.getUuid())
                     .append("instance", aQuota.getInstance())
                     .append("instanceType", aQuota.getInstanceType())
-                    .append("value", aQuota.getValue())
-                    .getMap());
+                    .append("value", aQuota.getValue());
+                    
+
+            ItemCollectionUtils.saveItem(mRootUser, mCollectionQuotaInstance,
+                    lTemMap.getMap());
+
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
         return true;
@@ -246,7 +253,7 @@ public class ItemStorageQuota implements IQuotaStorage {
                 }
 
                 List<IItem> lChildQuotaistItem = findAll(mCollectionQuotaInstance,
-                        "uuidQuota", lItem.get("uuid"));
+                        "uuidquota", lItem.get("uuid"));
 
                 for (IItem lChildItem : lChildQuotaistItem) {
                     ItemCollectionUtils.removeItem(mRootUser,
@@ -268,7 +275,7 @@ public class ItemStorageQuota implements IQuotaStorage {
 
         try {
             List<IItem> lChildQuotaistItem = findAll(mCollectionQuotaInstance,
-                    "uuidQuota", aQuotaChild.getUuid());
+                    "uuidquota", aQuotaChild.getUuid());
 
             for (IItem lItem : lChildQuotaistItem) {
                 if (lItem.get("instance").equals(aQuotaChild.getInstance())) {
@@ -319,7 +326,7 @@ public class ItemStorageQuota implements IQuotaStorage {
 
         try {
             List<IItem> listItem = mCollectionQuotaInstance.getItemStorage()
-                    .find("uuidQuota", aQuotaChild.getUuid());
+                    .find("uuidquota", aQuotaChild.getUuid());
 
             for (IItem lItem : listItem) {
                 if (lItem.get("instance").equals(aQuotaChild.getInstance())) {
@@ -354,6 +361,7 @@ public class ItemStorageQuota implements IQuotaStorage {
 
             return flag;
         } catch (Exception ex) {
+            ex.printStackTrace();
             return false;
         }
     }
@@ -703,7 +711,7 @@ public class ItemStorageQuota implements IQuotaStorage {
         //Getting child quota.
         try {
             List<IItem> lQChilds = mCollectionQuotaInstance.
-                    getItemStorage().find("uuidQuota",
+                    getItemStorage().find("uuidquota",
                             aObjQuota.get("uuid"));
 
             for (IItem lObjInstance : lQChilds) {

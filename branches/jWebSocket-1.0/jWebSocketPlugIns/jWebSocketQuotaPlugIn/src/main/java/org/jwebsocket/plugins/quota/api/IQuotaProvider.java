@@ -27,7 +27,10 @@ import java.util.Map;
 public interface IQuotaProvider {
 
     /**
-     *
+     * Return the quota parent definition by an identifier for example 
+     * could be a quotaIntervalDay an a quotaIntervalMonth both are
+     * childs of the QuotaInterval quota. 
+     * 
      * @param aType
      * @return
      * @throws Exception
@@ -35,19 +38,24 @@ public interface IQuotaProvider {
     public IQuota getQuotaByIdentifier(String aType) throws Exception;
 
     /**
-     *
+     * return a map with all avtive quota
+     * key: identifier
+     * value: the quota object. 
+     * 
      * @return
      */
     public Map<String, IQuota> getActiveQuotas();
 
     /**
-     *
+     * return all the storage used for each active quota.
      * @return
      */
     public Map<String, IQuotaStorage> getActiveStorages();
 
     /**
-     *
+     * return the quota identifier given a position 
+     * 
+     * 
      * @param aPos
      * @return
      */

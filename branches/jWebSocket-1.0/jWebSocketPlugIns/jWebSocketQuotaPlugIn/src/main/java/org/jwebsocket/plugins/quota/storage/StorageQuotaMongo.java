@@ -119,7 +119,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
         mConnection = new MongoClient(mHost);
         mDBconn = this.mConnection.getDB("quotaPlugin");
         mCollection = mDBconn.getCollection("quota");
-        mCollectionInstance = mDBconn.getCollection("quotaInstance");
+        mCollectionInstance = mDBconn.getCollection("quotainstance");
     }
 
     /**
@@ -160,7 +160,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
         try {
             BasicDBObject lDoc = new BasicDBObject();
 
-            lDoc.put("uuidQuota", aChildSI.getUuid());
+            lDoc.put("uuidquota", aChildSI.getUuid());
             lDoc.put("instance", aChildSI.getInstance());
             lDoc.put("instanceType", aChildSI.getInstanceType());
             lDoc.put("value", aChildSI.getValue());
@@ -185,7 +185,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
         lWhere.put("instance", aInstance);
         mCollection.remove(lWhere);
         lWhere = new BasicDBObject();
-        lWhere.put("uuidQuota", aUuid);
+        lWhere.put("uuidquota", aUuid);
         mCollectionInstance.remove(lWhere);
     }
 
@@ -196,7 +196,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
     @Override
     public void remove(QuotaChildSI aQuotaChild) {
         BasicDBObject lWhere = new BasicDBObject();
-        lWhere.put("uuidQuota", aQuotaChild.getUuid());
+        lWhere.put("uuidquota", aQuotaChild.getUuid());
         lWhere.put("instance", aQuotaChild.getInstance());
         mCollectionInstance.remove(lWhere);
 
@@ -231,7 +231,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
 
         BasicDBObject lWhere = new BasicDBObject();
         BasicDBObject lSetValue = new BasicDBObject();
-        lWhere.put("uuidQuota", aChildSI.getUuid());
+        lWhere.put("uuidquota", aChildSI.getUuid());
         lWhere.put("instance", aChildSI.getInstance());
         lSetValue.append("$set", new BasicDBObject().append("value", aChildSI.getValue()));
         mCollectionInstance.update(lWhere, lSetValue);
@@ -502,7 +502,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
 
         //Getting child quota.
         BasicDBObject lObject = new BasicDBObject();
-        lObject.put("uuidQuota", aObjQuota.get("uuid"));
+        lObject.put("uuidquota", aObjQuota.get("uuid"));
         DBCursor lDBQuota = mCollectionInstance.find(lObject);
 
         while (lDBQuota.hasNext()) {
@@ -529,7 +529,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
         BasicDBObject lObject = new BasicDBObject();
         BasicDBObject lObjectInstance = new BasicDBObject();
         lObject.put("uuid", aUuid);
-        lObjectInstance.put("uuidQuota", aUuid);
+        lObjectInstance.put("uuidquota", aUuid);
         lObjectInstance.put("instance", aInstance);
         DBObject lQuery = mCollection.findOne(lObject);
 

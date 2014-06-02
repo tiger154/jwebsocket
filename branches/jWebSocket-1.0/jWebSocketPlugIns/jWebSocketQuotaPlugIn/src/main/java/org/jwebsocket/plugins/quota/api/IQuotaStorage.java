@@ -30,40 +30,46 @@ import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaNotFound;
 public interface IQuotaStorage {
 
     /**
-     *
+     * save a quota object instance
+     * 
      * @param aQuota
      * @return
      */
     public boolean save(IQuotaSingleInstance aQuota);
 
     /**
-     *
+     * register a child quota to one parent quota. 
+     * 
      * @param aQuota
      * @return
      */
     public boolean save(QuotaChildSI aQuota);
 
     /**
-     *
+     * initialize the connection or any thing used to work with the database. 
+     * 
      * @throws Exception
      */
     public void initialize() throws Exception;
 
     /**
-     *
+     * remove a given quota. 
+     * 
      * @param aInstance
      * @param aUuid
      */
     public void remove(String aInstance, String aUuid);
 
     /**
-     *
+     * unregisterd a quota child for a parent quota. 
+     * 
      * @param aQuotaChild
      */
     public void remove(QuotaChildSI aQuotaChild);
 
     /**
-     *
+     * update the quota value. 
+     * 
      * @param aUuid
      * @param aValue
      * @return
@@ -71,21 +77,24 @@ public interface IQuotaStorage {
     public long update(String aUuid, Long aValue);
 
     /**
-     *
+     * update the quota value to a child quota. 
+     * 
      * @param aQuotaChild
      * @return
      */
     public long update(QuotaChildSI aQuotaChild);
 
     /**
-     *
+     * check if one quota exist given their uuid. 
+     * 
      * @param aUuid
      * @return
      */
     public boolean quotaExist(String aUuid);
 
     /**
-     *
+     *  check if one quota exist. 
+     * 
      * @param aNameSpace
      * @param aQuotaIdentifier
      * @param aInstance
@@ -96,28 +105,32 @@ public interface IQuotaStorage {
             String aInstance, String aActions);
 
     /**
-     *
+     * get the quota action, action means the token restricted by the quota. 
+     * 
      * @param aUuid
      * @return
      */
     public String getActions(String aUuid);
 
     /**
-     *
+     * get the quota list for a given quota type. 
+     * 
      * @param aQuotaType
      * @return
      */
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType);
 
     /**
-     *
+     * return the quotaList by a given quota identifier. 
+     * 
      * @param aIdentifier
      * @return
      */
     public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier);
 
     /**
-     *
+     * return the quota object list by the given parameters
+     * 
      * @param aIdentifier
      * @param aNameSpace
      * @param aInstanceType
@@ -127,7 +140,8 @@ public interface IQuotaStorage {
             String aNameSpace, String aInstanceType);
 
     /**
-     *
+     * return a list with all quota that match with the given parameters
+     * 
      * @param aQuotaType
      * @param aNs
      * @param aInstance
@@ -136,7 +150,8 @@ public interface IQuotaStorage {
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance);
 
     /**
-     *
+     * get the quota uuid. 
+     * 
      * @param aQuotaIdentifier
      * @param aNs
      * @param aInstance
@@ -149,7 +164,8 @@ public interface IQuotaStorage {
             String aInstanceType, String aActions) throws ExceptionQuotaNotFound;
 
     /**
-     *
+     * get quota a list of quota by instance type an instance
+     * 
      * @param aQuotaType
      * @param aInstance
      * @return
@@ -157,7 +173,8 @@ public interface IQuotaStorage {
     public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType, String aInstance);
 
     /**
-     *
+     * get a quota list that match with quota type and namespace. 
+     * 
      * @param aQuotaType
      * @param aNs
      * @return
@@ -165,14 +182,16 @@ public interface IQuotaStorage {
     public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs);
 
     /**
-     *
+     * get quota object instance by uuid 
+     * 
      * @param aUuid
      * @return
      */
     public IQuotaSingleInstance getQuotaByUuid(String aUuid);
 
     /**
-     *
+     * get a Raw Quota. 
+     * 
      * @param aUuid
      * @param aInstance
      * @return
@@ -180,7 +199,9 @@ public interface IQuotaStorage {
     public Map<String, Object> getRawQuota(String aUuid, String aInstance);
 
     /**
-     *
+     * This is and issues only for interval quota.
+     * that allow reset the interval reset date. 
+     * 
      * @param aUuid
      * @param aResetDate
      */
