@@ -30,7 +30,6 @@ import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.*;
 import org.jwebsocket.async.IOFuture;
-import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.connectors.InternalConnector;
 import org.jwebsocket.filter.TokenFilterChain;
 import org.jwebsocket.kit.*;
