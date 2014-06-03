@@ -25,7 +25,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.TimerTask;
-import java.util.logging.Level;
 import javax.net.ssl.SSLSocket;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
