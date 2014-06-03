@@ -50,6 +50,9 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	private final String mOnMaxConnectionsStrategy;
 	private final Map<String, Object> mSettings;
 	private final boolean mNotifySystemStopping;
+	private final boolean mKeepAliveConnectors;
+	private final Integer mKeepConnectorsAliveInterval;
+	private final Integer mKeepAliveConnectorsTimeout;
 
 	/**
 	 * Constructor for engine
@@ -72,12 +75,19 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	 * @param aMaxConnections
 	 * @param aOnMaxConnectionsStrategy
 	 * @param aNotifySystemStopping
+	 * @param aKeepConnectorsAlive
+	 * @param aKeepAliveConnectorsInterval
+	 * @param aKeepAliveConnectorsTimeout
+	 *
 	 */
 	public EngineConfig(String aId, String aName, String aJar, Integer aPort,
 			Integer aSSLPort, String aHostname, String aKeyStore, String aKeyStorePassword,
 			String aContext, String aServlet, int aTimeout,
 			int aMaxFrameSize, List<String> aDomains, Integer aMaxConnections,
-			String aOnMaxConnectionsStrategy, boolean aNotifySystemStopping, Map<String, Object> aSettigns) {
+			String aOnMaxConnectionsStrategy, boolean aNotifySystemStopping,
+			Map<String, Object> aSettigns, boolean aKeepConnectorsAlive,
+			Integer aKeepAliveConnectorsInterval,
+			Integer aKeepAliveConnectorsTimeout) {
 		this.mId = aId;
 		this.mName = aName;
 		this.mJar = aJar;
@@ -95,6 +105,9 @@ public final class EngineConfig implements Config, EngineConfiguration {
 		this.mOnMaxConnectionsStrategy = aOnMaxConnectionsStrategy;
 		this.mSettings = aSettigns;
 		this.mNotifySystemStopping = aNotifySystemStopping;
+		this.mKeepAliveConnectors = aKeepConnectorsAlive;
+		this.mKeepConnectorsAliveInterval = aKeepAliveConnectorsInterval;
+		this.mKeepAliveConnectorsTimeout = aKeepAliveConnectorsTimeout;
 
 		validate();
 	}
@@ -249,14 +262,43 @@ public final class EngineConfig implements Config, EngineConfiguration {
 		return mOnMaxConnectionsStrategy;
 	}
 
+	/**
+	 * {@inheritDoc }
+	 */
 	@Override
 	public Map<String, Object> getSettings() {
 		return Collections.unmodifiableMap(mSettings);
 	}
 
+	/**
+	 * {@inheritDoc }
+	 */
 	@Override
 	public boolean isNotifySystemStopping() {
 		return mNotifySystemStopping;
 	}
 
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public boolean getKeepAliveConnectors() {
+		return mKeepAliveConnectors;
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public Integer getKeepAliveConnectorsInterval() {
+		return mKeepConnectorsAliveInterval;
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public Integer getKeepAliveConnectorsTimeout() {
+		return mKeepAliveConnectorsTimeout;
+	}
 }

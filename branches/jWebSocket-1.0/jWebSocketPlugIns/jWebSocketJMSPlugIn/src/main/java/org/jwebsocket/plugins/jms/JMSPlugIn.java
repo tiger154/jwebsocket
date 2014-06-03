@@ -123,7 +123,10 @@ public class JMSPlugIn extends TokenPlugIn {
 					1000, // max connections
 					"-", // max connection stretegy
 					false, // notify on system stopping
-					null // settings
+					null, // settings
+					JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS, // defaults to false
+					JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_INTERVAL,
+					JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_TIMEOUT
 			);
 			mJMSEngine = new JMSEngine(lEngineCfg);
 

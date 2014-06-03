@@ -143,4 +143,28 @@ public interface EngineConfiguration extends Configuration {
 	 * @return
 	 */
 	boolean isNotifySystemStopping();
+	
+	/**
+	 * Indicates whether to check or not if the connector is still alive, this 
+	 * allows to detect when the network cable from the user is disconnected or 
+	 * simply if the wifi network failed then we know when we can disconnect the 
+	 * connector properly
+	 * @return
+	 */
+	boolean getKeepAliveConnectors();
+	
+	/**
+	 * Used to define a certain interval to ping the connector on the client 
+	 * side to check if it is still alive
+	 * @return
+	 */
+	Integer getKeepAliveConnectorsInterval();
+	
+	/**
+	 * Sets the default timeout that must wait the server before closing the 
+	 * connection if the client didn't respond to a ping in the specified time
+	 * @return 
+	 */
+	Integer getKeepAliveConnectorsTimeout();
+	
 }
