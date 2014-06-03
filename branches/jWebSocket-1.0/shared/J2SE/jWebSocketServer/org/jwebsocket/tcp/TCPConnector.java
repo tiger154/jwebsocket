@@ -24,6 +24,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Map;
+import java.util.TimerTask;
+import java.util.logging.Level;
 import javax.net.ssl.SSLSocket;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
@@ -35,6 +37,7 @@ import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.util.Tools;
 // import org.krakenapps.pcap.decoder.ethernet.MacAddress;
 // import org.krakenapps.pcap.util.Arping;
 
@@ -65,6 +68,11 @@ public class TCPConnector extends BaseConnector {
 	private CloseReason mCloseReason = CloseReason.TIMEOUT;
 	private Thread mClientThread = null;
 	private TimeoutOutputStreamNIOWriter mOutputStreamNIOSender;
+	private final boolean mKeepAlive;
+	private final Integer mKeepAliveInterval;
+	private final Integer mKeepAliveConnectorsTimeout;
+	private ShutDownConnectorTask mKeepAliveTimeoutTask;
+	private PingConnectorTask mKeepAliveIntervalTask;
 
 	/**
 	 * creates a new TCP connector for the passed engine using the passed client
@@ -79,6 +87,11 @@ public class TCPConnector extends BaseConnector {
 		mClientSocket = aClientSocket;
 		setSSL(mClientSocket instanceof SSLSocket);
 		mLogInfo = isSSL() ? SSL_LOG : TCP_LOG;
+
+		mKeepAlive = aEngine.getConfiguration().getKeepAliveConnectors();
+		mKeepAliveInterval = aEngine.getConfiguration().getKeepAliveConnectorsInterval();
+		mKeepAliveConnectorsTimeout = aEngine.getConfiguration().getKeepAliveConnectorsTimeout();
+
 		try {
 			mIn = mClientSocket.getInputStream();
 			mOut = mClientSocket.getOutputStream();
@@ -99,6 +112,10 @@ public class TCPConnector extends BaseConnector {
 		ClientProcessor lClientProc = new ClientProcessor(this);
 		mClientThread = new Thread(lClientProc);
 		mClientThread.start();
+		if (mKeepAlive) {
+			mKeepAliveTimeoutTask = new ShutDownConnectorTask();
+			mKeepAliveIntervalTask = new PingConnectorTask();
+		}
 	}
 
 	@Override
@@ -166,6 +183,9 @@ public class TCPConnector extends BaseConnector {
 					+ lPort + " with timeout "
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
 		}
+		if (mKeepAlive) {
+			Tools.getTimer().scheduleAtFixedRate(mKeepAliveIntervalTask, mKeepAliveInterval, mKeepAliveInterval);
+		}
 	}
 
 	/**
@@ -206,6 +226,11 @@ public class TCPConnector extends BaseConnector {
 
 	@Override
 	public void stopConnector(CloseReason aCloseReason) {
+		try {
+			mKeepAliveIntervalTask.cancel();
+		} catch (Exception e) {
+			// If the task is not running will always come here
+		}
 		// supporting client "close" command
 		String lClientCloseFlag = "connector_was_closed_by_client_demand";
 		if (null != getVar(lClientCloseFlag)) {
@@ -223,7 +248,7 @@ public class TCPConnector extends BaseConnector {
 			}
 			mCloseReason = aCloseReason;
 			synchronized (getWriteLock()) {
-				if (!isHixie()) {
+				if (!isHixie() && !CloseReason.BROKEN.equals(aCloseReason)) {
 					// Hybi specs demand that client must be notified
 					// with CLOSE control message before disconnect
 
@@ -446,6 +471,68 @@ public class TCPConnector extends BaseConnector {
 		return lHeader;
 	}
 
+	private class ShutDownConnectorTask extends TimerTask {
+
+		private boolean mCompleted = false;
+		private boolean mCancelled = false;
+
+		@Override
+		public void run() {
+			Tools.getThreadPool().submit(new TimerTask() {
+				@Override
+				public void run() {
+					if (getStatus() != WebSocketConnectorStatus.DOWN) {
+						mCompleted = true;
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("Shutting down connector " + getId()
+									+ " because it didn't respond to a ping");
+						}
+						mCloseReason = CloseReason.BROKEN;
+						try {
+							// setStatus(WebSocketConnectorStatus.DOWN);
+							mIn.close();
+							// stopConnector(CloseReason.BROKEN);
+						} catch (IOException ex) {
+						}
+					}
+				}
+			});
+
+		}
+
+		@Override
+		public boolean cancel() {
+			mCancelled = true;
+			return super.cancel();
+		}
+
+		public boolean isCompleted() {
+			return mCompleted;
+		}
+
+		public boolean isCancelled() {
+			return mCancelled;
+		}
+	}
+
+	private class PingConnectorTask extends TimerTask {
+
+		@Override
+		public void run() {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Sending server ping recognition to know if the connector " + getId() + " is alive.");
+			}
+			WebSocketPacket lPing = new RawPacket("");
+			lPing.setFrameType(WebSocketFrameType.PING);
+			sendPacket(lPing);
+			// The task needs to be cancelled right after we receive a PONG packet
+			if (mKeepAliveTimeoutTask.isCompleted() || mKeepAliveTimeoutTask.isCancelled()) {
+				mKeepAliveTimeoutTask = new ShutDownConnectorTask();
+				Tools.getTimer().schedule(mKeepAliveTimeoutTask, mKeepAliveConnectorsTimeout);
+			}
+		}
+	}
+
 	private class ClientProcessor implements Runnable {
 
 		private WebSocketConnector mConnector = null;
@@ -637,7 +724,14 @@ public class TCPConnector extends BaseConnector {
 						lClose.setFrameType(WebSocketFrameType.CLOSE);
 						sendPacket(lClose);
 						// the streams are closed in the run method
-					} else if (WebSocketFrameType.PONG.equals(lPacket.getFrameType())){
+					} else if (WebSocketFrameType.PONG.equals(lPacket.getFrameType())) {
+						if (mKeepAlive) {
+							try {
+								mKeepAliveTimeoutTask.cancel();
+							} catch (Exception e) {
+								// If the task is not running will always come here
+							}
+						}
 						// do nothing
 						// special support for IE issue
 					} else {
@@ -653,7 +747,9 @@ public class TCPConnector extends BaseConnector {
 					if (mLog.isDebugEnabled() && WebSocketConnectorStatus.UP == getStatus()) {
 						mLog.debug(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + ", " + mLogInfo + "): " + lEx.getMessage());
 					}
-					mCloseReason = CloseReason.SERVER;
+					if (!CloseReason.BROKEN.equals(mCloseReason)) {
+						mCloseReason = CloseReason.SERVER;
+					}
 					setStatus(WebSocketConnectorStatus.DOWN);
 				}
 			} // while up, if exception occurs the status is set to DOWN
