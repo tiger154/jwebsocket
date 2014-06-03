@@ -116,6 +116,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketClientAPI</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketJavaSEClient</artifactId>
 			<version>${project.version}</version>
 		</dependency>
