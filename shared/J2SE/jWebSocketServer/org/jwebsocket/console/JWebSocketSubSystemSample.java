@@ -92,7 +92,10 @@ public class JWebSocketSubSystemSample {
 				JWebSocketServerConstants.DEFAULT_MAX_CONNECTIONS, // max connections
 				JWebSocketServerConstants.DEFAULT_ON_MAX_CONNECTIONS_STRATEGY, // on max connections reached strategy
 				JWebSocketServerConstants.DEFAULT_NOTIFY_SYSTEM_STOPPING, // notify clients on system stopping
-				new FastMap<String, Object>());
+				new FastMap<String, Object>(), 
+				JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS, 
+				JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_INTERVAL,
+				JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_TIMEOUT);
 		mEngine = new TCPEngine(lEngineConfig);
 
 		// if engine could be instantiated properly...

@@ -56,6 +56,9 @@ public class EngineConfigHandler implements ConfigHandler {
 	private static final String DOMAIN = "domain";
 	private static final String MAX_CONNECTIONS = "maxconnections";
 	private static final String ON_MAX_CONNECTIONS = "onmaxconnections";
+	private static final String KEEP_ALIVE_CONNECTORS = "keepAliveConnectors";
+	private static final String KEEP_ALIVE_CONNECTORS_INTERVAL = "keepAliveConnectorsInterval";
+	private static final String KEEP_ALIVE_CONNECTORS_TIMEOUT = "keepAliveConnectorsTimeout";
 
 	/**
 	 * {@inheritDoc}
@@ -75,6 +78,9 @@ public class EngineConfigHandler implements ConfigHandler {
 		Integer lMaxConnections = JWebSocketServerConstants.DEFAULT_MAX_CONNECTIONS;
 		Map<String, Object> lSettings = new FastMap();
 		boolean lNotifySystemStopping = JWebSocketServerConstants.DEFAULT_NOTIFY_SYSTEM_STOPPING;
+		boolean lKeepAliveConnectors = JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS;
+		Integer lKeepAliveConnectorsInterval = JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_INTERVAL;
+		Integer lKeepAliveConnectorsTimeout = JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_TIMEOUT;
 
 		List<String> lDomains = null;
 		while (aStreamReader.hasNext()) {
@@ -130,6 +136,15 @@ public class EngineConfigHandler implements ConfigHandler {
 					lOnMaxConnectionsStrategy = aStreamReader.getText();
 				} else if (lElementName.equals(JWebSocketConfigHandler.SETTINGS)) {
 					lSettings = JWebSocketConfigHandler.getSettings(aStreamReader);
+				} else if (lElementName.equals(KEEP_ALIVE_CONNECTORS)) {
+					aStreamReader.next();
+					lKeepAliveConnectors = ("true".equals(aStreamReader.getText().toLowerCase()));
+				} else if (lElementName.equals(KEEP_ALIVE_CONNECTORS_INTERVAL)) {
+					aStreamReader.next();
+					lKeepAliveConnectorsInterval = Integer.parseInt(aStreamReader.getText());
+				} else if (lElementName.equals(KEEP_ALIVE_CONNECTORS_TIMEOUT)) {
+					aStreamReader.next();
+					lKeepAliveConnectorsTimeout = Integer.parseInt(aStreamReader.getText());
 				} else {
 					//ignore
 				}
@@ -146,7 +161,10 @@ public class EngineConfigHandler implements ConfigHandler {
 				lContext, lServlet,
 				lTimeout, lFramesize, lDomains, lMaxConnections,
 				lOnMaxConnectionsStrategy,
-				lNotifySystemStopping, lSettings);
+				lNotifySystemStopping, lSettings,
+				lKeepAliveConnectors,
+				lKeepAliveConnectorsInterval,
+				lKeepAliveConnectorsTimeout);
 	}
 
 	/**
