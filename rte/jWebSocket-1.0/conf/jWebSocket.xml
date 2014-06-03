@@ -143,6 +143,25 @@
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
 			<!--
+				Used to start sending a ping to the connectors so we know if 
+				they are still alive or not.
+				Is recommended as default values 20000 miliseconds in the 
+				keepAliveConnectorsInterval and around 10000 miliseconds in 
+				keepAliveConnectorsTimeout and to keep always the interval 
+				longer than the timeout.
+			-->
+			<keepAliveConnectors>false</keepAliveConnectors>
+			<!--
+				Defines every how long time we will send a ping to each 
+				connector to know if it is still alive 
+			-->
+			<keepAliveConnectorsInterval>20000</keepAliveConnectorsInterval>
+			<!--
+				Defines every how long time we will send a ping to each 
+				connector to know if it is still alive 
+			-->
+			<keepAliveConnectorsTimeout>10000</keepAliveConnectorsTimeout>
+			<!--
 				maximum size of the data packet that the engine will read,
 				if the frame size is larger than this the connection will be closed.
 			-->
@@ -583,8 +602,8 @@
 			</threadPool>
 			
 			<settings>
-				<setting key="supressed_log_fields">password,secretPassword,accessPassword,newSecretPassword,secretKey,accessKey,newSecretKey</setting>
-				<setting key="supressed_log_fields_value">******</setting>
+				<setting key="suppresed_log_fields">password,secretPassword,accessPassword,newSecretPassword,secretKey,accessKey,newSecretKey</setting>
+				<setting key="suppresed_log_fields_value">******</setting>
 			</settings>
 		</server>
 		<server>
@@ -593,8 +612,8 @@
 			<jar>jWebSocketCustomServer-1.0.jar</jar>
 		</server>
 		<settings>
-			<setting key="supressed_log_fields" value="password,newPassword,secretPassword,accessPassword"></setting>
-			<setting key="supressed_log_fields_value" value="******"></setting>
+			<setting key="suppresed_log_fields" value="password,newPassword,secretPassword,accessPassword"></setting>
+			<setting key="suppresed_log_fields_value" value="******"></setting>
 		</settings>
 	</servers>
 
