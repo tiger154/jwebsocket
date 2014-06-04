@@ -625,7 +625,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	runSpecs: function() {
-		var lCollectionName = "myContacts";
+		var lCollectionName = "mycontacts";
 		var lPwd = "123";
 		
 		// create
