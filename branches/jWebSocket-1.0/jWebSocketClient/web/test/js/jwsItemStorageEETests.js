@@ -795,7 +795,7 @@ jws.tests.ItemStorageEE = {
 	},
 	
 	runSpecs: function() {
-		var lCollectionName = "myContacts";
+		var lCollectionName = "mycontacts";
 		var lPwd = "123";
 		
 		// create
@@ -1014,10 +1014,10 @@ jws.tests.ItemStorageEE = {
 			}),
 			longe: "long"
 		}, 0);
-		this.testCreateCollection("myMixed", "mixedValues", "123", "123", false, 1, 0);
-		this.testSubscribeCollection("myMixed", "123", 0);
-		this.testAuthorizeCollection("myMixed", "123", 0);
-		this.testSaveItem("myMixed", {
+		this.testCreateCollection("mymixed", "mixedValues", "123", "123", false, 1, 0);
+		this.testSubscribeCollection("mymixed", "123", 0);
+		this.testAuthorizeCollection("mymixed", "123", 0);
+		this.testSaveItem("mymixed", {
 			string: "abc",
 			mail:"rsantamaria@jwebsocket.org",
 			integer: 654,
@@ -1027,9 +1027,9 @@ jws.tests.ItemStorageEE = {
 		}, 0);
 		
 		// find random
-		this.testFindItemRandom("myMixed", 0, true);
+		this.testFindItemRandom("mymixed", 0, true);
 		
-		this.testSaveItem("myMixed", {
+		this.testSaveItem("mymixed", {
 			string: "abccv",
 			mail:"rsantamaria22@jwebsocket.org",
 			integer: 654,
@@ -1049,12 +1049,12 @@ jws.tests.ItemStorageEE = {
 
 		// remove definition
 		this.testRemoveItemDef("mixedValues", -1); // should fail (item definition in use)
-		this.testClearCollection("myMixed", lPwd, 0);
+		this.testClearCollection("mymixed", lPwd, 0);
 		
 		// remove collection
 		this.testRemoveCollection(lCollectionName, "wrong password", -1);
 		this.testRemoveCollection(lCollectionName, lPwd, 0);
-		this.testRemoveCollection("myMixed", lPwd, 0);
+		this.testRemoveCollection("mymixed", lPwd, 0);
 		this.testRemoveCollection(lCollectionName + "1", lPwd, 0);
 		
 		this.testRemoveItemDef("mixedValues", 0); 
