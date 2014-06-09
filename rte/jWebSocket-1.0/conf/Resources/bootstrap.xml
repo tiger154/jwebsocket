@@ -51,10 +51,14 @@
 			<bean class="org.jwebsocket.config.JWebSocketConfig"
 				  factory-method="expandEnvAndJWebSocketVars">
 				<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/channels;create=true" />
+				<!--<constructor-arg index="0" value="jdbc:mysql://database-host:3306/database-name" />-->
 			</bean>
 		</property>
 		<property name="databaseType">
 			<bean class="com.j256.ormlite.db.DerbyEmbeddedDatabaseType" />
+			<!--<property name="username" value="" />
+			<property name="password" value="" />
+			<bean class="com.j256.ormlite.db.MysqlDatabaseType" />-->
 		</property>
 	</bean>
 	
