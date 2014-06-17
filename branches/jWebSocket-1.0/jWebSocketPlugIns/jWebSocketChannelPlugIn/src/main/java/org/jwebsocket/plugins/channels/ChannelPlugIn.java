@@ -186,6 +186,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 				"Channels database connection is not valid!");
 
 		mChannelManager = (ChannelManager) mBeanFactory.getBean("channelManager");
+
 		// give a success message to the administrator
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Channel plug-in successfully instantiated.");
@@ -250,6 +251,13 @@ public class ChannelPlugIn extends ActionPlugIn {
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		processLogoff(aConnector);
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		if (isClusterEnabled()) {
+			mChannelManager.setJMSManager(getServer().getJMSManager());
+		}
 	}
 
 	/**

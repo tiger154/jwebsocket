@@ -20,6 +20,10 @@ package org.jwebsocket.plugins.channels;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +34,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.channels.Channel.ChannelState;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.JMSManager;
 
 /**
  * Manager class responsible for all the channel operations within the
@@ -62,6 +67,7 @@ public class ChannelManager implements IInitializable {
 	private ChannelStore mChannelStore;
 	private SubscriberStore mSubscriberStore;
 	private PublisherStore mPublisherStore;
+	private final FastMap<String, Channel> mChannelCache = new FastMap<String, Channel>().shared();
 	/**
 	 * in-memory store maps
 	 */
@@ -105,6 +111,7 @@ public class ChannelManager implements IInitializable {
 	 */
 	public static final String SUBSCRIBER_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "sub.";
 	private final Map<String, Object> mSettings;
+	private JMSManager mJMSManager;
 
 	@Override
 	public void initialize() throws Exception {
@@ -207,6 +214,7 @@ public class ChannelManager implements IInitializable {
 				}
 			}
 		}
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(lSuccess + " channels successfully initialized.");
 		}
@@ -214,6 +222,27 @@ public class ChannelManager implements IInitializable {
 
 	@Override
 	public void shutdown() throws Exception {
+	}
+
+	public void setJMSManager(JMSManager aJMSManager) {
+		mJMSManager = aJMSManager;
+		
+		// JMS message registration
+		if (null != mJMSManager) {
+			try {
+			mJMSManager.subscribe(new MessageListener() {
+				@Override
+				public void onMessage(Message aMessage) {
+					try {
+						mChannelCache.remove(aMessage.getStringProperty("channelId"));
+					} catch (JMSException lEx) {
+					}
+				}
+			}, "ns = '" + ChannelPlugIn.NS_CHANNELS + "' AND (msgType='channelRemoved' OR msgType='channelUpdated'");
+			} catch (Exception lEx){
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "registering channels JMS listener"));
+			}
+		}
 	}
 
 	private ChannelManager(Map<String, Object> aSettings,
@@ -241,7 +270,11 @@ public class ChannelManager implements IInitializable {
 	 * @throws Exception
 	 */
 	public Channel getChannel(String aChannelId) throws Exception {
-		return mChannelStore.getChannel(aChannelId);
+		if (!mChannelCache.containsKey(aChannelId)) {
+			mChannelCache.put(aChannelId, mChannelStore.getChannel(aChannelId));
+		}
+
+		return mChannelCache.get(aChannelId);
 	}
 
 	/**
@@ -251,6 +284,7 @@ public class ChannelManager implements IInitializable {
 	 * @throws Exception
 	 */
 	public Channel removeChannel(String aChannelId) throws Exception {
+		mChannelCache.remove(aChannelId);
 		Channel lChannel = getChannel(aChannelId);
 		if (lChannel != null) {
 			for (String lPublisher : lChannel.getPublishers()) {
