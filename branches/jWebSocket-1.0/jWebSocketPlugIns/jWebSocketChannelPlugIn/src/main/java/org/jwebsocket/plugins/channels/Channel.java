@@ -162,6 +162,7 @@ public final class Channel implements ChannelLifeCycle {
 		// register core channel listener
 		if (mChannelListeners.isEmpty()) {
 			registerListener(new ChannelListener() {
+				
 				@Override
 				public void channelStarted(Channel aChannel, String aUser) {
 					Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
