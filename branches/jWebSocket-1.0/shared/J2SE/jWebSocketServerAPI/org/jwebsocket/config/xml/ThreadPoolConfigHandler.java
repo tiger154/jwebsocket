@@ -45,7 +45,10 @@ public class ThreadPoolConfigHandler implements ConfigHandler {
 	 */
 	@Override
 	public Config processConfig(XMLStreamReader streamReader) throws XMLStreamException {
-		int corePoolSize = 0, maximumPoolSize = 0, keepAliveTime = 0, blockingQueueSize = 0;
+		int corePoolSize = Runtime.getRuntime().availableProcessors(), 
+				maximumPoolSize = corePoolSize * 2, 
+				keepAliveTime = 60, 
+				blockingQueueSize = 1000;
 		while (streamReader.hasNext()) {
 			streamReader.next();
 			if (streamReader.isStartElement()) {
