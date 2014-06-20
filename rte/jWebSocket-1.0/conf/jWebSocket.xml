@@ -181,7 +181,7 @@
 			<onmaxconnections>reject</onmaxconnections>
 			<settings>
 				<!-- NIO output writer mechanism thread pool size -->
-				<setting key="workers">50</setting>
+				<setting key="workers">10</setting>
 				<!-- NIO output writer mechanism writes timeout -->
 				<setting key="writer_timeout">1000</setting>
 				<!-- Set socket TcpNoDelay property value
@@ -251,7 +251,7 @@
 			<onmaxconnections>reject</onmaxconnections>
 			<settings>
 				<!-- NIO output writer mechanism thread pool size -->
-				<setting key="workers">50</setting>
+				<setting key="workers">10</setting>
 				<!-- NIO output writer mechanism writes timeout -->
 				<setting key="writer_timeout">1000</setting>
 				<!-- Set socket TcpNoDelay property value
@@ -591,10 +591,14 @@
 			 Use of small queues generally requires larger pool sizes, which keeps CPUs busier but may encounter unacceptable scheduling overhead, which also decreases throughput.
 			 -->
 			<threadPool>
-				<!--  number of thread that are "waiting" even if the queue is empty  -->
-				<corePoolSize>10</corePoolSize>
-				<!--  number maximum of thread that can be running at the same time -->
-				<maximumPoolSize>100</maximumPoolSize>
+				<!--  number of thread that are "waiting" even if the queue is empty  
+				default: Runtime.getRuntime().availableProcessors() -->
+				<corePoolSize>8</corePoolSize>
+
+				<!--  number maximum of threads that can be running at the same time 
+				default: corePoolSize * 2 -->
+				<maximumPoolSize>16</maximumPoolSize>
+
 				<!--  time before the desctruction of "free" threads (seconds) -->
 				<keepAliveTime>60</keepAliveTime>
 				<!--  size of the blocking queue. Connection will be refused if the queue is full and the poolsize is equals to the maximumPoolSize -->
