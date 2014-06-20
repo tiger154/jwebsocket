@@ -30,8 +30,8 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
  */
 public class ThreadPoolConfig implements Config {
 
-	private int corePoolSize = 10;
-	private int maximumPoolSize = 100;
+	private int corePoolSize = Runtime.getRuntime().availableProcessors();
+	private int maximumPoolSize = Runtime.getRuntime().availableProcessors() * 2;
 	private int keepAliveTime = 60;
 	private int blockingQueueSize = 1000;
 

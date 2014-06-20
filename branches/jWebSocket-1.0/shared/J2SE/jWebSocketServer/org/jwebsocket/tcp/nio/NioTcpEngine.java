@@ -76,7 +76,7 @@ public class NioTcpEngine extends BaseEngine {
 	/**
 	 *
 	 */
-	public static final int DEFAULT_NUM_WORKERS = 100;
+	public static final int DEFAULT_NUM_WORKERS = Runtime.getRuntime().availableProcessors();
 	private Selector mPlainSelector;
 	private Selector mSSLSelector;
 	private ServerSocketChannel mPlainServer;

@@ -284,7 +284,6 @@ public class ChannelManager implements IInitializable {
 	 * @throws Exception
 	 */
 	public Channel removeChannel(String aChannelId) throws Exception {
-		mChannelCache.remove(aChannelId);
 		Channel lChannel = getChannel(aChannelId);
 		if (lChannel != null) {
 			for (String lPublisher : lChannel.getPublishers()) {
@@ -298,7 +297,9 @@ public class ChannelManager implements IInitializable {
 			lChannel.clearSubscribers();
 
 			mChannelStore.removeChannel(aChannelId);
+			mChannelCache.remove(aChannelId);
 		}
+		
 		return lChannel;
 	}
 
@@ -322,6 +323,7 @@ public class ChannelManager implements IInitializable {
 	 * @param aChannel the channel to store.
 	 */
 	public void storeChannel(Channel aChannel) {
+		mChannelCache.put(aChannel.getId(), aChannel);
 		mChannelStore.storeChannel(aChannel);
 	}
 
