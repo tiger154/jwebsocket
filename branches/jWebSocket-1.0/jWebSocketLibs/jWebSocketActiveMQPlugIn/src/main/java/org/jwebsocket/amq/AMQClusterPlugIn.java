@@ -43,7 +43,7 @@ public class AMQClusterPlugIn implements BrokerPlugin {
 	public Broker installPlugin(Broker broker) throws Exception {
 		return new AMQClusterFilter(broker, mTargetDestinations, mMongo, mUsername, mPassword);
 	}
-
+    
 	/**
 	 *
 	 * @return

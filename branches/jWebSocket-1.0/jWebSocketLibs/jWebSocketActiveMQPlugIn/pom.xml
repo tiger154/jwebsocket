@@ -69,7 +69,7 @@
 						<id>Bundle</id>
 						<configuration>
 							<classifier>Bundle</classifier>
-							<finalName>jWebSocketActiveMQPlugIn</finalName>
+							<finalName>jWebSocketActiveMQPlugIn-Bundle</finalName>
 							<outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 							<descriptors>
 								<descriptor>src/assembly/one-jar.xml</descriptor>
