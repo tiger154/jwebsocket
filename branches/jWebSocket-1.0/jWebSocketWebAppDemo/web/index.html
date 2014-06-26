@@ -86,7 +86,7 @@ public class SampleWebSocketPlugIn extends ActionPlugIn {
 			var lURL = jws.getWebAppURL();
 
 			lConn.open(lURL, {
-				OnOpen: function() {
+				OnWelcome: function() {
 					$(document).ready(function( ) {
 						$("#btnHttp").click(function() {
 							$.get(self.location.pathname + '/http', {name: $("#name").val()}, function(aResponse) {
