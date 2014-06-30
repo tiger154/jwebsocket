@@ -1305,6 +1305,10 @@ public class Tools {
      * otherwise.
      */
     public static boolean wildCardMatch(String aText, String aPattern) {
+        if ("*".equals(aPattern) || aText.equals(aPattern)) {
+            return true;
+        }
+
         // Create the cards by splitting using a RegEx. If more speed 
         // is desired, a simpler character based splitting can be done.
         String[] lCards = aPattern.split("\\*");
