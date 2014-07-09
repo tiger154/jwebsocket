@@ -12,6 +12,7 @@
 		  init-method="start" destroy-method="stop">
 		<property name="brokerName" value="jWebSocketAMQ" />
 		<property name="persistent" value="false" />
+		<property name="useShutdownHook" value="false" />
 	</bean>
 	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" 
 		  depends-on="jmsBroker" >
