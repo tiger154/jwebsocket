@@ -56,9 +56,8 @@ public class TokenPlugInChain extends BasePlugInChain {
 					TokenPlugIn lTokenPlugIn = ((TokenPlugIn) lPlugIn);
 					lTokenPlugIn.processLogon(aConnector);
 				} catch (Exception lEx) {
-					mLog.error("(plug-in '"
-							+ ((TokenPlugIn) lPlugIn).getNamespace() + "') "
-							+ lEx.getClass().getSimpleName() + ": "
+					mLog.error(lEx.getClass().getSimpleName() + " in plug-in '"
+							+ ((TokenPlugIn) lPlugIn).getNamespace() + "': "
 							+ lEx.getMessage());
 				}
 			}
@@ -76,9 +75,8 @@ public class TokenPlugInChain extends BasePlugInChain {
 					TokenPlugIn lTokenPlugIn = ((TokenPlugIn) lPlugIn);
 					lTokenPlugIn.processLogoff(aConnector);
 				} catch (Exception lEx) {
-					mLog.error("(plug-in '"
-							+ ((TokenPlugIn) lPlugIn).getNamespace() + "') "
-							+ lEx.getClass().getSimpleName() + ": "
+					mLog.error(lEx.getClass().getSimpleName() + " in plug-in '"
+							+ ((TokenPlugIn) lPlugIn).getNamespace() + "': "
 							+ lEx.getMessage());
 				}
 			}
@@ -104,11 +102,12 @@ public class TokenPlugInChain extends BasePlugInChain {
 							lTokenPlugIn.processToken(lPlugInResponse, aConnector, aToken);
 						}
 					} catch (Exception lEx) {
-						mLog.error(lEx.getClass().getSimpleName() 
-								+ "in plug-in '"
+						mLog.error(lEx.getClass().getSimpleName()
+								+ " in plug-in '"
 								+ ((TokenPlugIn) lPlugIn).getNamespace() + "': "
 								+ lEx.getMessage()
-								+ ", token: " + aToken.getLogString());
+								+ ", token: " + aToken.getLogString() + ", "
+								+ Logging.getStackTraceAsString(lEx));
 					}
 					if (lPlugInResponse.isChainAborted()) {
 						break;

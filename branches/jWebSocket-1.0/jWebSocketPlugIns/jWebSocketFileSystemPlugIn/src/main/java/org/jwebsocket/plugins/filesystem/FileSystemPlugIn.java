@@ -223,7 +223,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		if (lType != null && getNamespace().equals(lNS)) {
 			if (lType.equals("getFilelist")) {
-				return getFilelist(aConnector.getUsername(), aToken);
+				return mGetFilelist(aConnector, aToken);
 			} else if (lType.equals("getAliasPath")) {
 				String lTargetAlias = aToken.getString("alias");
 				Token lToken = TokenFactory.createToken();
@@ -237,6 +237,16 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		return null;
 	}
 
+	private String replaceAliasVars(WebSocketConnector aConnector, String aBaseDir) {
+		aBaseDir = JWebSocketConfig.expandEnvVarsAndProps(aBaseDir);
+		aBaseDir = aBaseDir.replace("{username}", aConnector.getUsername());
+		if (null != aConnector.getSession()) {
+			aBaseDir = aBaseDir.replace("{uuid}", aConnector.getSession().getUUID());
+			aBaseDir = aBaseDir.replace("{sessionId}", aConnector.getSession().getSessionId());
+		}
+		return aBaseDir;
+	}
+
 	/**
 	 * Gets the directory path for a given alias.
 	 *
@@ -248,8 +258,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lBaseDir = mSettings.getAliasPath(aAlias);
 
 		if (null != lBaseDir && aAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
-			lBaseDir = JWebSocketConfig.expandEnvVarsAndProps(lBaseDir);
-			lBaseDir = lBaseDir.replace("{username}", aConnector.getUsername());
+			lBaseDir = replaceAliasVars(aConnector, lBaseDir);
+			/*
+			 lBaseDir = JWebSocketConfig.expandEnvVarsAndProps(lBaseDir);
+			 lBaseDir = lBaseDir.replace("{username}", aConnector.getUsername());
+			 */
 		}
 
 		return lBaseDir;
@@ -531,11 +544,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			// populating the response data field according to the file type
 			String lFileType = new MimetypesFileTypeMap().getContentType(lFile);
 			boolean lIsBinary = false;
-			try{
+			try {
 				lIsBinary = Tools.isBinaryFile(lFile);
-			}catch(IOException aEx){
+			} catch (IOException aEx) {
 				lIsBinary = lFileType.contains("text") || lFileType.contains("json")
-					|| lFileType.contains("javascript");
+						|| lFileType.contains("javascript");
 			}
 			if (!lIsBinary) {
 				lData = new String(lBA);
@@ -636,7 +649,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 * @param aToken
 	 * @return
 	 */
-	protected Token getFilelist(String aUsername, Token aToken) {
+	private Token mGetFilelist(WebSocketConnector aConnector, Token aToken) {
 
 		String lAlias = aToken.getString("alias");
 		boolean lRecursive = aToken.getBoolean("recursive", false);
@@ -650,9 +663,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		lObject = mSettings.getAliasPath(lAlias);
 		if (lObject != null) {
 			lBaseDir = (String) lObject;
+			lBaseDir = replaceAliasVars(aConnector, lBaseDir);
+			/*
 			lBaseDir = JWebSocketConfig.expandEnvVarsAndProps(lBaseDir).
-					replace("{username}", aUsername);
-
+					replace("{username}", aConnector.getUsername());
+			*/
 			File lDir;
 			if (null != lSubPath) {
 				lDir = new File(lBaseDir + File.separator + lSubPath);
@@ -882,7 +897,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		Token lResponse = getFilelist(aConnector.getUsername(), aToken);
+		Token lResponse = mGetFilelist(aConnector, aToken);
 		lServer.setResponseFields(aToken, lResponse);
 
 		// send response to requester
