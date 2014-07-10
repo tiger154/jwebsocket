@@ -18,7 +18,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.sso;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -58,8 +61,7 @@ public class Main {
 		lProps.setProperty("log4j.logger.org.jwebsocket", "DEBUG");
 		lProps.setProperty("log4j.appender.console.threshold", "DEBUG");
 		PropertyConfigurator.configure(lProps);
-		
-		
+
 		mLog.info("jWebSocket SSO (OAuth) Demo Client");
 
 		Configuration lConfig = null;
@@ -96,16 +98,49 @@ public class Main {
 		lOAuth.setOAuthAppId(lOAuthAppId);
 		lOAuth.setOAuthAppSecret(lOAuthAppSecret);
 
-		mLog.info("Getting Session Cookie: " + lOAuth.getSSOSession(lOAuthUsername, lOAuthPassword, 5000));
-		mLog.info("Authenticate Session: " + lOAuth.authSession(lOAuth.getSessionId(), 5000));
-		String lAccessToken = lOAuth.getAccessToken();
-		/*		
-		 mLog.info("JSON Direct Authentication: " + lOAuth.authDirect(lOAuthUsername, lOAuthPassword));
-		 */
-		mLog.info("JSON User from Access Token: " + lOAuth.getUser(lAccessToken));
-		/*
-		 mLog.info("JSON Refresh Access Token: " + lOAuth.refreshAccessToken());
-		 mLog.info("Username from OAuth Object: " + lOAuth.getUsername());
-		 */
+		
+		String lSMSession = SiteMinder.getSSOSession(5000);
+		mLog.info("Getting SM Session: " + lSMSession);
+		
+		if(true) return;
+		
+		int lMax = 1;
+		Map<String, Object> lJSON;
+		for (int lCount = 0; lCount < lMax; lCount++) {
+			mLog.info("================== " + lCount + "/" + lMax + " ==================");
+			String lSessionCookie = lOAuth.getSSOSession(lOAuthUsername, lOAuthPassword, 5000);
+			mLog.info("Getting Session Cookie: " + lSessionCookie);
+			try {
+				lJSON = lOAuth.parseJSON(lSessionCookie);
+			} catch (IOException ex) {
+				mLog.error(ex.getMessage());
+				break;
+			}
+			String lAuthSession = lOAuth.authSession(lOAuth.getSessionId(), 5000);
+			mLog.info("Authenticate Session: " + lAuthSession);
+			try {
+				lJSON = lOAuth.parseJSON(lAuthSession);
+			} catch (IOException ex) {
+				mLog.error(ex.getMessage());
+				break;
+			}
+			String lAccessToken = lOAuth.getAccessToken();
+			/*		
+			 mLog.info("JSON Direct Authentication: " + lOAuth.authDirect(lOAuthUsername, lOAuthPassword));
+			 */
+			String lUsername = lOAuth.getUser(lAccessToken);
+			mLog.info("JSON User from Access Token: " + lUsername);
+			try {
+				lJSON = lOAuth.parseJSON(lUsername);
+			} catch (IOException ex) {
+				mLog.error(ex.getMessage());
+				break;
+			}
+			/*
+			 mLog.info("JSON Refresh Access Token: " + lOAuth.refreshAccessToken());
+			 mLog.info("Username from OAuth Object: " + lOAuth.getUsername());
+			 */
+		}
 	}
+	
 }

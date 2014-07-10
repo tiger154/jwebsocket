@@ -20,6 +20,7 @@ package org.jwebsocket.amq;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -28,6 +29,8 @@ import org.apache.activemq.broker.BrokerFilter;
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.ConnectionContext;
 import org.apache.activemq.command.ConnectionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allows/Reject client connections based on basic white/black lists
@@ -40,94 +43,99 @@ import org.apache.activemq.command.ConnectionInfo;
  * <tt>org.jwebsocket.*=*.jwebsocket.org,*.jwebsocket.com</tt>
  *
  * PlugIn configuration example for AMQ:
- * <code>
+ * <plugins>
  * <bean xmlns="http://www.springframework.org/schema/beans"
  * id="jwsBasicSecurityPlugIn"
  * class="org.jwebsocket.amq.AMQBasicSecurityPlugIn">
  * <constructor-arg value="security/whitelist.properties"/>
  * <constructor-arg value="security/blacklist.properties"/>
  * </bean>
- * </code>
+ * </<plugins>
  *
- * @author Rolando Santamaria Maso
+ * @author Rolando Santamaria Maso, Alexander Schulze
  */
 public class AMQBasicSecurityPlugIn implements BrokerPlugin {
 
-    private final Properties mWhiteList = new Properties();
-    private final Properties mBlackList = new Properties();
+	private static final Logger mLog = LoggerFactory.getLogger(AMQBasicSecurityPlugIn.class);
+	private final Properties mWhiteList = new Properties();
+	private final Properties mBlackList = new Properties();
 
-    public AMQBasicSecurityPlugIn(String aWhiteListFilePath, String aBlackListFilePath) {
-        try {
-            // loading white list data
-            File lFile = new File(System.getenv("ACTIVEMQ_CONF") + File.separator + aWhiteListFilePath);
-            mWhiteList.load(new FileInputStream(lFile));
+	public AMQBasicSecurityPlugIn(String aWhiteListFilePath, String aBlackListFilePath) {
+		try {
+			mLog.info("Instantiating jWebSocket AMQBasicSecurityPlugIn...");
+			// loading white list data
+			File lFile = new File(System.getenv("ACTIVEMQ_CONF") + File.separator + aWhiteListFilePath);
+			mWhiteList.load(new FileInputStream(lFile));
 
-            // loading black list data
-            lFile = new File(System.getenv("ACTIVEMQ_CONF") + File.separator + aBlackListFilePath);
-            mBlackList.load(new FileInputStream(lFile));
-        } catch (Exception lEx) {
-            throw new RuntimeException(lEx);
-        }
-    }
+			// loading black list data
+			lFile = new File(System.getenv("ACTIVEMQ_CONF") + File.separator + aBlackListFilePath);
+			mBlackList.load(new FileInputStream(lFile));
+		} catch (IOException lEx) {
+			throw new RuntimeException(lEx);
+		}
+	}
 
-    @Override
-    public Broker installPlugin(final Broker aBroker) throws Exception {
-        return new BrokerFilter(aBroker) {
+	@Override
+	public Broker installPlugin(final Broker aBroker) throws Exception {
+		mLog.info("Installing jWebSocket AMQBasicSecurityPlugIn...");
+		return new BrokerFilter(aBroker) {
 
-            @Override
-            public void addConnection(ConnectionContext aContext, ConnectionInfo aInfo) throws Exception {
-                // getting the client id
-                String lClientId = aContext.getClientId();
-                // getting raw remotehost
-                String lRemoteHost = aContext.getConnection().getRemoteAddress();
-                int lStartPos = lRemoteHost.indexOf("://") + 3;
-                // getting IP address
-                String lIpAddress = lRemoteHost.substring(lStartPos, lRemoteHost.indexOf(":", lStartPos));
-                // getting hostname
-                lRemoteHost = InetAddress.getByName(lIpAddress).getHostName();
+			@Override
+			public void addConnection(ConnectionContext aContext, ConnectionInfo aInfo) throws Exception {
+				// getting the client id
+				String lClientId = aContext.getClientId();
+				// getting raw remotehost
+				String lRemoteHost = aContext.getConnection().getRemoteAddress();
+				mLog.info("jWebSocket AMQBasicSecurityPlugIn checking host " + lRemoteHost + "...");
+				int lStartPos = lRemoteHost.indexOf("://") + 3;
+				// getting IP address
+				String lIpAddress = lRemoteHost.substring(lStartPos, lRemoteHost.indexOf(":", lStartPos));
+				// getting hostname
+				lRemoteHost = InetAddress.getByName(lIpAddress).getHostName();
 
-                // checking black list
-                Enumeration<Object> lKeys = mBlackList.keys();
-                while (lKeys.hasMoreElements()) {
-                    // key
-                    String lWildcard = (String) lKeys.nextElement();
-                    // value
-                    String[] lHosts = ((String) mBlackList.getProperty(lWildcard)).split(",");
-                    if (Tools.wildCardMatch(lClientId, lWildcard)
-                            && (Tools.wildCardMatch(lHosts, lRemoteHost)
-                            || Tools.wildCardMatch(lHosts, lIpAddress))) {
-                        throw new SecurityException("Client '" + lClientId
-                                + ":" + lIpAddress
-                                + ":" + lRemoteHost + "' rejected due to black list restriction!");
-                    }
-                }
+				// checking black list
+				Enumeration<Object> lKeys = mBlackList.keys();
+				while (lKeys.hasMoreElements()) {
+					// key
+					String lWildcard = (String) lKeys.nextElement();
+					// value
+					String[] lHosts = ((String) mBlackList.getProperty(lWildcard)).split(",");
+					if (Tools.wildCardMatch(lClientId, lWildcard)
+							&& (Tools.wildCardMatch(lHosts, lRemoteHost)
+							|| Tools.wildCardMatch(lHosts, lIpAddress))) {
+						throw new SecurityException("Client '" + lClientId
+								+ ":" + lIpAddress
+								+ ":" + lRemoteHost + "' rejected due to black list restriction!");
+					}
+				}
 
-                // checking white list
-                lKeys = mWhiteList.keys();
-                boolean lAuthorized = false;
-                while (lKeys.hasMoreElements()) {
-                    // key
-                    String lWildcard = (String) lKeys.nextElement();
-                    // value
-                    String[] lHosts = ((String) mWhiteList.getProperty(lWildcard)).split(",");
-                    if (Tools.wildCardMatch(lClientId, lWildcard)
-                            && (Tools.wildCardMatch(lHosts, lRemoteHost)
-                            || Tools.wildCardMatch(lHosts, lIpAddress))) {
-                        lAuthorized = true;
-                        break;
-                    }
-                }
-                if (!lAuthorized) {
-                    throw new SecurityException("Client '" + lClientId
-                            + ":" + lIpAddress
-                            + ":" + lRemoteHost + "' rejected due to white list restriction!");
-                }
+				// checking white list
+				lKeys = mWhiteList.keys();
+				boolean lAuthorized = false;
+				while (lKeys.hasMoreElements()) {
+					// key
+					String lWildcard = (String) lKeys.nextElement();
+					// value
+					String[] lHosts = ((String) mWhiteList.getProperty(lWildcard)).split(",");
+					if (Tools.wildCardMatch(lClientId, lWildcard)
+							&& (Tools.wildCardMatch(lHosts, lRemoteHost)
+							|| Tools.wildCardMatch(lHosts, lIpAddress))) {
+						lAuthorized = true;
+						break;
+					}
+				}
+				if (!lAuthorized) {
+					throw new SecurityException("Client '" + lClientId
+							+ ":" + lIpAddress
+							+ ":" + lRemoteHost + "' rejected due to white list restriction!");
+				}
 
-                // adding the client connection
-                super.addConnection(aContext, aInfo);
-            }
+				mLog.info("jWebSocket AMQBasicSecurityPlugIn accepted host " + lRemoteHost + " (IP: " + lIpAddress + ").");
+				// adding the client connection
+				super.addConnection(aContext, aInfo);
+			}
 
-        };
-    }
+		};
+	}
 
 }

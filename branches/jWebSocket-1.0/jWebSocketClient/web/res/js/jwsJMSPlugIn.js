@@ -17,7 +17,7 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-//:author:*:Johannes Smutny
+//:author:*:Alexander Schulze, Johannes Smutny
 
 //:package:*:jws
 //:class:*:jws.JMSPlugIn

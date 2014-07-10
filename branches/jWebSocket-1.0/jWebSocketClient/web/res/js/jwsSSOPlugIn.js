@@ -430,7 +430,9 @@ jws.SSOPlugIn = {
 					if (aOptions.OnFailure) {
 						aOptions.OnFailure({
 							code: (lXHR.status !== 0 ? lXHR.status : -1),
-							msg: (lXHR.statusText !== "" ? lXHR.statusText : "failure")
+							msg: (lXHR.statusText !== "" 
+									? lXHR.statusText 
+									: "No response from OAuth server " + aOptions.URL)
 						});
 					}
 				}
@@ -551,7 +553,9 @@ jws.SSOPlugIn = {
 					if (aOptions.OnFailure) {
 						aOptions.OnFailure({
 							code: (lXHR.status !== 0 ? lXHR.status : -1),
-							msg: (lXHR.statusText !== "" ? lXHR.statusText : "failure")
+							msg: (lXHR.statusText !== "" 
+									? lXHR.statusText 
+									: "No response from OAuth server " + aOptions.URL)
 						});
 					}
 				}
@@ -665,7 +669,9 @@ jws.SSOPlugIn = {
 					if (aOptions.OnFailure) {
 						aOptions.OnFailure({
 							code: (lXHR.status !== 0 ? lXHR.status : -1),
-							msg: (lXHR.statusText !== "" ? lXHR.statusText : "failure")
+							msg: (lXHR.statusText !== ""
+									? lXHR.statusText
+									: "No response from OAuth server " + aOptions.URL)
 						});
 					}
 				}
@@ -787,7 +793,9 @@ jws.SSOPlugIn = {
 					if (aOptions.OnFailure) {
 						aOptions.OnFailure({
 							code: (lXHR.status !== 0 ? lXHR.status : -1),
-							msg: (lXHR.statusText !== "" ? lXHR.statusText : "failure")
+							msg: (lXHR.statusText !== ""
+									? lXHR.statusText
+									: "No response from OAuth server " + aOptions.URL)
 						});
 					}
 				}
@@ -904,7 +912,9 @@ jws.SSOPlugIn = {
 					if (aOptions.OnFailure) {
 						aOptions.OnFailure({
 							code: (lXHR.status !== 0 ? lXHR.status : -1),
-							msg: (lXHR.statusText !== "" ? lXHR.statusText : "failure")
+							msg: (lXHR.statusText !== ""
+									? lXHR.statusText
+									: "No response from OAuth server " + aOptions.URL)
 						});
 					}
 				}
@@ -1038,7 +1048,7 @@ jws.SSOPlugIn = {
 									: -1),
 							msg: (lXHR.statusText !== ""
 									? lXHR.statusText
-									: "failure")
+									: "No response from OAuth server " + aOptions.URL)
 						});
 					}
 				}

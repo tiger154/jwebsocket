@@ -1529,6 +1529,7 @@
 		</plugin>
 
 		<!-- jWebSocket Chat PlugIn -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.chat.ChatPlugIn</name>
 			<id>jws.chat</id>
@@ -1538,7 +1539,8 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-
+		-->
+		
 		<!-- plug-in for shared objects -->
 		<plugin>
 			<name>org.jwebsocket.plugins.sharedobjects.SharedObjectsPlugIn</name>
@@ -2130,7 +2132,6 @@
     
 	<!-- filters to be instantiated for jWebSocket -->
 	<filters>
-        
 		<filter>
 			<name>org.jwebsocket.filters.system.SystemFilter</name>
 			<id>jws.systemFilter</id>
@@ -2161,8 +2162,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</filter>
-        
-		
+
 		<filter>
 			<name>org.jwebsocket.plugins.quota.QuotaFilter</name>
 			<id>jws.quotaFilter</id>
@@ -2173,7 +2173,6 @@
 			</server-assignments>
 		</filter>
 
-		
 		<filter>
 			<name>org.jwebsocket.filters.sample.SampleFilter</name>
 			<id>jws.sampleFilter</id>
@@ -2184,7 +2183,7 @@
 			</server-assignments>
 		</filter>
 		
-		<!--this filter enabled the timeout of authentication mechanism for the UserAdmin plugIn -->
+		<!-- this filter enabled the timeout of authentication mechanism for the UserAdmin plugIn -->
 		<filter>
 			<name>org.jwebsocket.enterprise.plugins.useradmin.AuthenticationFilter</name>
 			<id>jws.authenticationFilter</id>
@@ -2210,7 +2209,7 @@
 			</server-assignments>
 		</filter>
 		-->
-
+		
 		<filter>
 			<name>org.jwebsocket.plugins.loadbalancer.LoadBalancerFilter</name>
 			<id>jws.loadBalancerFilter</id>
@@ -2223,7 +2222,7 @@
 				<setting key="loadbalancer_plugin">jws.lb</setting>
 			</settings>
 		</filter>
-		
+
 	</filters>
 
 </jWebSocket>

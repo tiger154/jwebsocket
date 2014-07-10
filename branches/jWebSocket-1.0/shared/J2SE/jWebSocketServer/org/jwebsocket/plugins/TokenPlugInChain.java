@@ -104,9 +104,9 @@ public class TokenPlugInChain extends BasePlugInChain {
 							lTokenPlugIn.processToken(lPlugInResponse, aConnector, aToken);
 						}
 					} catch (Exception lEx) {
-						mLog.error("Plug-in '"
-								+ ((TokenPlugIn) lPlugIn).getNamespace() + "') "
-								+ lEx.getClass().getSimpleName() + ": "
+						mLog.error(lEx.getClass().getSimpleName() 
+								+ "in plug-in '"
+								+ ((TokenPlugIn) lPlugIn).getNamespace() + "': "
 								+ lEx.getMessage()
 								+ ", token: " + aToken.getLogString());
 					}

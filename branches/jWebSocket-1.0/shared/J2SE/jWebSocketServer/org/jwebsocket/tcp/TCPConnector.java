@@ -227,7 +227,7 @@ public class TCPConnector extends BaseConnector {
 	public void stopConnector(CloseReason aCloseReason) {
 		try {
 			mKeepAliveIntervalTask.cancel();
-		} catch (Exception e) {
+		} catch (Exception lEx) {
 			// If the task is not running will always come here
 		}
 		// supporting client "close" command
@@ -502,7 +502,13 @@ public class TCPConnector extends BaseConnector {
 		@Override
 		public boolean cancel() {
 			mCancelled = true;
-			return super.cancel();
+			boolean lRes = true;
+			try {
+				lRes = super.cancel();
+			} catch (Exception lEx) {
+				// just in case it is already canceled
+			}
+			return lRes;
 		}
 
 		public boolean isCompleted() {
@@ -525,9 +531,12 @@ public class TCPConnector extends BaseConnector {
 			lPing.setFrameType(WebSocketFrameType.PING);
 			sendPacket(lPing);
 			// The task needs to be cancelled right after we receive a PONG packet
-			if (mKeepAliveTimeoutTask.isCompleted() || mKeepAliveTimeoutTask.isCancelled()) {
-				mKeepAliveTimeoutTask = new ShutDownConnectorTask();
-				Tools.getTimer().schedule(mKeepAliveTimeoutTask, mKeepAliveConnectorsTimeout);
+			synchronized (this) {
+				if (mKeepAliveTimeoutTask.isCompleted()
+						|| mKeepAliveTimeoutTask.isCancelled()) {
+					mKeepAliveTimeoutTask = new ShutDownConnectorTask();
+					Tools.getTimer().schedule(mKeepAliveTimeoutTask, mKeepAliveConnectorsTimeout);
+				}
 			}
 		}
 	}
@@ -727,7 +736,7 @@ public class TCPConnector extends BaseConnector {
 						if (mKeepAlive) {
 							try {
 								mKeepAliveTimeoutTask.cancel();
-							} catch (Exception e) {
+							} catch (Exception lEx) {
 								// If the task is not running will always come here
 							}
 						}
