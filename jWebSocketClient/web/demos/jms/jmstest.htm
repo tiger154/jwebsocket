@@ -117,11 +117,15 @@
 						{}, //
 						"", // JSON
 						{OnSuccess: function(aToken) {
-								log("Hello success: " + aToken.sourceId);
+								log("Hello World success: " + aToken.sourceId);
 							},
 							OnFailure: function(aToken) {
-								log("Echo failure: " + aToken.msg);
-							}
+								log("Hello World failure: " + aToken.msg);
+							},
+							OnTimeout: function() {
+								log("Hello World timeout!");
+							},
+							timeout: 2000
 						}
 				);
 			}
@@ -134,7 +138,7 @@
 						"getUser",
 						{accessToken: eAccessToken.value
 						},
-						"", // JSON
+				"", // JSON
 						{OnSuccess: function(aToken) {
 								log("Hello success: " + aToken.sourceId);
 							},
@@ -189,7 +193,7 @@
 						"testOAuth",
 						{accessToken: eAccessToken.value
 						},
-						"", // JSON
+				"", // JSON
 						{OnSuccess: function(aToken) {
 								log("SSO Auth success: " + aToken.sourceId);
 							},
@@ -213,7 +217,7 @@
 						{username: eUsername.value,
 							password: ePassword.value
 						},
-						"", // JSON
+				"", // JSON
 						{OnSuccess: function(aToken) {
 								log("LDAP Auth success: " + aToken.sourceId);
 							},

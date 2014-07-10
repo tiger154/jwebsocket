@@ -37,6 +37,7 @@ import org.codehaus.jackson.map.ObjectMapper;
  */
 public class OAuth extends OAuthBase {
 
+	
 	/**
 	 *
 	 */
@@ -107,7 +108,7 @@ public class OAuth extends OAuthBase {
 			lHeaders.put("Authorization", "Basic " + lCredentials);
 			lHeaders.put("Cache-Control", "no-cache");
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-			String lJSONString = call2(mOAuthHost + mOAuthGetSessionURL, "GET",
+			String lJSONString = HTTPSupport.call2(mOAuthHost + mOAuthGetSessionURL, "GET",
 					lHeaders, lPostBody, aTimeout);
 
 			Map<String, Object> lJSON = parseJSON(lJSONString);
@@ -138,7 +139,7 @@ public class OAuth extends OAuthBase {
 					+ "&password=" + URLEncoder.encode(aPassword, "UTF-8");
 			Map lHeaders = new HashMap<String, String>();
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-			String lJSONString = call(mOAuthHost, "POST",
+			String lJSONString = HTTPSupport.call2(mOAuthHost, "POST",
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mAccessToken = (String) lJSON.get("access_token");
@@ -171,7 +172,7 @@ public class OAuth extends OAuthBase {
 			lHeaders.put("Authorization",
 					"Basic " + Base64.encodeBase64String(
 							(getOAuthAppId() + ":" + getOAuthAppSecret()).getBytes("UTF-8")));
-			String lJSONString = call2(mOAuthHost + OAUTH_AUTHSESSION_URL, "POST",
+			String lJSONString = HTTPSupport.call2(mOAuthHost + OAUTH_AUTHSESSION_URL, "POST",
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mAccessToken = (String) lJSON.get("access_token");
@@ -224,7 +225,7 @@ public class OAuth extends OAuthBase {
 			Map lHeaders = new HashMap<String, String>();
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
-			String lJSONString = call2(mOAuthHost + OAUTH_GETUSER_URL, "POST",
+			String lJSONString = HTTPSupport.call2(mOAuthHost + OAUTH_GETUSER_URL, "POST",
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			if (null != lJSON) {
@@ -302,7 +303,7 @@ public class OAuth extends OAuthBase {
 			Map lHeaders = new HashMap<String, String>();
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
-			String lJSONString = call(mOAuthHost, "POST",
+			String lJSONString = HTTPSupport.call2(mOAuthHost, "POST",
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mAccessToken = (String) lJSON.get("access_token");
@@ -396,7 +397,7 @@ public class OAuth extends OAuthBase {
 	public String testCall(String aURL) {
 		Map lHeaders = new HashMap<String, String>();
 		lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-		String lRes = call2(aURL, "GET", lHeaders, null, 5000);
+		String lRes = HTTPSupport.call2(aURL, "GET", lHeaders, null, 5000);
 		return lRes;
 	}
 

@@ -720,7 +720,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			// get the target
 			lTargetId = aToken.getString("targetId");
 			lTargetConnector = getConnector(lTargetId);
-			lTargetType = "client-id";
+			lTargetType = "endpoint-id";
 		}
 
 		/*
@@ -736,6 +736,15 @@ public class SystemPlugIn extends TokenPlugIn {
 						+ "' to " + lTargetId + "...");
 			}
 			if ("forward.json".equals(lAction)) {
+				if (null == getServer().getConnector(lTargetId)) {
+					String lMsg = "No target connector with endpoint-id'"
+							+ lTargetId + "' found.";
+					mLog.warn(lMsg);
+					lResponse.setInteger("code", -1);
+					lResponse.setString("msg", lMsg);
+					sendToken(aConnector, aConnector, lResponse);
+					return;
+				}
 				WebSocketPacket lPacket = new RawPacket(aToken.getString("data"));
 				Token lToken = JSONProcessor.packetToToken(lPacket);
 				String lGatewayId = lTargetConnector.getString("$gatewayId");
@@ -777,7 +786,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			// get the target
 			lTargetId = aToken.getString("targetId");
 			lTargetConnector = getConnector(lTargetId);
-			lTargetType = "client-id";
+			lTargetType = "endpoint-id";
 		}
 
 		if (lTargetConnector != null) {

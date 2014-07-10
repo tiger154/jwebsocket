@@ -477,10 +477,17 @@ public class JMSPlugIn extends TokenPlugIn {
 	}
 
 	private void sendNotConnectedToken(WebSocketConnector aConnector, Token aToken) {
-		sendErrorToken(aConnector, aToken, "not connected to message queue or topic");
+		sendErrorToken(aConnector, aToken,
+				"not connected to message queue or topic");
 	}
 
-	private void sendMissingJmsManagerResponseToken(WebSocketConnector aConnector, Token aToken) {
+	private void sendTargetNotFound(WebSocketConnector aConnector, Token aToken) {
+		sendErrorToken(aConnector, aToken, "No target connector with endpoint-id '"
+				+ aToken.getString("targetId") + "' found.");
+	}
+
+	private void sendMissingJmsManagerResponseToken(WebSocketConnector aConnector,
+			Token aToken) {
 		Token lResponseToken = createResponse(aToken);
 		setCodeAndMsg(lResponseToken, -1,
 				"missing JMS manager: correct your config");
@@ -578,6 +585,9 @@ public class JMSPlugIn extends TokenPlugIn {
 	private void ping(WebSocketConnector aConnector, Token aToken) {
 		if (null != mSender) {
 			String lTargetId = aToken.getString("targetId");
+			if (null == getServer().getConnector(lTargetId)) {
+				sendTargetNotFound(aConnector, aToken);
+			}
 			Integer lUTID = aToken.getInteger("utid");
 			Token lToken = TokenFactory.createToken("org.jwebsocket.jms.gateway", "ping");
 			lToken.setString("sourceId", aConnector.getId());
