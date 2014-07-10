@@ -598,7 +598,11 @@ public class TCPConnector extends BaseConnector {
 							+ "the connection has been closed unexpectedly!");
 				}
 			} catch (IOException lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "executing handshake"));
+				if (lEx instanceof SocketException) {
+					mLog.warn(Logging.getSimpleExceptionMessage(lEx, "executing handshake"));
+				} else {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "executing handshake"));
+				}
 			}
 			try {
 				if (!lOk) {
