@@ -90,12 +90,10 @@
 	</appender>	
 	
 	<!-- special treatment for all logging activities of the spring-framework -->
-	<!--
 	<logger name="org.springframework" additivity="false">
 		<level value="WARN"/>
 		<appender-ref ref="developmentLog"/>
 	</logger>
-	-->
 
 	<!-- special treatment for all logging activities of the jWebSocket framework -->
 	<logger name="org.jwebsocket" additivity="false">

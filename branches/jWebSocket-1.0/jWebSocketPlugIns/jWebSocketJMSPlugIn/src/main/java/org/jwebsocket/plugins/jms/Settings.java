@@ -32,49 +32,49 @@ public class Settings {
 	private String mAdvisoryTopic = null;
 
 	/**
-	 * @return the mEndPointId
+	 * @return the Endpoint Id
 	 */
 	public String getEndPointId() {
 		return mEndPointId;
 	}
 
 	/**
-	 * @param mEndPointId the mEndPointId to set
+	 * @param aEndPointId
 	 */
-	public void setEndPointId(String mEndPointId) {
-		this.mEndPointId = mEndPointId;
+	public void setEndPointId(String aEndPointId) {
+		mEndPointId = aEndPointId;
 	}
 
 	/**
-	 * @return the mBrokerURI
+	 * @return the Broker URI
 	 */
 	public String getBrokerURI() {
 		return mBrokerURI;
 	}
 
 	/**
-	 * @param mBrokerURI the mBrokerURI to set
+	 * @param aBrokerURI
 	 */
-	public void setBrokerURI(String mBrokerURI) {
-		this.mBrokerURI = mBrokerURI;
+	public void setBrokerURI(String aBrokerURI) {
+		mBrokerURI = aBrokerURI;
 	}
 
 	/**
-	 * @return the mAdvisoryTopic
+	 * @return the Advisory Topic
 	 */
 	public String getAdvisoryTopic() {
 		return mAdvisoryTopic;
 	}
 
 	/**
-	 * @param mAdvisoryTopic the mAdvisoryTopic to set
+	 * @param aAdvisoryTopic
 	 */
-	public void setAdvisoryTopic(String mAdvisoryTopic) {
-		this.mAdvisoryTopic = mAdvisoryTopic;
+	public void setAdvisoryTopic(String aAdvisoryTopic) {
+		mAdvisoryTopic = aAdvisoryTopic;
 	}
 
 	/**
-	 * @return the mGatewayTopic
+	 * @return the Gateway Topic
 	 */
 	public String getGatewayTopic() {
 		return mGatewayTopic;

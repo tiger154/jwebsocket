@@ -250,6 +250,33 @@ public class ADTools {
 	}
 
 	/**
+	 *
+	 * @param aDN
+	 * @param aAttrNames
+	 * @return
+	 */
+	public Map<String, List<String>> getUserAttrsFromDN(String aDN, String[] aAttrNames) {
+		String lFilter = "(&(ObjectClass=user)(distinguishedName=" + aDN + "))";
+		FastMap<String, Map<String, List<String>>> lResMap = (FastMap<String, Map<String, List<String>>>) query(mUSER_BASE_DN, lFilter, aAttrNames);
+		Entry lEntry = lResMap.head().getNext();
+		if (lEntry == null) {
+			return null;
+		}
+		Map<String, List<String>> lRes = new FastMap<String, List<String>>();
+
+		Map<String, List<String>> Items = (FastMap<String, List<String>>) lEntry.getValue();
+		if (Items != null) {
+			for (String aAttrName : aAttrNames) {
+				FastList<String> lList = (FastList<String>) Items.get(aAttrName);
+				if (lList != null) {
+					lRes.put(aAttrName, lList);
+				}
+			}
+		}
+		return lRes;
+	}
+
+	/**
 	 * Returns the DN from a given login name (user's nickname) or null if the
 	 * user could not be found.
 	 *

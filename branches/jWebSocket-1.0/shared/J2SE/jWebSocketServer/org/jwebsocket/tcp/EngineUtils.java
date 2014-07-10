@@ -76,9 +76,11 @@ public class EngineUtils {
 	public static RequestHeader validateC2SRequest(List<String> aDomains,
 			Map<String, Object> aReqMap, Logger aLogger) throws UnsupportedEncodingException {
 
-		boolean lAccepted = isOriginValid(aReqMap.get("origin").toString(), aDomains);
+		Object lOrigin = aReqMap.get("origin");
+		boolean lAccepted = (null != lOrigin)
+				&& isOriginValid(lOrigin.toString(), aDomains);
 		if (!lAccepted) {
-			aLogger.error("Client origin '" + aReqMap.get("origin") + "' does not match allowed domains."
+			aLogger.error("Client origin '" + (null != lOrigin ? aReqMap.get("origin") : "[no origin found in request headers]") + "' does not match allowed domains."
 					+ "Please check for your active engine <domains> section in jWebSocket.xml!");
 			return null;
 		}
@@ -113,11 +115,11 @@ public class EngineUtils {
 			if (lPos >= 0) {
 				lSearchString = lPath.substring(lPos + 1);
 				if (lSearchString.length() > 0) {
-					String[] lArgsArray =
-							lSearchString.split(JWebSocketCommonConstants.ARGARG_SEPARATOR);
+					String[] lArgsArray
+							= lSearchString.split(JWebSocketCommonConstants.ARGARG_SEPARATOR);
 					for (int lIdx = 0; lIdx < lArgsArray.length; lIdx++) {
-						String[] lKeyValuePair =
-								lArgsArray[lIdx].split(JWebSocketCommonConstants.KEYVAL_SEPARATOR, 2);
+						String[] lKeyValuePair
+								= lArgsArray[lIdx].split(JWebSocketCommonConstants.KEYVAL_SEPARATOR, 2);
 						if (lKeyValuePair.length == 2) {
 							lArgs.put(lKeyValuePair[0], lKeyValuePair[1]);
 							if (aLogger.isDebugEnabled()) {

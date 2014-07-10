@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:context="http://www.springframework.org/schema/context"
-	   xmlns:amq="http://activemq.apache.org/schema/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans 
-		http://www.springframework.org/schema/beans/spring-beans.xsd 
-		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+			 xmlns:context="http://www.springframework.org/schema/context"
+			 xmlns:amq="http://activemq.apache.org/schema/core" 
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+		http://activemq.apache.org/schema/core
+		http://activemq.apache.org/schema/core/activemq-core.xsd
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- an embedded broker -->
-	<!-- bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+	<!-- 
+	<beans:bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
 		<property name="config" value="file:conf/activemq.xml" />
-	</bean-->
+	</beans:bean>
+	--> 
 
 	<!-- JMS ConnectionFactory to use -->
-	<bean id="amqFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+	<beans:bean id="amqFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
 		<!-- TCP args reference at: http://activemq.apache.org/tcp-transport-reference.html -->
-		<property name="brokerURL" value="tcp://0.0.0.0:61616?connectionTimeout=10000" /> 
-		<property name="useAsyncSend" value="true" />
-	</bean>
+		<beans:property name="brokerURL" value="tcp://0.0.0.0:61616?connectionTimeout=10000" /> 
+		<beans:property name="useAsyncSend" value="true" />
+	</beans:bean>
 
-	<bean id="connectionFactory"
-		  class="org.springframework.jms.connection.SingleConnectionFactory">
-		<property name="targetConnectionFactory" ref="amqFactory" />
-	</bean>
+	<beans:bean id="connectionFactory"
+				class="org.springframework.jms.connection.SingleConnectionFactory">
+		<beans:property name="targetConnectionFactory" ref="amqFactory" />
+	</beans:bean>
 
 	<!-- amq:broker useJmx="false" persistent="false"> <amq:transportConnectors> 
 	<amq:transportConnector uri="tcp://localhost:61616" /> </amq:transportConnectors> 
@@ -36,16 +40,16 @@
 	<amq:topic id="jmsGateway" physicalName="org.jwebsocket.jms.gateway" />
 
 	<!-- settings for the JMSGateway -->
-	<bean id="org.jwebsocket.plugins.jms.settings" class="org.jwebsocket.plugins.jms.Settings">
+	<beans:bean id="org.jwebsocket.plugins.jms.settings" class="org.jwebsocket.plugins.jms.Settings">
 		<!-- failover args reference at: http://activemq.apache.org/failover-transport-reference.html -->
 		<!-- <property name="brokerURI" value="failover:(tcp://<host1>:61616,tcp://<host2>:61616)?initialReconnectDelay=100&amp;connectionTimeout=10000"/> -->
 		<!-- <property name="brokerURI" value="tcp://<host>:61616?connectionTimeout=10000"/> -->
 		<!-- <property name="brokerURI" value="tcp://localhost:61616?connectionTimeout=10000"/> -->
-		<property name="brokerURI" value="failover:(tcp://localhost:61616)?initialReconnectDelay=100&amp;maxReconnectDelay=5000&amp;timeout=3000&amp;useExponentialBackOff=false"/>
-		<property name="gatewayTopic" value="org.jwebsocket.jms.gateway"/>
-		<property name="advisoryTopic" value="ActiveMQ.Advisory.Consumer.Topic.org.jwebsocket.jms.gateway"/>
+		<beans:property name="brokerURI" value="failover:(tcp://localhost:61616)?initialReconnectDelay=100&amp;maxReconnectDelay=5000&amp;timeout=3000&amp;useExponentialBackOff=false"/>
+		<beans:property name="gatewayTopic" value="org.jwebsocket.jms.gateway"/>
+		<beans:property name="advisoryTopic" value="ActiveMQ.Advisory.Consumer.Topic.org.jwebsocket.jms.gateway"/>
 		<!-- use id for this node in the cluster, must be unique per node -->
-		<property name="endPointId" value="org.jwebsocket.jms.gateway"/>
-	</bean>
+		<beans:property name="endPointId" value="org.jwebsocket.jms.gateway"/>
+	</beans:bean>
 
-</beans>
+</beans:beans>
