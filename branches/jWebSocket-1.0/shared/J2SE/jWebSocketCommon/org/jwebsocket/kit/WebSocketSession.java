@@ -103,7 +103,7 @@ public class WebSocketSession {
 	public void setCreatedAt() {
 		if (null == getCreatedAt()) {
 			mStorage.put(CREATED_AT, System.currentTimeMillis());
-		} 
+		}
 	}
 
 	/**
@@ -143,7 +143,8 @@ public class WebSocketSession {
 		if (null == mSessionId) {
 			this.mSessionId = aSessionId;
 		} else {
-			throw new UnsupportedOperationException("The 'sessionId' property is in read-only state!");
+			throw new UnsupportedOperationException(
+					"The 'sessionId' property is in read-only state!");
 		}
 	}
 
@@ -165,7 +166,8 @@ public class WebSocketSession {
 		if (null == mStorage) {
 			mStorage = aStorage;
 		} else {
-			throw new UnsupportedOperationException("The storage property is in read-only state!!");
+			throw new UnsupportedOperationException(
+					"The storage property is in read-only state!");
 		}
 	}
 }

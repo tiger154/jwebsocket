@@ -152,13 +152,13 @@
 			-->
 			<keepAliveConnectors>false</keepAliveConnectors>
 			<!--
-				Defines every how long time we will send a ping to each 
-				connector to know if it is still alive 
+				Defines in which intervals the server sends a ping to each 
+				connector to know if it is still alive (default: 20000)
 			-->
 			<keepAliveConnectorsInterval>20000</keepAliveConnectorsInterval>
 			<!--
-				Defines every how long time we will send a ping to each 
-				connector to know if it is still alive 
+				Defines how long the server waits on the client's pong 
+				(default: 10000)
 			-->
 			<keepAliveConnectorsTimeout>10000</keepAliveConnectorsTimeout>
 			<!--
