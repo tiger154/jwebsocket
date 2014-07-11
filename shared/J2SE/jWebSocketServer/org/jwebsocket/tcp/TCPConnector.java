@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.Date;
 import java.util.Map;
 import java.util.TimerTask;
 import javax.net.ssl.SSLSocket;
@@ -70,8 +71,9 @@ public class TCPConnector extends BaseConnector {
 	private final boolean mKeepAlive;
 	private final Integer mKeepAliveInterval;
 	private final Integer mKeepAliveConnectorsTimeout;
-	private ShutDownConnectorTask mKeepAliveTimeoutTask;
-	private PingConnectorTask mKeepAliveIntervalTask;
+	private ShutDownConnectorTask mKeepAliveTimeoutTask = null;
+	private PingConnectorTask mKeepAliveIntervalTask = null;
+	private long mPingStartedAt;
 
 	/**
 	 * creates a new TCP connector for the passed engine using the passed client
@@ -111,10 +113,6 @@ public class TCPConnector extends BaseConnector {
 		ClientProcessor lClientProc = new ClientProcessor(this);
 		mClientThread = new Thread(lClientProc);
 		mClientThread.start();
-		if (mKeepAlive) {
-			mKeepAliveTimeoutTask = new ShutDownConnectorTask();
-			mKeepAliveIntervalTask = new PingConnectorTask();
-		}
 	}
 
 	@Override
@@ -183,6 +181,7 @@ public class TCPConnector extends BaseConnector {
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
 		}
 		if (mKeepAlive) {
+			mKeepAliveIntervalTask = new PingConnectorTask();
 			Tools.getTimer().scheduleAtFixedRate(mKeepAliveIntervalTask, mKeepAliveInterval, mKeepAliveInterval);
 		}
 	}
@@ -472,51 +471,21 @@ public class TCPConnector extends BaseConnector {
 
 	private class ShutDownConnectorTask extends TimerTask {
 
-		private boolean mCompleted = false;
-		private boolean mCancelled = false;
-
 		@Override
 		public void run() {
-			Tools.getThreadPool().submit(new TimerTask() {
-				@Override
-				public void run() {
-					if (getStatus() != WebSocketConnectorStatus.DOWN) {
-						mCompleted = true;
-						if (mLog.isDebugEnabled()) {
-							mLog.debug("Shutting down connector " + getId()
-									+ " because it didn't respond to a ping");
-						}
-						mCloseReason = CloseReason.BROKEN;
-						try {
-							// setStatus(WebSocketConnectorStatus.DOWN);
-							mIn.close();
-							// stopConnector(CloseReason.BROKEN);
-						} catch (IOException ex) {
-						}
-					}
+			if (getStatus() != WebSocketConnectorStatus.DOWN) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Shutting down connector " + getId()
+							+ " because it didn't respond to a ping");
 				}
-			});
-
-		}
-
-		@Override
-		public boolean cancel() {
-			mCancelled = true;
-			boolean lRes = true;
-			try {
-				lRes = super.cancel();
-			} catch (Exception lEx) {
-				// just in case it is already canceled
+				mCloseReason = CloseReason.BROKEN;
+				try {
+					// setStatus(WebSocketConnectorStatus.DOWN);
+					mIn.close();
+					// stopConnector(CloseReason.BROKEN);
+				} catch (IOException ex) {
+				}
 			}
-			return lRes;
-		}
-
-		public boolean isCompleted() {
-			return mCompleted;
-		}
-
-		public boolean isCancelled() {
-			return mCancelled;
 		}
 	}
 
@@ -524,16 +493,18 @@ public class TCPConnector extends BaseConnector {
 
 		@Override
 		public void run() {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Sending server ping recognition to know if the connector " + getId() + " is alive.");
-			}
-			WebSocketPacket lPing = new RawPacket("");
-			lPing.setFrameType(WebSocketFrameType.PING);
-			sendPacket(lPing);
-			// The task needs to be cancelled right after we receive a PONG packet
 			synchronized (this) {
-				if (mKeepAliveTimeoutTask.isCompleted()
-						|| mKeepAliveTimeoutTask.isCancelled()) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Sending S2C ping to connector '" + getId() + "' "
+							+ (null != getUsername() ? "(" + getUsername() + ")" : "[not authenticated]")
+							+ "...");
+				}
+				WebSocketPacket lPing = new RawPacket("");
+				lPing.setFrameType(WebSocketFrameType.PING);
+				sendPacket(lPing);
+				// The task needs to be cancelled right after we receive a PONG packet
+				if (null == mKeepAliveTimeoutTask) {
+					mPingStartedAt = new Date().getTime();
 					mKeepAliveTimeoutTask = new ShutDownConnectorTask();
 					Tools.getTimer().schedule(mKeepAliveTimeoutTask, mKeepAliveConnectorsTimeout);
 				}
@@ -737,11 +708,31 @@ public class TCPConnector extends BaseConnector {
 						sendPacket(lClose);
 						// the streams are closed in the run method
 					} else if (WebSocketFrameType.PONG.equals(lPacket.getFrameType())) {
+
+						// TODO: shouldn't we enclose this in a synchronize(this)??
 						if (mKeepAlive) {
-							try {
-								mKeepAliveTimeoutTask.cancel();
-							} catch (Exception lEx) {
-								// If the task is not running will always come here
+							if (mLog.isDebugEnabled()) {
+								mLog.debug("Received S2C pong from connector '"
+										+ getId()
+										+ "' " 
+										+ (null != getUsername() ? "(" + getUsername() + ")" : "[not authenticated]")
+										+ " ("
+										+ ((new Date()).getTime() - mPingStartedAt)
+										+ "ms).");
+							}
+							synchronized (this) {
+								if (null != mKeepAliveTimeoutTask) {
+									try {
+										mKeepAliveTimeoutTask.cancel();
+										mKeepAliveTimeoutTask = null;
+									} catch (Exception lEx) {
+										// If the task is not running will always come here
+									}
+								}
+							}
+						} else {
+							if (mLog.isDebugEnabled()) {
+								mLog.warn("Pong received from connector '" + getId() + "' although no S2C keep-alive configured.");
 							}
 						}
 						// do nothing

@@ -1095,8 +1095,18 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Authentication Successfully. Updating the user session...");
+			mLog.debug(
+					"Authentication successful. Updating the user session (id: "
+					+ (null != aConnector.getSession()
+					? aConnector.getSession().getSessionId()
+					: "[null]")
+					+ ", storage: "
+					+ (null != aConnector.getSession()
+					? aConnector.getSession().getStorage()
+					: "[null]")
+					+ ")...");
 		}
+
 		// getting the session
 		Map<String, Object> lSession = aConnector.getSession().getStorage();
 
