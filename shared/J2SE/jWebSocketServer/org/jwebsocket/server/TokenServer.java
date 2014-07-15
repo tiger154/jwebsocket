@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.server;
 
+import static java.lang.Boolean.TRUE;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -64,6 +65,7 @@ public class TokenServer extends BaseServer {
 	private final int mMaximumPoolSize;
 	private final int mKeepAliveTime;
 	private final int mBlockingQueueSize;
+	private JMSManager mJMSManager = null;
 
 	/**
 	 *
@@ -279,7 +281,9 @@ public class TokenServer extends BaseServer {
 
 				final Token lToken = packetToToken(aConnector, aDataPacket);
 				if (lToken != null) {
-					boolean lRunReqInOwnThread = "true".equals(lToken.getString("spawnThread"));
+					boolean lRunReqInOwnThread
+							= TRUE.equals(lToken.getBoolean("spawnThread"))
+							|| "true".equals(lToken.getString("spawnThread"));
 					// TODO: create list of running threads and close all properly
 					// on shutdown
 					if (lRunReqInOwnThread) {
@@ -1025,6 +1029,12 @@ public class TokenServer extends BaseServer {
 	 * @throws java.lang.Exception
 	 */
 	public JMSManager getJMSManager() throws Exception {
-		return (JMSManager) JWebSocketBeanFactory.getInstance().getBean("jmsManager");
+		if (null == mJMSManager) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Loading JMSManager...");
+			}
+			mJMSManager = (JMSManager) JWebSocketBeanFactory.getInstance().getBean("jmsManager");
+		}
+		return mJMSManager;
 	}
 }

@@ -69,19 +69,24 @@ public class EngineUtils {
 	 *
 	 * @param aDomains
 	 * @param aReqMap
-	 * @param aLogger
+	 * @param aLog
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
 	public static RequestHeader validateC2SRequest(List<String> aDomains,
-			Map<String, Object> aReqMap, Logger aLogger) throws UnsupportedEncodingException {
+			Map<String, Object> aReqMap, Logger aLog) throws UnsupportedEncodingException {
 
 		Object lOrigin = aReqMap.get("origin");
+		Object lUserAgent = aReqMap.get("User-Agent");
 		boolean lAccepted = (null != lOrigin)
 				&& isOriginValid(lOrigin.toString(), aDomains);
 		if (!lAccepted) {
-			aLogger.error("Client origin '" + (null != lOrigin ? aReqMap.get("origin") : "[no origin found in request headers]") + "' does not match allowed domains."
-					+ "Please check for your active engine <domains> section in jWebSocket.xml!");
+			aLog.error("Client origin '"
+					+ (null != lOrigin
+					? lOrigin
+					: "[no 'origin' in request headers" + (null != lUserAgent ? ", user-agent: " + lUserAgent : ", no user-agent given") + "]")
+					+ "' does not match allowed domains."
+					+ " Check engine <domains> section in jWebSocket.xml!");
 			return null;
 		}
 
@@ -92,17 +97,17 @@ public class EngineUtils {
 
 		// run validation
 		if (!WebSocketProtocolAbstraction.isValidDraft(lDraft)) {
-			aLogger.error("Error in Handshake: Draft #'" + lDraft + "' not supported.");
+			aLog.error("Error in Handshake: Draft #'" + lDraft + "' not supported.");
 			return null;
 		}
 
 		if (!WebSocketProtocolAbstraction.isValidVersion(lVersion)) {
-			aLogger.error("Error in Handshake: Version #'" + lVersion + "' not supported.");
+			aLog.error("Error in Handshake: Version #'" + lVersion + "' not supported.");
 			return null;
 		}
 
-		if (aLogger.isDebugEnabled()) {
-			aLogger.debug("Client uses websocket protocol version #" + lVersion + "/draft #" + lDraft + " for communication.");
+		if (aLog.isDebugEnabled()) {
+			aLog.debug("Client uses websocket protocol version #" + lVersion + "/draft #" + lDraft + " for communication.");
 		}
 		RequestHeader lHeader = new RequestHeader();
 		Map<String, String> lArgs = new HashMap<String, String>();
@@ -122,8 +127,8 @@ public class EngineUtils {
 								= lArgsArray[lIdx].split(JWebSocketCommonConstants.KEYVAL_SEPARATOR, 2);
 						if (lKeyValuePair.length == 2) {
 							lArgs.put(lKeyValuePair[0], lKeyValuePair[1]);
-							if (aLogger.isDebugEnabled()) {
-								aLogger.debug("arg" + lIdx + ": "
+							if (aLog.isDebugEnabled()) {
+								aLog.debug("arg" + lIdx + ": "
 										+ lKeyValuePair[0] + "="
 										+ lKeyValuePair[1]);
 							}

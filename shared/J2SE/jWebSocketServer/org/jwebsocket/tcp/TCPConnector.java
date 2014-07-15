@@ -71,8 +71,8 @@ public class TCPConnector extends BaseConnector {
 	private final boolean mKeepAlive;
 	private final Integer mKeepAliveInterval;
 	private final Integer mKeepAliveConnectorsTimeout;
-	private ShutDownConnectorTask mKeepAliveTimeoutTask = null;
-	private PingConnectorTask mKeepAliveIntervalTask = null;
+	private S2CPingTimeoutTask mS2CPingTimeoutTask = null;
+	private S2CPingIntervalTask mS2CPingIntervalTask = null;
 	private long mPingStartedAt;
 
 	/**
@@ -181,8 +181,8 @@ public class TCPConnector extends BaseConnector {
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
 		}
 		if (mKeepAlive) {
-			mKeepAliveIntervalTask = new PingConnectorTask();
-			Tools.getTimer().scheduleAtFixedRate(mKeepAliveIntervalTask, mKeepAliveInterval, mKeepAliveInterval);
+			mS2CPingIntervalTask = new S2CPingIntervalTask();
+			Tools.getTimer().scheduleAtFixedRate(mS2CPingIntervalTask, mKeepAliveInterval, mKeepAliveInterval);
 		}
 	}
 
@@ -225,7 +225,7 @@ public class TCPConnector extends BaseConnector {
 	@Override
 	public void stopConnector(CloseReason aCloseReason) {
 		try {
-			mKeepAliveIntervalTask.cancel();
+			mS2CPingIntervalTask.cancel();
 		} catch (Exception lEx) {
 			// If the task is not running will always come here
 		}
@@ -469,27 +469,38 @@ public class TCPConnector extends BaseConnector {
 		return lHeader;
 	}
 
-	private class ShutDownConnectorTask extends TimerTask {
+	private class S2CPingTimeoutTask extends TimerTask {
 
 		@Override
 		public void run() {
-			if (getStatus() != WebSocketConnectorStatus.DOWN) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Shutting down connector " + getId()
-							+ " because it didn't respond to a ping");
+			synchronized (this) {
+				// to allow a new ping timeout task to be created ...
+				// set existing one to null
+				mS2CPingTimeoutTask = null;
+
+				if (getStatus() != WebSocketConnectorStatus.DOWN) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug(
+								"Shutting down connector '"
+								+ getId()
+								+ "' because it didn't respond to a ping");
+					}
+					mCloseReason = CloseReason.BROKEN;
+					try {
+						// setStatus(WebSocketConnectorStatus.DOWN);
+						mIn.close();
+						// stopConnector(CloseReason.BROKEN);
+					} catch (IOException ex) {
+					}
 				}
-				mCloseReason = CloseReason.BROKEN;
-				try {
-					// setStatus(WebSocketConnectorStatus.DOWN);
-					mIn.close();
-					// stopConnector(CloseReason.BROKEN);
-				} catch (IOException ex) {
-				}
+				// if the connector is shutdown ...
+				// we also can cancel the S2C ping
+				mS2CPingIntervalTask.cancel();
 			}
 		}
 	}
 
-	private class PingConnectorTask extends TimerTask {
+	private class S2CPingIntervalTask extends TimerTask {
 
 		@Override
 		public void run() {
@@ -503,10 +514,10 @@ public class TCPConnector extends BaseConnector {
 				lPing.setFrameType(WebSocketFrameType.PING);
 				sendPacket(lPing);
 				// The task needs to be cancelled right after we receive a PONG packet
-				if (null == mKeepAliveTimeoutTask) {
+				if (null == mS2CPingTimeoutTask) {
 					mPingStartedAt = new Date().getTime();
-					mKeepAliveTimeoutTask = new ShutDownConnectorTask();
-					Tools.getTimer().schedule(mKeepAliveTimeoutTask, mKeepAliveConnectorsTimeout);
+					mS2CPingTimeoutTask = new S2CPingTimeoutTask();
+					Tools.getTimer().schedule(mS2CPingTimeoutTask, mKeepAliveConnectorsTimeout);
 				}
 			}
 		}
@@ -707,6 +718,9 @@ public class TCPConnector extends BaseConnector {
 						lClose.setFrameType(WebSocketFrameType.CLOSE);
 						sendPacket(lClose);
 						// the streams are closed in the run method
+					} else if (WebSocketFrameType.FRAGMENT.equals(lPacket.getFrameType())) {
+						// TODO: support fragments!
+						mLog.warn("Frame type '" + lPacket.getFrameType() + "' not yet supported (" + mLogInfo + "), ignoring frame.");
 					} else if (WebSocketFrameType.PONG.equals(lPacket.getFrameType())) {
 
 						// TODO: shouldn't we enclose this in a synchronize(this)??
@@ -714,17 +728,17 @@ public class TCPConnector extends BaseConnector {
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Received S2C pong from connector '"
 										+ getId()
-										+ "' " 
+										+ "' "
 										+ (null != getUsername() ? "(" + getUsername() + ")" : "[not authenticated]")
 										+ " ("
 										+ ((new Date()).getTime() - mPingStartedAt)
 										+ "ms).");
 							}
 							synchronized (this) {
-								if (null != mKeepAliveTimeoutTask) {
+								if (null != mS2CPingTimeoutTask) {
 									try {
-										mKeepAliveTimeoutTask.cancel();
-										mKeepAliveTimeoutTask = null;
+										mS2CPingTimeoutTask.cancel();
+										mS2CPingTimeoutTask = null;
 									} catch (Exception lEx) {
 										// If the task is not running will always come here
 									}
