@@ -29,6 +29,7 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javolution.util.FastMap;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
@@ -267,7 +268,10 @@ public class JMSEndPointSender {
 				}, aTimeout);
 			}
 		} catch (JMSException lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + " sending message.");
+			mLog.error(lEx.getClass().getSimpleName() 
+					+ " sending message: " 
+					+ lEx.getMessage() + " "
+					+ ExceptionUtils.getStackTrace(lEx));
 		}
 	}
 

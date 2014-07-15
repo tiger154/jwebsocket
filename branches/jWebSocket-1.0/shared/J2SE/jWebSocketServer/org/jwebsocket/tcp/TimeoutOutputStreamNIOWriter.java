@@ -55,6 +55,7 @@ public class TimeoutOutputStreamNIOWriter {
 	// of expected client send operations that concurrently might get 
 	// to a timeout case.
 	private static ExecutorService mPool = null;
+	private final static Object mPoolSync = new Object();
 	private OutputStream mOut = null;
 	private InputStream mIn = null;
 	private WebSocketConnector mConnector = null;
@@ -80,9 +81,11 @@ public class TimeoutOutputStreamNIOWriter {
 	 *
 	 */
 	public static void stop() {
-		if (mStarted) {
-			mPool.shutdownNow();
-			mStarted = false;
+		synchronized (mPoolSync) {
+			if (mStarted) {
+				mPool.shutdownNow();
+				mStarted = false;
+			}
 		}
 	}
 
@@ -178,30 +181,37 @@ public class TimeoutOutputStreamNIOWriter {
 			mLog.debug("Scheduling send operation to '" + mConnector.getId() + "'...");
 		}
 
-		// create a timer task to send the packet 
-		final SendOperation lSend = new SendOperation(aDataPacket);
-
-		// create a timeout timer task to cancel the send operation in case of disconnection
-		Tools.getTimer().schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					if (!lSend.isDone()) {
-						// close the outbound stream to fire exception
-						// timed out write operation
-						if (mIsDebug && mLog.isDebugEnabled()) {
-							mLog.debug("Closing stream to '" + mConnector.getId() + "' connector due to timeout...");
-						}
-						lSend.getIn().close();
-						lSend.getOut().close();
-					}
-				} catch (IOException lEx) {
-					// TODO check this
-				}
+		synchronized (mPoolSync) {
+			if (mPool.isTerminated() || mPool.isShutdown()) {
+				mLog.warn("Sender thread pool is terminated or shutdown already, skipping send operation.");
+				return;
 			}
-		}, mTimeout);
 
-		// finally execute the send operation
-		mPool.execute(lSend);
+			// create a timer task to send the packet 
+			final SendOperation lSend = new SendOperation(aDataPacket);
+
+			// create a timeout timer task to cancel the send operation in case of disconnection
+			Tools.getTimer().schedule(new TimerTask() {
+				@Override
+				public void run() {
+					try {
+						if (!lSend.isDone()) {
+							// close the outbound stream to fire exception
+							// timed out write operation
+							if (mIsDebug && mLog.isDebugEnabled()) {
+								mLog.debug("Closing stream to '" + mConnector.getId() + "' connector due to timeout...");
+							}
+							lSend.getIn().close();
+							lSend.getOut().close();
+						}
+					} catch (IOException lEx) {
+						// TODO check this
+					}
+				}
+			}, mTimeout);
+
+			// finally execute the send operation
+			mPool.execute(lSend);
+		}
 	}
 }

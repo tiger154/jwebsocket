@@ -62,6 +62,8 @@ import org.springframework.context.ApplicationContext;
  *
  * @author Alexander Schulze
  */
+
+
 public class JMSPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
@@ -553,6 +555,13 @@ public class JMSPlugIn extends TokenPlugIn {
 			RightJms... aRights) {
 		return new ActionInput(aConnector, aToken, aPositiveMsg, aRights);
 
+	}
+
+	/**
+	 * @return the mSettings
+	 */
+	public Settings getSpringSettings() {
+		return mSettings;
 	}
 
 	class ActionInput {
