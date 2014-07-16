@@ -423,7 +423,8 @@ public class TCPConnector extends BaseConnector {
 		EngineUtils.parseCookies(lReqMap);
 
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
-				getEngine().getConfiguration().getDomains(), lReqMap, mLog);
+				getEngine().getConfiguration().getDomains(), lReqMap, mLog,
+				aClientSocket);
 		if (null == lHeader) {
 			return null;
 		}
@@ -572,15 +573,22 @@ public class TCPConnector extends BaseConnector {
 					}
 					lOk = true;
 				} else {
+					InetAddress lAddr = mClientSocket.getInetAddress();
 					mLog.error(lLogInfo + " client not accepted on port "
 							+ mClientSocket.getPort()
 							+ " due to handshake issues. "
-							+ "Probably the client supported WebSocket protocol is not updated, "
-							+ "the SSL handshake could not be established or "
-							+ "the connection has been closed unexpectedly!");
+							+ (null != lAddr
+							? lAddr.getHostAddress() + ", " + lAddr.getHostName()
+							: "[no IP/hostname available]")
+							+ ", headers: "
+							+ (null != lHeader
+							? lHeader.toString()
+							: "[no headers passed]")
+							+ ", invalid client" + (isSSL() ? " , SSL handshake error" : "")
+							+ " or connection closed unexpectedly!");
 				}
 			} catch (IOException lEx) {
-				if (lEx instanceof SocketException) {
+				if (lEx instanceof SocketException || lEx instanceof SocketTimeoutException) {
 					mLog.warn(Logging.getSimpleExceptionMessage(lEx, "executing handshake"));
 				} else {
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "executing handshake"));
