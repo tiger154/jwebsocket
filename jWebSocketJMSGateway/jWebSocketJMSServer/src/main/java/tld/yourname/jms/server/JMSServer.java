@@ -89,7 +89,7 @@ public class JMSServer {
 		try {
 			// try to load properties files from local folder or jar
 			String lPath ="JMSServer.properties";
-			mLog.debug("Tring to read properties from: " + lPath);
+			mLog.debug("Trying to read properties from: " + lPath);
 			lConfig = new PropertiesConfiguration(lPath);
 		} catch (ConfigurationException ex) {
 		}
