@@ -19,6 +19,8 @@
 package org.jwebsocket.tcp;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,14 +72,32 @@ public class EngineUtils {
 	 * @param aDomains
 	 * @param aReqMap
 	 * @param aLog
+	 * @param aClientSocket
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
 	public static RequestHeader validateC2SRequest(List<String> aDomains,
-			Map<String, Object> aReqMap, Logger aLog) throws UnsupportedEncodingException {
+			Map<String, Object> aReqMap, Logger aLog,
+			Socket aClientSocket) throws UnsupportedEncodingException {
 
-		Object lOrigin = aReqMap.get("origin");
-		Object lUserAgent = aReqMap.get("User-Agent");
+		InetAddress lAddr = aClientSocket.getInetAddress();
+		if (aLog.isDebugEnabled()) {
+			aLog.debug("Validating connection from "
+					+ (null != lAddr
+					? lAddr.getHostAddress() + ", " + lAddr.getHostName()
+					: "[no IP/hostname available]")
+					+ ", headers: "
+					+ (null != aReqMap
+					? aReqMap.toString()
+					: "[no headers passed]")
+			);
+		}
+		Object lOrigin = null;
+		Object lUserAgent = null;
+		if (null != aReqMap) {
+			lOrigin = aReqMap.get("origin");
+			lUserAgent = aReqMap.get("User-Agent");
+		}
 		boolean lAccepted = (null != lOrigin)
 				&& isOriginValid(lOrigin.toString(), aDomains);
 		if (!lAccepted) {
@@ -85,8 +105,16 @@ public class EngineUtils {
 					+ (null != lOrigin
 					? lOrigin
 					: "[no 'origin' in request headers" + (null != lUserAgent ? ", user-agent: " + lUserAgent : ", no user-agent given") + "]")
-					+ "' does not match allowed domains."
-					+ " Check engine <domains> section in jWebSocket.xml!");
+					+ "' does not match allowed domains"
+					+ ", host: "
+					+ (null != lAddr
+					? lAddr.getHostAddress() + ", " + lAddr.getHostName()
+					: "[no IP/hostname available]")
+					+ ", headers: "
+					+ (null != aReqMap
+					? aReqMap.toString()
+					: "[no headers passed]"
+					+ ". Check engine <domains> section in jWebSocket.xml!"));
 			return null;
 		}
 

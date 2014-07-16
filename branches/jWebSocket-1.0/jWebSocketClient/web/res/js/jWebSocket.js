@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC3 (build 40715)
+	//:const:*:VERSION:String:1.0.0 RC3 (build 40716)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC3 (build 40715)",
+	VERSION: "1.0.0 RC3 (build 40716)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace

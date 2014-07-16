@@ -21,6 +21,7 @@ package org.jwebsocket.tcp.nio;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
@@ -632,8 +633,11 @@ public class NioTcpEngine extends BaseEngine {
 					}
 					EngineUtils.parseCookies(lReqMap);
 
+					Socket lSocket = mConnectorToChannelMap.get(aBean.getConnectorId()).socket();
+					
 					RequestHeader lReqHeader = EngineUtils.validateC2SRequest(
-							getConfiguration().getDomains(), lReqMap, mLog);
+							getConfiguration().getDomains(), lReqMap, mLog, 
+							lSocket);
 
 					byte[] lResponse = WebSocketHandshake.generateS2CResponse(lReqMap, lReqHeader);
 
@@ -655,7 +659,8 @@ public class NioTcpEngine extends BaseEngine {
 					}
 
 					int lTimeout = lReqHeader.getTimeout(getConfiguration().getTimeout());
-					mConnectorToChannelMap.get(aBean.getConnectorId()).socket().setSoTimeout(lTimeout);
+					// mConnectorToChannelMap.get(aBean.getConnectorId()).socket().setSoTimeout(lTimeout);
+					lSocket.setSoTimeout(lTimeout);
 					
 					// initializing connector
 					aConnector.wsHandshakeValidated();

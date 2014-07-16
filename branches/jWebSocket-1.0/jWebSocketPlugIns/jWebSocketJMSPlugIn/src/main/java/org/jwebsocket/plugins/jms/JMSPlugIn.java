@@ -62,8 +62,6 @@ import org.springframework.context.ApplicationContext;
  *
  * @author Alexander Schulze
  */
-
-
 public class JMSPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
@@ -88,6 +86,8 @@ public class JMSPlugIn extends TokenPlugIn {
 	private String mEndPointId;
 	private String mGatewayTopicId;
 	private String mAdvisoryTopicId;
+	private List<String> mDomains = new FastList<String>();
+	private boolean mInitialized = false;
 
 	/**
 	 *
@@ -106,91 +106,100 @@ public class JMSPlugIn extends TokenPlugIn {
 					lBeanFactory);
 			mSettings = (Settings) lBeanFactory.getBean("org.jwebsocket.plugins.jms.settings");
 
-			List<String> lDomains = new FastList<String>();
-			lDomains.add("*");
-			EngineConfig lEngineCfg = new EngineConfig(
-					"jmsgw0", // id
-					"jWebSocket JMSGateway", // name 
-					"-", // jar
-					0, // port
-					0, // ssl port
-					JWebSocketServerConstants.DEFAULT_HOSTNAME,
-					"-", // keystore
-					"-", // keystore pw
-					"-", // context
-					"-", // servlet
-					0, // timeout
-					65536, // max frame size
-					lDomains, // domains
-					1000, // max connections
-					"-", // max connection stretegy
-					false, // notify on system stopping
-					null, // settings
-					JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS, // defaults to false
-					JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_INTERVAL,
-					JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_TIMEOUT
-			);
-			mJMSEngine = new JMSEngine(lEngineCfg);
-
-			// Advisory listener
-			// setting up the JMS Gateway
-			mBrokerURI = mSettings.getBrokerURI();
-			mEndPointId = mSettings.getEndPointId();
-			mGatewayTopicId = mSettings.getGatewayTopic();
-			mAdvisoryTopicId = mSettings.getAdvisoryTopic();
-
-			mConnectionFactory = new ActiveMQConnectionFactory(mBrokerURI);
-			try {
-				mConnection = mConnectionFactory.createConnection();
-				// setting the clientID is required for durable subscribers
-				mConnection.setClientID(mEndPointId);
-				// if we detect a duplicate endponin id this start operation 
-				// will fail and cause an exception,such that we cannot 
-				// connect to the queue or topic.
-				mConnection.start();
-
-				mSession = mConnection.createSession(false,
-						Session.AUTO_ACKNOWLEDGE);
-
-				Topic lGatewayTopic = mSession.createTopic(mGatewayTopicId);
-				MessageProducer lProducer = mSession.createProducer(lGatewayTopic);
-				mSender = new JMSSender(mSession, lProducer, mEndPointId);
-
-				// we use a durable subscriber here to allow a restart 
-				// of the jWebSocket server instance.
-				mConsumer = // mSession.createDurableSubscriber(
-						mSession.createConsumer(
-								lGatewayTopic,
-								"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
-				mListener = new JMSListener(mJMSEngine, mSender);
-				mConsumer.setMessageListener(mListener);
-
-				// create the listener to the advisory topic
-				Topic lAdvisoryTopic = mSession.createTopic(mAdvisoryTopicId);
-				mAdvisoryConsumer = mSession.createConsumer(lAdvisoryTopic);
-				JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
-						mJMSEngine, mSender);
-				mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
-
-				// registering JMSEngine once JMS connection is already started
-				JWebSocketFactory.getEngines()
-						.put(lEngineCfg.getId(), mJMSEngine);
-				List<WebSocketServer> lServers = JWebSocketFactory.getServers();
-				for (WebSocketServer lServer : lServers) {
-					lServer.addEngine(mJMSEngine);
-				}
-
-				// give a success message to the administrator
-				if (mLog.isInfoEnabled()) {
-					mLog.info("JMS plug-in successfully instantiated, JMS Gateway endpoint id: '" + mEndPointId + "'.");
-				}
-			} catch (JMSException lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx,
-						"connecting JMS client."));
-			}
+			mDomains = new FastList<String>();
+			mDomains.add("*");
 		} catch (BeansException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
 					"instantiating JMS client."));
+		}
+	}
+
+	private void init() {
+		// check if already initialized
+		if (mInitialized) {
+			return;
+		} else {
+			mInitialized = true;
+		}
+		EngineConfig lEngineCfg = new EngineConfig(
+				"jmsgw0", // id
+				"jWebSocket JMSGateway", // name 
+				"-", // jar
+				0, // port
+				0, // ssl port
+				JWebSocketServerConstants.DEFAULT_HOSTNAME,
+				"-", // keystore
+				"-", // keystore pw
+				"-", // context
+				"-", // servlet
+				0, // timeout
+				65536, // max frame size
+				mDomains, // domains
+				1000, // max connections
+				"-", // max connection stretegy
+				false, // notify on system stopping
+				null, // settings
+				JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS, // defaults to false
+				JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_INTERVAL,
+				JWebSocketServerConstants.KEEP_ALIVE_CONNECTORS_TIMEOUT
+		);
+		mJMSEngine = new JMSEngine(lEngineCfg);
+
+		// Advisory listener
+		// setting up the JMS Gateway
+		mBrokerURI = mSettings.getBrokerURI();
+		mEndPointId = mSettings.getEndPointId();
+		mGatewayTopicId = mSettings.getGatewayTopic();
+		mAdvisoryTopicId = mSettings.getAdvisoryTopic();
+
+		mConnectionFactory = new ActiveMQConnectionFactory(mBrokerURI);
+		try {
+			mConnection = mConnectionFactory.createConnection();
+			// setting the clientID is required for durable subscribers
+			mConnection.setClientID(mEndPointId);
+			// if we detect a duplicate endponin id this start operation 
+			// will fail and cause an exception,such that we cannot 
+			// connect to the queue or topic.
+			mConnection.start();
+
+			mSession = mConnection.createSession(false,
+					Session.AUTO_ACKNOWLEDGE);
+
+			Topic lGatewayTopic = mSession.createTopic(mGatewayTopicId);
+			MessageProducer lProducer = mSession.createProducer(lGatewayTopic);
+			mSender = new JMSSender(mSession, lProducer, mEndPointId);
+
+			// we use a durable subscriber here to allow a restart 
+			// of the jWebSocket server instance.
+			mConsumer = // mSession.createDurableSubscriber(
+					mSession.createConsumer(
+							lGatewayTopic,
+							"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
+			mListener = new JMSListener(mJMSEngine, mSender);
+			mConsumer.setMessageListener(mListener);
+
+			// create the listener to the advisory topic
+			Topic lAdvisoryTopic = mSession.createTopic(mAdvisoryTopicId);
+			mAdvisoryConsumer = mSession.createConsumer(lAdvisoryTopic);
+			JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
+					mJMSEngine, mSender);
+			mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
+
+			// registering JMSEngine once JMS connection is already started
+			JWebSocketFactory.getEngines()
+					.put(lEngineCfg.getId(), mJMSEngine);
+			List<WebSocketServer> lServers = JWebSocketFactory.getServers();
+			for (WebSocketServer lServer : lServers) {
+				lServer.addEngine(mJMSEngine);
+			}
+
+			// give a success message to the administrator
+			if (mLog.isInfoEnabled()) {
+				mLog.info("JMS plug-in successfully instantiated, JMS Gateway endpoint id: '" + mEndPointId + "'.");
+			}
+		} catch (JMSException lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx,
+					"connecting JMS client."));
 		}
 	}
 
@@ -237,6 +246,14 @@ public class JMSPlugIn extends TokenPlugIn {
 		if (null != mJmsManager) {
 			mJmsManager.stopListener(aConnector.getId());
 		}
+	}
+
+	@Override
+	public void engineStarted(WebSocketEngine aEngine) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Engine '" + aEngine.getId() + "' started.");
+		}
+		init();
 	}
 
 	@Override

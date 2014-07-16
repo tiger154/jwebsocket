@@ -35,7 +35,7 @@ import org.jwebsocket.token.Token;
  */
 public class TokenPlugInChain extends BasePlugInChain {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 *
@@ -106,8 +106,13 @@ public class TokenPlugInChain extends BasePlugInChain {
 								+ " in plug-in '"
 								+ ((TokenPlugIn) lPlugIn).getNamespace() + "': "
 								+ lEx.getMessage()
+								+ ", source: '" + aConnector.getId() + "'"
+								+ (null != aConnector.getUsername()
+								? " (" + aConnector.getUsername() + ")"
+								: " [not authenticated]")
 								+ ", token: " + aToken.getLogString() + ", "
-								+ Logging.getStackTraceAsString(lEx));
+								+ Logging.getStackTraceAsString(lEx)
+						);
 					}
 					if (lPlugInResponse.isChainAborted()) {
 						break;
