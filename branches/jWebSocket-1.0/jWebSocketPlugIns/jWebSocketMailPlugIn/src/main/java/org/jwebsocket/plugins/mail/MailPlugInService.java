@@ -20,8 +20,10 @@ package org.jwebsocket.plugins.mail;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,6 +37,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.MultiPartEmail;
 import org.apache.log4j.Logger;
@@ -252,7 +255,7 @@ public class MailPlugInService {
 			} else {
 				lBA = lData.getBytes("UTF-8");
 			}
-		} catch (Exception lEx) {
+		} catch (UnsupportedEncodingException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " on save: " + lEx.getMessage());
 		}
 
@@ -290,7 +293,7 @@ public class MailPlugInService {
 
 			Token lSplitToken = archiveAttachments(aConnector, aToken, lMailStoreToken, lBaseDir, aServer, aPlugInNS);
 
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			aResponse.setInteger("code", -1);
 			lMsg = lEx.getClass().getSimpleName() + " on save: " + lEx.getMessage();
 			aResponse.setString("msg", lMsg);
@@ -492,7 +495,7 @@ public class MailPlugInService {
 				 * lFOS.write(lBuff, 0, lRead); lFOS.close(); } lFIS.close();
 				 */
 				lRes.setInteger("code", 0);
-			} catch (Exception lEx) {
+			} catch (IOException lEx) {
 				lRes.setInteger("code", -1);
 				lRes.setString("msg", lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 			}
@@ -544,9 +547,9 @@ public class MailPlugInService {
 		List<EmailAttachment> lEmailAttachments = new FastList<EmailAttachment>();
 
 		if (lAttachedFiles != null) {
-			for (int lIdx = 0; lIdx < lAttachedFiles.size(); lIdx++) {
+			for (Object lAttachedFile : lAttachedFiles) {
 				EmailAttachment lAttachment = new EmailAttachment();
-				lAttachment.setPath((String) lAttachedFiles.get(lIdx));
+				lAttachment.setPath((String) lAttachedFile);
 				lAttachment.setDisposition(EmailAttachment.ATTACHMENT);
 				// lAttachment.setDescription( "Picture of John" );
 				// lAttachment.setName( "John" );
@@ -588,6 +591,22 @@ public class MailPlugInService {
 				for (String lToSplit1 : lToSplit) {
 					if (lToSplit1 != null && lToSplit1.length() > 0) {
 						lEmail.addTo(lToSplit1.trim());
+					}
+				}
+			}
+			if (lCC != null && lCC.length() > 0) {
+				String[] lCCSplit = lCC.split(";");
+				for (String lCCSplit1 : lCCSplit) {
+					if (lCCSplit1 != null && lCCSplit1.length() > 0) {
+						lEmail.addCc(lCCSplit1.trim());
+					}
+				}
+			}
+			if (lBCC != null && lBCC.length() > 0) {
+				String[] lBCCSplit = lBCC.split(";");
+				for (String lBCCSplit1 : lBCCSplit) {
+					if (lBCCSplit1 != null && lBCCSplit1.length() > 0) {
+						lEmail.addBcc(lBCCSplit1.trim());
 					}
 				}
 			}
@@ -679,7 +698,7 @@ public class MailPlugInService {
 			lResponse.setInteger("code", 0);
 			lResponse.setString("msg", "ok");
 			lResponse.setString("msgId", lMsgId);
-		} catch (Exception lEx) {
+		} catch (EmailException lEx) {
 			lMsg = lEx.getClass().getSimpleName() + " (" + lEx.getCause().getClass().getSimpleName() + "): " + lEx.getMessage();
 			mLog.error(lMsg);
 			lResponse.setInteger("code", -1);
