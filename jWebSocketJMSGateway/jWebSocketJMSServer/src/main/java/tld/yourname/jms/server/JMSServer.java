@@ -52,11 +52,12 @@ public class JMSServer {
 
 	static final Logger mLog = Logger.getLogger(JMSServer.class);
 	private static JWSEndPoint lJWSEndPoint;
+	private static String mDomain = "yourdomain.tld";
 
-	private void checkLDAPNVIDIA(Token aToken) {
+	private void checkADUsername(Token aToken) {
 		String lUsername = aToken.getString("username");
 		if (null != lUsername) {
-			lUsername = lUsername.toLowerCase().endsWith("@nvidia.com") ? lUsername : lUsername + "@nvidia.com";
+			lUsername = lUsername.toLowerCase().endsWith("@" + mDomain) ? lUsername : lUsername + "@" + mDomain;
 			aToken.setString("username", lUsername);
 		}
 	}
@@ -435,7 +436,7 @@ public class JMSServer {
 						int lCode = 0;
 						String lMessage = "Ok";
 						try {
-							checkLDAPNVIDIA(aToken);
+							checkADUsername(aToken);
 							lUsername = lAuthenticator.authenticate(aToken);
 							if (null == lUsername) {
 								lCode = -1;
