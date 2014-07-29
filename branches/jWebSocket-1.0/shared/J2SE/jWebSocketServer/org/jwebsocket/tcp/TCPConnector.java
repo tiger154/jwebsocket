@@ -74,6 +74,7 @@ public class TCPConnector extends BaseConnector {
 	private S2CPingTimeoutTask mS2CPingTimeoutTask = null;
 	private S2CPingIntervalTask mS2CPingIntervalTask = null;
 	private long mPingStartedAt;
+	private Object mSyncPing = new Object();
 
 	/**
 	 * creates a new TCP connector for the passed engine using the passed client
@@ -474,7 +475,7 @@ public class TCPConnector extends BaseConnector {
 
 		@Override
 		public void run() {
-			synchronized (this) {
+			synchronized (mSyncPing) {
 				// to allow a new ping timeout task to be created ...
 				// set existing one to null
 				mS2CPingTimeoutTask = null;
@@ -496,7 +497,10 @@ public class TCPConnector extends BaseConnector {
 				}
 				// if the connector is shutdown ...
 				// we also can cancel the S2C ping
-				mS2CPingIntervalTask.cancel();
+				try {
+					mS2CPingIntervalTask.cancel();
+				} catch (Exception lEx) {
+				}
 			}
 		}
 	}
@@ -505,7 +509,7 @@ public class TCPConnector extends BaseConnector {
 
 		@Override
 		public void run() {
-			synchronized (this) {
+			synchronized (mSyncPing) {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Sending S2C ping to connector '" + getId() + "' "
 							+ (null != getUsername() ? "(" + getUsername() + ")" : "[not authenticated]")
@@ -742,7 +746,7 @@ public class TCPConnector extends BaseConnector {
 										+ ((new Date()).getTime() - mPingStartedAt)
 										+ "ms).");
 							}
-							synchronized (this) {
+							synchronized (mSyncPing) {
 								if (null != mS2CPingTimeoutTask) {
 									try {
 										mS2CPingTimeoutTask.cancel();
