@@ -112,7 +112,7 @@ public enum CloseReason {
 	/**
 	 * The connection was broken.
 	 */
-	BROKEN(1001),
+	BROKEN(1011),
 	/**
 	 * The session timeout exceeded.
 	 */
@@ -120,24 +120,24 @@ public enum CloseReason {
 	/**
 	 * The server closed the connection.
 	 */
-	SERVER(1004),
+	SERVER(1000),
 	/**
 	 * The client closed the connection.
 	 */
-	CLIENT(1005),
+	CLIENT(4001),
 	/**
 	 * The server was shut down.
 	 */
-	SHUTDOWN(1006),
+	SHUTDOWN(1001),
 	/**
 	 * The server rejects the connection
 	 */
-	SERVER_REJECT_CONNECTION(1007),
+	SERVER_REJECT_CONNECTION(4002),
 	/**
 	 * The server redirect new connections
 	 */
-	SERVER_REDIRECT_CONNECTION(1009);
-	private int mCode;
+	SERVER_REDIRECT_CONNECTION(4003);
+	private final int mCode;
 
 	CloseReason(int aCode) {
 		mCode = aCode;

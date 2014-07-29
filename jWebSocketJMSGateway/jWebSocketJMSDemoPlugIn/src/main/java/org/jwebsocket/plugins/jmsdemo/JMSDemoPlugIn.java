@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmsdemo;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -28,6 +30,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -68,9 +71,19 @@ public class JMSDemoPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for JMS demo plugin
 		this.setNamespace(NS_JMSDEMO);
-		if (mLog.isInfoEnabled()) {
-			mLog.info("JMS Demo plug-in successfully instantiated.");
+
+		try {
+			ApplicationContext lBeanFactory = getConfigBeanFactory(NS_JMSDEMO);
+			mSettings = (Settings) lBeanFactory.getBean("org.jwebsocket.plugins.jmsdemo.settings");
+
+			if (mLog.isInfoEnabled()) {
+				mLog.info("JMS Demo plug-in successfully instantiated.");
+			}
+		} catch (BeansException lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx,
+					"instantiating JMS Demo Plug-in."));
 		}
+
 	}
 
 	@Override
@@ -117,6 +130,8 @@ public class JMSDemoPlugIn extends TokenPlugIn {
 		if (lType != null && getNamespace().equals(lNS)) {
 			if (lType.equals("echo")) {
 				echo(aConnector, aToken);
+			} else if (lType.equals("decryptDemo")) {
+				decryptDemo(aConnector, aToken);
 			}
 		}
 	}
@@ -136,4 +151,40 @@ public class JMSDemoPlugIn extends TokenPlugIn {
 
 		lServer.sendToken(aConnector, lResponse);
 	}
+
+	@SuppressWarnings({"UseSpecificCatch", "BroadCatchBlock", "TooBroadCatch"})
+	private void decryptDemo(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+
+		Token lResponse = createResponse(aToken);
+
+		String lMessage = aToken.getString("message");
+		if (null == lMessage) {
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", "No ensrypted message passed.");
+			lServer.sendToken(aConnector, lResponse);
+			return;
+		}
+		if (null == mSettings.getAESPassPhrase()) {
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", "No AESPassphrase configured for JMS demo plug-in.");
+			lServer.sendToken(aConnector, lResponse);
+			return;
+		}
+
+		try {
+			SecretKeySpec lSecKeySpec = new SecretKeySpec(mSettings.getAESPassPhrase().getBytes(), "AES");
+			Cipher lCipher = Cipher.getInstance("AES");
+			lCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(lSecKeySpec.getEncoded(), "AES"));
+			byte[] lDecrypted = lCipher.doFinal(lMessage.getBytes());
+			lResponse.setString("decrypted", new String(lDecrypted));
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "decrypting message"));
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+		}
+		
+		lServer.sendToken(aConnector, lResponse);
+	}
+
 }

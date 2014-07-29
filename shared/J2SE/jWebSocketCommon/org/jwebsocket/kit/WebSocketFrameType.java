@@ -43,7 +43,7 @@ public enum WebSocketFrameType {
 	/**
 	 *
 	 */
-	CLOSE(0x09),
+	CLOSE(0x08),
 	/**
 	 *
 	 */
@@ -52,7 +52,7 @@ public enum WebSocketFrameType {
 	 *
 	 */
 	PONG(0x0A);
-	private int mFrameType;
+	private final int mFrameType;
 
 	WebSocketFrameType(int aFrameType) {
 		mFrameType = aFrameType;

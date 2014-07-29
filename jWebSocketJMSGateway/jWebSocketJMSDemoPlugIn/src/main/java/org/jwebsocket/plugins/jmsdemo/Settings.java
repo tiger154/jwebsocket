@@ -24,4 +24,20 @@ package org.jwebsocket.plugins.jmsdemo;
  */
 public class Settings {
 
+	private String mAESPassPhrase = null;
+
+	/**
+	 * @return the mAESPassPhrase
+	 */
+	public String getAESPassPhrase() {
+		return mAESPassPhrase;
+	}
+
+	/**
+	 * @param aAESPassPhrase the mAESPassPhrase to set
+	 */
+	public void setAESPassPhrase(String aAESPassPhrase) {
+		mAESPassPhrase = aAESPassPhrase;
+	}
+
 }

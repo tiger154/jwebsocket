@@ -53,6 +53,14 @@ public class JMSServer {
 	static final Logger mLog = Logger.getLogger(JMSServer.class);
 	private static JWSEndPoint lJWSEndPoint;
 
+	private void checkLDAPNVIDIA(Token aToken) {
+		String lUsername = aToken.getString("username");
+		if (null != lUsername) {
+			lUsername = lUsername.toLowerCase().endsWith("@nvidia.com") ? lUsername : lUsername + "@nvidia.com";
+			aToken.setString("username", lUsername);
+		}
+	}
+
 	/**
 	 *
 	 * @param aArgs
@@ -88,7 +96,7 @@ public class JMSServer {
 		boolean lConfigLoaded;
 		try {
 			// try to load properties files from local folder or jar
-			String lPath ="JMSServer.properties";
+			String lPath = "JMSServer.properties";
 			mLog.debug("Trying to read properties from: " + lPath);
 			lConfig = new PropertiesConfiguration(lPath);
 		} catch (ConfigurationException ex) {
@@ -386,7 +394,7 @@ public class JMSServer {
 					public void processToken(String aSourceId, Token aToken) {
 
 						Map<String, Object> lArgs = new FastMap<String, Object>();
-						
+
 						String lUsername;
 						int lCode = 0;
 						String lMessage = "Ok";
@@ -403,7 +411,7 @@ public class JMSServer {
 							lMessage = ex.getClass().getSimpleName()
 							+ " on authentication!";
 						}
-						
+
 						lJWSEndPoint.respondPayload(
 								aToken,
 								lCode, // return code
@@ -427,6 +435,7 @@ public class JMSServer {
 						int lCode = 0;
 						String lMessage = "Ok";
 						try {
+							checkLDAPNVIDIA(aToken);
 							lUsername = lAuthenticator.authenticate(aToken);
 							if (null == lUsername) {
 								lCode = -1;
