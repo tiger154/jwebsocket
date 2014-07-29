@@ -75,11 +75,11 @@ public class BaseWebSocketClient extends BaseClient {
 	private List<WebSocketSubProtocol> mSubprotocols;
 	private WebSocketSubProtocol mNegotiatedSubProtocol;
 	private static final String CR_CLIENT = "Client closed connection";
-	private WebSocketEncoding mEncoding = WebSocketEncoding.TEXT;
+	private final WebSocketEncoding mEncoding = WebSocketEncoding.TEXT;
 	private final Object mWriteLock = new Object();
 	private String mCloseReason = null;
 	private Headers mHeaders = null;
-	private Set<HttpCookie> mCookies = new FastSet<HttpCookie>();
+	private final Set<HttpCookie> mCookies = new FastSet<HttpCookie>();
 
 	/**
 	 * Base constructor
@@ -192,7 +192,7 @@ public class BaseWebSocketClient extends BaseClient {
 				mHeaders = new Headers();
 				try {
 					mHeaders.readFromStream(aVersion, mIn);
-				} catch (Exception lEx) {
+				} catch (WebSocketException lEx) {
 					// ignore exception here, will be processed afterwards
 				}
 
@@ -386,13 +386,13 @@ public class BaseWebSocketClient extends BaseClient {
 		setCloseReason(CR_CLIENT);
 		try {
 			sendCloseHandshake();
-		} catch (Exception lEx) {
+		} catch (WebSocketException lEx) {
 			// ignore that, connection is about to be terminated
 		}
 		try {
 			// stopping the receiver thread stops the entire client
 			terminateReceiverThread();
-		} catch (Exception lEx) {
+		} catch (WebSocketException lEx) {
 			// ignore that, connection is about to be terminated
 		}
 	}
@@ -576,7 +576,7 @@ public class BaseWebSocketClient extends BaseClient {
 						mSocket.shutdownInput();
 					}
 				}
-			} catch (Exception lEx) {
+			} catch (IOException lEx) {
 				lExMsg += "Shutdown input: " + lEx.getMessage() + ", ";
 			}
 			try {
@@ -641,7 +641,7 @@ public class BaseWebSocketClient extends BaseClient {
 						setCloseReason("Inbound stream terminated");
 						mIsRunning = false;
 					}
-				} catch (Exception lEx) {
+				} catch (IOException lEx) {
 					mIsRunning = false;
 					setCloseReason(lEx.getClass().getName() + " in hybi processor: " + lEx.getMessage());
 				}

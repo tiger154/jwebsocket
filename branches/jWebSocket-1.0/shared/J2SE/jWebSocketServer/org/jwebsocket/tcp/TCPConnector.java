@@ -514,7 +514,7 @@ public class TCPConnector extends BaseConnector {
 				WebSocketPacket lPing = new RawPacket("");
 				lPing.setFrameType(WebSocketFrameType.PING);
 				sendPacket(lPing);
-				// The task needs to be cancelled right after we receive a PONG packet
+				// The task needs to be cancelled right after we received a PONG packet
 				if (null == mS2CPingTimeoutTask) {
 					mPingStartedAt = new Date().getTime();
 					mS2CPingTimeoutTask = new S2CPingTimeoutTask();

@@ -150,7 +150,7 @@
 				keepAliveConnectorsTimeout and to keep always the interval 
 				longer than the timeout.
 			-->
-			<keepAliveConnectors>false</keepAliveConnectors>
+			<keepAliveConnectors>true</keepAliveConnectors>
 			<!--
 				Defines in which intervals the server sends a ping to each 
 				connector to know if it is still alive (default: 20000)
@@ -1673,6 +1673,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JMSPlugIn/jmsdemo.xml</setting>
 			</settings>
 		</plugin>
 
