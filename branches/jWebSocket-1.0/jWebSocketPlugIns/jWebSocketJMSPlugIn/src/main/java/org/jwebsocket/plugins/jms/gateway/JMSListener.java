@@ -91,7 +91,7 @@ public class JMSListener implements MessageListener {
 		try {
 			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("JMS Gateway incoming message :'" + lToken.getLogString() + "'");
+				mLog.debug("JMS Gateway incoming message: '" + Logging.getTokenStr(lToken) + "'");
 			}
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+			 xmlns:context="http://www.springframework.org/schema/context"
+			 xmlns:amq="http://activemq.apache.org/schema/core" 
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+		http://activemq.apache.org/schema/core
+		http://activemq.apache.org/schema/core/activemq-core.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- settings for the JMS Demo Plug-in -->
+	<beans:bean id="org.jwebsocket.plugins.jmsdemo.settings" class="org.jwebsocket.plugins.jmsdemo.Settings">
+		<beans:property name="AESPassPhrase" value="0123456789ABCDEF" /> <!-- "PutYourPassPhraseHere" -->
+	</beans:bean>
+
+</beans:beans>
