@@ -52,7 +52,7 @@ public class JMSServer {
 
 	static final Logger mLog = Logger.getLogger(JMSServer.class);
 	private static JWSEndPoint lJWSEndPoint;
-	private static String mDomain = "yourdomain.tld";
+	private static final String mDomain = "yourdomain.tld";
 
 	private void checkADUsername(Token aToken) {
 		String lUsername = aToken.getString("username");

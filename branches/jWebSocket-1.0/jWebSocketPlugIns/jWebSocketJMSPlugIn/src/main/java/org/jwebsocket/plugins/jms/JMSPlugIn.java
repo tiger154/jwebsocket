@@ -23,6 +23,7 @@ package org.jwebsocket.plugins.jms;
  * @author Johannes Smutny, Alexander Schulze
  */
 import java.util.List;
+import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
@@ -66,7 +67,7 @@ public class JMSPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
 	private static final String NS_JMS = JWebSocketServerConstants.NS_BASE + ".plugins.jms";
-	private final static String VERSION = "1.0.0";
+	private final static String VERSION = "1.0.1";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JMSPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
@@ -154,6 +155,15 @@ public class JMSPlugIn extends TokenPlugIn {
 
 		mConnectionFactory = new ActiveMQConnectionFactory(mBrokerURI);
 		try {
+			// registering JMSEngine once JMS connection is already started
+			Map<String, WebSocketEngine> lEngines = JWebSocketFactory.getEngines();
+			lEngines.put(lEngineCfg.getId(), mJMSEngine);
+			List<WebSocketServer> lServers = JWebSocketFactory.getServers();
+			for (WebSocketServer lServer : lServers) {
+				// automatically registers the server at the engine (cross connection)
+				lServer.addEngine(mJMSEngine);
+			}
+
 			mConnection = mConnectionFactory.createConnection();
 			// setting the clientID is required for durable subscribers
 			mConnection.setClientID(mEndPointId);
@@ -185,21 +195,21 @@ public class JMSPlugIn extends TokenPlugIn {
 					mJMSEngine, mSender);
 			mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
 
-			// registering JMSEngine once JMS connection is already started
-			JWebSocketFactory.getEngines()
-					.put(lEngineCfg.getId(), mJMSEngine);
-			List<WebSocketServer> lServers = JWebSocketFactory.getServers();
-			for (WebSocketServer lServer : lServers) {
-				lServer.addEngine(mJMSEngine);
-			}
-
 			// give a success message to the administrator
 			if (mLog.isInfoEnabled()) {
 				mLog.info("JMS plug-in successfully instantiated, JMS Gateway endpoint id: '" + mEndPointId + "'.");
 			}
 		} catch (JMSException lEx) {
+			// cleanup engines and servers to allow at least other engines to run without side effects
+			Map<String, WebSocketEngine> lEngines = JWebSocketFactory.getEngines();
+			lEngines.remove(lEngineCfg.getId());
+			List<WebSocketServer> lServers = JWebSocketFactory.getServers();
+			for (WebSocketServer lServer : lServers) {
+				// automatically removes the server at the engine (cross connection)
+				lServer.removeEngine(mJMSEngine);
+			}
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
-					"connecting JMS client."));
+					"connecting JMS gateway, de-registered JMS engine from server environment."));
 		}
 	}
 

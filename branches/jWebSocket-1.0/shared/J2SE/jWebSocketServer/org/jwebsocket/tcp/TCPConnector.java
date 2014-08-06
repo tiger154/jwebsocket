@@ -74,7 +74,7 @@ public class TCPConnector extends BaseConnector {
 	private S2CPingTimeoutTask mS2CPingTimeoutTask = null;
 	private S2CPingIntervalTask mS2CPingIntervalTask = null;
 	private long mPingStartedAt;
-	private Object mSyncPing = new Object();
+	private final Object mSyncPing = new Object();
 
 	/**
 	 * creates a new TCP connector for the passed engine using the passed client

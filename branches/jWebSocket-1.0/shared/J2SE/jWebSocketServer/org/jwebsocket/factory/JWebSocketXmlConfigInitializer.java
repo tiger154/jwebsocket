@@ -39,7 +39,7 @@ import org.jwebsocket.logging.Logging;
  *
  * @author puran
  * @version $Id: JWebSocketXmlConfigInitializer.java 424 2010-05-01 19:11:04Z
- mailtopuran $
+ * mailtopuran $
  */
 public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitializer {
 
@@ -96,7 +96,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 			URL lURL = new URL(lURLStr);
 			lMethod.invoke(lURLCL, new Object[]{lURL});
 		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding external library"));
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading external library"));
 		}
 	}
 
@@ -265,12 +265,12 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 		}
 		// now initialize the plugins
 		for (PluginConfig lPlugInConfig : jWebSocketConfig.getPlugins()) {
-			String lPlugInLogStr = null;
+			String lPlugInLogStr;
 			try {
 				lPlugInLogStr = lPlugInConfig.getNamespace();
 				if (!lPlugInConfig.getJars().isEmpty()) {
 					if (mLog.isDebugEnabled()) {
-						mLog.info("Adding plug-in required libraries: " + lPlugInConfig.getJars());
+						mLog.info("Loading plug-in jars: " + lPlugInConfig.getJars());
 					}
 					for (String lPath : lPlugInConfig.getJars()) {
 						loadLibrary(lPath);
@@ -334,11 +334,16 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 						mLog.error("Plug-in '" + lPlugInConfig.getId()
 								+ "' could not be instantiated due to invalid constructor.");
 					}
+				} else {
+					mLog.error("Plug-in '" + lPlugInConfig.getId()
+							+ "' could not be instantiated"
+							+ ", check class name '" 
+							+ lPlugInConfig.getName() + "'.");
 				}
 
 			} catch (Exception lEx) {
 				mLog.error("Could not instantiate '" + lPlugInConfig.getId() + "' plug-in: "
-						+ "[" + lEx.getCause().getClass().getSimpleName() + "]" + lEx.getCause().getMessage());
+						+ "[" + lEx.getClass().getSimpleName() + "] " + lEx.getMessage());
 			}
 		}
 		return lPlugInMap;
