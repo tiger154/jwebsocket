@@ -42,8 +42,10 @@ import org.jwebsocket.jms.Attributes;
 public class JMSManager {
 
 	private Session mSession;
-	private Map<String, MessageConsumer> mListeners = new FastMap<String, MessageConsumer>().shared();
-	private Map<String, MessageProducer> mProducers = new FastMap<String, MessageProducer>().shared();
+	private final Map<String, MessageConsumer> mListeners
+			= new FastMap<String, MessageConsumer>().shared();
+	private final Map<String, MessageProducer> mProducers
+			= new FastMap<String, MessageProducer>().shared();
 	private String mDefaultDestination;
 
 	/**
@@ -97,7 +99,7 @@ public class JMSManager {
 			}
 			mDefaultDestination = aDefaultDestination;
 			mSession = aConn.createSession(aUseTransaction, Session.AUTO_ACKNOWLEDGE);
-		} catch (Exception lEx) {
+		} catch (JMSException lEx) {
 			throw new RuntimeException(lEx);
 		}
 	}

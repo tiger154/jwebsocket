@@ -29,7 +29,7 @@ import org.jwebsocket.logging.Logging;
  *
  * @author puran
  * @version $Id: AbstractJWebSocketInitializer.java 437 2010-05-03 22:10:20Z
- mailtopuran $
+ * mailtopuran $
  */
 public abstract class AbstractJWebSocketInitializer implements WebSocketInitializer {
 
@@ -117,25 +117,23 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 
 	/**
 	 *
-	 * @param aPlugInName
+	 * @param aClassName
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public Class<WebSocketPlugIn> loadPluginFromClasspath(String aPlugInName) {
+	public Class<WebSocketPlugIn> loadPluginFromClasspath(String aClassName) {
 		try {
-			Class<WebSocketPlugIn> lPluginClass = (Class<WebSocketPlugIn>) Class.forName(aPlugInName, true,
+			Class<WebSocketPlugIn> lPluginClass = (Class<WebSocketPlugIn>) Class.forName(aClassName, true,
 					JWebSocketFactory.getClassLoader().getClassLoader());
 
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Plug-in '" + aPlugInName + "' loaded from classpath.");
+				mLog.debug("Class '" + aClassName + "' loaded from classpath.");
 			}
-			// System.out.println("Plug-in '" + aPluginName + "' loaded from classpath.");
 			return lPluginClass;
 		} catch (ClassNotFoundException ex) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Plug-in '" + aPlugInName + "' not yet in classpath.");
+				mLog.debug("Class '" + aClassName + "' not found in classpath.");
 			}
-			// System.out.println("Plug-in '" + aPluginName + "' not yet in classpath.");
 		}
 		return null;
 	}
