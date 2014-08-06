@@ -99,7 +99,8 @@ public class JMSAdvisoryListener implements MessageListener {
 							WebSocketConnector lConnector = new JMSConnector(mEngine,
 									mJMSSender, lConnectionId, lEndPointId);
 							if (mLog.isDebugEnabled()) {
-								mLog.debug("Adding connector to engine...");
+								mLog.debug("Adding connector '"
+										+ lEndPointId + "' to JMS engine...");
 							}
 							mEngine.addConnector(lConnector);
 							lConnector.startConnector();
