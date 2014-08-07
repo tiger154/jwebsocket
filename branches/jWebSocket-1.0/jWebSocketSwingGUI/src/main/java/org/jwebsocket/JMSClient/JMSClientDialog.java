@@ -18,6 +18,7 @@ import org.jwebsocket.jms.endpoint.JWSEndPointSender;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.ui.TestDialog;
 
 /**
  *
@@ -25,7 +26,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class JMSClientDialog extends javax.swing.JFrame {
 
-	private JTextArea mLog;
+	public JTextArea mLog;
 	private String mBrokerURL;
 	private String mGatewayTopic;
 	private String mGatewayId;
@@ -47,6 +48,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 	private final String TT_IDENTIFY = "identify";
 	private final String NS_SYSTEM = "org.jwebsocket.plugins.system";
 	private Properties mProperties;
+	public TestDialog mMainDialog;
 
 	/**
 	 * Creates new form JMSClientDialog
@@ -59,10 +61,11 @@ public class JMSClientDialog extends javax.swing.JFrame {
 	 *
 	 * @param aField
 	 */
-	public JMSClientDialog(JTextArea aField) {
+	public JMSClientDialog(JTextArea aField, TestDialog aParentDialog) {
 		initComponents();
 		mLog = aField;
 		loadPropertyFile();
+		mMainDialog = aParentDialog;
 		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		log("jWebSocket JMS Gateway Demo Client initialized");
@@ -83,6 +86,8 @@ public class JMSClientDialog extends javax.swing.JFrame {
 					String lBrokerURL = mProperties.getProperty("brokerURL");
 					String lGatewayId = mProperties.getProperty("gatewayID");
 					String lEndpointId = mProperties.getProperty("endpointID");
+					String lUsername = mProperties.getProperty("username");
+					String lPassword = mProperties.getProperty("password");
 					if (lTopic != null) {
 						jtfTopic.setText(lTopic.trim());
 					}
@@ -94,6 +99,12 @@ public class JMSClientDialog extends javax.swing.JFrame {
 					}
 					if (lEndpointId != null) {
 						jtfEndpointID.setText(lEndpointId.trim());
+					}
+					if (lUsername != null) {
+						jtfUsername.setText(lUsername.trim());
+					}
+					if (lPassword != null) {
+						jPFPassword.setText(lPassword);
 					}
 				}
 

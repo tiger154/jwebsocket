@@ -4,13 +4,13 @@
  */
 package org.jwebsocket.JMSClient;
 
-import java.util.Map;
 import java.util.Properties;
-import javolution.util.FastMap;
 import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
 import org.jwebsocket.jms.endpoint.JWSEndPointSender;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
+import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 
 /**
  *
@@ -75,6 +75,11 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 				jtPayload.setText(lPayload);
 			}
 		}
+		if (mParentDialog.mMainDialog.getJcbWrap().isEnabled()) {
+			jCBWordWrap.setEnabled(true);
+		} else {
+			jCBWordWrap.setEnabled(false);
+		}
 	}
 
 	private void sendPayload() {
@@ -82,19 +87,14 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 		String lNS = jtTopic.getText();
 		final String lType = jtType.getText();
 
-		Map<String, Object> lArgs = new FastMap<String, Object>();
+		Token lArgs;
+		lArgs = TokenFactory.createToken();
 		try {
 			String lArgsText = jtArgs.getText();
 			if (lArgsText != null) {
-				String[] lElements = lArgsText.split("\n");
-				for (int lIdx = 0; lIdx < lElements.length; lIdx++) {
-					String[] lEntrySplit = lElements[lIdx].split(":");
-					if (lEntrySplit.length > 1) {
-						lArgs.put(lEntrySplit[0].trim(), lEntrySplit[1].trim());
-					}
-				}
+				lArgs = JSONProcessor.JSONStringToToken(lArgsText);
 			}
-		} catch (Exception e) {
+		} catch (Exception lEx) {
 			mParentDialog.log("There was an error while parsing the arguments, "
 					+ "please check that you are entering the entries separated by comma");
 			return;
@@ -154,7 +154,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 			});
 		}
 		mStart = System.currentTimeMillis();
-		mSender.sendPayload(lTargetId, lNS, lType, lArgs, lPayload);
+		mSender.sendPayload(lTargetId, lNS, lType, lArgs.getMap(), lPayload);
 	}
 
 	/**
@@ -182,9 +182,12 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jcbRepeat = new javax.swing.JCheckBox();
         jtfRepeatTest = new javax.swing.JTextField();
+        jBClear = new javax.swing.JButton();
+        jCBWordWrap = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Send payload to a specified target");
+        setAlwaysOnTop(true);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 onWindowClosed(evt);
@@ -218,7 +221,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Cancel");
+        jButton2.setText("Close");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -234,6 +237,20 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 
         jtfRepeatTest.setText("5");
         jtfRepeatTest.setEnabled(false);
+
+        jBClear.setText("Clear");
+        jBClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBClearActionPerformed(evt);
+            }
+        });
+
+        jCBWordWrap.setText("Word Wrap");
+        jCBWordWrap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBWordWrapActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -262,18 +279,24 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
                         .addComponent(jtTargetId, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(29, 29, 29))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(111, 111, 111)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jbSend)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jBClear)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addGap(164, 164, 164))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(111, 111, 111)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jCBWordWrap)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jcbRepeat)
                         .addGap(18, 18, 18)
-                        .addComponent(jtfRepeatTest))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbSend)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton2)))
-                .addGap(167, 167, 167))
+                        .addComponent(jtfRepeatTest)
+                        .addGap(151, 151, 151))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -302,10 +325,13 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jcbRepeat)
                     .addComponent(jtfRepeatTest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1, Short.MAX_VALUE)
+                .addComponent(jCBWordWrap)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbSend)
-                    .addComponent(jButton2))
+                    .addComponent(jButton2)
+                    .addComponent(jBClear))
                 .addGap(19, 19, 19))
         );
 
@@ -347,6 +373,16 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 		}
     }//GEN-LAST:event_onWindowClosed
 
+    private void jCBWordWrapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBWordWrapActionPerformed
+		mParentDialog.mLog.setLineWrap(jCBWordWrap.isSelected());
+		mParentDialog.mMainDialog.getJcbWrap().setSelected(jCBWordWrap.isSelected());
+    }//GEN-LAST:event_jCBWordWrapActionPerformed
+
+    private void jBClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBClearActionPerformed
+		mParentDialog.mLog.setText("");
+		mParentDialog.mMainDialog.initializeLogs();
+    }//GEN-LAST:event_jBClearActionPerformed
+
 	/**
 	 * @param args the command line arguments
 	 */
@@ -383,7 +419,9 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 		});
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jBClear;
     private javax.swing.JButton jButton2;
+    private javax.swing.JCheckBox jCBWordWrap;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
