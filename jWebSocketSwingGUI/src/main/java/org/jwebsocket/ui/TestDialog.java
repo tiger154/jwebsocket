@@ -98,7 +98,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
                 }
         }
 
-        private void initializeLogs() {
+        public void initializeLogs() {
                 PrintStream lPrintStream;
                 OutputStreamConsole lConsole = new OutputStreamConsole(txaLog);
                 lPrintStream = new PrintStream(lConsole);
@@ -1219,6 +1219,13 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
                 }
 	}//GEN-LAST:event_btnRPCActionPerformed
 
+	/**
+	 * @return the jcbWrap
+	 */
+	public javax.swing.JCheckBox getJcbWrap() {
+		return jcbWrap;
+	}
+
         private class MyResponseListener extends BaseTokenResponseListener {
 
                 public MyResponseListener(long aTimeout) {
@@ -1315,7 +1322,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	}//GEN-LAST:event_mniViewActionPerformed
 
     private void jmiViewJMSCLientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiViewJMSCLientActionPerformed
-            mJMSClient = new JMSClientDialog(txaLog);
+            mJMSClient = new JMSClientDialog(txaLog, this);
             mJMSClient.setLocation(this.getX() + 400,
                     this.getLocation().y + 200);
 
@@ -1323,7 +1330,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     }//GEN-LAST:event_jmiViewJMSCLientActionPerformed
 
     private void jcbWrapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbWrapActionPerformed
-            txaLog.setLineWrap(jcbWrap.isSelected());
+            txaLog.setLineWrap(getJcbWrap().isSelected());
     }//GEN-LAST:event_jcbWrapActionPerformed
 
         /**
