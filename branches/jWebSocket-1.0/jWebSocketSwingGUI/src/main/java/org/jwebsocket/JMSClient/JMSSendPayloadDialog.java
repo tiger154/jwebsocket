@@ -22,11 +22,13 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 	private JWSEndPointMessageListener mListener;
 	private JMSClientDialog mParentDialog;
 	private int mLoop = 0;
+	private int mResponses = 0;
 	private int mTotalIterations = 0;
 	private long mStart;
 	private long mTotalTime;
 	private long mElapsedTime;
 	private long[] mAverage;
+	private boolean mIsAsynchronous;
 
 	/**
 	 * Creates new form SendPayloadDialog
@@ -99,37 +101,29 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 					+ "please check that you are entering the entries separated by comma");
 			return;
 		}
-		if (jcbRepeat.isSelected()) {
-			mParentDialog.log("-----------------------------------------------------");
-			mParentDialog.log("STARTED LOAD TEST ITERATION: "
-					+ (mTotalIterations - mLoop));
-		}
+
 		String lPayload = jtPayload.getText();
-		mParentDialog.log("Sending payload:\" "
-				+ "Target ID: " + lTargetId
-				+ ", Gateway ID: " + lNS
-				+ ", Type: " + lType
-				+ ", Arguments: " + lArgs.toString()
-				+ ", Payload: " + lPayload
-				+ "\"");
 
 		if (!mListener.hasResponseListener(lNS, lType)) {
 			mListener.addResponseListener(lNS, lType, new JWSMessageListener(mSender) {
 				@Override
 				public void processToken(String aSourceId, Token aToken) {
-					mParentDialog.log("Received '" + lType + "' from '" + aSourceId + ".");
-					mParentDialog.log(aToken.toString());
 					if (jcbRepeat.isSelected()) {
-						mAverage[mTotalIterations - mLoop] = (System.currentTimeMillis() - mStart);
-						mParentDialog.log("FINISHED ITERATION: "
-								+ (mTotalIterations - mLoop)
-								+ ", with: " + ((System.currentTimeMillis() - mStart)) + " miliseconds");
-
+						mParentDialog.log("-----------------------------------------------------");
+						mAverage[mResponses] = (System.currentTimeMillis() - mAverage[mResponses]);
+						mParentDialog.log("FINISHED ITERATION: " + (mResponses + 1)
+								+ ", with: " + mAverage[mResponses] + " miliseconds");
+						mResponses++;
 					}
-					if (mLoop > 0) {
+//					mParentDialog.log("Received '" + lType + "' from '" + aSourceId + ".");
+					mParentDialog.log("Response: " + aToken.toString());
+
+					if (!mIsAsynchronous && mLoop > 0) {
 						mLoop--;
 						sendPayload();
-					} else {
+						return;
+					}
+					if (mResponses == mTotalIterations + 1) {
 						if (jcbRepeat.isSelected()) {
 							mParentDialog.log("--------------------------------------------------------");
 							mParentDialog.log("                 TOTAL TEST RESULTS");
@@ -138,23 +132,60 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 							long lSum = 0;
 							for (int lIdx = 0; lIdx < mAverage.length; lIdx++) {
 								lSum += mAverage[lIdx];
-								mParentDialog.log("Iteration " + lIdx + ": " + " ----------------- " + mAverage[lIdx] + " ms");
+								mParentDialog.log("Iteration " + (lIdx + 1) + ": " + " ----------------- " + mAverage[lIdx] + " ms");
 							}
 							mTotalTime = (System.currentTimeMillis() - mElapsedTime) / 1000;
 							mParentDialog.log("--------------------------------------------------------");
 							mParentDialog.log("AVERAGE: " + lSum / mAverage.length + " ms");
 							mParentDialog.log("TOTAL TIME: " + mTotalTime + " seconds to send "
-									+ mTotalIterations + " " + jtType.getText()
+									+ (mTotalIterations + 1) + " " + jtType.getText()
 									+ " operations to target: " + jtTargetId.getText());
 							mParentDialog.log("--------------------------------------------------------");
 						}
 						mTotalIterations = 0;
+						mResponses = 0;
+						mAverage = new long[mTotalIterations];
 					}
 				}
 			});
 		}
-		mStart = System.currentTimeMillis();
-		mSender.sendPayload(lTargetId, lNS, lType, lArgs.getMap(), lPayload);
+
+		if (mIsAsynchronous) {
+			while (mLoop >= 0) {
+				if (jcbRepeat.isSelected()) {
+					mParentDialog.log("-----------------------------------------------------");
+					mParentDialog.log("STARTED LOAD TEST ITERATION: "
+							+ (mTotalIterations - mLoop + 1));
+					// Saving start time
+					mAverage[mTotalIterations - mLoop] = System.currentTimeMillis();
+				}
+				mParentDialog.log("Sending payload:\" "
+						+ "Target ID: " + lTargetId
+						+ ", Gateway ID: " + lNS
+						+ ", Type: " + lType
+						+ ", Arguments: " + lArgs.toString()
+						+ ", Payload: " + lPayload
+						+ "\"");
+				mSender.sendPayload(lTargetId, lNS, lType, lArgs.getMap(), lPayload);
+				mLoop--;
+			}
+		} else {
+			if (jcbRepeat.isSelected()) {
+				mParentDialog.log("-----------------------------------------------------");
+				mParentDialog.log("STARTED LOAD TEST ITERATION: "
+						+ (mTotalIterations - mLoop + 1));
+				// Saving start time
+				mAverage[mTotalIterations - mLoop] = System.currentTimeMillis();
+			}
+			mSender.sendPayload(lTargetId, lNS, lType, lArgs.getMap(), lPayload);
+			mParentDialog.log("Sending payload:\" "
+					+ "Target ID: " + lTargetId
+					+ ", Gateway ID: " + lNS
+					+ ", Type: " + lType
+					+ ", Arguments: " + lArgs.toString()
+					+ ", Payload: " + lPayload
+					+ "\"");
+		}
 	}
 
 	/**
@@ -184,6 +215,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
         jtfRepeatTest = new javax.swing.JTextField();
         jBClear = new javax.swing.JButton();
         jCBWordWrap = new javax.swing.JCheckBox();
+        jCBAsinchronous = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Send payload to a specified target");
@@ -252,6 +284,14 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
             }
         });
 
+        jCBAsinchronous.setText("Asynchronous ");
+        jCBAsinchronous.setEnabled(false);
+        jCBAsinchronous.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBAsinchronousActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -268,7 +308,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
                             .addComponent(jLabel4)
                             .addComponent(jLabel6)
                             .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jtType)
                             .addComponent(jScrollPane1)
@@ -279,24 +319,27 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
                         .addComponent(jtTargetId, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(29, 29, 29))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jbSend)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jBClear)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
-                .addGap(164, 164, 164))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(111, 111, 111)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(111, 111, 111)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jcbRepeat)
+                            .addComponent(jCBWordWrap))
+                        .addGap(18, 18, 18)
+                        .addComponent(jtfRepeatTest))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jbSend)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jBClear)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jCBWordWrap)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jcbRepeat)
-                        .addGap(18, 18, 18)
-                        .addComponent(jtfRepeatTest)
-                        .addGap(151, 151, 151))))
+                        .addGap(62, 62, 62)
+                        .addComponent(jCBAsinchronous)))
+                .addGap(92, 92, 92))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -322,11 +365,16 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
                     .addComponent(jLabel6)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcbRepeat)
-                    .addComponent(jtfRepeatTest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1, Short.MAX_VALUE)
-                .addComponent(jCBWordWrap)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jcbRepeat)
+                            .addComponent(jtfRepeatTest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1, Short.MAX_VALUE)
+                        .addComponent(jCBWordWrap))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jCBAsinchronous)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbSend)
@@ -345,7 +393,8 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
     private void jbSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSendActionPerformed
 		if (jcbRepeat.isSelected()) {
 			try {
-				mLoop = Integer.parseInt(jtfRepeatTest.getText());
+				mLoop = Integer.parseInt(jtfRepeatTest.getText()) - 1;
+				mIsAsynchronous = jCBAsinchronous.isSelected();
 				mTotalIterations = mLoop;
 				mAverage = new long[mTotalIterations + 1];
 				mElapsedTime = System.currentTimeMillis();
@@ -359,8 +408,10 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
     private void jcbRepeatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbRepeatActionPerformed
 		if (jcbRepeat.isSelected()) {
 			jtfRepeatTest.setEnabled(true);
+			jCBAsinchronous.setEnabled(true);
 		} else {
 			jtfRepeatTest.setEnabled(false);
+			jCBAsinchronous.setEnabled(false);
 		}
     }//GEN-LAST:event_jcbRepeatActionPerformed
 
@@ -382,6 +433,10 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 		mParentDialog.mLog.setText("");
 		mParentDialog.mMainDialog.initializeLogs();
     }//GEN-LAST:event_jBClearActionPerformed
+
+    private void jCBAsinchronousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBAsinchronousActionPerformed
+		// TODO add your handling code here:
+    }//GEN-LAST:event_jCBAsinchronousActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -421,6 +476,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jBClear;
     private javax.swing.JButton jButton2;
+    private javax.swing.JCheckBox jCBAsinchronous;
     private javax.swing.JCheckBox jCBWordWrap;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
