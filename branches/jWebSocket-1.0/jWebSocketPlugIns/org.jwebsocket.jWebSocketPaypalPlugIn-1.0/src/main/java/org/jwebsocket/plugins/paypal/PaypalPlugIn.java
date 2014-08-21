@@ -18,7 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.paypal;
 
-import java.util.Collection;
+import com.paypal.api.payments.Payment;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
@@ -28,7 +28,6 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -49,8 +48,9 @@ public class PaypalPlugIn extends TokenPlugIn {
     private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
     private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
     private final static String DESCRIPTION = "jWebSocket PaypalPlugIn - Community Edition";
+    private final static String TT_PP_PAYMENT = "paypal_payment";
     private static Setting mPayPalSettings;
-    private Paypal facade;
+    private PaypalFacade mFacade;
 
     /**
      * This PlugIn shows how to easily set up a simple jWebSocket based Paypal
@@ -67,7 +67,7 @@ public class PaypalPlugIn extends TokenPlugIn {
         try {
             ApplicationContext mBeanFactory = getConfigBeanFactory();
             mPayPalSettings = (Setting) mBeanFactory.getBean("org.jwebsocket.plugins.paypal.setting");
-            facade = new Paypal(mPayPalSettings.getClientID(), mPayPalSettings.getClientSecret());
+            mFacade = new PaypalFacade(mPayPalSettings.getClientID(), mPayPalSettings.getClientSecret());
         } catch (Exception lEx) {
             mLog.error("Failed to instantiate Paypal plug-in " + lEx.getLocalizedMessage());
         }
@@ -83,20 +83,26 @@ public class PaypalPlugIn extends TokenPlugIn {
     public void processToken(PlugInResponse aResponse,
             WebSocketConnector aConnector, Token aToken) {
         if (getNamespace().equals(aToken.getNS())) {
-            Token lResponseToken = createResponse(aToken);
-            lResponseToken.setString("msg", "Received Properly, thanks!");
-
-            getServer().sendToken(aConnector, lResponseToken);
-
-            Token lBroadcastToken = TokenFactory.createToken(getNamespace(), "broadcast");
-            lBroadcastToken.setString("msg", "Connector: " + aConnector.getId() + " connected as: " + aConnector.getUsername());
-            Collection<WebSocketConnector> lConnectors = getServer().getAllConnectors().values();
-            for (WebSocketConnector lConn : lConnectors) {
-                if (!lConn.getId().equals(aConnector.getId())) {
-                    getServer().sendToken(lConn, lBroadcastToken);
+//            Token lResponseToken = createResponse(aToken);
+//            lResponseToken.setString("msg", "Received Properly, thanks!");
+//
+//            getServer().sendToken(aConnector, lResponseToken);
+//
+//            Token lBroadcastToken = TokenFactory.createToken(getNamespace(), "broadcast");
+//            lBroadcastToken.setString("msg", "Connector: " + aConnector.getId() + " connected as: " + aConnector.getUsername());
+//            Collection<WebSocketConnector> lConnectors = getServer().getAllConnectors().values();
+//            for (WebSocketConnector lConn : lConnectors) {
+//                if (!lConn.getId().equals(aConnector.getId())) {
+//                    getServer().sendToken(lConn, lBroadcastToken);
+//                }
+//            }
+            if (TT_PP_PAYMENT.equals(aToken.getType())) {
+                try {
+                    createPayment(aToken, aConnector);
+                } catch (Exception lEx) {
+                    mLog.error(lEx);
                 }
             }
-
         }
     }
 
@@ -128,5 +134,15 @@ public class PaypalPlugIn extends TokenPlugIn {
     @Override
     public String getLicense() {
         return LICENSE;
+    }
+
+    private void createPayment(Token aToken, WebSocketConnector aConnector) throws Exception {
+        Payment lResult = mFacade.createPayment(aToken);
+        Token lRespToken = createResponse(aToken);
+
+        lRespToken.setString("data", lResult.toJSON());
+        
+
+        getServer().sendToken(aConnector, lRespToken);
     }
 }
