@@ -322,6 +322,11 @@
 			<artifactId>ormlite-jdbc</artifactId>
 			<version>4.43</version>
 		</dependency>
+                 <dependency>
+                    <groupId>com.paypal.sdk</groupId>
+                    <artifactId>rest-api-sdk</artifactId>
+                    <version>0.9.1</version>
+                </dependency>
 		<!--
 		<dependency>
 			<groupId>org.krakenapps</groupId>
