@@ -1546,6 +1546,9 @@
 			<id>jws.paypal</id>
 			<ns>org.jwebsocket.plugins.paypal</ns>
 			<jar>jWebSocketPaypalPlugIn-1.0.jar</jar>
+                        <settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/PayPalPlugIn/paypal.xml</setting>
+			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
