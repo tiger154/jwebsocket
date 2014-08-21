@@ -24,12 +24,12 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
-import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * This plug-in provides all the Paypal functionality.
@@ -49,6 +49,8 @@ public class PaypalPlugIn extends TokenPlugIn {
     private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
     private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
     private final static String DESCRIPTION = "jWebSocket PaypalPlugIn - Community Edition";
+    private static Setting mPayPalSettings;
+    private Paypal facade;
 
     /**
      * This PlugIn shows how to easily set up a simple jWebSocket based Paypal
@@ -61,6 +63,15 @@ public class PaypalPlugIn extends TokenPlugIn {
         if (mLog.isDebugEnabled()) {
             mLog.debug("Instantiating Paypal plug-in...");
         }
+
+        try {
+            ApplicationContext mBeanFactory = getConfigBeanFactory();
+            mPayPalSettings = (Setting) mBeanFactory.getBean("org.jwebsocket.plugins.paypal.setting");
+            facade = new Paypal(mPayPalSettings.getClientID(), mPayPalSettings.getClientSecret());
+        } catch (Exception lEx) {
+            mLog.error("Failed to instantiate Paypal plug-in " + lEx.getLocalizedMessage());
+        }
+
         // org.jwebsocket.plugins.paypal
         this.setNamespace(aConfiguration.getNamespace());
         if (mLog.isInfoEnabled()) {
