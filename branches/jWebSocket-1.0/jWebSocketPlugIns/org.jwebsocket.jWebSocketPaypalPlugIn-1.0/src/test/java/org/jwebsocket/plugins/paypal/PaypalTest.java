@@ -16,7 +16,6 @@
 
 package org.jwebsocket.plugins.paypal;
 
-import com.paypal.core.rest.APIContext;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -57,10 +56,11 @@ public class PaypalTest {
     @Test
     public void testGetAccessToken() {
         System.out.println("getAccessToken");
-        Paypal instance = new Paypal();
+        PaypalFacade instance = new PaypalFacade("AX8NcRCAEvm9nMcZopQUlAwiWIoC04anu4a7gH4om6hbi64viCA0UiLqgoZf", "EIekyBAFa5nFngJ57gsrVQTZJq2a-SDSv2LdEuo0Qq8sP3xrkBpJVgsRKRdy");
         String result = "";
         try {
             result = instance.getAccessToken();
+            System.out.println(result);
         } catch (Exception ex) {
             Logger.getLogger(PaypalTest.class.getName()).log(Level.SEVERE, null, ex);
         }
