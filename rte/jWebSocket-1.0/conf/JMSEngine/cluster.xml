@@ -12,7 +12,7 @@
 
 	<!-- the JMSEngine ActiveMQ connection factory	-->
 	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="failover:(tcp://192.168.56.1:61616)" />
+		<property name="brokerURL" value="failover:(tcp://0.0.0.0:61616)" />
 		<property name="useAsyncSend" value="true" />
 		<property name="userName">
 			<value>jws_cloud1</value>
@@ -24,7 +24,7 @@
 
 	<!-- the MongoDB server connection instance -->
 	<bean id="mongodbConnection" class="com.mongodb.MongoClient" destroy-method="close">
-		<constructor-arg value="192.168.56.1"/>
+		<constructor-arg value="localhost"/>
 	</bean>
 
 	<!-- the MongoDB database instance to store the load balancer data -->
