@@ -16,11 +16,11 @@
 
 package org.jwebsocket.plugins.paypal;
 
-import com.paypal.api.payments.Payment;
+import com.paypal.core.rest.APIContext;
 import com.paypal.core.rest.OAuthTokenCredential;
 import com.paypal.core.rest.PayPalRESTException;
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -32,12 +32,8 @@ import java.util.logging.Logger;
  * @author zcool
  */
 public class Paypal {
-    public String getTokenId() throws Exception{
+    public Properties getProperties() throws FileNotFoundException, Exception {
         InputStream inputStream = new FileInputStream("/home/zcool/src/jWebSocket/branches/jWebSocket-1.0/jWebSocketPlugIns/org.jwebsocket.jWebSocketPaypalPlugIn-1.0/src/main/resources/sdk_config.properties");
-        
-        if(inputStream == null) {
-            throw new Exception("File not found !!!");
-        }
         
         Properties properties = new Properties();
         try {
@@ -45,7 +41,14 @@ public class Paypal {
         } catch (IOException ex) {
             Logger.getLogger(Paypal.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
+        return properties;
+    }
+    
+    
+    public String getAccessToken() throws Exception{
+        Properties properties = getProperties();
+        
         String accessToken = null;
         try {
             accessToken = new OAuthTokenCredential(properties.getProperty("clientID"), properties.getProperty("clientSecret")).getAccessToken();
@@ -54,6 +57,10 @@ public class Paypal {
         }
         return accessToken;
     }
+    
+    
+    
+    
 }
 
 
