@@ -35,13 +35,19 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  */
 public class AMQClusterTest {
 
+	private static final String SERVER1 = "tcp://192.168.56.2:61616";
+	private static final String SERVER2 = "tcp://192.168.56.3:61616";
+	private static final String SERVER3 = "tcp://192.168.56.4:61616";
+	
 	/**
 	 *
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		try {
-			ActiveMQConnectionFactory lFactory = new ActiveMQConnectionFactory("tcp://192.168.56.2:61616");
+			
+			
+			ActiveMQConnectionFactory lFactory = new ActiveMQConnectionFactory(SERVER1);
 			Connection lConnection1 = lFactory.createConnection();
 			lConnection1.setClientID("01");
 			lConnection1.start();
@@ -54,7 +60,7 @@ public class AMQClusterTest {
 				}
 			});
 
-			ActiveMQConnectionFactory lFactory2 = new ActiveMQConnectionFactory("tcp://192.168.56.4:61616");
+			ActiveMQConnectionFactory lFactory2 = new ActiveMQConnectionFactory(SERVER3);
 			Connection lConnection2 = lFactory2.createConnection();
 			lConnection2.setClientID("02");
 			lConnection2.start();
@@ -63,7 +69,7 @@ public class AMQClusterTest {
 			MessageProducer lProducer = lSession2.createProducer(lSession2.createTopic("jws_cloud1"));
 			lProducer.send(lSession2.createTextMessage("Hello cluster P1"));
 
-			ActiveMQConnectionFactory lFactory3 = new ActiveMQConnectionFactory("tcp://192.168.56.3:61616");
+			ActiveMQConnectionFactory lFactory3 = new ActiveMQConnectionFactory(SERVER2);
 			Connection lConnection3 = lFactory3.createConnection();
 			lConnection3.setClientID("03");
 			lConnection3.start();
