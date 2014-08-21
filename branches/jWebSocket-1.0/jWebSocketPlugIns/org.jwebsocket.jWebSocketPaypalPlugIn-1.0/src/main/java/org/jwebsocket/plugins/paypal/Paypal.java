@@ -32,26 +32,19 @@ import java.util.logging.Logger;
  * @author zcool
  */
 public class Paypal {
-    public Properties getProperties() throws FileNotFoundException, Exception {
-        InputStream inputStream = new FileInputStream("/home/zcool/src/jWebSocket/branches/jWebSocket-1.0/jWebSocketPlugIns/org.jwebsocket.jWebSocketPaypalPlugIn-1.0/src/main/resources/sdk_config.properties");
-        
-        Properties properties = new Properties();
-        try {
-            properties.load(inputStream);
-        } catch (IOException ex) {
-            Logger.getLogger(Paypal.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return properties;
+    private String clientID;
+    private String clientSecret;
+
+    Paypal(String aClientID, String aClientSecret) {
+        this.clientID = aClientID;
+        this.clientSecret = aClientSecret;
     }
     
-    
     public String getAccessToken() throws Exception{
-        Properties properties = getProperties();
         
         String accessToken = null;
         try {
-            accessToken = new OAuthTokenCredential(properties.getProperty("clientID"), properties.getProperty("clientSecret")).getAccessToken();
+            accessToken = new OAuthTokenCredential(this.clientID, this.clientSecret).getAccessToken();
         } catch (PayPalRESTException ex) {
             Logger.getLogger(Paypal.class.getName()).log(Level.SEVERE, null, ex);
         }
