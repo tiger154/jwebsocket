@@ -1541,6 +1541,16 @@
 		</plugin>
 		-->
 		
+                <plugin>
+			<name>org.jwebsocket.plugins.paypal.PaypalPlugIn</name>
+			<id>jws.paypal</id>
+			<ns>org.jwebsocket.plugins.paypal</ns>
+			<jar>jWebSocketPaypalPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+                
 		<!-- plug-in for shared objects -->
 		<plugin>
 			<name>org.jwebsocket.plugins.sharedobjects.SharedObjectsPlugIn</name>
