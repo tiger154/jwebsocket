@@ -31,9 +31,11 @@ import org.apache.activemq.broker.BrokerFilter;
 import org.apache.activemq.broker.ConnectionContext;
 import org.apache.activemq.broker.region.Subscription;
 import org.apache.activemq.command.ConsumerInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Store consumer connection data into a MongoDB database collection, to be used
+ * Store consumer connection data into a MongoDB database collection to be used
  * by the jWebSocket Cluster Load Balancer component.
  *
  * @author Rolando Santamaria Maso
@@ -43,6 +45,7 @@ public class AMQClusterFilter extends BrokerFilter {
 	private final List<String> mTargetDestinations;
 	private Mongo mMongo;
 	private final String mUsername, mPassword;
+	private static final Logger mLog = LoggerFactory.getLogger(AMQBasicSecurityPlugIn.class);
 
 	/**
 	 *
@@ -65,6 +68,8 @@ public class AMQClusterFilter extends BrokerFilter {
 	public AMQClusterFilter(Broker aBroker, List<String> aTargetDestinations, Mongo aMongo,
 			String aUsername, String aPassword) {
 		super(aBroker);
+		mLog.info("Instantiating jWebSocket AMQClusterFilter...");
+		
 		mCachedCollections = new FastMap<String, DBCollection>().shared();
 		mTargetDestinations = aTargetDestinations;
 		mUsername = aUsername;
@@ -107,6 +112,7 @@ public class AMQClusterFilter extends BrokerFilter {
 				if (lClusterDest.matches(lDest)) {
 					String lDatabaseName = aInfo.getDestination().getPhysicalName();
 					if (lDatabaseName.endsWith("_nodes")) {
+						// supporting server nodes
 						// the database name match the C2S topic name
 						lDatabaseName = lDatabaseName.substring(0, lDatabaseName.length() - 6);
 					}
