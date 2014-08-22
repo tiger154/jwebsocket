@@ -362,7 +362,7 @@ public class JMSManager {
 	}
 
 	/**
-	 * Terminates a subscription using the subscrition unique identifier
+	 * Terminates a subscription
 	 *
 	 * @param aSubscriptionId
 	 * @throws JMSException
