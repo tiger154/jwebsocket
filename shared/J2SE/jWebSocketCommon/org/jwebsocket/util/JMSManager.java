@@ -47,6 +47,7 @@ public class JMSManager {
 	private final Map<String, MessageProducer> mProducers
 			= new FastMap<String, MessageProducer>().shared();
 	private String mDefaultDestination;
+	private final Connection mConnection;
 
 	/**
 	 *
@@ -54,6 +55,15 @@ public class JMSManager {
 	 */
 	public JMSManager(Connection aConn) {
 		this(false, aConn);
+	}
+
+	/**
+	 * The JMSManager JMS connection
+	 *
+	 * @return
+	 */
+	public Connection getConnection() {
+		return mConnection;
 	}
 
 	/**
@@ -99,6 +109,7 @@ public class JMSManager {
 			}
 			mDefaultDestination = aDefaultDestination;
 			mSession = aConn.createSession(aUseTransaction, Session.AUTO_ACKNOWLEDGE);
+			mConnection = aConn;
 		} catch (JMSException lEx) {
 			throw new RuntimeException(lEx);
 		}
