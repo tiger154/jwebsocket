@@ -1,8 +1,8 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Paypal Plug-in (Community Edition, CE)
+//	jWebSocket - jWebSocket JDBC Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//	Alexander Schulze, Germany (NRW)
+//      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -31,17 +31,15 @@ import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
 
 /**
- * This plug-in provides all the Paypal functionality.
+ * This plug-in provides all the PayPal functionality.
  *
- * @author Victor Antonio Barzana Crespo
+ * @author Omar Antonio Díaz Peña
  */
-public class PaypalPlugIn extends TokenPlugIn {
+public class PayPalPlugIn extends TokenPlugIn {
 
     private static final Logger mLog = Logging.getLogger();
     private static final FastMap<String, WebSocketConnector> mClients
             = new FastMap<String, WebSocketConnector>().shared();
-//    public static final String NS_CHAT
-//            = JWebSocketServerConstants.NS_BASE + ".plugins.paypal";
     private final static String VERSION = "1.0.0";
     private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
     private final static String LABEL = "jWebSocket PaypalPlugIn";
@@ -50,7 +48,7 @@ public class PaypalPlugIn extends TokenPlugIn {
     private final static String DESCRIPTION = "jWebSocket PaypalPlugIn - Community Edition";
     private final static String TT_PP_PAYMENT = "paypal_payment";
     private static Setting mPayPalSettings;
-    private PaypalFacade mFacade;
+    private PayPalFacade mFacade;
 
     /**
      * This PlugIn shows how to easily set up a simple jWebSocket based Paypal
@@ -58,7 +56,7 @@ public class PaypalPlugIn extends TokenPlugIn {
      *
      * @param aConfiguration
      */
-    public PaypalPlugIn(PluginConfiguration aConfiguration) {
+    public PayPalPlugIn(PluginConfiguration aConfiguration) {
         super(aConfiguration);
         if (mLog.isDebugEnabled()) {
             mLog.debug("Instantiating Paypal plug-in...");
@@ -67,7 +65,7 @@ public class PaypalPlugIn extends TokenPlugIn {
         try {
             ApplicationContext mBeanFactory = getConfigBeanFactory();
             mPayPalSettings = (Setting) mBeanFactory.getBean("org.jwebsocket.plugins.paypal.setting");
-            mFacade = new PaypalFacade(mPayPalSettings.getClientID(), mPayPalSettings.getClientSecret());
+            mFacade = new PayPalFacade(mPayPalSettings.getClientID(), mPayPalSettings.getClientSecret());
         } catch (Exception lEx) {
             mLog.error("Failed to instantiate Paypal plug-in " + lEx.getLocalizedMessage());
         }
@@ -83,19 +81,6 @@ public class PaypalPlugIn extends TokenPlugIn {
     public void processToken(PlugInResponse aResponse,
             WebSocketConnector aConnector, Token aToken) {
         if (getNamespace().equals(aToken.getNS())) {
-//            Token lResponseToken = createResponse(aToken);
-//            lResponseToken.setString("msg", "Received Properly, thanks!");
-//
-//            getServer().sendToken(aConnector, lResponseToken);
-//
-//            Token lBroadcastToken = TokenFactory.createToken(getNamespace(), "broadcast");
-//            lBroadcastToken.setString("msg", "Connector: " + aConnector.getId() + " connected as: " + aConnector.getUsername());
-//            Collection<WebSocketConnector> lConnectors = getServer().getAllConnectors().values();
-//            for (WebSocketConnector lConn : lConnectors) {
-//                if (!lConn.getId().equals(aConnector.getId())) {
-//                    getServer().sendToken(lConn, lBroadcastToken);
-//                }
-//            }
             if (TT_PP_PAYMENT.equals(aToken.getType())) {
                 try {
                     createPayment(aToken, aConnector);
@@ -141,7 +126,6 @@ public class PaypalPlugIn extends TokenPlugIn {
         Token lRespToken = createResponse(aToken);
 
         lRespToken.setString("data", lResult.toJSON());
-        
 
         getServer().sendToken(aConnector, lRespToken);
     }
