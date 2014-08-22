@@ -21,6 +21,7 @@ package org.jwebsocket.plugins.scripting.app;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
+import org.jwebsocket.jms.JMSServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.util.JMSManager;
 
@@ -47,8 +48,7 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @param aUseTransaction
 	 */
 	public JMSManagerAbstraction(BaseScriptApp aScriptApp, boolean aUseTransaction) {
-		this(aScriptApp, aUseTransaction, (Connection) JWebSocketBeanFactory
-				.getInstance().getBean("jmsConnection0"));
+		this(aScriptApp, aUseTransaction, null);
 	}
 
 	/**
@@ -70,7 +70,11 @@ public class JMSManagerAbstraction extends JMSManager {
 	 */
 	public JMSManagerAbstraction(BaseScriptApp aScriptApp, boolean aUseTransaction, Connection aConn,
 			String aDefaultDestination) {
-		super(aUseTransaction, aConn, aDefaultDestination);
+		super(aUseTransaction, (null == aConn)
+				? ((aScriptApp.getWebSocketServer() instanceof JMSServer)
+				? ((JMSServer) aScriptApp.getWebSocketServer()).getJMSManager().getConnection()
+				: (Connection) JWebSocketBeanFactory.getInstance().getBean("jmsConnection0"))
+				: aConn, aDefaultDestination);
 		mScriptApp = aScriptApp;
 	}
 
