@@ -94,6 +94,7 @@ App.on('appLoaded', function() {
 //	var JMS = App.getJMSManager();
 //	App.publish('JMSManager', {
 //		test: function(aMessage) {
+//			App.getLogger().debug("Sending message: " + aMessage);
 //			JMS.send('queue://test.queue', aMessage);
 //			JMS.send('topic://test.topic', aMessage);
 //		},
@@ -102,14 +103,14 @@ App.on('appLoaded', function() {
 //		}
 //	});
 //
-//	JMS.subscribe('queue://test.queue', {
+//	JMS.subscribeTo("queue://test.queue", {
 //		onMessage: function(aMsg) {
-//			App.getLogger().debug("queue: " + aMsg.getText());
+//			App.getLogger().debug("received from queue: " + aMsg.getText());
 //		}
 //	});
-//	JMS.subscribe('topic://test.topic', {
+//	JMS.subscribeTo('topic://test.topic', {
 //		onMessage: function(aMsg) {
-//			App.getLogger().debug("topic: " + aMsg.getText());
+//			App.getLogger().debug("received from topic: " + aMsg.getText());
 //		}
 //	});
 });
