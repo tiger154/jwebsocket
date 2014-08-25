@@ -63,7 +63,6 @@ import org.jwebsocket.plugins.scripting.app.Manifest;
 import org.jwebsocket.plugins.scripting.app.js.JavaScriptApp;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.util.JMSManager;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
@@ -647,22 +646,14 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		loadApp(lAppName, lAppPath, lHotReload);
 
 		// broadcasting event to other ScriptingPlugIn nodes
-		JMSManager lJMSManager = null;
-		try {
-			lJMSManager = getServer().getJMSManager();
-		} catch (Exception aException) {
-			mLog.error("Failed to get JMS Manager with the following exception: " + aException.getMessage());
-		}
-		if (lJMSManager != null) {
-			// building the message
-			MapMessage lMessage = lJMSManager.buildMessage(NS, ClusterMessageTypes.LOAD_APP.name());
-			lMessage.setStringProperty("appName", lAppName);
-			lMessage.setBooleanProperty("hotLoad", lHotReload);
-			lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
+		MapMessage lMessage = getServer().getJMSManager().buildMessage(NS, ClusterMessageTypes.LOAD_APP.name());
+		lMessage.setStringProperty("appName", lAppName);
+		lMessage.setBooleanProperty("hotLoad", lHotReload);
+		lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
 
-			// sending the message
-			lJMSManager.send(lMessage);
-		}
+		// sending the message
+		getServer().getJMSManager().send(lMessage);
+
 		sendToken(aConnector, createResponse(aToken));
 	}
 
@@ -851,22 +842,14 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		loadApp(lAppName, lAppDir.getAbsolutePath(), lHotDeploy);
 
 		// broadcasting event to other ScriptingPlugIn nodes
-		JMSManager lJMSManager = null;
-		try {
-			lJMSManager = getServer().getJMSManager();
-		} catch (Exception aException) {
-			mLog.error("Failed to get JMS Manager with the following exception: " + aException.getMessage());
-		}
-		if (lJMSManager != null) {
-			// building the message
-			MapMessage lMessage = lJMSManager.buildMessage(NS, ClusterMessageTypes.LOAD_APP.name());
-			lMessage.setStringProperty("appName", lAppName);
-			lMessage.setBooleanProperty("hotLoad", lHotDeploy);
-			lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
+		MapMessage lMessage = getServer().getJMSManager().buildMessage(NS, ClusterMessageTypes.LOAD_APP.name());
+		lMessage.setStringProperty("appName", lAppName);
+		lMessage.setBooleanProperty("hotLoad", lHotDeploy);
+		lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
 
-			// sending the message
-			lJMSManager.send(lMessage);
-		}
+		// sending the message
+		getServer().getJMSManager().send(lMessage);
+
 		// finally send acknowledge response
 		sendToken(aConnector, createResponse(aToken));
 	}
@@ -936,21 +919,13 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		FileUtils.deleteDirectory(new File(lScriptApp.getPath()));
 
 		// broadcasting event to other ScriptingPlugIn nodes
-		JMSManager lJMSManager = null;
-		try {
-			lJMSManager = getServer().getJMSManager();
-		} catch (Exception aException) {
-			mLog.error("Failed to get JMS Manager with the following exception: " + aException.getMessage());
-		}
-		if (lJMSManager != null) {
-			// building the message
-			MapMessage lMessage = lJMSManager.buildMessage(NS, ClusterMessageTypes.UNDEPLOY_APP.name());
-			lMessage.setStringProperty("appName", lApp);
-			lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
+		MapMessage lMessage = getServer().getJMSManager().buildMessage(NS, ClusterMessageTypes.UNDEPLOY_APP.name());
+		lMessage.setStringProperty("appName", lApp);
+		lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
 
-			// sending the message
-			lJMSManager.send(lMessage);
-		}
+		// sending the message
+		getServer().getJMSManager().send(lMessage);
+
 		// acknowledge response for the client
 		sendToken(aConnector, createResponse(aToken));
 	}
