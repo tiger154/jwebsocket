@@ -21,15 +21,13 @@ package org.jwebsocket.plugins.itemstorage.event;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import javolution.util.FastList;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
 import org.jwebsocket.plugins.itemstorage.api.IItemCollection;
 import org.jwebsocket.plugins.itemstorage.api.IItemStorage;
 import org.jwebsocket.plugins.itemstorage.api.IItemStorageListener;
 import org.jwebsocket.plugins.itemstorage.collection.ItemCollection;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -38,36 +36,6 @@ import org.jwebsocket.plugins.itemstorage.collection.ItemCollection;
 public class ItemStorageEventManager {
 
 	private static final List<IItemStorageListener> mListeners = new FastList<IItemStorageListener>();
-	private static ExecutorService mThreadPool = null;
-
-	/**
-	 *
-	 * @return
-	 */
-	public static boolean isThreadPoolUP() {
-		return null != mThreadPool && !mThreadPool.isShutdown();
-	}
-
-	/**
-	 *
-	 */
-	public static void startThreadPool() {
-		mThreadPool = Executors.newFixedThreadPool(10, new ThreadFactory() {
-			@Override
-			public Thread newThread(Runnable aRunnable) {
-				return new Thread(aRunnable, "jWebSocket ItemStoragePlugIn");
-			}
-		});
-	}
-
-	/**
-	 *
-	 */
-	public static void stopThreadPool() {
-		if (isThreadPoolUP()) {
-			mThreadPool.shutdownNow();
-		}
-	}
 
 	/**
 	 *
@@ -94,7 +62,7 @@ public class ItemStorageEventManager {
 	public static void onItemSaved(final String aUser, final IItem aItem, final IItemCollection aItemCollection) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onItemSaved(aUser, aItem, aItemCollection);
@@ -111,7 +79,7 @@ public class ItemStorageEventManager {
 	public static void onItemSaved(final IItem aItem, final IItemStorage aItemStorage) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onItemSaved(aItem, aItemStorage);
@@ -128,7 +96,7 @@ public class ItemStorageEventManager {
 	public static void onItemRemoved(final IItem aItem, final IItemStorage aItemStorage) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onItemRemoved(aItem, aItemStorage);
@@ -146,7 +114,7 @@ public class ItemStorageEventManager {
 	public static void onItemRemoved(final String aUser, final IItem aItem, final IItemCollection aItemCollection) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onItemRemoved(aUser, aItem, aItemCollection);
@@ -162,7 +130,7 @@ public class ItemStorageEventManager {
 	public static void onStorageCleaned(final IItemStorage aItemStorage) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onStorageCleaned(aItemStorage);
@@ -178,7 +146,7 @@ public class ItemStorageEventManager {
 	public static void onStorageCreated(final IItemStorage aItemStorage) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onStorageCreated(aItemStorage);
@@ -209,7 +177,7 @@ public class ItemStorageEventManager {
 	public static void onSubscription(final String aCollectionName, final String aSubscriber) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onSubscription(aCollectionName, aSubscriber);
@@ -227,7 +195,7 @@ public class ItemStorageEventManager {
 	public static void onUnsubscription(final String aCollectionName, final String aSubscriber, final String aUser) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onUnsubscription(aCollectionName, aSubscriber, aUser);
@@ -244,7 +212,7 @@ public class ItemStorageEventManager {
 	public static void onAuthorization(final String aCollectionName, final String aPublisher) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onAuthorization(aCollectionName, aPublisher);
@@ -261,7 +229,7 @@ public class ItemStorageEventManager {
 	public static void onCollectionRestarted(final String aCollectionName, final Set<String> aAffectedClients) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					lListener.onCollectionRestarted(aCollectionName, aAffectedClients);
@@ -277,7 +245,7 @@ public class ItemStorageEventManager {
 	public static void onCollectionSaved(final ItemCollection aCollection) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
-			mThreadPool.execute(new Runnable() {
+			Tools.getThreadPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					try {
