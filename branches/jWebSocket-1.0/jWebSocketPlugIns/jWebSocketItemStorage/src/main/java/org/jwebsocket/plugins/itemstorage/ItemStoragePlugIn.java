@@ -448,12 +448,10 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 	@Override
 	public void systemStarting() throws Exception {
-		ItemStorageEventManager.startThreadPool();
 	}
 
 	@Override
 	public void systemStopped() throws Exception {
-		ItemStorageEventManager.stopThreadPool();
 	}
 
 	@Override
