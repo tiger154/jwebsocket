@@ -498,8 +498,14 @@ public class TCPEngine extends BaseEngine {
 					}
 
 					if (mLog.isDebugEnabled()) {
-						mLog.debug("Client trying to connect on port #"
-								+ (lClientSocket != null ? lClientSocket.getPort() : "[no socket]")
+						mLog.debug("Client from '"
+								+ (lClientSocket != null
+								? lClientSocket.getInetAddress()
+								: "[no socket]")
+								+ "' connecting to port "
+								+ (lClientSocket != null
+								? lClientSocket.getPort()
+								: "[no socket]")
 								+ "...");
 					}
 

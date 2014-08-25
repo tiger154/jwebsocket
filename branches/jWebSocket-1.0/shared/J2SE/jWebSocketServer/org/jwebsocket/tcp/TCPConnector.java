@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimerTask;
@@ -37,6 +38,7 @@ import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.plugins.flashbridge.FlashBridgePlugIn;
 import org.jwebsocket.util.Tools;
 // import org.krakenapps.pcap.decoder.ethernet.MacAddress;
 // import org.krakenapps.pcap.util.Arping;
@@ -55,7 +57,7 @@ public class TCPConnector extends BaseConnector {
 	private InputStream mIn = null;
 	private OutputStream mOut = null;
 	private Socket mClientSocket = null;
-	private static final int CONNECT_TIMEOUT = 5000 * 2;
+	private static final int CONNECT_TIMEOUT = 10000; // in ms
 	/**
 	 *
 	 */
@@ -64,6 +66,11 @@ public class TCPConnector extends BaseConnector {
 	 *
 	 */
 	public static final String SSL_LOG = "SSL";
+
+	/**
+	 *
+	 */
+	public static final String FLASH_POLICY_REQUEST = "policy-file-request";
 	private String mLogInfo = TCP_LOG;
 	private CloseReason mCloseReason = CloseReason.TIMEOUT;
 	private Thread mClientThread = null;
@@ -254,8 +261,12 @@ public class TCPConnector extends BaseConnector {
 					// @TODO the close reason has to be notified to the client
 					// following the WebSocket protocol specification for this
 					// @see http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-17#page-45
-					WebSocketPacket lClose;
-					lClose = new RawPacket(WebSocketFrameType.CLOSE, WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name()));
+					WebSocketPacket lClose
+							= new RawPacket(WebSocketFrameType.CLOSE,
+									WebSocketProtocolAbstraction.calcCloseData(
+											CloseReason.CLIENT.getCode(),
+											CloseReason.CLIENT.name()));
+
 					WebSocketConnectorStatus lStatus = getStatus();
 					// to ensure that the close packet can be sent at all!
 					setStatus(WebSocketConnectorStatus.UP);
@@ -369,6 +380,34 @@ public class TCPConnector extends BaseConnector {
 	// TODO: implement fragmentation for packet sending
 	private void sendHybi(int aVersion, WebSocketPacket aDataPacket) throws IOException {
 		// exception handling is done in sendPacket method
+		WebSocketFrameType lFrameType = aDataPacket.getFrameType();
+		if (WebSocketFrameType.CLOSE.equals(lFrameType) // || WebSocketFrameType.PING.equals(lFrameType)
+				// || WebSocketFrameType.PONG.equals(lFrameType)
+				) {
+			int lCode = -1;
+			String lText = "[empty]";
+			if (aDataPacket.getByteArray().length >= 2) {
+				lCode = ((byte) aDataPacket.getByteArray()[0] << 8)
+						| ((byte) aDataPacket.getByteArray()[1] & 0xFF);
+			}
+			if (aDataPacket.getByteArray().length >= 3) {
+				lText = new String(Arrays.copyOfRange(aDataPacket.getByteArray(), 2, aDataPacket.getByteArray().length), "UTF-8");
+			}
+			if (aDataPacket.getByteArray().length > 126) {
+				mLog.warn("Control frame with too long content detected (cut to 126 bytes): "
+						+ aDataPacket.getFrameType().name()
+						+ ", " + aDataPacket.getByteArray().length + " bytes"
+						+ ", code: " + lCode
+						+ ", text: '" + lText + "'");
+				aDataPacket.setByteArray(Arrays.copyOf(aDataPacket.getByteArray(), 126));
+			} else {
+				mLog.debug("Sending control frame: "
+						+ aDataPacket.getFrameType().name()
+						+ ", " + aDataPacket.getByteArray().length + " bytes"
+						+ ", code: " + lCode
+						+ ", text: '" + lText + "'");
+			}
+		}
 		byte[] lPacket = WebSocketProtocolAbstraction.rawToProtocolPacket(
 				aVersion, aDataPacket, WebSocketProtocolAbstraction.UNMASKED);
 		mOut.write(lPacket);
@@ -393,7 +432,8 @@ public class TCPConnector extends BaseConnector {
 				lBAOS.write(lBuff, 0, lRead);
 				String lAsStr = lBAOS.toString();
 				if (null != lAsStr
-						&& lAsStr.indexOf("\r\n\r\n") > 0) {
+						&& (lAsStr.indexOf("\r\n\r\n") > 0
+						|| lAsStr.contains(FLASH_POLICY_REQUEST))) {
 					break;
 				}
 			} else {
@@ -411,10 +451,36 @@ public class TCPConnector extends BaseConnector {
 			return null;
 		}
 		byte[] lReq = lBAOS.toByteArray();
+		String lReqString = new String(lReq).replace("\r\n", "\\n");
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Parsing handshake request: " + new String(lReq).replace("\r\n", "\\n"));
+			mLog.debug("Parsing handshake request: " + lReqString);
 		}
+
+		// maybe the request is a flash policy-file-request
+		if (null != lReqString && lReqString.contains(FLASH_POLICY_REQUEST)) {
+			mLog.warn("Client '"
+					+ aClientSocket.getInetAddress() + ":"
+					+ aClientSocket.getPort()
+					+ "' requests for policy file ('"
+					+ lReqString
+					+ "'), check for FlashBridge plug-in.");
+			String lCrossDomainXML = FlashBridgePlugIn.getCrossDomainXML();
+			if (null != lCrossDomainXML && lCrossDomainXML.length() > 0) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Sending flash policy file to '"
+							+ aClientSocket.getInetAddress() + ":"
+							+ aClientSocket.getPort() + "'");
+				}
+				byte[] lBA = lCrossDomainXML.getBytes("US-ASCII");
+				lOut.write(lBA);
+				lOut.flush();
+				RequestHeader lHeader = new RequestHeader();
+				lHeader.put(RequestHeader.WS_PROTOCOL, lReqString);
+				return lHeader;
+			}
+		}
+
 		Map<String, Object> lReqMap = WebSocketHandshake.parseC2SRequest(
 				lReq, aClientSocket instanceof SSLSocket);
 		if (lReqMap == null) {
@@ -431,7 +497,6 @@ public class TCPConnector extends BaseConnector {
 		}
 
 		// generate the websocket handshake
-		// if policy-file-request is found answer it
 		byte[] lBA = WebSocketHandshake.generateS2CResponse(lReqMap, lHeader);
 		if (lBA == null) {
 			if (mLog.isDebugEnabled()) {
@@ -446,23 +511,6 @@ public class TCPConnector extends BaseConnector {
 
 		lOut.write(lBA);
 		lOut.flush();
-
-		// maybe the request is a flash policy-file-request
-		String lFlashBridgeReq = (String) lReqMap.get("policy-file-request");
-		if (lFlashBridgeReq != null) {
-			mLog.warn("TCPEngine returned policy file request ('"
-					+ lFlashBridgeReq
-					+ "'), check for FlashBridge plug-in.");
-		}
-
-		// if we detected a flash policy-file-request return "null"
-		// (no websocket header detected)
-		if (lFlashBridgeReq != null) {
-			mLog.warn("TCP Engine returned policy file response ('"
-					+ new String(lBA, "US-ASCII")
-					+ "'), check for FlashBridge plug-in.");
-			return null;
-		}
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Handshake flushed.");
@@ -561,21 +609,30 @@ public class TCPConnector extends BaseConnector {
 				mClientSocket.setSoTimeout(10 * 1000);
 
 				RequestHeader lHeader = processHandshake(mClientSocket);
-				if (lHeader != null) {
-					setHeader(lHeader);
-					int lTimeout = lHeader.getTimeout(getEngine().getConfiguration().getTimeout());
-					mClientSocket.setSoTimeout(lTimeout);
-					setVersion(lHeader.getVersion());
-					setSubprot(lHeader.getSubProtocol());
-					if (mLog.isDebugEnabled()) {
-						mLog.debug(lLogInfo + " client accepted on port "
-								+ mClientSocket.getPort()
-								+ " with timeout "
-								+ (lTimeout > 0 ? lTimeout + "ms" : "infinite")
-								+ " (TCPNoDelay was: " + lTCPNoDelay + ")"
-								+ "...");
+				if (null != lHeader) {
+					String lSubProt = lHeader.getSubProtocol();
+					if (null != lSubProt && lSubProt.contains(FLASH_POLICY_REQUEST)) {
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("WebSocket connection rejected, but flash policy file sent to '"
+									+ mClientSocket.getInetAddress() + ":"
+									+ mClientSocket.getPort() + "'.");
+						}
+					} else {
+						setHeader(lHeader);
+						int lTimeout = lHeader.getTimeout(getEngine().getConfiguration().getTimeout());
+						mClientSocket.setSoTimeout(lTimeout);
+						setVersion(lHeader.getVersion());
+						setSubprot(lSubProt);
+						if (mLog.isDebugEnabled()) {
+							mLog.debug(lLogInfo + " client accepted on port "
+									+ mClientSocket.getPort()
+									+ " with timeout "
+									+ (lTimeout > 0 ? lTimeout + "ms" : "infinite")
+									+ " (TCPNoDelay was: " + lTCPNoDelay + ")"
+									+ "...");
+						}
+						lOk = true;
 					}
-					lOk = true;
 				} else {
 					InetAddress lAddr = mClientSocket.getInetAddress();
 					mLog.error(lLogInfo + " client not accepted on port "
@@ -588,8 +645,8 @@ public class TCPConnector extends BaseConnector {
 							+ (null != lHeader
 							? lHeader.toString()
 							: "[no headers passed]")
-							+ ", invalid client" + (isSSL() ? " , SSL handshake error" : "")
-							+ " or connection closed unexpectedly!");
+							+ ", invalid client" + (isSSL() ? " , SSL handshake error or certificate issue" : "")
+							+ ", connection closed.");
 				}
 			} catch (IOException lEx) {
 				if (lEx instanceof SocketException || lEx instanceof SocketTimeoutException) {
@@ -726,8 +783,11 @@ public class TCPConnector extends BaseConnector {
 
 						// As per spec, server must respond to CLOSE with acknowledgment CLOSE (maybe
 						// this should be handled higher up in the hierarchy?)
-						WebSocketPacket lClose = new RawPacket("");
-						lClose.setFrameType(WebSocketFrameType.CLOSE);
+						WebSocketPacket lClose
+								= new RawPacket(WebSocketFrameType.CLOSE,
+										WebSocketProtocolAbstraction.calcCloseData(
+												CloseReason.CLIENT.getCode(),
+												CloseReason.CLIENT.name()));
 						sendPacket(lClose);
 						// the streams are closed in the run method
 					} else if (WebSocketFrameType.FRAGMENT.equals(lPacket.getFrameType())) {

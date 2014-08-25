@@ -54,6 +54,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 	 *
 	 */
 	public final static String NS_FLASH_BRIDGE = JWebSocketServerConstants.NS_BASE + ".plugins.flashbridge";
+
 	private ServerSocket mServerSocket = null;
 	private int mListenerPort = 843;
 	private boolean mIsRunning = false;
@@ -135,6 +136,13 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 * @return the mCrossDomainXML
+	 */
+	public static String getCrossDomainXML() {
+		return mCrossDomainXML;
+	}
+	
 	@Override
 	public String getVersion() {
 		return VERSION;
@@ -221,14 +229,14 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 								mLog.debug("Received " + lLine + "...");
 							}
 							lFoundPolicyFileRequest
-									= lLine.indexOf("policy-file-request") >= 0; // "<policy-file-request/>"
+									= lLine.contains("policy-file-request"); // "<policy-file-request/>"
 						}
 						if (lFoundPolicyFileRequest) {
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Answering on flash policy-file-request (" + lLine + ")...");
 								// mLog.debug("Answer: " + mCrossDomainXML);
 							}
-							lOS.write(mCrossDomainXML.getBytes("UTF-8"));
+							lOS.write(getCrossDomainXML().getBytes("UTF-8"));
 							lOS.flush();
 						} else {
 							mLog.warn("Received invalid policy-file-request (" + lLine + ")...");
