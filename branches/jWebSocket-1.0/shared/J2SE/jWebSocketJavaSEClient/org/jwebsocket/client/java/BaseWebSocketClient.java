@@ -265,7 +265,7 @@ public class BaseWebSocketClient extends BaseClient {
 
 				sendInternal(
 						WebSocketProtocolAbstraction.rawToProtocolPacket(
-						mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
+								mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
 			}
 		}
 	}
@@ -281,7 +281,7 @@ public class BaseWebSocketClient extends BaseClient {
 
 				sendInternal(
 						WebSocketProtocolAbstraction.rawToProtocolPacket(
-						mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
+								mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
 			}
 		}
 	}
@@ -408,7 +408,9 @@ public class BaseWebSocketClient extends BaseClient {
 					mOut.write(0xff00);
 					mOut.flush();
 				} else {
-					WebSocketPacket lPacket = new RawPacket(WebSocketFrameType.CLOSE, "BYE");
+					WebSocketPacket lPacket
+							= new RawPacket(WebSocketFrameType.CLOSE,
+									WebSocketProtocolAbstraction.calcCloseData(CloseReason.CLIENT.getCode(), CloseReason.CLIENT.name()));
 					send(lPacket);
 				}
 			} catch (IOException lIOEx) {
