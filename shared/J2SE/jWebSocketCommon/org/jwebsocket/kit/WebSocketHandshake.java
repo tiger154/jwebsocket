@@ -449,19 +449,6 @@ public final class WebSocketHandshake {
 	 * @return
 	 */
 	public static byte[] generateS2CResponse(Map<String, Object> aRequest, RequestHeader aReqHeader) {
-		String lPolicyFileRequest = (String) aRequest.get("policy-file-request");
-		if (lPolicyFileRequest != null) {
-			byte[] lBA;
-			try {
-				lBA = ("<cross-domain-policy>"
-						+ "<allow-access-from domain=\"*\" to-ports=\"*\" />"
-						+ "</cross-domain-policy>\n").getBytes("US-ASCII");
-			} catch (UnsupportedEncodingException lEx) {
-				lBA = null;
-			}
-			return lBA;
-		}
-
 		// now that we have parsed the header send handshake...
 		// since 0.9.0.0609 considering Sec-WebSocket-Key processing
 		Boolean lIsSecure = (Boolean) aRequest.get("isSecure");
@@ -485,8 +472,13 @@ public final class WebSocketHandshake {
 		String lRes = // since IETF draft 76 "WebSocket Protocol" not "Web Socket Protocol"
 				// change implemented since v0.9.5.0701
 				(lSecKeyAccept == null
-				? "HTTP/1.1 101 Web" + (lIsSecure ? "" : " ") + "Socket Protocol Handshake\r\n" + "Upgrade: WebSocket\r\n" + "Connection: Upgrade\r\n"
-				: "HTTP/1.1 101 Switching Protocols\r\n" + "Upgrade: websocket\r\n" + "Connection: Upgrade\r\n")
+				? "HTTP/1.1 101 Web" + (lIsSecure ? "" : " ")
+				+ "Socket Protocol Handshake\r\n"
+				+ "Upgrade: WebSocket\r\n"
+				+ "Connection: Upgrade\r\n"
+				: "HTTP/1.1 101 Switching Protocols\r\n"
+				+ "Upgrade: websocket\r\n"
+				+ "Connection: Upgrade\r\n")
 				+ (lSecKeyAccept != null ? "Sec-WebSocket-Accept: " + lSecKeyAccept + "\r\n" : "")
 				+ (lSubProt != null ? (lIsSecure ? "Sec-" : "") + "WebSocket-Protocol: " + lSubProt + "\r\n" : "")
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Origin: " + lOrigin + "\r\n"

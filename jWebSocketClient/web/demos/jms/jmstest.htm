@@ -65,18 +65,22 @@
 
 			function jmsPing() {
 				log("Sending 'Ping'...");
-				lWSC.jmsPing(eTargetId.value, {
-					OnSuccess: function(aToken) {
-						log("Ping success: " + aToken.sourceId);
-					},
-					OnFailure: function(aToken) {
-						log("Ping failure: " + aToken.msg);
-					},
-					OnTimeout: function() {
-						log("Ping timeout!");
-					},
-					timeout: 2000
-				});
+				if( lWSC.isConnected() ) {
+					lWSC.jmsPing(eTargetId.value, {
+						OnSuccess: function(aToken) {
+							log("Ping success: " + aToken.sourceId);
+						},
+						OnFailure: function(aToken) {
+							log("Ping failure: " + aToken.msg);
+						},
+						OnTimeout: function() {
+							log("Ping timeout!");
+						},
+						timeout: 2000
+					});
+				} else {
+					log( "Not connected." );
+				}	
 			}
 
 			function jmsIdentify() {

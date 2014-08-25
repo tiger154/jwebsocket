@@ -281,24 +281,24 @@ public class JMSPlugIn extends TokenPlugIn {
 		if (null != mConsumer) {
 			try {
 				mConsumer.close();
-			} catch (JMSException lEX) {
+			} catch (JMSException lEx) {
 			}
 		}
 		// shutdown advisory listener
 		if (null != mAdvisoryConsumer) {
 			try {
 				mAdvisoryConsumer.close();
-			} catch (JMSException lEX) {
+			} catch (JMSException lEx) {
 			}
 		}
 		if (null != mConnection) {
 			try {
 				mConnection.stop();
-			} catch (JMSException lEX) {
+			} catch (JMSException lEx) {
 			}
 			try {
 				mConnection.close();
-			} catch (JMSException lEX) {
+			} catch (JMSException lEx) {
 			}
 		}
 	}
@@ -623,6 +623,7 @@ public class JMSPlugIn extends TokenPlugIn {
 			String lTargetId = aToken.getString("targetId");
 			if (null == getServer().getConnector(lTargetId)) {
 				sendTargetNotFound(aConnector, aToken);
+				return;
 			}
 			Integer lUTID = aToken.getInteger("utid");
 			Token lToken = TokenFactory.createToken("org.jwebsocket.jms.gateway", "ping");
