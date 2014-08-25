@@ -66,7 +66,7 @@ public class PingpongMatch extends Match implements Runnable {
 		this.mPingpongPlayerList = new ArrayList<PingpongPlayer>(2);
 		this.mBall = new PingpongBall(aPingpongStage);
 		this.mBall = new PingpongBall(aPingpongStage);
-		this.mThread = new Thread(this);
+		this.mThread = new Thread(this, "PingPong game internal thread");
 		this.mGameOver = false;
 		this.mStop = true;
 		this.mSpeed = 50;
