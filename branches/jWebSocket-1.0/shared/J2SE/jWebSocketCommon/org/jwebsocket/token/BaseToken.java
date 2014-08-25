@@ -40,6 +40,10 @@ public abstract class BaseToken implements Token {
 	/**
 	 *
 	 */
+	public static final String EXPIRES = "expires";
+	/**
+	 *
+	 */
 	public static final String IS_LAST_CHUNK = "isLastChunk";
 	/**
 	 *
@@ -69,6 +73,11 @@ public abstract class BaseToken implements Token {
 	 *
 	 */
 	private static final String SUPRESSED_LOG_FIELDS_VALUE = "supressed_log_fields_value";
+
+	@Override
+	public Boolean hasExpired() {
+		return getMap().containsKey(EXPIRES) && getLong(EXPIRES) < System.currentTimeMillis();
+	}
 
 	@Override
 	public Integer getCode() {

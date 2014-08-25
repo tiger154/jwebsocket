@@ -32,6 +32,12 @@ public interface Token {
 
 	/**
 	 *
+	 * @return TRUE if the token has expired, FALSE otherwise
+	 */
+	Boolean hasExpired();
+
+	/**
+	 *
 	 * @return TRUE if the token is a logical chunk, FALSE otherwise
 	 */
 	Boolean isChunk();
