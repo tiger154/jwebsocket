@@ -49,27 +49,27 @@ public class Settings {
 	/**
 	 * Global security permissions
 	 */
-	private List<String> mGlobalSecurityPermissions = new LinkedList<String>();
+	private final List<String> mGlobalSecurityPermissions = new LinkedList<String>();
 	/**
 	 * Global white listed beans
 	 */
-	private List<String> mGlobalWhiteListedBeans = new LinkedList<String>();
+	private final List<String> mGlobalWhiteListedBeans = new LinkedList<String>();
 	/**
 	 * Applications security permissions
 	 */
-	private Map<String, List<String>> mAppsSecurityPermissions = new LinkedHashMap<String, List<String>>();
+	private final Map<String, List<String>> mAppsSecurityPermissions = new LinkedHashMap<String, List<String>>();
 	/**
 	 * Applications while listed beans
 	 */
-	private Map<String, List<String>> mAppsWhiteListedBeans = new LinkedHashMap<String, List<String>>();
+	private final Map<String, List<String>> mAppsWhiteListedBeans = new LinkedHashMap<String, List<String>>();
 	/**
 	 * Local apps white listed beans
 	 */
-	private Map<String, List<String>> mCachedWhiteListedBeans = new FastMap<String, List<String>>().shared();
+	private final Map<String, List<String>> mCachedWhiteListedBeans = new FastMap<String, List<String>>().shared();
 	/**
 	 * Cached permissions
 	 */
-	private Map<String, Permissions> mCachedAppPermissions = new FastMap<String, Permissions>().shared();
+	private final Map<String, Permissions> mCachedAppPermissions = new FastMap<String, Permissions>().shared();
 	/**
 	 * Script apps directory path
 	 */
