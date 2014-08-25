@@ -138,23 +138,8 @@ public class Tools {
 	 * @param aMsg String the string to calculate the MD5 sum for.
 	 * @return MD5 sum of the given string.
 	 */
-	@SuppressWarnings({"BroadCatchBlock", "TooBroadCatch", "UseSpecificCatch"})
 	public static String getMD5(String aMsg) {
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("MD5");
-			byte[] lBufSource = aMsg.getBytes("UTF-8");
-			byte[] lBufTarget = md.digest(lBufSource);
-			Formatter formatter = new Formatter();
-			for (byte b : lBufTarget) {
-				formatter.format("%02x", b);
-			}
-			return (formatter.toString());
-		} catch (Exception lEx) {
-			// log.error("getMD5: " + ex.getMessage());
-			System.out.println("getMD5: " + lEx.getMessage());
-		}
-		return null;
+		return getMD5(aMsg.getBytes());
 	}
 
 	/**
@@ -186,17 +171,9 @@ public class Tools {
 	 * @param aByteArray Byte array to calculate the MD5 sum for.
 	 * @return MD5 sum of the given string.
 	 */
-	@SuppressWarnings({"BroadCatchBlock", "TooBroadCatch", "UseSpecificCatch"})
 	public static String getMD5(byte[] aByteArray) {
-		MessageDigest md;
 		try {
-			md = MessageDigest.getInstance("MD5");
-			byte[] lBufTarget = md.digest(aByteArray);
-			Formatter formatter = new Formatter();
-			for (byte b : lBufTarget) {
-				formatter.format("%02x", b);
-			}
-			return (formatter.toString());
+			return HashUtils.strToMD5(aByteArray);
 		} catch (Exception lEx) {
 			// log.error("getMD5: " + ex.getMessage());
 			System.out.println("getMD5: " + lEx.getMessage());
@@ -211,21 +188,12 @@ public class Tools {
 	 * @param aMsg String the string to calculate the MD5 sum for.
 	 * @return MD5 sum of the given string.
 	 */
-	@SuppressWarnings({"BroadCatchBlock", "TooBroadCatch", "UseSpecificCatch"})
 	public static String getSHA1(String aMsg) {
-		MessageDigest md;
 		try {
-			md = MessageDigest.getInstance("SHA-1");
-			byte[] lBufSource = aMsg.getBytes("UTF-8");
-			byte[] lBufTarget = md.digest(lBufSource);
-			Formatter formatter = new Formatter();
-			for (byte b : lBufTarget) {
-				formatter.format("%02x", b);
-			}
-			return (formatter.toString());
+			return HashUtils.strToSHA1(aMsg.getBytes());
 		} catch (Exception lEx) {
 			// log.error("getMD5: " + ex.getMessage());
-			System.out.println("getSHA: " + lEx.getMessage());
+			System.out.println("getSHA1: " + lEx.getMessage());
 		}
 		return null;
 	}
