@@ -27,7 +27,6 @@ public enum MessageType {
 	/**
 	 *
 	 */
-	CON,
 	CONNECTION,
 
 	/**
