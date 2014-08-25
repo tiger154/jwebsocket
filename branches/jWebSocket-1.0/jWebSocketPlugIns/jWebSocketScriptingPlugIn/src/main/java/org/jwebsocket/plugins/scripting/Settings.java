@@ -134,7 +134,7 @@ public class Settings {
 	}
 
 	/**
-	 * Initialize apps directory checkings.
+	 * Initialize plug-in
 	 *
 	 * @throws Exception
 	 */
