@@ -35,7 +35,7 @@ import javolution.util.FastMap;
 import org.jwebsocket.jms.Attributes;
 
 /**
- * JMS based message hub
+ * JMS based message hub for components messaging
  *
  * @author Rolando Santamaria Maso
  */
