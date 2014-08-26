@@ -34,6 +34,8 @@ jws.FileSystemPlugIn = {
 	// core aliases
 	ALIAS_PRIVATE: "privateDir",
 	ALIAS_PUBLIC: "publicDir",
+	ALIAS_SESSION: "sessionDir",
+	ALIAS_USER_SESSION: "uuidDir",
 
 	NOT_FOUND_ERR: 1,
 	SECURITY_ERR: 2,
