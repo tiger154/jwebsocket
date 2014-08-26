@@ -9,3 +9,7 @@
 /rte
 /branches/jWebSocket-1.0/jWebSocketPlugIns/PayPalPlugIn/target/
 /branches/jWebSocket-1.0/jWebSocketPlugIns/jWebSocketPayPalPlugIn/target/
+/branches/jWebSocket-1.0/jWebSocketClient/web/demos/jwsPayPal/nbproject/private/
+rte/jWebSocket-1.0/conf/jWebSocket.xml
+rte/jWebSocket-1.0/conf/PayPalPlugIn/paypal.xml
+branches/jWebSocket-1.0/jWebSocketClient/web/navigation.html

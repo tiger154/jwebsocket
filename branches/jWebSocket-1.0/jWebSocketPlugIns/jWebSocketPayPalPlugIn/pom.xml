@@ -8,9 +8,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jwebsocket</groupId>
-	<artifactId>jWebSocketPaypalPlugIn</artifactId>
-	<name>jWebSocketPaypalPlugIn</name>
-	<description>jWebSocket Paypal Plug-in</description>
+	<artifactId>jWebSocketPayPalPlugIn</artifactId>
+	<name>jWebSocketPayPalPlugIn</name>
+	<description>jWebSocket PayPal Plug-in</description>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
