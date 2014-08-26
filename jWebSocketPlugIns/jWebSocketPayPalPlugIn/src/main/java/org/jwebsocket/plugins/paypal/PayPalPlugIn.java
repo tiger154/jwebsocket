@@ -19,6 +19,9 @@
 package org.jwebsocket.plugins.paypal;
 
 import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.PaymentHistory;
+import java.util.List;
+import java.util.logging.Level;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
@@ -47,6 +50,9 @@ public class PayPalPlugIn extends TokenPlugIn {
     private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
     private final static String DESCRIPTION = "jWebSocket PaypalPlugIn - Community Edition";
     private final static String TT_PP_PAYMENT = "paypal_payment";
+    private final static String TT_PP_EXECUTE = "paypal_execute";
+    private final static String TT_PP_LIST = "paypal_list";
+    private final static String TT_PP_GET = "paypal_get";
     private static Setting mPayPalSettings;
     private PayPalFacade mFacade;
 
@@ -83,12 +89,30 @@ public class PayPalPlugIn extends TokenPlugIn {
         if (getNamespace().equals(aToken.getNS())) {
             if (TT_PP_PAYMENT.equals(aToken.getType())) {
                 try {
-                    createPayment(aToken, aConnector);
+                    createPayment(aConnector, aToken);
+                } catch (Exception lEx) {
+                    mLog.error(lEx);
+                }
+            } else if (TT_PP_EXECUTE.equals(aToken.getType())){
+                try {
+                    executePayment(aConnector, aToken);
+                } catch (Exception lEx) {
+                    mLog.error(lEx);
+                }
+            } else if (TT_PP_LIST.equals(aToken.getType())) {
+                try {
+                    listPayments(aConnector, aToken);
+                } catch (Exception lEx) {
+                    mLog.error(lEx);
+                }
+            } else if (TT_PP_GET.equals(aToken.getType())) {
+                try {
+                    getPayment(aConnector, aToken);
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             }
-        }
+        } 
     }
 
     @Override
@@ -121,12 +145,38 @@ public class PayPalPlugIn extends TokenPlugIn {
         return LICENSE;
     }
 
-    private void createPayment(Token aToken, WebSocketConnector aConnector) throws Exception {
+    public void createPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
         Payment lResult = mFacade.createPayment(aToken);
         Token lRespToken = createResponse(aToken);
 
         lRespToken.setString("data", lResult.toJSON());
+        getServer().sendToken(aConnector, lRespToken);
+    }
 
+    public void executePayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+        Payment lResult = mFacade.executePayment(aToken);
+        Token lRespToken = createResponse(aToken);
+
+        lRespToken.setString("data", lResult.toJSON());
+        getServer().sendToken(aConnector, lRespToken);
+        
+    }
+
+    public void listPayments(WebSocketConnector aConnector, Token aToken) throws Exception {
+        PaymentHistory lResult = mFacade.listPayments(aConnector, aToken);
+        
+        Token lRespToken = createResponse(aToken);
+
+        lRespToken.setString("data", lResult.toJSON());
+        getServer().sendToken(aConnector, lRespToken);
+    }
+
+    public void getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+        Payment lResult = mFacade.getPayment(aConnector, aToken);
+        
+        Token lRespToken = createResponse(aToken);
+
+        lRespToken.setString("data", lResult.toJSON());
         getServer().sendToken(aConnector, lRespToken);
     }
 }

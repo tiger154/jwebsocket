@@ -24,16 +24,21 @@ import com.paypal.api.payments.ItemList;
 import com.paypal.api.payments.Payer;
 import com.paypal.api.payments.PayerInfo;
 import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.PaymentExecution;
+import com.paypal.api.payments.PaymentHistory;
 import com.paypal.api.payments.RedirectUrls;
 import com.paypal.api.payments.Transaction;
+import com.paypal.core.rest.APIContext;
 import com.paypal.core.rest.OAuthTokenCredential;
 import com.paypal.core.rest.PayPalRESTException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.token.Token;
 
 /**
@@ -123,7 +128,39 @@ public class PayPalFacade {
         }
 
         lPayment.setTransactions(lTransactions);
-
+        
         return lPayment.create(this.getAccessToken());
+    }
+
+    public Payment executePayment(Token aToken) throws Exception {
+        Payment lPayment = new Payment();
+        lPayment.setId(aToken.getString("payment_id"));
+        
+        PaymentExecution lPaymentExecution = new PaymentExecution();
+        lPaymentExecution.setPayerId(aToken.getString("payer_id"));
+        
+        String lAccessToken = this.getAccessToken();
+        APIContext lApiContext = new APIContext(lAccessToken);
+        
+        return lPayment.execute(lApiContext, lPaymentExecution);
+    }
+
+    public PaymentHistory listPayments(WebSocketConnector aConnector, Token aToken) throws Exception {
+        HashMap lContainerMap = new HashMap<String, String>();
+        Map lPagingData = aToken.getMap("paging");
+       
+        lContainerMap.put("start_index", lPagingData.get("start_index").toString());
+        lContainerMap.put("count", lPagingData.get("count").toString());
+        lContainerMap.put("sort_order", (String)lPagingData.get("sort_order"));
+        
+        PaymentHistory lResult  = Payment.list(getAccessToken(), lContainerMap);
+        
+        return lResult;
+    }
+
+    public Payment getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+        Payment lResult = Payment.get(getAccessToken(), aToken.getString("payment_id"));
+        
+        return lResult;
     }
 }
