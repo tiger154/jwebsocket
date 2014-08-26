@@ -82,6 +82,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 */
 	public static final String PRIVATE_ALIAS_DIR_KEY = "privateDir";
 	/**
+	 * Private Session alias directory settings map key.
+	 */
+	public static final String SESSION_ALIAS_DIR_KEY = "sessionDir";
+	public static final String UUID_ALIAS_DIR_KEY = "uuidDir";
+	/**
 	 * Public alias directory settings map key.
 	 */
 	public static final String PUBLIC_ALIAS_DIR_KEY = "publicDir";
@@ -257,7 +262,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	public String getAliasPath(WebSocketConnector aConnector, String aAlias) {
 		String lBaseDir = mSettings.getAliasPath(aAlias);
 
-		if (null != lBaseDir && aAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
+		if (null != lBaseDir && (PRIVATE_ALIAS_DIR_KEY.equals(aAlias)
+				|| SESSION_ALIAS_DIR_KEY.equals(aAlias)
+				|| UUID_ALIAS_DIR_KEY.equals(aAlias))) {
 			lBaseDir = replaceAliasVars(aConnector, lBaseDir);
 			/*
 			 lBaseDir = JWebSocketConfig.expandEnvVarsAndProps(lBaseDir);
@@ -365,7 +372,13 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		// scope may be "private" or "public"
 		String lBaseDir;
 		if (JWebSocketCommonConstants.SCOPE_PRIVATE.equals(lScope)) {
-			lBaseDir = getAliasPath(aConnector, PRIVATE_ALIAS_DIR_KEY);
+			if (SESSION_ALIAS_DIR_KEY.equals(lAlias)) {
+				lBaseDir = getAliasPath(aConnector, lAlias);
+			} else if (UUID_ALIAS_DIR_KEY.equals(lAlias)) {
+				lBaseDir = getAliasPath(aConnector, lAlias);
+			} else {
+				lBaseDir = getAliasPath(aConnector, PRIVATE_ALIAS_DIR_KEY);
+			}
 		} else if (JWebSocketCommonConstants.SCOPE_PUBLIC.equals(lScope)) {
 			lBaseDir = getAliasPath(aConnector, lAlias);
 		} else {
@@ -665,9 +678,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			lBaseDir = (String) lObject;
 			lBaseDir = replaceAliasVars(aConnector, lBaseDir);
 			/*
-			lBaseDir = JWebSocketConfig.expandEnvVarsAndProps(lBaseDir).
-					replace("{username}", aConnector.getUsername());
-			*/
+			 lBaseDir = JWebSocketConfig.expandEnvVarsAndProps(lBaseDir).
+			 replace("{username}", aConnector.getUsername());
+			 */
 			File lDir;
 			if (null != lSubPath) {
 				lDir = new File(lBaseDir + File.separator + lSubPath);
@@ -818,7 +831,13 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lBaseDir;
 		String lAlias = aToken.getString("alias", PUBLIC_ALIAS_DIR_KEY);
 		if (JWebSocketCommonConstants.SCOPE_PRIVATE.equals(lScope)) {
-			lBaseDir = getAliasPath(aConnector, PRIVATE_ALIAS_DIR_KEY);
+			if (SESSION_ALIAS_DIR_KEY.equals(lAlias)) {
+				lBaseDir = getAliasPath(aConnector, lAlias);
+			} else if (UUID_ALIAS_DIR_KEY.equals(lAlias)) {
+				lBaseDir = getAliasPath(aConnector, lAlias);
+			} else {
+				lBaseDir = getAliasPath(aConnector, PRIVATE_ALIAS_DIR_KEY);
+			}
 		} else if (JWebSocketCommonConstants.SCOPE_PUBLIC.equals(lScope)) {
 			lBaseDir = getAliasPath(aConnector, lAlias);
 		} else {
