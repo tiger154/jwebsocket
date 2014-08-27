@@ -37,12 +37,19 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 
 	private final Map<String, IHandler> mResponseHandlers = new FastMap<String, IHandler>().shared();
 	private final Map<String, List<IHandler>> mHandlers = new FastMap<String, List<IHandler>>().shared();
+	private IExceptionHandler mExceptionHandler = new IExceptionHandler() {
+
+		@Override
+		public void handle(Exception lEx) {
+
+		}
+	};
 
 	@Override
 	public IEventBus send(Token aToken) {
 		return send(aToken, null);
 	}
-	
+
 	@Override
 	public Token createResponse(Token aInToken) {
 		Token lResponse = TokenFactory.createToken(aInToken.getNS(), "response");
@@ -57,7 +64,7 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 	public Token createErrorResponse(Token aInToken) {
 		Token lResponse = createResponse(aInToken);
 		lResponse.setCode(-1);
-		
+
 		return lResponse;
 	}
 
@@ -96,8 +103,12 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 
 					@Override
 					public void run() {
-						lH.setEventBus(lEB);
-						lH.OnMessage(aToken);
+						try {
+							lH.setEventBus(lEB);
+							lH.OnMessage(aToken);
+						} catch (Exception lEx) {
+							mExceptionHandler.handle(lEx);
+						}
 					}
 				});
 			}
@@ -116,8 +127,12 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 
 				@Override
 				public void run() {
-					lH.setEventBus(lEB);
-					lH.OnMessage(aToken);
+					try {
+						lH.setEventBus(lEB);
+						lH.OnMessage(aToken);
+					} catch (Exception lEx) {
+						mExceptionHandler.handle(lEx);
+					}
 				}
 			});
 
@@ -132,18 +147,31 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 
 				@Override
 				public void run() {
-					lH.OnMessage(aResponse);
+					try {
+						lH.OnMessage(aResponse);
 
-					// supporting jWebSocket callbacks style
-					lH.OnResponse(aResponse);
+						// supporting jWebSocket callbacks style
+						lH.OnResponse(aResponse);
 
-					if (Handler.STATUS_OK.equals(aResponse.getCode())) {
-						lH.OnSuccess(aResponse);
-					} else {
-						lH.OnFailure(aResponse);
+						if (Handler.STATUS_OK.equals(aResponse.getCode())) {
+							lH.OnSuccess(aResponse);
+						} else {
+							lH.OnFailure(aResponse);
+						}
+					} catch (Exception lEx) {
+						mExceptionHandler.handle(lEx);
 					}
 				}
 			});
 		}
+	}
+
+	@Override
+	public void setExceptionHandler(IExceptionHandler aHandler) {
+		mExceptionHandler = aHandler;
+	}
+
+	public IExceptionHandler getExceptionHandler() {
+		return mExceptionHandler;
 	}
 }
