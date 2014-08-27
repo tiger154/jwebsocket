@@ -69,7 +69,7 @@ public interface IEventBus {
 		void reply(Token aResponse, IHandler aHandler);
 
 		void setEventBus(IEventBus aEB);
-		
+
 		IEventBus getEventBus();
 
 		/**
@@ -113,5 +113,20 @@ public interface IEventBus {
 	 * @return
 	 */
 	IEventBus send(Token aToken, IHandler aHandler);
+
+	/**
+	 * Create response Token message
+	 *
+	 * @param aInToken The request Token
+	 * @return The response Token
+	 */
+	Token createResponse(Token aInToken);
 	
+	/**
+	 * Create error response Token message
+	 *
+	 * @param aInToken The request Token
+	 * @return The response Token
+	 */
+	Token createErrorResponse(Token aInToken);
 }
