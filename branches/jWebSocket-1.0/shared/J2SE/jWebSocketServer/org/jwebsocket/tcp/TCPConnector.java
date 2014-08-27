@@ -559,7 +559,7 @@ public class TCPConnector extends BaseConnector {
 		public void run() {
 			synchronized (mSyncPing) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug("Sending S2C ping to connector '" + getId() + "' "
+					mLog.debug("Sending PING to connector '" + getId() + "' "
 							+ (null != getUsername() ? "(" + getUsername() + ")" : "[not authenticated]")
 							+ "...");
 				}
@@ -794,11 +794,10 @@ public class TCPConnector extends BaseConnector {
 						// TODO: support fragments!
 						mLog.warn("Frame type '" + lPacket.getFrameType() + "' not yet supported (" + mLogInfo + "), ignoring frame.");
 					} else if (WebSocketFrameType.PONG.equals(lPacket.getFrameType())) {
-
 						// TODO: shouldn't we enclose this in a synchronize(this)??
 						if (mKeepAlive) {
 							if (mLog.isDebugEnabled()) {
-								mLog.debug("Received S2C pong from connector '"
+								mLog.debug("Received PONG from connector '"
 										+ getId()
 										+ "' "
 										+ (null != getUsername() ? "(" + getUsername() + ")" : "[not authenticated]")
