@@ -21,7 +21,6 @@ package org.jwebsocket.eventbus;
 import org.jwebsocket.api.IEventBus;
 import org.jwebsocket.token.BaseTokenResponseListener;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 
 /**
  *
@@ -31,13 +30,23 @@ public class Handler extends BaseTokenResponseListener implements IEventBus.IHan
 
 	public static final Integer STATUS_OK = 0;
 	private IEventBus mEB;
+	private IEventListener mEventListener;
 
 	public Handler() {
-		setTimeout(0);
+		this(new Long(0));
+	}
+
+	public Handler(IEventListener aListener, long aTimeout) {
+		super(aTimeout);
+		mEventListener = aListener;
+	}
+
+	public Handler(IEventListener aListener) {
+		this(aListener, new Long(0));
 	}
 
 	public Handler(Long aTimeout) {
-		super(aTimeout);
+		this(null, aTimeout);
 	}
 
 	@Override
@@ -52,7 +61,7 @@ public class Handler extends BaseTokenResponseListener implements IEventBus.IHan
 
 	@Override
 	public void reply(Token aResponse) {
-		mEB.send(aResponse);
+		reply(aResponse, null);
 	}
 
 	@Override
@@ -61,22 +70,31 @@ public class Handler extends BaseTokenResponseListener implements IEventBus.IHan
 	}
 
 	Token createErrorResponse(Token aInToken) {
-		Token lError = createResponse(aInToken);
-		lError.setCode(-1);
-
-		return lError;
+		return getEventBus().createErrorResponse(aInToken);
 	}
 
 	Token createResponse(Token aInToken) {
-		Token lResponse = TokenFactory.createToken(aInToken.getNS(), "response");
-		lResponse.setCode(STATUS_OK);
-		lResponse.setString(JMSEventBus.ATTR_TOKEN_BUS_UTID, aInToken.getString(JMSEventBus.ATTR_TOKEN_BUS_UTID));
-		lResponse.setString("reqType", aInToken.getType());
-
-		return lResponse;
+		return getEventBus().createResponse(aInToken);
 	}
 
 	@Override
 	public void OnMessage(Token aToken) {
+		if (null != mEventListener) {
+			mEventListener.OnMessage(aToken);
+		}
+	}
+
+	@Override
+	public void OnTimeout(Token aToken) {
+		if (null != mEventListener) {
+			mEventListener.OnTimeout(aToken);
+		}
+	}
+
+	public interface IEventListener {
+
+		public void OnMessage(Token aToken);
+
+		public void OnTimeout(Token aToken);
 	}
 }

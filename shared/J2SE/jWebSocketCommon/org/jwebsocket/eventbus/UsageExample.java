@@ -77,7 +77,7 @@ public class UsageExample {
 				}
 			});
 			// registering handler to "test.queue" name-space
-			lEB1.register("test.queue", new Handler() {
+			lEB1.register("test.q*", new Handler() {
 
 				@Override
 				public void OnMessage(Token aToken) {
@@ -120,7 +120,7 @@ public class UsageExample {
 			});
 			// sending message to "test.timeout" name-space
 			// should invoke Timeout callback because no listener is active on target name-space
-			lEB1.send(TokenFactory.createToken("test.timeout", "action"), new Handler(new Long(3000)) {
+			lEB1.send(TokenFactory.createToken("test.timeout", "action"), new Handler(new Long(1000)) {
 
 				@Override
 				public void OnTimeout(Token aToken) {
