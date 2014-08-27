@@ -17,13 +17,12 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-// @author kyberneees
+// @author Rolando Santamaria Maso
 var App = (function() {
-	// app listeners container
+// app listeners container
 	var mListeners = AppUtils.newThreadSafeMap();
 	// app public objects (controllers) container
 	var mAPI = AppUtils.newThreadSafeMap();
-
 	// function to convert a JavaScript native object to a Java Map instance
 	var toMap = function(aNativeObject) {
 		var lMap = new Packages.java.util.HashMap();
@@ -37,7 +36,6 @@ var App = (function() {
 
 		return lMap;
 	};
-
 	var toList = function(aArray) {
 		var lList = new Packages.java.util.LinkedList();
 		for (var lIndex in aArray) {
@@ -46,7 +44,6 @@ var App = (function() {
 
 		return lList;
 	};
-
 	// function to convert a Java object to a JavaScript native object
 	// maps, lists and booleans supported
 	var toNativeObject = function(aObject) {
@@ -69,12 +66,11 @@ var App = (function() {
 
 			return lNative;
 		} else if (aObject instanceof Packages.java.lang.Boolean) {
-			lNative = true == aObject;
+			lNative = true === aObject;
 		}
 
 		return aObject;
 	};
-
 	// app utility storage
 	var mStorage = AppUtils.newThreadSafeMap();
 	// app version
@@ -83,17 +79,17 @@ var App = (function() {
 	var mDescription = '';
 	// app server client instance
 	var mServerClient;
-
+	// app event bus reference
+	var mEventBus;
 	return {
 		getJMSManager: function(aUseTransaction, aConn) {
 			var lJMSManager;
-			if (undefined !== aUseTransaction && undefined != aConn) {
+			if (undefined !== aUseTransaction && undefined !== aConn) {
 				lJMSManager = AppUtils.getJMSManager(aUseTransaction, aConn);
 			} else if (undefined !== aUseTransaction) {
 				lJMSManager = AppUtils.getJMSManager(aUseTransaction);
 			}
 			lJMSManager = AppUtils.getJMSManager();
-
 			return lJMSManager;
 		},
 		getDescription: function() {
@@ -113,12 +109,11 @@ var App = (function() {
 		},
 		set: function(aAttrName, aValue) {
 			mStorage.put(aAttrName, aValue);
-
 			return aValue;
 		},
 		get: function(aAttrName, aDefaultValue) {
 			var lValue = mStorage.get(aAttrName);
-			if (null == lValue) {
+			if (null === lValue) {
 				lValue = aDefaultValue;
 			}
 
@@ -167,7 +162,7 @@ var App = (function() {
 
 				lClientAPI[lObjId] = lObjAPI;
 			}
-			
+
 			return lClientAPI;
 		},
 		isPublished: function(aObjectId) {
@@ -187,7 +182,6 @@ var App = (function() {
 		},
 		sendToken: function(aConnector, aToken, aArg3, aArg4) {
 			var lToken = toMap(aToken);
-
 			if (!aArg3) {
 				AppUtils.sendToken(aConnector, lToken);
 			} else if (!aArg4) {
@@ -214,7 +208,7 @@ var App = (function() {
 			return toNativeObject(AppUtils.createResponse(toMap(aInToken)));
 		},
 		broadcast: function(aArg1, aArg2) {
-			if (null != aArg2) {
+			if (null !== aArg2) {
 				AppUtils.broadcast(aArg1, toMap(aArg2));
 			} else {
 				AppUtils.broadcast(toMap(aArg1));
@@ -278,7 +272,7 @@ var App = (function() {
 			AppUtils.loadToAppBeanFactory(aFile);
 		},
 		getBean: function(aBeanId, aNamespace) {
-			return (undefined == aNamespace)
+			return (undefined === aNamespace)
 					? AppUtils.getBean(aBeanId)
 					: AppUtils.getBean(aBeanId, aNamespace);
 		},
@@ -304,11 +298,99 @@ var App = (function() {
 		removeModule: function(aName) {
 			return App.getStorage().remove('module.' + aName);
 		},
+		getEventBus: function() {
+			if (!mEventBus) {
+				var lEventBus = App.getWebSocketServer().getEventBus();
+
+				var lSetResponseFields = function(aReq, aResponse) {
+					aResponse.ns = aReq.ns;
+					aResponse.type = 'response';
+					aResponse.reqType = aReq.type;
+					aResponse.code = 0;
+					aResponse.tokenbus_utid = aReq.tokenbus_utid;
+				}
+
+				var lToHandler = function(aListener) {
+					if (!aListener)
+						return null;
+
+					var lListener = new Packages.org.jwebsocket.eventbus.Handler.IEventListener(){
+						OnMessage: function(aToken) {
+							try {
+								var lMessage = toNativeObject(aToken.getMap());
+								lMessage.reply = function(aResponse, aListener) {
+									lSetResponseFields(lMessage, aResponse);
+									mEventBus.send(aResponse, aListener);
+								};
+								lMessage.fail = function(aResponse, aListener) {
+									lSetResponseFields(lMessage, aResponse);
+									aResponse.code = -1;
+									mEventBus.send(aResponse, aListener);
+								};
+
+								if (aListener.OnMessage) {
+									aListener.OnMessage(lMessage);
+								}
+								if ('response' === lMessage.type) {
+									if (aListener.OnResponse) {
+										aListener.OnResponse(lMessage);
+									}
+									if (0 === aToken.getCode()) {
+										if (aListener.OnSuccess) {
+											aListener.OnSuccess(lMessage);
+										}
+									} else {
+										if (aListener.OnFailure) {
+											aListener.OnFailure(lMessage);
+										}
+									}
+								}
+							} catch (lEx) {
+								App.getLogger().error('Invoking EventBus message handler: ' + lEx);
+							}
+						},
+						OnTimeout: function(aToken) {
+							try {
+								var lMessage = toNativeObject(aToken.getMap());
+								if (aListener.OnTimeout) {
+									aListener.OnTimeout(lMessage);
+								}
+							} catch (lEx) {
+								App.getLogger().error('Invoking EventBus message timeout handler: ' + lEx);
+							}
+						}
+					};
+
+					return new Packages.org.jwebsocket.eventbus.Handler(lListener, aListener.timeout || 0);
+				};
+				mEventBus = {
+					cancelHandlersOnShutdown: true,
+					publish: function(aObject) {
+						lEventBus.publish(AppUtils.toToken(App.toMap(aObject)));
+					},
+					send: function(aObject, aListener) {
+						lEventBus.send(AppUtils.toToken(App.toMap(aObject)), lToHandler(aListener));
+					},
+					register: function(aNS, aListener) {
+						var lRegistration = lEventBus.register(aNS, lToHandler(aListener));
+						if (this.cancelHandlersOnShutdown) {
+							App.on(['undeploying', 'beforeAppReload'], function() {
+								lRegistration.cancel();
+							});
+						}
+
+						return lRegistration;
+					}
+				};
+			}
+
+			return mEventBus;
+		}
+		,
 		getServerClient: function() {
 			if (!mServerClient) {
 				// get internal client instance
 				var lClient = AppUtils.getServerClient();
-
 				// return JavaScript wrapper
 				mServerClient = {
 					NS_SYSTEM: 'org.jwebsocket.plugins.system',
@@ -317,7 +399,7 @@ var App = (function() {
 						return lClient;
 					},
 					sendToken: function(aToken, aCallbacks) {
-						if (null == aCallbacks) {
+						if (null === aCallbacks) {
 							aCallbacks = {};
 						}
 						return lClient.sendToken(toMap(aToken), {
@@ -418,7 +500,6 @@ var App = (function() {
 						return lRes;
 					}
 				};
-
 				mServerClient.addListener({
 					processToken: function(aToken) {
 						for (var lIndex in mServerClient.listeners) {
@@ -430,7 +511,7 @@ var App = (function() {
 					}
 				});
 				App.on('beforeAppReload', function(aHotLoad) {
-					if (false == aHotLoad) {
+					if (false === aHotLoad) {
 						mServerClient.close();
 					}
 				});
@@ -442,6 +523,13 @@ var App = (function() {
 })();
 
 /**
+ * Global app EventBus object
+ * @type @exp;App@call;getEventBus
+ */
+EventBus = App.getEventBus();
+
+
+/**
  * jWebSocket JavaScript plug-ins bridge
  */
 var jws = {
@@ -451,13 +539,11 @@ var jws = {
 		addPlugIn: function(a, aPlugIn) {
 			// getting server instance
 			var lServer = App.getServerClient();
-
 			// storing the plugin for future incoming token notifications.
-			App.assertTrue(undefined != aPlugIn.NS,
+			App.assertTrue(undefined !== aPlugIn.NS,
 					'The given plug-in class has invalid NS property value!');
-
 			// registering the plugin listener
-			if (typeof (aPlugIn['processToken']) == 'function') {
+			if (typeof (aPlugIn['processToken']) === 'function') {
 				lServer.listeners[aPlugIn.NS] = aPlugIn['processToken'];
 			}
 
