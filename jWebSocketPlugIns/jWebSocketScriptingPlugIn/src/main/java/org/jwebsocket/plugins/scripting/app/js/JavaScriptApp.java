@@ -57,6 +57,7 @@ public class JavaScriptApp extends BaseScriptApp {
 	 * @param aScriptApp The scripting engine that runs the application
 	 * @param aLoader The application class loader
 	 */
+	@SuppressWarnings("OverridableMethodCallInConstructor")
 	public JavaScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp, LocalLoader aLoader) {
 		super(aServer, aAppName, aAppPath, aScriptApp, aLoader);
 
