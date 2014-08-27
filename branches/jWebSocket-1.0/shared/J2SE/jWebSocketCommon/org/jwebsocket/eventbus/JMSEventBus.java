@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.eventbus;
 
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import org.jwebsocket.api.IEventBus;
@@ -51,6 +52,7 @@ public class JMSEventBus extends BaseEventBus {
 	private MessageProducer mQueueProducer;
 	private MessageProducer mTopicProducer;
 	private final String mDestinationId;
+	private final Timer mTimer = Tools.getTimer();
 
 	public Connection getConnection() {
 		return mConnection;
@@ -119,7 +121,7 @@ public class JMSEventBus extends BaseEventBus {
 			if (aHandler.getTimeout() > 0) {
 				aToken.setLong(BaseToken.EXPIRES, System.currentTimeMillis() + aHandler.getTimeout());
 
-				Tools.getTimer().schedule(new TimerTask() {
+				mTimer.schedule(new TimerTask() {
 
 					@Override
 					public void run() {
