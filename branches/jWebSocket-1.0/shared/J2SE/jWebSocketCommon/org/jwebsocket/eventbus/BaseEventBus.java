@@ -24,7 +24,9 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.jwebsocket.api.IEventBus;
 import org.jwebsocket.api.IInitializable;
+import static org.jwebsocket.eventbus.Handler.STATUS_OK;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -36,15 +38,27 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 	private final Map<String, IHandler> mResponseHandlers = new FastMap<String, IHandler>().shared();
 	private final Map<String, List<IHandler>> mHandlers = new FastMap<String, List<IHandler>>().shared();
 
-	/**
-	 * Send a token
-	 *
-	 * @param aToken
-	 * @return
-	 */
 	@Override
 	public IEventBus send(Token aToken) {
 		return send(aToken, null);
+	}
+	
+	@Override
+	public Token createResponse(Token aInToken) {
+		Token lResponse = TokenFactory.createToken(aInToken.getNS(), "response");
+		lResponse.setCode(STATUS_OK);
+		lResponse.setString(JMSEventBus.ATTR_TOKEN_BUS_UTID, aInToken.getString(JMSEventBus.ATTR_TOKEN_BUS_UTID));
+		lResponse.setString("reqType", aInToken.getType());
+
+		return lResponse;
+	}
+
+	@Override
+	public Token createErrorResponse(Token aInToken) {
+		Token lResponse = createResponse(aInToken);
+		lResponse.setCode(-1);
+		
+		return lResponse;
 	}
 
 	IHandler removeResponseHandler(String aTokenUID) {
@@ -92,7 +106,7 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 
 	void invokeHandler(String aNS, final Token aToken) {
 		for (String lNS : mHandlers.keySet()) {
-			if (!aNS.matches(lNS) || !Tools.wildCardMatch(aNS, lNS) || mHandlers.get(lNS).isEmpty()) {
+			if (!aNS.matches(lNS) && !Tools.wildCardMatch(aNS, lNS) || mHandlers.get(lNS).isEmpty()) {
 				continue;
 			}
 
