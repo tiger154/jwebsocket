@@ -80,6 +80,16 @@ public interface IEventBus {
 		void OnMessage(Token aToken);
 	}
 
+	public interface IExceptionHandler {
+
+		/**
+		 * Handle uncaught exceptions during handlers invocation
+		 *
+		 * @param lEx
+		 */
+		void handle(Exception lEx);
+	}
+
 	/**
 	 * Publish a token
 	 *
@@ -121,7 +131,7 @@ public interface IEventBus {
 	 * @return The response Token
 	 */
 	Token createResponse(Token aInToken);
-	
+
 	/**
 	 * Create error response Token message
 	 *
@@ -129,4 +139,12 @@ public interface IEventBus {
 	 * @return The response Token
 	 */
 	Token createErrorResponse(Token aInToken);
+
+	/**
+	 * Set the EventBus exception handler to allow developers control of
+	 * uncaught handlers exception during invocation.
+	 *
+	 * @param aHandler
+	 */
+	void setExceptionHandler(IExceptionHandler aHandler);
 }
