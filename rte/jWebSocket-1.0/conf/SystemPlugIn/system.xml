@@ -175,7 +175,7 @@
 
 	<!-- 
 		 SessionManager component for sessions management 
-	     ************************************************
+		 ************************************************
 		 Uses JDBC (derby) by default, to switch the persistent storage
 		 modify the storageProvider properties.
 	-->
@@ -232,10 +232,17 @@
 		<property name="collectionName" value="__storages_collection__" />
 	</bean>
 	
-	<!-- JMS Manager for internal/external messaging -->
+	<!-- JMS Manager for internal/external JMS based messaging -->
 	<bean id="jmsManager" class="org.jwebsocket.util.JMSManager" destroy-method="shutdown">
 		<constructor-arg index="0" value="false"/>
 		<constructor-arg index="1" ref="jmsConnection0"/>
 		<constructor-arg index="2" value="topic://jwebsocket_messagehub"/>
+	</bean>
+	
+	<!-- JMS based EventBus for internal/external Token messaging -->
+	<bean id="jmsEventBus" class="org.jwebsocket.eventbus.JMSEventBus" 
+		  init-method="initialize" destroy-method="shutdown">
+		<constructor-arg index="0" ref="jmsConnection0"/>
+		<constructor-arg index="1" value="event_bus"/>
 	</bean>
 </beans>
