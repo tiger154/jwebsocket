@@ -66,6 +66,7 @@ public class TokenServer extends BaseServer {
 	private final int mKeepAliveTime;
 	private final int mBlockingQueueSize;
 	private JMSManager mJMSManager = null;
+	private IEventBus mEventBus;
 
 	/**
 	 *
@@ -1023,12 +1024,11 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * Gets the global JMSManager
+	 * Get the global JMSManager
 	 *
 	 * @return
-	 * @throws java.lang.Exception
 	 */
-	public JMSManager getJMSManager() throws Exception {
+	public JMSManager getJMSManager() {
 		if (null == mJMSManager) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Loading JMSManager...");
@@ -1036,5 +1036,20 @@ public class TokenServer extends BaseServer {
 			mJMSManager = (JMSManager) JWebSocketBeanFactory.getInstance().getBean("jmsManager");
 		}
 		return mJMSManager;
+	}
+
+	/**
+	 * Get the global IEventBus instance
+	 *
+	 * @return
+	 */
+	public IEventBus getEventBus() {
+		if (null == mEventBus) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Loading JMS EventBus...");
+			}
+			mEventBus = (IEventBus) JWebSocketBeanFactory.getInstance().getBean("jmsEventBus");
+		}
+		return mEventBus;
 	}
 }
