@@ -81,10 +81,10 @@ App.on('appLoaded', function() {
 			});
 		},
 		toList: function() {
-			return App.toList(["white", "black", "blue"]);
+			return App.toList(['white', 'black', 'blue']);
 		},
 		toMap: function() {
-			return App.toMap({name: "Rolando SM", email: "rsantamaria@jwebsocket.org", age: 28});
+			return App.toMap({name: 'Rolando SM', email: 'rsantamaria@jwebsocket.org', age: 28});
 		}
 	});
 
@@ -94,7 +94,7 @@ App.on('appLoaded', function() {
 //	var JMS = App.getJMSManager();
 //	App.publish('JMSManager', {
 //		test: function(aMessage) {
-//			App.getLogger().debug("Sending message: " + aMessage);
+//			App.getLogger().debug('Sending message: ' + aMessage);
 //			JMS.send('queue://test.queue', aMessage);
 //			JMS.send('topic://test.topic', aMessage);
 //		},
@@ -103,14 +103,64 @@ App.on('appLoaded', function() {
 //		}
 //	});
 //
-//	JMS.subscribeTo("queue://test.queue", {
+//	JMS.subscribeTo('queue://test.queue', {
 //		onMessage: function(aMsg) {
-//			App.getLogger().debug("received from queue: " + aMsg.getText());
+//			App.getLogger().debug('received from queue: ' + aMsg.getText());
 //		}
 //	});
 //	JMS.subscribeTo('topic://test.topic', {
 //		onMessage: function(aMsg) {
-//			App.getLogger().debug("received from topic: " + aMsg.getText());
+//			App.getLogger().debug('received from topic: ' + aMsg.getText());
+//		}
+//	});
+
+
+//	EventBus.register('test.topic', {
+//		OnMessage: function(aMessage) {
+//			App.getLogger().debug('Received:' + aMessage.msg);
+//		}
+//	});
+//
+//	EventBus.register('test.q*', {
+//		OnMessage: function(aMessage) {
+//			App.getLogger().debug('Received:' + aMessage.msg);
+//			App.getLogger().debug('Replying...');
+//			aMessage.reply({
+//				msg: 'This is a response message'
+//			});
+////			aMessage.fail({
+////				msg: 'This is a response error message'
+////			});
+//		}
+//	});
+//
+//	EventBus.publish({
+//		ns: 'test.topic',
+//		type: 'publish',
+//		msg: 'Message is broadcasted to all active listeners on target namespace'
+//	});
+//
+//	EventBus.send({
+//		ns: 'test.queue',
+//		type: 'send',
+//		msg: 'Message is sent to only one listener on target namespace'
+//	}, {
+//		OnSuccess: function(aResponse) {
+//			App.getLogger().debug('Processing response...');
+//			App.getLogger().debug(aResponse.msg);
+//		},
+//		OnFailure: function(aResponse) {
+//			App.getLogger().debug(aResponse.msg);
+//		}
+//	});
+//
+//	EventBus.send({
+//		ns: 'namespace_without_handlers',
+//		type: 'timeout'
+//	}, {
+//		timeout: 3000,
+//		OnTimeout: function(aResponse) {
+//			App.getLogger().debug('Timeout');
 //		}
 //	});
 });
