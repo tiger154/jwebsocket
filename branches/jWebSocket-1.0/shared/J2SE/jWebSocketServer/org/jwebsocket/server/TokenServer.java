@@ -1049,6 +1049,13 @@ public class TokenServer extends BaseServer {
 				mLog.debug("Loading JMS EventBus...");
 			}
 			mEventBus = (IEventBus) JWebSocketBeanFactory.getInstance().getBean("jmsEventBus");
+			mEventBus.setExceptionHandler(new IEventBus.IExceptionHandler() {
+
+				@Override
+				public void handle(Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "during EventBus handler invocation"), lEx);
+				}
+			});
 		}
 		return mEventBus;
 	}
