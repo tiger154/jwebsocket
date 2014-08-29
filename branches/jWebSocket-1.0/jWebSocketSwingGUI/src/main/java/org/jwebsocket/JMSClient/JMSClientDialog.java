@@ -9,10 +9,12 @@ import java.awt.event.WindowListener;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import javax.jms.JMSException;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import org.apache.commons.io.FilenameUtils;
 import org.jwebsocket.jms.endpoint.JMSEndPoint;
+import org.jwebsocket.jms.endpoint.JWSEndPoint;
 import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
 import org.jwebsocket.jms.endpoint.JWSEndPointSender;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
@@ -143,15 +145,19 @@ public class JMSClientDialog extends javax.swing.JFrame {
 				+ mGatewayId + ", "
 				+ mEndPointId);
 		// instantiate a new jWebSocket JMS Gateway Client
-		mJMSEndPoint = new JMSEndPoint(
-				mBrokerURL,
-				mGatewayTopic, // gateway topic
-				mGatewayId, // gateway endpoint id
-				mEndPointId, // unique node id
-				5, // thread pool size, messages being processed concurrently
-				JMSEndPoint.TEMPORARY // temporary (for clients)
-		);
-
+		try {
+			mJMSEndPoint = JWSEndPoint.getInstance(
+					mBrokerURL,
+					mGatewayTopic, // gateway topic
+					mGatewayId, // gateway endpoint id
+					mEndPointId, // unique node id
+					5, // thread pool size, messages being processed concurrently
+					JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
+			);
+		} catch (JMSException lEx) {
+			log("ERROR: JMSEndpoint could not be instantiated: " + lEx.getMessage());
+			return;
+		}
 		// instantiate a high level JWSEndPointMessageListener
 		mListener = new JWSEndPointMessageListener(mJMSEndPoint);
 		// instantiate a high level JWSEndPointSender
