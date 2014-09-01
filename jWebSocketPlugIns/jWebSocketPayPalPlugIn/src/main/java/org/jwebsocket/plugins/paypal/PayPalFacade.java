@@ -27,6 +27,8 @@ import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.PaymentExecution;
 import com.paypal.api.payments.PaymentHistory;
 import com.paypal.api.payments.RedirectUrls;
+import com.paypal.api.payments.Refund;
+import com.paypal.api.payments.Sale;
 import com.paypal.api.payments.Transaction;
 import com.paypal.core.rest.APIContext;
 import com.paypal.core.rest.OAuthTokenCredential;
@@ -40,6 +42,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.token.Token;
+import org.springframework.core.annotation.Order;
 
 /**
  *
@@ -162,5 +165,30 @@ public class PayPalFacade {
         Payment lResult = Payment.get(getAccessToken(), aToken.getString("payment_id"));
         
         return lResult;
+    }
+
+    public Sale getSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+        Sale lResult = Sale.get(getAccessToken(), aToken.getString("transaction_id"));
+        
+        return lResult;
+    }
+
+    public Refund getRefundSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+        String lAccessToken = getAccessToken();
+        
+        Sale lSale = Sale.get(lAccessToken, aToken.getString("transaction_id"));
+        Map lAmountData = (Map) aToken.getMap("amount");
+        Amount lAmount = new Amount();
+        lAmount.setCurrency((String)lAmountData.get("currency"));
+        lAmount.setTotal((String)lAmountData.get("total"));
+        
+        Refund lRefund = new Refund();
+        lRefund.setAmount(lAmount);
+        
+        return lSale.refund(lAccessToken, lRefund);
+    }
+
+    public Order createOrder(WebSocketConnector aConnector, Token aToken) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
