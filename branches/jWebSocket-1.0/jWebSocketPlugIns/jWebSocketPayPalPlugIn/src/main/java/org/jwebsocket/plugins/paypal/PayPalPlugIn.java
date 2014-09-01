@@ -20,8 +20,8 @@ package org.jwebsocket.plugins.paypal;
 
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.PaymentHistory;
-import java.util.List;
-import java.util.logging.Level;
+import com.paypal.api.payments.Refund;
+import com.paypal.api.payments.Sale;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
@@ -53,8 +53,10 @@ public class PayPalPlugIn extends TokenPlugIn {
     private final static String TT_PP_EXECUTE = "paypal_execute";
     private final static String TT_PP_LIST = "paypal_list";
     private final static String TT_PP_GET = "paypal_get";
+    private final static String TT_PP_SALE = "paypal_sale";
+    private final static String TT_PP_REFUND = "paypal_refund";
     private static Setting mPayPalSettings;
-    private PayPalFacade mFacade;
+    private PayPalFacade mFacade;   
 
     /**
      * This PlugIn shows how to easily set up a simple jWebSocket based Paypal
@@ -111,7 +113,19 @@ public class PayPalPlugIn extends TokenPlugIn {
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
-            }
+            } else if (TT_PP_SALE.equals(aToken.getType())) {
+                try {
+                    getSale(aConnector, aToken);
+                } catch (Exception lEx) {
+                    mLog.error(lEx);
+                }
+            } else if (TT_PP_REFUND.equals(aToken.getType())) {
+                try {
+                    refundSale(aConnector, aToken);
+                } catch (Exception lEx) {
+                    mLog.error(lEx);
+                }
+            } 
         } 
     }
 
@@ -173,6 +187,24 @@ public class PayPalPlugIn extends TokenPlugIn {
 
     public void getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
         Payment lResult = mFacade.getPayment(aConnector, aToken);
+        
+        Token lRespToken = createResponse(aToken);
+
+        lRespToken.setString("data", lResult.toJSON());
+        getServer().sendToken(aConnector, lRespToken);
+    }
+
+    public void getSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+        Sale lResult = mFacade.getSale(aConnector, aToken);
+        
+        Token lRespToken = createResponse(aToken);
+
+        lRespToken.setString("data", lResult.toJSON());
+        getServer().sendToken(aConnector, lRespToken);
+    }
+
+    public void refundSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+        Refund lResult = mFacade.getRefundSale(aConnector, aToken);
         
         Token lRespToken = createResponse(aToken);
 
