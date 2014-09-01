@@ -1,8 +1,8 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket JDBC Plug-In (Community Edition, CE)
+//	jWebSocket - jWebSocket PayPal Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//      Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -24,30 +24,54 @@ package org.jwebsocket.plugins.paypal;
  */
 public class Setting {
 
-    private String clientID;
-    private String clientSecret;
+    private String mClientID;
+    private String mClientSecret;
 
-    public Setting(String clientID, String clientSecret) {
-        this.clientID = clientID;
-        this.clientSecret = clientSecret;
+	/**
+	 *
+	 * @param aClientID
+	 * @param aClientSecret
+	 */
+	public Setting(String aClientID, String aClientSecret) {
+        mClientID = aClientID;
+        mClientSecret = aClientSecret;
     }
 
-    public Setting() {
+	/**
+	 *
+	 */
+	public Setting() {
     }
 
-    public String getClientID() {
-        return clientID;
+	/**
+	 *
+	 * @return
+	 */
+	public String getClientID() {
+        return mClientID;
     }
 
-    public void setClientID(String clientID) {
-        this.clientID = clientID;
+	/**
+	 *
+	 * @param aClientID
+	 */
+	public void setClientID(String aClientID) {
+        mClientID = aClientID;
     }
 
-    public String getClientSecret() {
-        return clientSecret;
+	/**
+	 *
+	 * @return
+	 */
+	public String getClientSecret() {
+        return mClientSecret;
     }
 
-    public void setClientSecret(String clientSecret) {
-        this.clientSecret = clientSecret;
+	/**
+	 *
+	 * @param aClientSecret
+	 */
+	public void setClientSecret(String aClientSecret) {
+        mClientSecret = aClientSecret;
     }
 }
