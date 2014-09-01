@@ -47,15 +47,15 @@ public class Tools {
 
         // Iterate over the cards.
         for (String lCard : lCards) {
-            int idx = aText.indexOf(lCard);
+            int lIdx = aText.indexOf(lCard);
 
             // Card not detected in the text.
-            if (idx == -1) {
+            if (lIdx == -1) {
                 return false;
             }
 
             // Move ahead, towards the right of the text.
-            aText = aText.substring(idx + lCard.length());
+            aText = aText.substring(lIdx + lCard.length());
         }
 
         return true;
@@ -78,7 +78,6 @@ public class Tools {
                 return true;
             }
         }
-
         return false;
     }
 }

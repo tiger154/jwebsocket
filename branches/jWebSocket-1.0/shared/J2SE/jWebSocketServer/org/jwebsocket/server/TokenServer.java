@@ -650,7 +650,7 @@ public class TokenServer extends BaseServer {
 	private IOFuture sendTokenData(WebSocketConnector aSource,
 			WebSocketConnector aTarget, Token aToken, boolean aIsAsync) {
 		if (null == aTarget) {
-			mLog.error("Trying to send token to removed or closed connector: "
+			mLog.warn("Trying to send token to removed or closed connector: "
 					+ Logging.getTokenStr(aToken));
 		} else if (aTarget.supportTokens()) {
 			// before sending the token push it through filter chain

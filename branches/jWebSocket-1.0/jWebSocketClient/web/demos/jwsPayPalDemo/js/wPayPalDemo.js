@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Remote Shell Demo (Community Edition, CE)
+//	jWebSocket PayPal Demo (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)

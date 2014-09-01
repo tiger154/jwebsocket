@@ -1,8 +1,8 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket JDBC Plug-In (Community Edition, CE)
+//	jWebSocket - jWebSocket PayPal Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//      Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -74,7 +75,7 @@ public class PayPalPlugIn extends TokenPlugIn {
             ApplicationContext mBeanFactory = getConfigBeanFactory();
             mPayPalSettings = (Setting) mBeanFactory.getBean("org.jwebsocket.plugins.paypal.setting");
             mFacade = new PayPalFacade(mPayPalSettings.getClientID(), mPayPalSettings.getClientSecret());
-        } catch (Exception lEx) {
+        } catch (BeansException lEx) {
             mLog.error("Failed to instantiate Paypal plug-in " + lEx.getLocalizedMessage());
         }
 
@@ -159,56 +160,91 @@ public class PayPalPlugIn extends TokenPlugIn {
         return LICENSE;
     }
 
-    public void createPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
+	public void createPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
         Payment lResult = mFacade.createPayment(aToken);
         Token lRespToken = createResponse(aToken);
 
         lRespToken.setString("data", lResult.toJSON());
-        getServer().sendToken(aConnector, lRespToken);
+        sendToken(aConnector, lRespToken);
     }
 
-    public void executePayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
+	public void executePayment(WebSocketConnector aConnector, Token aToken) throws Exception {
         Payment lResult = mFacade.executePayment(aToken);
         Token lRespToken = createResponse(aToken);
 
         lRespToken.setString("data", lResult.toJSON());
-        getServer().sendToken(aConnector, lRespToken);
-        
+        sendToken(aConnector, lRespToken);
     }
 
-    public void listPayments(WebSocketConnector aConnector, Token aToken) throws Exception {
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
+	public void listPayments(WebSocketConnector aConnector, Token aToken) throws Exception {
         PaymentHistory lResult = mFacade.listPayments(aConnector, aToken);
         
         Token lRespToken = createResponse(aToken);
 
         lRespToken.setString("data", lResult.toJSON());
-        getServer().sendToken(aConnector, lRespToken);
+        sendToken(aConnector, lRespToken);
     }
 
-    public void getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
+	public void getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
         Payment lResult = mFacade.getPayment(aConnector, aToken);
         
         Token lRespToken = createResponse(aToken);
 
         lRespToken.setString("data", lResult.toJSON());
-        getServer().sendToken(aConnector, lRespToken);
+        sendToken(aConnector, lRespToken);
     }
 
-    public void getSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
+	public void getSale(WebSocketConnector aConnector, Token aToken) throws Exception {
         Sale lResult = mFacade.getSale(aConnector, aToken);
         
         Token lRespToken = createResponse(aToken);
 
         lRespToken.setString("data", lResult.toJSON());
-        getServer().sendToken(aConnector, lRespToken);
+        sendToken(aConnector, lRespToken);
     }
 
-    public void refundSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
+	public void refundSale(WebSocketConnector aConnector, Token aToken) throws Exception {
         Refund lResult = mFacade.getRefundSale(aConnector, aToken);
         
         Token lRespToken = createResponse(aToken);
 
         lRespToken.setString("data", lResult.toJSON());
-        getServer().sendToken(aConnector, lRespToken);
+        sendToken(aConnector, lRespToken);
     }
 }
