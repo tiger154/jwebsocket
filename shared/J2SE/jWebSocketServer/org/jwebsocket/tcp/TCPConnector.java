@@ -559,7 +559,7 @@ public class TCPConnector extends BaseConnector {
 		public void run() {
 			synchronized (mSyncPing) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug("Sending PING to connector '" + getId() + "' "
+					mLog.debug("Sending S2C ping to connector '" + getId() + "' "
 							+ (null != getUsername() ? "(" + getUsername() + ")" : "[not authenticated]")
 							+ "...");
 				}
@@ -797,7 +797,7 @@ public class TCPConnector extends BaseConnector {
 						// TODO: shouldn't we enclose this in a synchronize(this)??
 						if (mKeepAlive) {
 							if (mLog.isDebugEnabled()) {
-								mLog.debug("Received PONG from connector '"
+								mLog.debug("Received S2C pong from connector '"
 										+ getId()
 										+ "' "
 										+ (null != getUsername() ? "(" + getUsername() + ")" : "[not authenticated]")

@@ -1,5 +1,5 @@
 /*
- * jWebSocket HelloWorld Initialization script 
+ * jWebSocket PayPal Initialization script 
  * @author vbarzana
  */
 

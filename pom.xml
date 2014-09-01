@@ -75,6 +75,7 @@
 		<module>jWebSocketPlugIns/jWebSocketItemStorage</module>
 		<module>jWebSocketPlugIns/jWebSocketScriptingPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketQuotaPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketPayPalPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketJCRPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketTTSPlugIn</module>
 		<module>jWebSocketJMSGateway</module>
