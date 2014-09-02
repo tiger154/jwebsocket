@@ -32,17 +32,13 @@ import com.paypal.api.payments.Sale;
 import com.paypal.api.payments.Transaction;
 import com.paypal.core.rest.APIContext;
 import com.paypal.core.rest.OAuthTokenCredential;
-import com.paypal.core.rest.PayPalRESTException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.token.Token;
-import org.springframework.core.annotation.Order;
 
 /**
  *
@@ -53,39 +49,35 @@ public class PayPalFacade {
     private final String mClientID;
     private final String mClientSecret;
 
-	/**
-	 *
-	 * @param aClientID
-	 * @param aClientSecret
-	 */
-	public PayPalFacade(String aClientID, String aClientSecret) {
+    /**
+     * Empty constructor
+     * 
+     * @param aClientID
+     * @param aClientSecret
+     */
+    public PayPalFacade(String aClientID, String aClientSecret) {
         mClientID = aClientID;
         mClientSecret = aClientSecret;
     }
 
-	/**
-	 *
-	 * @return
-	 * @throws Exception
-	 */
-	public String getAccessToken() throws Exception {
-
-        String lAccessToken = null;
-        try {
-            lAccessToken = new OAuthTokenCredential(mClientID, mClientSecret).getAccessToken();
-        } catch (PayPalRESTException lEx) {
-            Logger.getLogger(PayPalFacade.class.getName()).log(Level.SEVERE, null, lEx);
-        }
-        return lAccessToken;
+    /**
+     * This method makes a request to the PayPal API and gets back the token for each operation.
+     * 
+     * @return String 
+     * @throws Exception
+     */
+    public String getAccessToken() throws Exception {
+        return new OAuthTokenCredential(mClientID, mClientSecret).getAccessToken();
     }
 
-	/**
-	 *
-	 * @param aToken
-	 * @return
-	 * @throws Exception
-	 */
-	public Payment createPayment(Token aToken) throws Exception {
+    /**
+     * Creates a Payment.
+     * 
+     * @param aToken
+     * @return Payment
+     * @throws Exception
+     */
+    public Payment createPayment(Token aToken) throws Exception {
         Payment lPayment = new Payment();
         lPayment.setIntent(aToken.getString("intent"));
 
@@ -99,11 +91,10 @@ public class PayPalFacade {
         lPayerInfo.setLastName((String) lPayerData.get("last_name"));
         lPayerInfo.setPayerId((String) lPayerData.get("payer_id"));
         lPayer.setPayerInfo(lPayerInfo);
-        Map lRedirectData = aToken.getMap("redirect_urls");
 
         RedirectUrls lRedirectUrls = new RedirectUrls();
-        lRedirectUrls.setReturnUrl((String) lRedirectData.get("return_url"));
-        lRedirectUrls.setCancelUrl((String) lRedirectData.get("cancel_url"));
+        lRedirectUrls.setReturnUrl(aToken.getString("return_url"));
+        lRedirectUrls.setCancelUrl(aToken.getString("cancel_url"));
         lPayment.setRedirectUrls(lRedirectUrls);
 
         lPayment.setPayer(lPayer);
@@ -147,104 +138,99 @@ public class PayPalFacade {
         }
 
         lPayment.setTransactions(lTransactions);
-        
+
         return lPayment.create(this.getAccessToken());
     }
 
-	/**
-	 *
-	 * @param aToken
-	 * @return
-	 * @throws Exception
-	 */
-	public Payment executePayment(Token aToken) throws Exception {
+    /**
+     * Executes the payment 
+     * 
+     * @param aToken
+     * @return Payment
+     * @throws Exception
+     */
+    public Payment executePayment(Token aToken) throws Exception {
         Payment lPayment = new Payment();
         lPayment.setId(aToken.getString("payment_id"));
-        
+
         PaymentExecution lPaymentExecution = new PaymentExecution();
         lPaymentExecution.setPayerId(aToken.getString("payer_id"));
-        
+
         String lAccessToken = this.getAccessToken();
         APIContext lApiContext = new APIContext(lAccessToken);
-        
+
         return lPayment.execute(lApiContext, lPaymentExecution);
     }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @return
-	 * @throws Exception
-	 */
-	public PaymentHistory listPayments(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * List payments according to some criteria 
+     * 
+     * @param aConnector
+     * @param aToken
+     * @return PaymentHistory
+     * @throws Exception
+     */
+    public PaymentHistory listPayments(WebSocketConnector aConnector, Token aToken) throws Exception {
         HashMap lContainerMap = new HashMap<String, String>();
         Map lPagingData = aToken.getMap("paging");
-       
+
         lContainerMap.put("start_index", lPagingData.get("start_index").toString());
         lContainerMap.put("count", lPagingData.get("count").toString());
-        lContainerMap.put("sort_order", (String)lPagingData.get("sort_order"));
-        
-        PaymentHistory lResult  = Payment.list(getAccessToken(), lContainerMap);
-        
+        lContainerMap.put("sort_order", (String) lPagingData.get("sort_order"));
+
+        PaymentHistory lResult = Payment.list(getAccessToken(), lContainerMap);
+
         return lResult;
     }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @return
-	 * @throws Exception
-	 */
-	public Payment getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * Get a Payment 
+     * 
+     * @param aConnector
+     * @param aToken
+     * @return Payment
+     * @throws Exception
+     */
+    public Payment getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
         Payment lResult = Payment.get(getAccessToken(), aToken.getString("payment_id"));
-        
+
         return lResult;
     }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @return
-	 * @throws Exception
-	 */
-	public Sale getSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * Get a sale
+     * 
+     * @param aConnector
+     * @param aToken
+     * @return Sale
+     * @throws Exception
+     */
+    public Sale getSale(WebSocketConnector aConnector, Token aToken) throws Exception {
         Sale lResult = Sale.get(getAccessToken(), aToken.getString("transaction_id"));
-        
+
         return lResult;
     }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @return
-	 * @throws Exception
-	 */
-	public Refund getRefundSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * Refund a sale
+     * 
+     * @param aConnector
+     * @param aToken
+     * @return Refund
+     * @throws Exception
+     */
+    public Refund getRefundSale(WebSocketConnector aConnector, Token aToken) throws Exception {
         String lAccessToken = getAccessToken();
-        
+
         Sale lSale = Sale.get(lAccessToken, aToken.getString("transaction_id"));
         Map lAmountData = (Map) aToken.getMap("amount");
         Amount lAmount = new Amount();
-        lAmount.setCurrency((String)lAmountData.get("currency"));
-        lAmount.setTotal((String)lAmountData.get("total"));
-        
+        lAmount.setCurrency((String) lAmountData.get("currency"));
+        lAmount.setTotal((String) lAmountData.get("total"));
+
         Refund lRefund = new Refund();
         lRefund.setAmount(lAmount);
-        
-        return lSale.refund(lAccessToken, lRefund);
-    }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @return
-	 */
-	public Order createOrder(WebSocketConnector aConnector, Token aToken) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return lSale.refund(lAccessToken, lRefund);
     }
 }
