@@ -2,8 +2,10 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
 	
-	<bean id="org.jwebsocket.plugins.paypal.setting" class="org.jwebsocket.plugins.paypal.Setting">
+	<bean id="org.jwebsocket.plugins.paypal.setting" class="org.jwebsocket.plugins.paypal.Settings">
 		<property name="clientID" value=""/>
 		<property name="clientSecret" value=""/>
+		<property name="returnUrl" value=""/>
+		<property name="cancelUrl" value=""/>
 	</bean>
 </beans>
