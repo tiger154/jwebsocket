@@ -290,7 +290,9 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'query' for alias '"
-					+ (null == lAlias ? "default" : lAlias) + "'...");
+					+ (null == lAlias ? "default" : lAlias) + "', SQL '"
+					+ (null == lSQL ? "[no query passed]" : lSQL.replace("\n", "\\n").replace("\r", "\\r"))
+					+ "'...");
 		}
 
 		// load SQL script
@@ -347,7 +349,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			List<Integer> lValues = new FastList<Integer>();
 			String lErrMsg = null;
 			for (int lValIdx = 0; lValIdx < lCount; lValIdx++) {
-				String lQuery = Tools.expandVars(getNativeAccess(aToken).getSelectSequenceSQL(), 
+				String lQuery = Tools.expandVars(getNativeAccess(aToken).getSelectSequenceSQL(),
 						lVars, Tools.EXPAND_CASE_SENSITIVE);
 				Token lPKToken = getNativeAccess(aToken).query(lQuery);
 				if (0 == lPKToken.getInteger("code")) {

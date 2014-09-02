@@ -52,6 +52,31 @@
 		<property name="maxActive" value="2"/>
 	</bean>
 	
+	<!-- the MySQL DataSource (parameterized for configuration via a PropertyPlaceHolderConfigurer)  -->
+	<bean id="mysqlDataSource_jWS_ExtJS_CRUD" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+		<!-- the JDBC driver class for MySQL -->
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<!-- the URL to the MySQL server -->
+		<property name="url" value="jdbc:mysql://localhost:3306/jws_extjs_crud"/>
+		<!-- database user and password for this connection -->
+		<property name="username" value="root"/>
+		<!-- password, please ensure that the location of this 
+		JDBC config file is properly secured in your network! -->
+		<property name="password" value="root"/>
+		<!-- Timeout in seconds before connection validation queries fail. -->
+		<property name="validationQueryTimeout" value="5"/>
+		<!-- The maximum number of milliseconds that the pool will wait 
+		(when there are no available connections) for a connection to be 
+		returned before throwing an exception, or <= 0 to wait indefinitely. -->
+		<property name="maxWait" value="3000"/>
+		<!-- The initial number of connections that are created 
+		when the pool is started. -->
+		<property name="initialSize" value="2"/>
+		<!-- The maximum number of active connections that can be allocated 
+		from this pool at the same time, or negative for no limit. --> 
+		<property name="maxActive" value="2"/>
+	</bean>
+	
 	<!-- the Oracle DataSource (parameterized for configuration via a PropertyPlaceHolderConfigurer) -->
 	<bean id="oracleDataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
@@ -98,6 +123,19 @@
 		<property name="execStoredProcSQL" value="call ${procname}(${args})"/>
 	</bean>
 
+	<bean id="mySQLNativeAccess_jWS_ExtJS_CRUD" class="org.jwebsocket.plugins.jdbc.NativeAccess">
+		<!-- here you can select which datasource to use 
+		for the native JDBC access component (field "ref") -->
+		<property name="dataSource" ref="mysqlDataSource_jWS_ExtJS_CRUD"/>
+		
+		<!-- MySQL command to retrieve a sequence value -->
+		<property name="selectSequenceSQL" value="select getSequence('${sequence}')"/>
+		<!-- MySQL command to call a function -->
+		<property name="execFunctionSQL" value="select ${funcname}(${args})"/>
+		<!-- MySQL command to execute a stored procedure -->
+		<property name="execStoredProcSQL" value="call ${procname}(${args})"/>
+	</bean>
+
 	<bean id="oracleNativeAccess" class="org.jwebsocket.plugins.jdbc.NativeAccess">
 		<!-- here you can select which datasource to use 
 		for the native JDBC access component (field "ref") -->
@@ -131,6 +169,7 @@
 				-->
 				<entry key="jwsDemo" value-ref="mySQLNativeAccess_jwsDemo"/>
 				<entry key="default" value-ref="derbyNativeAccess"/>
+				<entry key="jws_extjs_crud" value-ref="mySQLNativeAccess_jWS_ExtJS_CRUD"/>
 			</map>
 		</property>
 	</bean>
