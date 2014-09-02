@@ -28,6 +28,11 @@
 						<value>permission java.security.AllPermission</value>
 					</list>
 				</entry>
+				<entry key="jws_extjs_crud">
+					<list>
+						<value>permission java.security.AllPermission</value>
+					</list>
+				</entry>				
 			</map>
 		</property>
 	

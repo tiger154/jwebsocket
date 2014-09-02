@@ -1,0 +1,7 @@
+{
+	"language_ext": "js",
+	"jws_version": "1.0.0",
+	"jws_dependencies": ["jws.system"],
+	"permissions": [],
+	"author": "Rolando SM <rsantamaria@jwebsocket.org> 09/10/2013"
+}
