@@ -50,11 +50,7 @@ $(function() {
                             }, 
                             description: 'Transaction test'
                         }
-                    ],
-                    redirect_urls: {
-                        return_url: $('#return_url').val(), //'http://localhost/web/demos/jwsPayPal/public_html/return.html',
-                        cancel_url: $('#cancel_url').val() //'http://localhost/web/demos/jwsPayPal/public_html/cancel.html'
-                    }
+                    ]
                 }, {
                     OnSuccess: function(aToken){
                         var lResponseToken = JSON.parse(aToken.data);

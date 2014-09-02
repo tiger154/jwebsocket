@@ -56,8 +56,8 @@ public class PayPalPlugIn extends TokenPlugIn {
     private final static String TT_PP_GET = "paypal_get";
     private final static String TT_PP_SALE = "paypal_sale";
     private final static String TT_PP_REFUND = "paypal_refund";
-    private static Setting mPayPalSettings;
-    private PayPalFacade mFacade;   
+    private static Settings mPayPalSettings;
+    private PayPalFacade mFacade;
 
     /**
      * This PlugIn shows how to easily set up a simple jWebSocket based Paypal
@@ -73,7 +73,7 @@ public class PayPalPlugIn extends TokenPlugIn {
 
         try {
             ApplicationContext mBeanFactory = getConfigBeanFactory();
-            mPayPalSettings = (Setting) mBeanFactory.getBean("org.jwebsocket.plugins.paypal.setting");
+            mPayPalSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.paypal.setting");
             mFacade = new PayPalFacade(mPayPalSettings.getClientID(), mPayPalSettings.getClientSecret());
         } catch (BeansException lEx) {
             mLog.error("Failed to instantiate Paypal plug-in " + lEx.getLocalizedMessage());
@@ -96,7 +96,7 @@ public class PayPalPlugIn extends TokenPlugIn {
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
-            } else if (TT_PP_EXECUTE.equals(aToken.getType())){
+            } else if (TT_PP_EXECUTE.equals(aToken.getType())) {
                 try {
                     executePayment(aConnector, aToken);
                 } catch (Exception lEx) {
@@ -126,8 +126,8 @@ public class PayPalPlugIn extends TokenPlugIn {
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
-            } 
-        } 
+            }
+        }
     }
 
     @Override
@@ -159,92 +159,111 @@ public class PayPalPlugIn extends TokenPlugIn {
     public String getLicense() {
         return LICENSE;
     }
+    
+    /**
+     * Clearing the JSON 
+     * 
+     * @param aJSON
+     * @return String 
+     */
+    public static String clearJSON(String aJSON){
+        return aJSON.replaceAll("(\\r|\\n)", "");
+    } 
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @throws Exception
-	 */
-	public void createPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * Creates a payment
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
+    public void createPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+        aToken.setString("return_url", mPayPalSettings.getReturnUrl());
+        aToken.setString("cancel_url", mPayPalSettings.getCancelUrl());
+        
         Payment lResult = mFacade.createPayment(aToken);
         Token lRespToken = createResponse(aToken);
 
-        lRespToken.setString("data", lResult.toJSON());
+        lRespToken.setString("data", clearJSON(lResult.toJSON()));
         sendToken(aConnector, lRespToken);
     }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @throws Exception
-	 */
-	public void executePayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * Execute the payment
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
+    public void executePayment(WebSocketConnector aConnector, Token aToken) throws Exception {
         Payment lResult = mFacade.executePayment(aToken);
         Token lRespToken = createResponse(aToken);
 
-        lRespToken.setString("data", lResult.toJSON());
+        lRespToken.setString("data", clearJSON(lResult.toJSON()));
         sendToken(aConnector, lRespToken);
     }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @throws Exception
-	 */
-	public void listPayments(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * List payments
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
+    public void listPayments(WebSocketConnector aConnector, Token aToken) throws Exception {
         PaymentHistory lResult = mFacade.listPayments(aConnector, aToken);
-        
+
         Token lRespToken = createResponse(aToken);
 
-        lRespToken.setString("data", lResult.toJSON());
+        lRespToken.setString("data", clearJSON(lResult.toJSON()));
         sendToken(aConnector, lRespToken);
     }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @throws Exception
-	 */
-	public void getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * Get a payment
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
+    public void getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
         Payment lResult = mFacade.getPayment(aConnector, aToken);
-        
+
         Token lRespToken = createResponse(aToken);
 
-        lRespToken.setString("data", lResult.toJSON());
+        lRespToken.setString("data", clearJSON(lResult.toJSON()));
         sendToken(aConnector, lRespToken);
     }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @throws Exception
-	 */
-	public void getSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * Get a sale
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
+    public void getSale(WebSocketConnector aConnector, Token aToken) throws Exception {
         Sale lResult = mFacade.getSale(aConnector, aToken);
-        
+
         Token lRespToken = createResponse(aToken);
 
-        lRespToken.setString("data", lResult.toJSON());
+        lRespToken.setString("data", clearJSON(lResult.toJSON()));
         sendToken(aConnector, lRespToken);
     }
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @throws Exception
-	 */
-	public void refundSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+    /**
+     * Refund a sale
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
+    public void refundSale(WebSocketConnector aConnector, Token aToken) throws Exception {
         Refund lResult = mFacade.getRefundSale(aConnector, aToken);
-        
+
         Token lRespToken = createResponse(aToken);
 
-        lRespToken.setString("data", lResult.toJSON());
+        lRespToken.setString("data", clearJSON(lResult.toJSON()));
         sendToken(aConnector, lRespToken);
     }
 }
