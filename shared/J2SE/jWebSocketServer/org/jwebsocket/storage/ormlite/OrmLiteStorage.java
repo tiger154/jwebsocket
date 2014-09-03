@@ -38,8 +38,8 @@ import org.springframework.util.Assert;
  */
 public class OrmLiteStorage extends BaseStorage<String, Object> {
 
-	private Dao<EntryEntity, String> mEntries;
-	private String mName;
+	private final Dao<EntryEntity, String> mEntries;
+	private final String mName;
 	Logger mLog = Logging.getLogger();
 
 	/**
