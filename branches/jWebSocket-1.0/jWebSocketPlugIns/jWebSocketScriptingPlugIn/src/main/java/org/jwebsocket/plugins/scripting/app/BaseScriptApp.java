@@ -383,10 +383,10 @@ abstract public class BaseScriptApp {
 
 	/**
 	 * Evaluate an script file into the app script engine.
-	 * 
+	 *
 	 * @param aScriptFilePath The script file path to evaluate.
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public abstract Object eval(String aScriptFilePath) throws Exception;
 
@@ -523,9 +523,6 @@ abstract public class BaseScriptApp {
 	 * @param aChunkable The IChunkable implementation object
 	 */
 	public void sendChunkable(WebSocketConnector aConnector, Object aChunkable) {
-		// IChunkable objects cannot be filtered in this level
-		// notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
-
 		mPlugIn.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class));
 	}
 
@@ -537,9 +534,6 @@ abstract public class BaseScriptApp {
 	 * @param aListener The IChunkableDeliveryListener implementation callback.
 	 */
 	public void sendChunkable(WebSocketConnector aConnector, Object aChunkable, Object aListener) {
-		// IChunkable objects cannot be filtered in this level
-		// notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
-
 		mPlugIn.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class),
 				(IChunkableDeliveryListener) cast(aListener, IChunkableDeliveryListener.class));
 	}
@@ -598,6 +592,18 @@ abstract public class BaseScriptApp {
 	public void requireAuthority(WebSocketConnector aConnector, String aAuthority) throws Exception {
 		if (!mPlugIn.hasAuthority(aConnector, aAuthority)) {
 			throw new Exception("Not authorized. Missing required '" + aAuthority + "' authority!");
+		}
+	}
+
+	/**
+	 * Raise an exception if the client is not authenticated.
+	 *
+	 * @param aConnector The connector
+	 * @throws Exception
+	 */
+	public void requireAuthenticated(WebSocketConnector aConnector) throws Exception {
+		if (!aConnector.getSession().isAuthenticated()) {
+			throw new Exception("Not authorized!");
 		}
 	}
 
