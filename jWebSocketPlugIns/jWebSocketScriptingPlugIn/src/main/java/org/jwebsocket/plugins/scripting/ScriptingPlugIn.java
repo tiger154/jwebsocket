@@ -47,6 +47,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.async.AsyncResult;
+import org.jwebsocket.async.AsyncResultHandler;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
@@ -138,24 +140,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating scripting plug-in"));
 		}
-	}
-
-	@Override
-	public Token invoke(WebSocketConnector aConnector, Token aToken) {
-		Token lResponse = createResponse(aToken);
-		lResponse.setCode(-1);
-
-		if (NS.equals(aToken.getNS())) {
-			if ("callMethod".equals(aToken.getType())) {
-				try {
-					return callMethod(aConnector, aToken);
-				} catch (Exception lEx) {
-					lResponse.setString("msg", lEx.getMessage());
-				}
-			}
-		}
-
-		return lResponse;
 	}
 
 	@Override
@@ -658,14 +642,14 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Call a custom method on a public application object.
+	 * Call a custom method on a public application object. 
 	 *
 	 * @param aConnector
 	 * @param aToken
 	 * @return
 	 * @throws Exception
 	 */
-	private Token callMethod(WebSocketConnector aConnector, Token aToken) throws Exception {
+	private void callMethod(final WebSocketConnector aConnector, final Token aToken) throws Exception {
 		String lApp = aToken.getString("app");
 		String lObjectId = aToken.getString("objectId");
 		String lMethod = aToken.getString("method");
@@ -675,23 +659,40 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		Assert.notNull(lApp, "The 'app' argument cannot be null!");
 		Assert.isTrue(mApps.containsKey(lApp), "The target application '" + lApp + "' does not exists!");
-		BaseScriptApp lScript = mApps.get(lApp);
+		final BaseScriptApp lScript = mApps.get(lApp);
 
 		// notify filter in
 		lScript.notifyEvent(BaseScriptApp.EVENT_FILTER_IN, new Object[]{aToken, aConnector});
 
-		long lStartTime = System.currentTimeMillis();
+		final long lStartTime = System.currentTimeMillis();
+		AsyncResultHandler<Object> lResultHandler = new AsyncResultHandler<Object>() {
+
+			@Override
+			public void handle(final AsyncResult<Object> aResult) {
+				final Token lResponse = createResponse(aToken);
+				if (aResult.isSuccees()) {
+					long lEndTime = System.currentTimeMillis();
+					lResponse.getMap().put("result", aResult.getResult());
+					lResponse.getMap().put("processingTime", lEndTime - lStartTime);
+				} else {
+					lResponse.setCode(-1);
+					lResponse.setString("msg", aResult.getFailure().getLocalizedMessage());
+				}
+
+				lScript.notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{lResponse, aConnector});
+
+				// sending response back
+				sendToken(aConnector, lResponse);
+			}
+		};
+		// passing the handler as method last argument to support async responses
+		lArgs.add(lResultHandler);
+		// calling the method
 		Object lResult = callMethod(lApp, lObjectId, lMethod, lArgs.toArray());
-		long lEndTime = System.currentTimeMillis();
-
-		Token lResponse = createResponse(aToken);
-		lResponse.getMap().put("result", lResult);
-		lResponse.getMap().put("processingTime", lEndTime - lStartTime);
-
-		// notify filter out
-		lScript.notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{lResponse, aConnector});
-
-		return lResponse;
+		// supporting synchronous responses
+		if (null != lResult) {
+			new AsyncResult<Object>(lResultHandler).setResult(lResult);
+		}
 	}
 
 	/**
@@ -702,7 +703,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * @throws Exception
 	 */
 	public void callMethodAction(WebSocketConnector aConnector, Token aToken) throws Exception {
-		sendToken(aConnector, callMethod(aConnector, aToken));
+		callMethod(aConnector, aToken);
 	}
 
 	/**
