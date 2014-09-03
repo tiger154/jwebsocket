@@ -29,7 +29,7 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
  */
 public interface IEventBus {
 
-	public interface Registration {
+	public interface IRegistration {
 
 		/**
 		 * Get name-space
@@ -89,7 +89,7 @@ public interface IEventBus {
 		 */
 		void handle(Exception lEx);
 	}
-
+	
 	/**
 	 * Publish a token
 	 *
@@ -105,7 +105,7 @@ public interface IEventBus {
 	 * @param aHandler
 	 * @return
 	 */
-	Registration register(String aNS, IHandler aHandler);
+	IRegistration register(String aNS, IHandler aHandler);
 
 	/**
 	 * Send a token
