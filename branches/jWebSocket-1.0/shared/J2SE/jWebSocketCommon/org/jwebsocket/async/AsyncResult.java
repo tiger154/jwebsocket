@@ -27,6 +27,11 @@ public class AsyncResult<T> {
 
 	private T mResult;
 	private Throwable mFailure;
+	private final AsyncResultHandler<T> mHandler;
+
+	public AsyncResult(AsyncResultHandler<T> aHandler) {
+		this.mHandler = aHandler;
+	}
 
 	public T getResult() {
 		return mResult;
@@ -36,24 +41,19 @@ public class AsyncResult<T> {
 		return mFailure;
 	}
 
-	public AsyncResult<T> setResult(T aResult) {
+	public void setResult(T aResult) {
 		mResult = aResult;
 
-		return this;
+		mHandler.handle(this);
 	}
 
-	public AsyncResult<T> setFailure(Throwable lEx) {
+	public void setFailure(Throwable lEx) {
 		mFailure = lEx;
 
-		return this;
+		mHandler.handle(this);
 	}
 
 	public boolean isSuccees() {
 		return mFailure == null;
 	}
-
-	public void setHandler(AsyncResultHandler<T> aHandler) {
-		aHandler.handle(this);
-	}
-
 }
