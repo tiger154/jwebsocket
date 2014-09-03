@@ -23,54 +23,6 @@ var App = (function() {
 	var mListeners = AppUtils.newThreadSafeMap();
 	// app public objects (controllers) container
 	var mAPI = AppUtils.newThreadSafeMap();
-	// function to convert a JavaScript native object to a Java Map instance
-	var toMap = function(aNativeObject) {
-		var lMap = new Packages.java.util.HashMap();
-		if (aNativeObject instanceof Packages.java.util.Map) {
-			lMap = aNativeObject;
-		} else {
-			for (var lAttr in aNativeObject) {
-				lMap.put(lAttr, aNativeObject[lAttr]);
-			}
-		}
-
-		return lMap;
-	};
-	var toList = function(aArray) {
-		var lList = new Packages.java.util.LinkedList();
-		for (var lIndex in aArray) {
-			lList.add(aArray[lIndex]);
-		}
-
-		return lList;
-	};
-	// function to convert a Java object to a JavaScript native object
-	// maps, lists and booleans supported
-	var toNativeObject = function(aObject) {
-		var lNative, lIt;
-		if (aObject instanceof Packages.java.util.Map) {
-			lNative = {};
-			lIt = aObject.keySet().iterator();
-			while (lIt.hasNext()) {
-				var lProp = lIt.next();
-				lNative[lProp] = toNativeObject(aObject.get(lProp));
-			}
-
-			return lNative;
-		} else if (aObject instanceof Packages.java.util.List) {
-			lNative = [];
-			lIt = aObject.iterator();
-			while (lIt.hasNext()) {
-				lNative.push(toNativeObject(lIt.next()));
-			}
-
-			return lNative;
-		} else if (aObject instanceof Packages.java.lang.Boolean) {
-			lNative = true === aObject;
-		}
-
-		return aObject;
-	};
 	// app utility storage
 	var mStorage = AppUtils.newThreadSafeMap();
 	// app version
@@ -81,6 +33,14 @@ var App = (function() {
 	var mServerClient;
 	// app event bus reference
 	var mEventBus;
+	// common regular expressions
+	var mCommonRegExps = {
+		username: /^[a-z0-9_-]{3,20}$/,
+		slug: /^[a-z0-9-]+$/,
+		email: /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/,
+		url: /^(((ws|wss|ftps|http|https|ftp):\/\/)?([[a-zA-Z0-9]\-\.])+(\.)([[a-zA-Z0-9]]){2,4}([[a-zA-Z0-9]\/+=%&_\.~?\-]*))*$/,
+		password: /^(?=^.{6,}$)((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.*$/
+	};
 	return {
 		getJMSManager: function(aUseTransaction, aConn) {
 			var lJMSManager;
@@ -92,11 +52,20 @@ var App = (function() {
 			lJMSManager = AppUtils.getJMSManager();
 			return lJMSManager;
 		},
+		newAsyncResult: function(aHandler) {
+			return new Packages.org.jwebsocket.async.AsyncResult(aHandler);
+		},
 		getDescription: function() {
 			return mDescription;
 		},
 		getWebSocketServer: function() {
 			return AppUtils.getWebSocketServer();
+		},
+		isArray: function(aObject) {
+			return 'array' === App.getType(aObject);
+		},
+		isObject: function(aObject) {
+			return 'object' === App.getType(aObject);
 		},
 		setDescription: function(aDescription) {
 			mDescription = aDescription;
@@ -151,13 +120,29 @@ var App = (function() {
 				var lObj = mAPI.get(lObjId);
 				var lObjAPI = {
 					methods: [],
-					description: lObj.description || null
+					description: lObj.description || null,
+					args: lObj.args || {}
 				};
 				for (var lMethod in lObj) {
-					lObjAPI.methods.push({
-						name: lMethod,
-						length: lObj[lMethod].length
-					});
+					var lType = typeof (lObj[lMethod]);
+					if ('function' === lType) {
+						lObjAPI.methods.push({
+							name: lMethod,
+							length: lObj[lMethod].length
+						});
+					} else if ('object' === lType) {
+						if ('function' === typeof (lObj[lMethod]['handler'])) {
+							lObjAPI.methods.push({
+								name: lMethod,
+								length: lObj[lMethod]['handler'].length
+							});
+						} else if ('object' === typeof (lObj[lMethod]['ebBridge'])) {
+							lObjAPI.methods.push({
+								name: lMethod,
+								length: lObj[lMethod]['ebBridge']['args'].length
+							});
+						}
+					}
 				}
 
 				lClientAPI[lObjId] = lObjAPI;
@@ -181,7 +166,7 @@ var App = (function() {
 			AppUtils.importScript(aFile);
 		},
 		sendToken: function(aConnector, aToken, aArg3, aArg4) {
-			var lToken = toMap(aToken);
+			var lToken = App.toMap(aToken);
 			if (!aArg3) {
 				AppUtils.sendToken(aConnector, lToken);
 			} else if (!aArg4) {
@@ -204,14 +189,17 @@ var App = (function() {
 		requireAuthority: function(aConnector, aAuthority) {
 			AppUtils.requireAuthority(aConnector, aAuthority);
 		},
+		requireAuthenticated: function(aConnector) {
+			AppUtils.requireAuthenticated(aConnector);
+		},
 		createResponse: function(aInToken) {
-			return toNativeObject(AppUtils.createResponse(toMap(aInToken)));
+			return App.toJS(AppUtils.createResponse(App.toMap(aInToken)));
 		},
 		broadcast: function(aArg1, aArg2) {
 			if (null !== aArg2) {
-				AppUtils.broadcast(aArg1, toMap(aArg2));
+				AppUtils.broadcast(aArg1, App.toMap(aArg2));
 			} else {
-				AppUtils.broadcast(toMap(aArg1));
+				AppUtils.broadcast(App.toMap(aArg1));
 			}
 		},
 		newThreadSafeMap: function() {
@@ -221,7 +209,7 @@ var App = (function() {
 			return AppUtils.newThreadSafeCollection();
 		},
 		on: function(aEventName, aFn) {
-			if (Object.prototype.toString.call(aEventName) === '[object Array]') {
+			if ('array' === App.getType(aEventName)) {
 				for (var lIndex = 0; lIndex < aEventName.length; lIndex++) {
 					App.on(aEventName[lIndex], aFn);
 				}
@@ -241,7 +229,7 @@ var App = (function() {
 			if (mListeners.containsKey(aEventName)) {
 				var lArgs = new Array();
 				for (var lIndex = 0; lIndex < aArgs.length; lIndex++) {
-					lArgs.push(toNativeObject(aArgs[lIndex]));
+					lArgs.push(App.toJS(aArgs[lIndex]));
 				}
 
 				var lIt = mListeners.get(aEventName).iterator();
@@ -250,20 +238,201 @@ var App = (function() {
 				}
 			}
 		},
+		invokeObject: function(aObjectId, aMethod, aArgs) {
+			var lObject = App.getPublished(aObjectId);
+			if ('function' === typeof (lObject[aMethod])) {
+				return lObject[aMethod].apply(lObject, App.toJS(aArgs));
+			} else if ('object' === typeof (lObject[aMethod])
+					&& ('function' === typeof (lObject[aMethod]['handler'])
+							|| 'object' === typeof (lObject[aMethod]['ebBridge']))) {
+				var lDef = lObject[aMethod];
+				// checking method authenticated metadata
+				if (lDef.authenticated) {
+					App.requireAuthenticated(aArgs[aArgs.length - 2]);
+				}
+				// checking method authority metadata
+				if (lDef.authority) {
+					App.requireAuthority(aArgs[aArgs.length - 2], lDef.authority);
+				}
+
+				// checking method arguments metadata
+				if (lDef.args) {
+					for (var lIndex in lDef.args) {
+						var lArgName = lDef.args[lIndex];
+						App.assertTrue(undefined !== lObject.args[lArgName],
+								'Argument \'' + lArgName + '\' definition is missing!');
+						App.assertValue(lObject.args[lArgName], aArgs[lIndex],
+								'Invalid \'' + lArgName + '\' argument value, constraint violation: ');
+					}
+				}
+				// checking method cache metadata
+				if (lDef.cache) {
+					//NOTE: cache metadata suppose to be supported on the client
+				}
+
+				// calling custom method annotation processors
+				// passing connector instance as last argument for developers convenience 
+				App.notifyEvent('controller.method.annotation.evaluation', [aMethod, lDef, aArgs, aArgs[aArgs.length - 2]]);
+
+				if ('function' === typeof (lObject[aMethod]['handler'])) {
+					return lObject[aMethod].handler.apply(lObject, App.toJS(aArgs));
+				} else {
+					// supporting EventBus bridge
+					var lBridge = lObject[aMethod]['ebBridge'];
+					App.assertValue('string' === App.getType(lBridge.ns), 'Expecting valid \'ns\' property in ebBrige definition!');
+					App.assertValue('string' === App.getType(lBridge.type), 'Expecting valid \'type\' property in ebBrige definition!');
+
+					var lMessage = {
+						ns: lBridge.ns,
+						type: aMethod
+					};
+					for (var lIndex in lDef.args) {
+						lMessage[lDef.args[lIndex]] = aArgs[lIndex];
+					}
+
+					// sending message through the EventBus
+					if ('publish' === lBridge.action) {
+						EventBus.publish(lMessage);
+
+						return;
+					} else if ('send' === lBridge.action) {
+						var lResponseHandler = aArgs[aArgs.length - 1];
+						EventBus.send(lMessage, {
+							OnSuccess: function(aResponse) {
+								// removing response header 
+								delete aResponse.code;
+								delete aResponse.message_uuid;
+								delete aResponse.reqType;
+								delete aResponse.type;
+								delete aResponse.ns;
+
+								App.newAsyncResult(lResponseHandler)
+										.setResult(App.toJava(aResponse));
+							},
+							OnFailure: function(aResponse) {
+								App.newAsyncResult(lResponseHandler)
+										.setFailure(new Packages.java.lang.Exception(aResponse.msg));
+							}
+						});
+
+						return;
+					}
+				}
+			}
+
+			throw new Error('Method \'' + aMethod + '\' does not exists on target object!');
+		},
+		assertValue: function(aDef, aValue, aMessage) {
+			if (aDef['not_null']) {
+				App.assertTrue(aValue !== null, aMessage + 'not_null');
+			}
+			var lType = App.getType(aValue);
+			if (aDef['type'] !== undefined) {
+				App.assertTrue(aDef['type'] === lType, aMessage + 'type');
+			}
+
+			if ('string' === lType || 'array' === lType) {
+				if (aDef['min_length'] !== undefined) {
+					App.assertTrue(aValue.length >= aDef['min_length'], aMessage + 'min_length');
+				}
+				if (aDef['max_length'] !== undefined) {
+					App.assertTrue(aValue.length <= aDef['max_length'], aMessage + 'max_length');
+				}
+			}
+
+			if ('string' === lType) {
+				if (aDef['regex'] !== undefined) {
+					var lMatches;
+					if ('string' === typeof (aDef['regex'])) {
+						if (!mCommonRegExps[aDef['regex']]) {
+							throw new Error('Regex \'' + aDef['regex'] + '\' is not supported!');
+						}
+						lMatches = ("" + aValue).match(mCommonRegExps[aDef['regex']]);
+					} else {
+						lMatches = ("" + aValue).match(aDef['regex']);
+					}
+					App.assertTrue(lMatches !== null && lMatches.length > 0 && lMatches[0].length === aValue.length,
+							aMessage + 'regex');
+				}
+			} else if (('integer' || 'double') === lType) {
+				if (aDef['min_value'] !== undefined) {
+					App.assertTrue(aValue >= aDef['min_value'], aMessage + 'min_value');
+				}
+				if (aDef['max_value'] !== undefined) {
+					App.assertTrue(aValue <= aDef['max_value'], aMessage + 'max_value');
+				}
+			}
+
+			if ('function' === App.getType(aDef['validator'])) {
+				App.assertTrue(aDef['validator'](aValue), aMessage + 'validator');
+			}
+
+			// calling custom argument annotation processors
+			App.notifyEvent('controller.argument.annotation.evaluation', [aDef, aValue, aMessage]);
+
+		},
 		invokePlugIn: function(aPlugInId, aConnector, aToken) {
-			return AppUtils.invokePlugIn(aPlugInId, aConnector, toMap(aToken));
+			return AppUtils.invokePlugIn(aPlugInId, aConnector, App.toMap(aToken));
 		},
 		isClusterEnabled: function() {
 			return AppUtils.isClusterEnabled();
 		},
-		toMap: function(aJSONObject) {
-			return toMap(aJSONObject);
+		toMap: function(aObject) {
+			var lMap = new Packages.java.util.HashMap();
+			if (aObject instanceof Packages.java.util.Map) {
+				lMap = aObject;
+			} else {
+				for (var lAttr in aObject) {
+					var lValue = aObject[lAttr];
+					if ('function' !== typeof (lValue)) {
+						lMap.put(lAttr, App.toJava(lValue));
+					}
+				}
+			}
+
+			return lMap;
 		},
-		toJSON: function(aJavaObject) {
-			return toNativeObject(aJavaObject);
+		toJava: function(aObject) {
+			if (App.isObject(aObject)) {
+				return App.toMap(aObject);
+			} else if (App.isArray(aObject)) {
+				return App.toList(aObject);
+			} else {
+				return aObject;
+			}
+		},
+		toJS: function(aObject) {
+			var lJSON;
+			if (aObject instanceof Packages.java.util.Map) {
+				lJSON = {};
+				var lIt = aObject.keySet().iterator();
+				while (lIt.hasNext()) {
+					var lProp = lIt.next();
+					lJSON[lProp] = App.toJS(aObject.get(lProp));
+				}
+
+				return lJSON;
+			} else if (aObject instanceof Packages.java.util.List) {
+				lJSON = [];
+				var lIt = aObject.iterator();
+				while (lIt.hasNext()) {
+					lJSON.push(App.toJS(lIt.next()));
+				}
+
+				return lJSON;
+			} else if (aObject instanceof Packages.java.lang.Boolean) {
+				return true === aObject;
+			}
+
+			return aObject;
 		},
 		toList: function(aArray) {
-			return toList(aArray);
+			var lList = new Packages.java.util.LinkedList();
+			for (var lIndex in aArray) {
+				lList.add(App.toJava(aArray[lIndex]));
+			}
+
+			return lList;
 		},
 		getAppBeanFactory: function() {
 			return AppUtils.getAppBeanFactory();
@@ -275,6 +444,26 @@ var App = (function() {
 			return (undefined === aNamespace)
 					? AppUtils.getBean(aBeanId)
 					: AppUtils.getBean(aBeanId, aNamespace);
+		},
+		getType: function(aObject) {
+			var lRes = typeof aObject;
+			if (aObject === undefined) {
+				lRes = 'undefined';
+			} else if (aObject === null) {
+				lRes = 'null';
+			} else if ('number' === lRes) {
+				if ((parseFloat(aObject) === parseInt(aObject))) {
+					lRes = 'integer';
+				} else {
+					lRes = 'double';
+				}
+			} else if (aObject instanceof Packages.java.util.List ||
+					aObject.constructor
+					&& aObject.constructor.toString().indexOf('function Array()') === 0) {
+				lRes = 'array';
+			}
+
+			return lRes;
 		},
 		getAppBean: function(aBeanId) {
 			return AppUtils.getAppBean(aBeanId);
@@ -301,66 +490,53 @@ var App = (function() {
 		getEventBus: function() {
 			if (!mEventBus) {
 				var lEventBus = App.getWebSocketServer().getEventBus();
-
 				var lSetResponseFields = function(aReq, aResponse) {
 					aResponse.ns = aReq.ns;
 					aResponse.type = 'response';
 					aResponse.reqType = aReq.type;
 					aResponse.code = 0;
-					aResponse.tokenbus_utid = aReq.tokenbus_utid;
-				}
-
+					aResponse.message_uuid = aReq.message_uuid;
+				};
 				var lToHandler = function(aListener) {
 					if (!aListener)
 						return null;
-
 					var lListener = new Packages.org.jwebsocket.eventbus.Handler.IEventListener(){
 						OnMessage: function(aToken) {
-							try {
-								var lMessage = toNativeObject(aToken.getMap());
-								lMessage.reply = function(aResponse, aListener) {
-									lSetResponseFields(lMessage, aResponse);
-									mEventBus.send(aResponse, aListener);
-								};
-								lMessage.fail = function(aResponse, aListener) {
-									lSetResponseFields(lMessage, aResponse);
-									aResponse.code = -1;
-									mEventBus.send(aResponse, aListener);
-								};
-
-								if (aListener.OnMessage) {
-									aListener.OnMessage(lMessage);
+							var lMessage = App.toJS(aToken.getMap());
+							lMessage.reply = function(aResponse, aListener) {
+								lSetResponseFields(lMessage, aResponse);
+								mEventBus.send(aResponse, aListener);
+							};
+							lMessage.fail = function(aResponse, aListener) {
+								lSetResponseFields(lMessage, aResponse);
+								aResponse.code = -1;
+								mEventBus.send(aResponse, aListener);
+							};
+							if (aListener.OnMessage) {
+								aListener.OnMessage(lMessage);
+							}
+							if ('response' === lMessage.type) {
+								if (aListener.OnResponse) {
+									aListener.OnResponse(lMessage);
 								}
-								if ('response' === lMessage.type) {
-									if (aListener.OnResponse) {
-										aListener.OnResponse(lMessage);
+								if (0 === aToken.getCode()) {
+									if (aListener.OnSuccess) {
+										aListener.OnSuccess(lMessage);
 									}
-									if (0 === aToken.getCode()) {
-										if (aListener.OnSuccess) {
-											aListener.OnSuccess(lMessage);
-										}
-									} else {
-										if (aListener.OnFailure) {
-											aListener.OnFailure(lMessage);
-										}
+								} else {
+									if (aListener.OnFailure) {
+										aListener.OnFailure(lMessage);
 									}
 								}
-							} catch (lEx) {
-								App.getLogger().error('Invoking EventBus message handler: ' + lEx);
 							}
 						},
 						OnTimeout: function(aToken) {
-							try {
-								var lMessage = toNativeObject(aToken.getMap());
-								if (aListener.OnTimeout) {
-									aListener.OnTimeout(lMessage);
-								}
-							} catch (lEx) {
-								App.getLogger().error('Invoking EventBus message timeout handler: ' + lEx);
+							var lMessage = App.toJS(aToken.getMap());
+							if (aListener.OnTimeout) {
+								aListener.OnTimeout(lMessage);
 							}
 						}
 					};
-
 					return new Packages.org.jwebsocket.eventbus.Handler(lListener, aListener.timeout || 0);
 				};
 				mEventBus = {
@@ -402,7 +578,7 @@ var App = (function() {
 						if (null === aCallbacks) {
 							aCallbacks = {};
 						}
-						return lClient.sendToken(toMap(aToken), {
+						return lClient.sendToken(App.toMap(aToken), {
 							getTimeout: function() {
 								if (aCallbacks['getTimeout']) {
 									return aCallbacks['getTimeout']();
@@ -413,22 +589,22 @@ var App = (function() {
 							},
 							OnTimeout: function(aToken) {
 								if (aCallbacks['OnTimeout']) {
-									aCallbacks['OnTimeout'](toNativeObject(aToken.getMap()));
+									aCallbacks['OnTimeout'](App.toJS(aToken.getMap()));
 								}
 							},
 							OnResponse: function(aResponse) {
 								if (aCallbacks['OnResponse']) {
-									aCallbacks['OnResponse'](toNativeObject(aResponse.getMap()));
+									aCallbacks['OnResponse'](App.toJS(aResponse.getMap()));
 								}
 							},
 							OnSuccess: function(aResponse) {
 								if (aCallbacks['OnSuccess']) {
-									aCallbacks['OnSuccess'](toNativeObject(aResponse.getMap()));
+									aCallbacks['OnSuccess'](App.toJS(aResponse.getMap()));
 								}
 							},
 							OnFailure: function(aResponse) {
 								if (aCallbacks['OnFailure']) {
-									aCallbacks['OnFailure'](toNativeObject(aResponse.getMap()));
+									aCallbacks['OnFailure'](App.toJS(aResponse.getMap()));
 								}
 							}
 						});
@@ -448,7 +624,7 @@ var App = (function() {
 							},
 							processToken: function(aToken) {
 								if (aListener['processToken']) {
-									aListener['processToken'](toNativeObject(aToken.getMap()));
+									aListener['processToken'](App.toJS(aToken.getMap()));
 								}
 							},
 							processClosed: function(aReason) {
@@ -458,7 +634,7 @@ var App = (function() {
 							},
 							processWelcome: function(aToken) {
 								if (aListener['processWelcome']) {
-									aListener['processWelcome'](toNativeObject(aToken.getMap()));
+									aListener['processWelcome'](App.toJS(aToken.getMap()));
 								}
 							},
 							processOpened: function() {
@@ -505,7 +681,7 @@ var App = (function() {
 						for (var lIndex in mServerClient.listeners) {
 							var lListener = mServerClient.listeners[lIndex];
 							if (lListener) {
-								lListener.call(mServerClient, toNativeObject(aToken));
+								lListener.call(mServerClient, App.toJS(aToken));
 							}
 						}
 					}
@@ -521,14 +697,11 @@ var App = (function() {
 		}
 	};
 })();
-
 /**
  * Global app EventBus object
  * @type @exp;App@call;getEventBus
  */
 EventBus = App.getEventBus();
-
-
 /**
  * jWebSocket JavaScript plug-ins bridge
  */
