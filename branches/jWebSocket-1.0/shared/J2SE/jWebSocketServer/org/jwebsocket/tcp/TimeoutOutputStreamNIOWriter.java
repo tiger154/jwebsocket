@@ -21,6 +21,7 @@ package org.jwebsocket.tcp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,6 +61,7 @@ public class TimeoutOutputStreamNIOWriter {
 	private InputStream mIn = null;
 	private WebSocketConnector mConnector = null;
 	private static boolean mStarted = false;
+	private static Timer mTimer;
 
 	/**
 	 *
@@ -67,6 +69,7 @@ public class TimeoutOutputStreamNIOWriter {
 	 * @param aTimeout
 	 */
 	public static void start(int aNumWorkers, int aTimeout) {
+		mTimer = Tools.getTimer();
 		mPool = Executors.newFixedThreadPool(aNumWorkers, new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable aRunnable) {
@@ -191,7 +194,7 @@ public class TimeoutOutputStreamNIOWriter {
 			final SendOperation lSend = new SendOperation(aDataPacket);
 
 			// create a timeout timer task to cancel the send operation in case of disconnection
-			Tools.getTimer().schedule(new TimerTask() {
+			mTimer.schedule(new TimerTask() {
 				@Override
 				public void run() {
 					try {
