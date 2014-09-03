@@ -71,9 +71,35 @@ App.on('appLoaded', function() {
 
 	// publishing to client public object (controllers)
 	App.publish('Main', {
-		sayHello: function(aName) {
-			// see: lib/myAppLib.js
-			return sayHello(aName);
+		args: {
+			email: {
+				not_null: false,
+				type: 'string',
+				regex: 'email'
+			},
+			age: {
+				not_null: false,
+				type: 'integer',
+				min_value: 18,
+				max_value: 65,
+				validator: function(aValue) {
+					return true;
+				}
+			}
+		},
+		sayHello: {
+			//authority: 'ADMIN',
+			authenticated: true,
+			args: ['email', 'age'],
+//			handler: function(aEmail, aAge) {
+//				return {
+//					msg: 'Hello ' + aEmail + ' - ' + aAge
+//				};
+//			}
+			ebBridge: {
+				ns: 'test.queue', //test.topic
+				action: 'send' // publish
+			}
 		},
 		broadcast: function(aMessage) {
 			App.broadcast({
@@ -85,6 +111,30 @@ App.on('appLoaded', function() {
 		},
 		toMap: function() {
 			return App.toMap({name: 'Rolando SM', email: 'rsantamaria@jwebsocket.org', age: 28});
+		},
+		asyncMethod: function(aConnector, aHandler) {
+			App.newAsyncResult(aHandler)
+					.setResult(App.toJava({
+						msg: 'Hello from async method call!',
+						numbers: [1, 2, 3],
+						username: aConnector.getUsername()
+					}));
+		},
+		getType: function(aConnector) {
+			return "username: " + aConnector.getUsername();
+		}
+	});
+
+	EventBus.register('test.queue', {
+		OnMessage: function(aMessage) {
+			aMessage.reply({
+				msg: 'Hello ' + aMessage.email + ' - ' + aMessage.age
+			});
+		}
+	});
+	EventBus.register('test.topic', {
+		OnMessage: function(aMessage) {
+			App.getLogger().debug('Hello ' + aMessage.email + ' - ' + aMessage.age);
 		}
 	});
 
@@ -162,5 +212,15 @@ App.on('appLoaded', function() {
 //		OnTimeout: function(aResponse) {
 //			App.getLogger().debug('Timeout');
 //		}
+//	});
+//
+//	EventBus.registerService('org.jwebsocket.paypal', {
+//		doPayment: {
+//			autority: 'ADMIN',
+//			authenticated: true,
+//			
+//			handler: function(user, amount, account) {
+//
+//			}}
 //	});
 });
