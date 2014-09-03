@@ -54,7 +54,7 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 	public Token createResponse(Token aInToken) {
 		Token lResponse = TokenFactory.createToken(aInToken.getNS(), "response");
 		lResponse.setCode(STATUS_OK);
-		lResponse.setString(JMSEventBus.ATTR_TOKEN_BUS_UTID, aInToken.getString(JMSEventBus.ATTR_TOKEN_BUS_UTID));
+		lResponse.setString(JMSEventBus.EVENT_BUS_MSG_UUID, aInToken.getString(JMSEventBus.EVENT_BUS_MSG_UUID));
 		lResponse.setString("reqType", aInToken.getType());
 
 		return lResponse;

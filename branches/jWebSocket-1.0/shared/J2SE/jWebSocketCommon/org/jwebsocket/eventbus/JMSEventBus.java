@@ -44,7 +44,7 @@ import org.springframework.util.Assert;
  */
 public class JMSEventBus extends BaseEventBus {
 
-	protected static final String ATTR_TOKEN_BUS_UTID = "tokenbus_utid";
+	protected static final String EVENT_BUS_MSG_UUID = "message_uuid";
 	private final Connection mConnection;
 	private Session mSession;
 	private MessageConsumer mTopicConsumer;
@@ -67,13 +67,13 @@ public class JMSEventBus extends BaseEventBus {
 	}
 
 	@Override
-	public Registration register(final String aNS, final IHandler aHandler) {
+	public IRegistration register(final String aNS, final IHandler aHandler) {
 		Assert.notNull(aNS, "The 'NS' argument cannot be null!");
 		Assert.notNull(aHandler, "The 'handler' argument cannot be null!");
 
 		storeHandler(aNS, aHandler);
 
-		return new Registration() {
+		return new IRegistration() {
 
 			@Override
 			public String getNS() {
@@ -95,18 +95,18 @@ public class JMSEventBus extends BaseEventBus {
 	@Override
 	public IEventBus publish(Token aToken) {
 		setUTID(aToken);
-		sendGeneric(mTopicProducer, aToken);
+		sendGeneric(mTopicProducer, aToken, new Long(0));
 
 		return this;
 	}
 
 	String setUTID(Token aToken) {
 		String lUUID;
-		if (!aToken.getMap().containsKey(ATTR_TOKEN_BUS_UTID)) {
+		if (!aToken.getMap().containsKey(EVENT_BUS_MSG_UUID)) {
 			lUUID = UUID.randomUUID().toString();
-			aToken.setString(ATTR_TOKEN_BUS_UTID, lUUID);
+			aToken.setString(EVENT_BUS_MSG_UUID, lUUID);
 		} else {
-			lUUID = aToken.getString(ATTR_TOKEN_BUS_UTID);
+			lUUID = aToken.getString(EVENT_BUS_MSG_UUID);
 		}
 
 		return lUUID;
@@ -115,10 +115,12 @@ public class JMSEventBus extends BaseEventBus {
 	@Override
 	public IEventBus send(final Token aToken, IHandler aHandler) {
 		final String lUUID = setUTID(aToken);
+		Long lExpiration = new Long(0);
 		if (null != aHandler) {
 			aHandler.setEventBus(this);
 			storeResponseHandler(lUUID, aHandler);
 			if (aHandler.getTimeout() > 0) {
+				lExpiration = aHandler.getTimeout();
 				aToken.setLong(BaseToken.EXPIRES, System.currentTimeMillis() + aHandler.getTimeout());
 
 				mTimer.schedule(new TimerTask() {
@@ -131,22 +133,36 @@ public class JMSEventBus extends BaseEventBus {
 
 								@Override
 								public void run() {
-									lH.OnTimeout(aToken);
+									try {
+										lH.OnTimeout(aToken);
+									} catch (Exception lEx) {
+										getExceptionHandler().handle(lEx);
+									}
 								}
 							});
 						}
 					}
-				}, aHandler.getTimeout());
+				}, aHandler
+						.getTimeout()
+				);
 			}
 		}
-		sendGeneric(mQueueProducer, aToken);
+		sendGeneric(mQueueProducer, aToken, lExpiration);
 
 		return this;
 	}
 
-	void sendGeneric(MessageProducer aProducer, Token aToken) {
+	void sendGeneric(MessageProducer aProducer, Token aToken, Long aExpiration
+	) {
 		try {
-			aProducer.send(mSession.createTextMessage(JSONProcessor.objectToJSONString(aToken)));
+			TextMessage lMsg = mSession.createTextMessage(JSONProcessor.objectToJSONString(aToken));
+			if (aExpiration > 0) {
+				lMsg.setJMSExpiration(aExpiration);
+			}
+			// setting higher priority for EventBus messages
+			lMsg.setJMSPriority(9);
+
+			aProducer.send(lMsg);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx);
 		}
@@ -200,7 +216,7 @@ public class JMSEventBus extends BaseEventBus {
 							// discard if token has expired
 							if (!lToken.hasExpired()) {
 								if ("response".equals(lToken.getType())) {
-									String lUTID = lToken.getString(ATTR_TOKEN_BUS_UTID);
+									String lUTID = lToken.getString(EVENT_BUS_MSG_UUID);
 									invokeResponseHandler(lUTID, lToken);
 								} else {
 									invokeHandler(lToken.getNS(), lToken);

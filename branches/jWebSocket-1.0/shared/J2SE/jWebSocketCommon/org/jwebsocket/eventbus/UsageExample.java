@@ -118,9 +118,9 @@ public class UsageExample {
 					}
 				}
 			});
-			// sending message to "test.timeout" name-space
-			// should invoke Timeout callback because no listener is active on target name-space
-			lEB1.send(TokenFactory.createToken("test.timeout", "action"), new Handler(new Long(1000)) {
+			// sending message to "to_no_handlers_ns" name-space
+			// should invoke Timeout callback because no response will be received
+			lEB1.send(TokenFactory.createToken("to_no_handlers_ns", "action"), new Handler(new Long(1000)) {
 
 				@Override
 				public void OnTimeout(Token aToken) {
