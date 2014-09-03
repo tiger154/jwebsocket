@@ -133,9 +133,7 @@ public class JavaScriptApp extends BaseScriptApp {
 	public Object callMethod(final String aObjectId, final String aMethod, final Object[] aArgs) throws Exception {
 		final Invocable lInvocable = (Invocable) getScriptApp();
 		Boolean lExists = (Boolean) lInvocable.invokeMethod(mApp, "isPublished", new Object[]{aObjectId});
-		Assert.isTrue(lExists, "The object with id ' " + aObjectId + "' is not published!");
-
-		final Object lObject = lInvocable.invokeMethod(mApp, "getPublished", new Object[]{aObjectId});
+		Assert.isTrue(lExists, "The object with id ' " + aObjectId + "' is not published for client access!");
 
 		// getting scripting plugin settings
 		Settings lSettings = (Settings) JWebSocketBeanFactory.getInstance(ScriptingPlugIn.NS)
@@ -148,7 +146,7 @@ public class JavaScriptApp extends BaseScriptApp {
 					public Object run() {
 						// invoking method
 						try {
-							return lInvocable.invokeMethod(lObject, aMethod, aArgs);
+							return lInvocable.invokeMethod(mApp, "invokeObject", new Object[]{aObjectId, aMethod, aArgs});
 						} catch (Exception lEx) {
 							throw new RuntimeException(lEx);
 						}
