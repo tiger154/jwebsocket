@@ -142,7 +142,7 @@ public class Settings {
 		// fixing paths format
 		mExtensionsDirectoryPath = new File(URLDecoder.decode(mExtensionsDirectoryPath, "utf-8")).getPath();
 		mAppsDirectoryPath = new File(URLDecoder.decode(mAppsDirectoryPath, "utf-8")).getPath();
-		
+
 		File lAppsDirectory = new File(mAppsDirectoryPath);
 		Assert.isTrue(lAppsDirectory.isDirectory(), "The applications directory path does not exists!"
 				+ " Please check directory path or access permissions.");
@@ -247,6 +247,10 @@ public class Settings {
 	 * @return
 	 */
 	public Permissions getAppPermissions(String aAppName, String aAppPath) {
+		if (mCachedAppPermissions.containsKey(aAppName)) {
+			return mCachedAppPermissions.get(aAppName);
+		}
+
 		Permissions lPerms = new Permissions();
 		Permission lPermission;
 
@@ -276,6 +280,7 @@ public class Settings {
 			}
 		}
 
+		mCachedAppPermissions.put(aAppName, lPerms);
 		return lPerms;
 	}
 
