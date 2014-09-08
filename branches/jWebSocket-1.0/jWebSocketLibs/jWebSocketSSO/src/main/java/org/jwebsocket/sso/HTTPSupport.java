@@ -1,8 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket HTTPSupport for OAuth for Java (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.sso;
 
 import java.io.IOException;
@@ -78,14 +91,13 @@ public class HTTPSupport {
 					int lStatus = lResponse.getStatusLine().getStatusCode();
 					HttpEntity lEntity = lResponse.getEntity();
 					return lEntity != null ? EntityUtils.toString(lEntity) : null;
-					
+
 //					if (lStatus >= 200 && lStatus < 300) {
 //						HttpEntity entity = lResponse.getEntity();
 //						return entity != null ? EntityUtils.toString(entity) : null;
 //					} else {
 //						throw new ClientProtocolException("Unexpected response status: " + lStatus);
 //					}
-					
 				}
 
 			};

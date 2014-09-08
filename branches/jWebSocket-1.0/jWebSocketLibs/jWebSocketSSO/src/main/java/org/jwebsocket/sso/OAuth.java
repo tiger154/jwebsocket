@@ -37,7 +37,6 @@ import org.codehaus.jackson.map.ObjectMapper;
  */
 public class OAuth extends OAuthBase {
 
-	
 	/**
 	 *
 	 */
@@ -230,17 +229,17 @@ public class OAuth extends OAuthBase {
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			if (null != lJSON) {
 				String lError = (String) lJSON.get("error");
-				if( null != lError) {
+				if (null != lError) {
 					mReturnCode = -1;
-					mReturnMsg = lError + " on validating access token: " 
+					mReturnMsg = lError + " on validating access token: "
 							+ (String) lJSON.get("error_description");
 					return "{\"code\":-1, \"msg\":\""
-						+ mReturnMsg + "\"}";
+							+ mReturnMsg + "\"}";
 				} else {
 					mUsername = (String) lJSON.get("login_name");
 					mFullname = (String) lJSON.get("full_user_name");
 					mEmail = (String) lJSON.get("email");
-				}	
+				}
 			}
 			return lJSONString;
 		} catch (IOException lEx) {
