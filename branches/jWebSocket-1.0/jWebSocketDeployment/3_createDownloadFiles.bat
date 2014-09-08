@@ -40,6 +40,9 @@ set confEE=%rteEE%conf\
 set clientEE=%rteEE%..\..\branches\jWebSocket-1.0-Enterprise\jWebSocketClient\
 set webEE=%clientEE%web
 
+set processes=%rteEE%processes\
+set ontologies=%rteEE%ontologies\
+
 set depl=..\jWebSocketDeployment\jWebSocket\
 set down=..\..\..\downloads\jWebSocket-%ver%\
 
@@ -173,6 +176,7 @@ xcopy %libs%jWebSocketLoadbalancerPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketLoggingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketMailPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketMonitoringPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketPayPalPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketPingPongGame-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketProxyPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketQuotaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
@@ -189,6 +193,7 @@ xcopy %libs%jWebSocketStreamingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketTestPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketTwitterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketXMPPPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+
 xcopy %libs%jWebSocketClientAPI-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJavaSEClient-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSwingGUI-%ver%.jar %tempdir%libs\ /s /i /y
@@ -201,6 +206,11 @@ xcopy %libsEE%jWebSocketFileSystemPlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libsEE%jWebSocketItemStoragePlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libsEE%jWebSocketUserAdminPlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libsEE%jWebSocketJavaSEClientEE-%ver%.jar %tempdir%libs\ /s /i /y
+
+xcopy %libsEE%jWebSocketANTLRPlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libsEE%jWebSocketBPMNPlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libsEE%jWebSocketStringTemplatePlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libsEE%jWebSocketOntologyPlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket config and keystore files (from v1.0) for SSL
 xcopy %conf%jWebSocket.xml %tempdir%conf\ /s /i /y
@@ -243,6 +253,7 @@ xcopy %conf%jWebSocketSwingGUI\*.properties %tempdir%conf\jWebSocketSwingGUI\ /s
 xcopy %conf%LoadBalancerPlugIn\*.xml %tempdir%conf\LoadBalancerPlugIn\ /s /i /y
 xcopy %conf%LoggingPlugIn\*.xml %tempdir%conf\LoggingPlugIn\ /s /i /y
 xcopy %conf%MailPlugIn\*.xml %tempdir%conf\MailPlugIn\ /s /i /y
+xcopy %conf%PayPalPlugIn\*.xml %tempdir%conf\PayPalPlugIn\ /s /i /y
 xcopy %conf%QuotaPlugIn\*.xml %tempdir%conf\QuotaPlugIn\ /s /i /y
 xcopy %conf%ReportingPlugIn\*.xml %tempdir%conf\ReportingPlugIn\ /s /i /y
 xcopy %conf%ReportingPlugIn\reports\*.jrxml %tempdir%conf\ReportingPlugIn\reports /s /i /y
@@ -250,7 +261,7 @@ xcopy %conf%ReportingPlugIn\reports\*.png %tempdir%conf\ReportingPlugIn\reports 
 xcopy %conf%Resources\*.xml %tempdir%conf\Resources\ /s /i /y
 xcopy %conf%RTCPlugIn\*.xml %tempdir%conf\RTCPlugIn\ /s /i /y
 xcopy %conf%ScriptingPlugIn\*.xml %tempdir%conf\ScriptingPlugIn\ /s /i /y
-rem for the scritingplug-in we also need the extensions, this right now are only .js files!
+rem for the scripting plug-in we also need the extensions, this right now are only .js files!
 xcopy %conf%ScriptingPlugIn\*.js %tempdir%conf\ScriptingPlugIn\ /s /i /y
 xcopy %conf%SMSPlugIn\*.xml %tempdir%conf\SMSPlugIn\ /s /i /y
 rem xcopy %conf%SSOPlugIn\*.xml %tempdir%conf\SSOPlugIn\ /s /i /y
@@ -264,6 +275,11 @@ xcopy %confEE%ItemStoragePlugInEE\*.xml %tempdir%conf\ItemStoragePlugInEE\ /s /i
 xcopy %confEE%SystemPlugInEE\*.xml %tempdir%conf\SystemPlugInEE\ /s /i /y
 xcopy %confEE%UserAdminPlugInEE\*.xml %tempdir%conf\UserAdminPlugInEE\ /s /i /y
 xcopy %confEE%UserAdminPlugInEE\*.info %tempdir%conf\UserAdminPlugInEE\ /s /i /y
+
+xcopy %confEE%ANTLRPlugInEE\*.xml %tempdir%conf\ANTLRPlugInEE\ /s /i /y
+xcopy %confEE%OntologyPlugInEE\*.xml %tempdir%conf\OntologyPlugInEE\ /s /i /y
+xcopy %confEE%BPMNPlugInEE\*.xml %tempdir%conf\BPMNPlugInEE\ /s /i /y
+xcopy %confEE%StringTemplatePlugInEE\*.xml %tempdir%conf\StringTemplatePlugInEE\ /s /i /y
 
 rem copy special conf settings for Tomcat engine (from v1.0)
 xcopy %conf%TomcatEngine\*.xml %tempdir%conf\TomcatEngine\ /s /i /y
@@ -281,6 +297,13 @@ xcopy %database%readme.txt %tempdir%database\ /s /i /y
 rem copy jWebSocket filesystem (from v1.0)
 xcopy %filesystem%public\ReadMe.txt %tempdir%filesystem\public\ /s /i /y
 xcopy %filesystem%private\ReadMe.txt %tempdir%filesystem\private\ /s /i /y
+
+rem copy jWebSocket EE ontologies (from RC3 b040908)
+xcopy %ontologies%*.owl %tempdir%ontologies\ /s /i /y
+xcopy %ontologies%catalog*.xml %tempdir%ontologies\ /s /i /y
+
+rem copy jWebSocket EE processes (from RC3 b040908)
+xcopy %processes%*.bpmn %tempdir%processes\ /s /i /y
 
 rem web folder
 xcopy %web%index.htm %tempdir%web\ /s /i /y
