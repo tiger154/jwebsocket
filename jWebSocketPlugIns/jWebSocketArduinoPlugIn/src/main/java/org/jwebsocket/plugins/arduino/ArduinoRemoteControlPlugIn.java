@@ -82,6 +82,8 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void initialize() throws Exception {

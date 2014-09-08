@@ -43,6 +43,10 @@ public class ChatPlugIn extends TokenPlugIn {
 	private static final Logger mLog = Logging.getLogger();
 	private static final FastMap<String, WebSocketConnector> mClients
 			= new FastMap<String, WebSocketConnector>().shared();
+
+	/**
+	 *
+	 */
 	public static final String NS_CHAT
 			= JWebSocketServerConstants.NS_BASE + ".plugins.chat";
 	private final static String VERSION = "1.0.0";

@@ -41,15 +41,15 @@ public class PerfTestPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_TEST =
-			JWebSocketServerConstants.NS_BASE + ".plugins.test";
+	private static final String NS_TEST
+			= JWebSocketServerConstants.NS_BASE + ".plugins.test";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket PerfTestPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-	private final static String DESCRIPTION =
-			"jWebSocket Performance Tests PlugIn - Community Edition";
+	private final static String DESCRIPTION
+			= "jWebSocket Performance Tests PlugIn - Community Edition";
 
 	/**
 	 *

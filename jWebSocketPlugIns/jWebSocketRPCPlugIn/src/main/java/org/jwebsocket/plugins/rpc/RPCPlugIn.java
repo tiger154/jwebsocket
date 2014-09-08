@@ -75,7 +75,8 @@ public class RPCPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket RPCPlugIn - Community Edition";
 	// Store the parameters type allowed for rpc method.
-	private Map<String, RPCCallableClassLoader> mRpcCallableClassLoader = new FastMap<String, RPCCallableClassLoader>();
+	private final Map<String, RPCCallableClassLoader> mRpcCallableClassLoader 
+			= new FastMap<String, RPCCallableClassLoader>();
 
 	// TODO: We need simple unique IDs to address a certain target, session id not
 	// suitable here.
@@ -159,7 +160,7 @@ public class RPCPlugIn extends TokenPlugIn {
 			if (!lFullMethodName.equals(CommonRpcPlugin.RPC_RIGHT_ID) && !lFullMethodName.equals(CommonRpcPlugin.RRPC_RIGHT_ID)) {
 				// setting with parameters type to handle java method overload
 				String[] lParameterTypes = null;
-				if (lFullMethodName.indexOf("(") != -1 && lFullMethodName.indexOf(")") != -1) {
+				if (lFullMethodName.contains("(") && lFullMethodName.contains(")")) {
 					String lParameters = lFullMethodName.substring(lFullMethodName.indexOf("(") + 1, lFullMethodName.length() - 1);
 					lParameters = lParameters.replace(" ", "");
 					lParameterTypes = lParameters.split(",");
@@ -265,7 +266,7 @@ public class RPCPlugIn extends TokenPlugIn {
 	private void initRPCCallableClass(Class aClass, String aClassName) {
 		if (aClass != null) {
 			try {
-				RPCCallable lInstance = null;
+				RPCCallable lInstance;
 				try {
 					Constructor lConstructor = aClass.getConstructor(WebSocketConnector.class);
 					lInstance = (RPCCallable) lConstructor.newInstance(new Object[]{null});
@@ -556,8 +557,7 @@ public class RPCPlugIn extends TokenPlugIn {
 		Method[] lMethods = lClass.getMethods();
 		ArrayList<Integer> lMethodWithSameNameAndNumberOfArguments = new ArrayList<Integer>();
 		if (aXmlParametersType == null) {
-			for (int i = 0; i < lMethods.length; i++) {
-				Method lMethod = lMethods[i];
+			for (Method lMethod : lMethods) {
 				if (lMethod.getName().equals(aMethodName)) {
 					if (lMethodWithSameNameAndNumberOfArguments.contains(lMethod.getParameterTypes().length)) {
 						// 2 methods have the same name and number of parameters
@@ -586,12 +586,11 @@ public class RPCPlugIn extends TokenPlugIn {
 				}
 			}
 		}
-		// Check if on of the method match
-		for (int i = 0; i < lMethods.length; i++) {
+		for (Method lMethod : lMethods) {
 			// If we are on a method with the same name, we check it's parameters
-			if (lMethods[i].getName().equals(aMethodName)) {
-				if (checkMethodParameters(lMethods[i], aXmlParametersType, aClassName)) {
-					return lMethods[i];
+			if (lMethod.getName().equals(aMethodName)) {
+				if (checkMethodParameters(lMethod, aXmlParametersType, aClassName)) {
+					return lMethod;
 				}
 			}
 		}
@@ -652,8 +651,8 @@ public class RPCPlugIn extends TokenPlugIn {
 			if (methodMatch) {
 				if (mLog.isDebugEnabled()) {
 					StringBuilder lParametersList = new StringBuilder();
-					for (int k = 0; k < aXmlParametersType.length; k++) {
-						lParametersList.append(aXmlParametersType[k] + ", ");
+					for (String lXmlParmType : aXmlParametersType) {
+						lParametersList.append(lXmlParmType).append(", ");
 					}
 					lParametersList.setLength(lParametersList.length() - 2);
 					if (mLog.isDebugEnabled()) {
@@ -674,10 +673,7 @@ public class RPCPlugIn extends TokenPlugIn {
 			return true;
 		}
 
-		// if parameters are not defined in the setting, means that we have a unique
-		// method with this name.
-		for (int j = 0; j < lParametersType.size(); j++) {
-			Class lParameterType = lParametersType.get(j);
+		for (Class lParameterType : lParametersType) {
 			if (!TypeConverter.isValidProtocolJavaType(lParameterType)) {
 				mLog.error("The method " + aMethod.getName()
 						+ " has an invalid parameter: "

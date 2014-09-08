@@ -31,7 +31,7 @@ import org.jwebsocket.plugins.rpc.MethodMatcher;
 @SuppressWarnings("rawtypes")
 public class ServerMethodMatcher extends MethodMatcher {
 
-	private WebSocketConnector mWebSocketConnector;
+	private final WebSocketConnector mWebSocketConnector;
 
 	/**
 	 *
@@ -60,7 +60,8 @@ public class ServerMethodMatcher extends MethodMatcher {
 	 * return the number of valid parameters: all the parameters except
 	 * WebSocketConnector If it's a WebSocketConnector, we will push the
 	 * instance of the connector which is performing the (r)rpc
-	 * @return 
+	 *
+	 * @return
 	 */
 	@Override
 	protected int getNumberOfValidParameters(Class[] aListOfParametersType) {

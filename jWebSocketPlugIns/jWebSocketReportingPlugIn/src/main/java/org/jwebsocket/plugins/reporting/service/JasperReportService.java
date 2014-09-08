@@ -201,11 +201,10 @@ public class JasperReportService implements IJasperReportService {
 	}
 
 	@Override
-	public String getConnectionAlias(){
-		return
-				mSettings.getJdbcAlias();
+	public String getConnectionAlias() {
+		return mSettings.getJdbcAlias();
 	}
-	
+
 	@Override
 	public void initialize() throws Exception {
 	}

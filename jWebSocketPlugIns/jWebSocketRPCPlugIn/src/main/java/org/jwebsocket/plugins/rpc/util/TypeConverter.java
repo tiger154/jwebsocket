@@ -131,8 +131,7 @@ public class TypeConverter {
 		boolean lIsValid = isValidProtocolJavaType(aJavaClass.getName());
 		if (!lIsValid) {
 			Class[] lInterfaces = aJavaClass.getInterfaces();
-			for (int lIdx = 0; lIdx < lInterfaces.length; lIdx++) {
-				Class lIF = lInterfaces[lIdx];
+			for (Class lIF : lInterfaces) {
 				lIsValid = lIF.getSimpleName().equals("ITokenizable");
 				if (lIsValid) {
 					break;

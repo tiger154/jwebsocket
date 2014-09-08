@@ -34,9 +34,9 @@ import javolution.util.FastMap;
  */
 public class RPCCallableClassLoader {
 
-	private Class mRpcCallableClass;
-	private RPCCallable mRpcCallableInstance;
-	private Map<String, List<MethodRightLink>> mMethods = new FastMap<String, List<MethodRightLink>>();
+	private final Class mRpcCallableClass;
+	private final RPCCallable mRpcCallableInstance;
+	private final Map<String, List<MethodRightLink>> mMethods = new FastMap<String, List<MethodRightLink>>();
 
 	/**
 	 *
@@ -104,8 +104,8 @@ public class RPCCallableClassLoader {
 	 */
 	public class MethodRightLink {
 
-		private String mRightId;
-		private Method mMethod;
+		private final String mRightId;
+		private final Method mMethod;
 
 		/**
 		 *

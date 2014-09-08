@@ -76,11 +76,11 @@ public interface IJasperReportService extends IInitializable {
 	 * @param aSettings
 	 */
 	void setSettings(Settings aSettings);
-	
+
 	/**
 	 * Gets the JDBC connection alias
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	String getConnectionAlias();
 }

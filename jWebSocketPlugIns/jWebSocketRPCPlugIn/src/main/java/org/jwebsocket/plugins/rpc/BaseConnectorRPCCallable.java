@@ -32,7 +32,8 @@ import org.jwebsocket.kit.CloseReason;
  */
 public class BaseConnectorRPCCallable extends AbstractRPCCallable implements RPCCallable {
 
-	private static Map<String, BaseConnectorRPCCallable> mInstances = new FastMap<String, BaseConnectorRPCCallable>();
+	private static final Map<String, BaseConnectorRPCCallable> mInstances
+			= new FastMap<String, BaseConnectorRPCCallable>();
 	private WebSocketConnector mConnector;
 
 	/**

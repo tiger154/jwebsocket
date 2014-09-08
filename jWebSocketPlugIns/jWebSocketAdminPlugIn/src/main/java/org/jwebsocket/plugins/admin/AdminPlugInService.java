@@ -598,7 +598,7 @@ public class AdminPlugInService {
 	}
 
 	/**
-	 * Change the order of plug-in in the PluginChain. (Up or Down <N> step)
+	 * Change the order of plug-in in the PluginChain. (Up or Down n step)
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -660,7 +660,7 @@ public class AdminPlugInService {
 	}
 
 	/**
-	 * Change the order of filter in the FilterChain. (Up or Down <N> step)
+	 * Change the order of filter in the FilterChain. (Up or Down n step)
 	 *
 	 * @param aConnector
 	 * @param aToken

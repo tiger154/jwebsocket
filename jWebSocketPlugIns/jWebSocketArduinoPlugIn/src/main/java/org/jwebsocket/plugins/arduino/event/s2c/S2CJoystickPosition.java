@@ -26,8 +26,8 @@ import org.jwebsocket.token.Token;
  */
 public class S2CJoystickPosition extends S2CEvent {
 
-	private Integer mX;
-	private Integer mY;
+	private final Integer mX;
+	private final Integer mY;
 
 	/**
 	 *

@@ -41,15 +41,15 @@ public class AutomTestPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_TEST_AUTOMATION =
-			JWebSocketServerConstants.NS_BASE + ".plugins.test";
+	private static final String NS_TEST_AUTOMATION
+			= JWebSocketServerConstants.NS_BASE + ".plugins.test";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket AutomTestPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-	private final static String DESCRIPTION =
-			"jWebSocket Automated Tests PlugIn - Community Edition";
+	private final static String DESCRIPTION
+			= "jWebSocket Automated Tests PlugIn - Community Edition";
 	// TODO: remove t. prefix here!
 	private final static String BROADCAST = "t.broadcast";
 	private final static String COMPLEX_VALIDATION = "t.complex_validation";
@@ -155,7 +155,7 @@ public class AutomTestPlugIn extends TokenPlugIn {
 		int lDelay = aToken.getInteger("delay", 2000);
 		try {
 			Thread.sleep(lDelay);
-		} catch (Exception lEx) {
+		} catch (InterruptedException lEx) {
 		}
 
 		sendToken(aConnector, aConnector, lResponse);
