@@ -170,7 +170,6 @@ public class CloudPlugIn extends TokenPlugIn {
 
 		Token lResponse = createResponse(aToken);
 
-
 		lServer.sendToken(aConnector, lResponse);
 	}
 }

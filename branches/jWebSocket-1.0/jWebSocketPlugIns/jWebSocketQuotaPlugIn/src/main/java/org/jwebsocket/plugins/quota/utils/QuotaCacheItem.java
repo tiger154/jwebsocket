@@ -27,24 +27,45 @@ public class QuotaCacheItem {
     private boolean mHasQuota;
     private long mExpiredTime;
 
-    public QuotaCacheItem(boolean hasQuota, long expiredTime) {
+	/**
+	 *
+	 * @param hasQuota
+	 * @param expiredTime
+	 */
+	public QuotaCacheItem(boolean hasQuota, long expiredTime) {
         this.mHasQuota = hasQuota;
         this.mExpiredTime = expiredTime;
     }
 
-    public void setHasQuota(boolean aHasQuota) {
+	/**
+	 *
+	 * @param aHasQuota
+	 */
+	public void setHasQuota(boolean aHasQuota) {
         this.mHasQuota = aHasQuota;
     }
 
-    public void setExpiredTime(long aExpiredTime) {
+	/**
+	 *
+	 * @param aExpiredTime
+	 */
+	public void setExpiredTime(long aExpiredTime) {
         this.mExpiredTime = aExpiredTime;
     }
 
-    public boolean isAvailableQuota() {
+	/**
+	 *
+	 * @return
+	 */
+	public boolean isAvailableQuota() {
         return mHasQuota;
     }
 
-    public long getExpiredTime() {
+	/**
+	 *
+	 * @return
+	 */
+	public long getExpiredTime() {
         return mExpiredTime;
     }
 

@@ -25,5 +25,5 @@ import javolution.util.FastSet;
  */
 public class SharedSets {
 
-	private FastSet set = new FastSet();
+	private final FastSet set = new FastSet();
 }

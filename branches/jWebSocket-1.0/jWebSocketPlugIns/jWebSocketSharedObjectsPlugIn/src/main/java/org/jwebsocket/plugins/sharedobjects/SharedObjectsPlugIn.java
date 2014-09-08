@@ -44,20 +44,20 @@ public class SharedObjectsPlugIn extends TokenPlugIn {
 
 	private static Logger log = Logging.getLogger();
 	// if namespace is changed update client plug-in accordingly!
-	private String NS_SHARED_OBJECTS =
-			JWebSocketServerConstants.NS_BASE + ".plugins.sharedObjs";
+	private final String NS_SHARED_OBJECTS
+			= JWebSocketServerConstants.NS_BASE + ".plugins.sharedObjs";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket SharedObjectsPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-	private final static String DESCRIPTION =
-			"jWebSocket SharedObjects PlugIn - Community Edition";
-	private SharedObjects sharedObjects = new SharedObjects();
+	private final static String DESCRIPTION
+			= "jWebSocket SharedObjects PlugIn - Community Edition";
+	private final SharedObjects sharedObjects = new SharedObjects();
 	// if data types are changed update client plug-in accordingly!
-	private List<String> DATA_TYPES = new FastList<String>(Arrays.asList(
+	private final List<String> DATA_TYPES = new FastList<String>(Arrays.asList(
 			new String[]{"number", "string", "boolean", "object",
-		"set", "list", "map", "table"}));
+				"set", "list", "map", "table"}));
 
 	/**
 	 *

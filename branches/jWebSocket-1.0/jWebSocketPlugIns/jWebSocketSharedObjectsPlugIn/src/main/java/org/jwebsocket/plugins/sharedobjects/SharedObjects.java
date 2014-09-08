@@ -28,8 +28,8 @@ import org.jwebsocket.logging.Logging;
  */
 public class SharedObjects {
 
-	private static Logger log = Logging.getLogger(SharedObjects.class);
-	private FastMap<String, Object> objects = new FastMap<String, Object>();
+	private static final Logger log = Logging.getLogger(SharedObjects.class);
+	private final FastMap<String, Object> objects = new FastMap<String, Object>();
 
 	/**
 	 *

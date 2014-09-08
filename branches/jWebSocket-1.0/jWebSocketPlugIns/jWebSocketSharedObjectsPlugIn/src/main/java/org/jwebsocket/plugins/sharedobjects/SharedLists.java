@@ -29,7 +29,7 @@ import org.jwebsocket.token.Token;
  */
 public class SharedLists {
 
-	private Map<String, FastList> mLists = new FastMap<String, FastList>();
+	private final Map<String, FastList> mLists = new FastMap<String, FastList>();
 
 	/**
 	 *

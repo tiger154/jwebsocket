@@ -28,8 +28,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jwebsocket.jms.endpoint.JMSEndPoint;
-import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
-import org.jwebsocket.jms.endpoint.JWSEndPointSender;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
@@ -183,7 +181,7 @@ public class JMSClient {
 		boolean lConfigLoaded;
 		try {
 			// try to load properties files from local folder or jar
-			String lPath ="JMSClient.properties";
+			String lPath = "JMSClient.properties";
 			mLog.debug("Tring to read properties from: " + lPath);
 			lConfig = new PropertiesConfiguration(lPath);
 		} catch (ConfigurationException ex) {
@@ -244,10 +242,10 @@ public class JMSClient {
 					lOAuthPassword,
 					lOAuthTimeout
 			);
-			try{
+			try {
 				lOAuthAuthenticator.authDirect(lOAuthUsername, lOAuthPassword);
-			} catch(JMSEndpointException lEx) {
-				mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: " 
+			} catch (JMSEndpointException lEx) {
+				mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: "
 						+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 			}
 			lAuthenticator.addAuthenticator(lAuthenticator);
@@ -269,10 +267,10 @@ public class JMSClient {
 					lBaseDNUsers
 			);
 			// to authenticatie the client, if required
-			try{
+			try {
 				lLDAPAuthenticator.bind(lBindUsername, lBindPassword);
-			} catch(JMSEndpointException lEx) {
-				mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: " 
+			} catch (JMSEndpointException lEx) {
+				mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: "
 						+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 			}
 			lAuthenticator.addAuthenticator(lLDAPAuthenticator);

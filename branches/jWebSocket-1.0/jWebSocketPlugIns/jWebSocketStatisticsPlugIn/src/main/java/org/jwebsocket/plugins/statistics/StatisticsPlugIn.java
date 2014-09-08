@@ -42,15 +42,15 @@ public class StatisticsPlugIn extends TokenPlugIn {
 	 private static final String SMTP_HOST_KEY = "smtp_host";
 	 */
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_STATISTICS =
-			JWebSocketServerConstants.NS_BASE + ".plugins.statistics";
+	private static final String NS_STATISTICS
+			= JWebSocketServerConstants.NS_BASE + ".plugins.statistics";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket StatisticsPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-	private final static String DESCRIPTION =
-			"jWebSocket Statistics PlugIn - Community Edition";
+	private final static String DESCRIPTION
+			= "jWebSocket Statistics PlugIn - Community Edition";
 	// private WebSocketPlugIn mStreamingPlugin = null;
 	// private BaseStream mStream = null;
 

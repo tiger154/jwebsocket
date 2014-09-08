@@ -133,7 +133,6 @@ public class MonitorStream extends TokenStream {
 					lToken.setInteger("usableDisk", (int) (lFile.getUsableSpace() >> 10));
 
 					// : further tags to be continued....
-
 					put(lToken);
 				} catch (InterruptedException lEx) {
 					mLog.error("(run) " + lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
