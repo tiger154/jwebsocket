@@ -63,6 +63,13 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		mConnectors = new FastMap<WebSocket, GrizzlyConnector>().shared();
 	}
 
+	/**
+	 *
+	 * @param handler
+	 * @param requestPacket
+	 * @param listeners
+	 * @return
+	 */
 	@Override
 	public WebSocket createSocket(ProtocolHandler handler, HttpRequestPacket requestPacket, WebSocketListener... listeners) {
 		if (isApplicationRequest(requestPacket)) {

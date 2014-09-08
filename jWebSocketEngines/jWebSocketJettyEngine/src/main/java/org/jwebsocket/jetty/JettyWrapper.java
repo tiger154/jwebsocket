@@ -31,7 +31,6 @@ import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.engines.BaseEngine;
-import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
@@ -45,7 +44,7 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 // " http://www.opennms.org/wiki/Standalone_HTTPS_with_Jetty
 /**
  *
- * @author alexanderschulze
+ * @author Alexander Schulze
  */
 public class JettyWrapper implements WebSocket,
 		OnTextMessage, OnBinaryMessage, OnFrame, OnControl {
@@ -58,6 +57,7 @@ public class JettyWrapper implements WebSocket,
 
 	/**
 	 *
+	 * @param aEngine
 	 * @param aRequest
 	 * @param aProtocol
 	 */

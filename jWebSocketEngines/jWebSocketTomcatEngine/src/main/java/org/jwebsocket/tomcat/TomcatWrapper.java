@@ -53,211 +53,211 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
  */
 public class TomcatWrapper extends MessageInbound {
 
-    private static final Logger mLog = Logging.getLogger();
-    private TomcatConnector mConnector = null;
-    private static WebSocketEngine mEngine = null;
-    private HttpServletRequest mRequest = null;
-    private HttpSession mSession = null;
-    private final RequestHeader mHeader;
-    private final InetAddress mRemoteHost;
-    private int mRemotePort;
-    private boolean mIsSecure;
+	private static final Logger mLog = Logging.getLogger();
+	private TomcatConnector mConnector = null;
+	private static WebSocketEngine mEngine = null;
+	private HttpServletRequest mRequest = null;
+	private HttpSession mSession = null;
+	private final RequestHeader mHeader;
+	private final InetAddress mRemoteHost;
+	private int mRemotePort;
+	private boolean mIsSecure;
 
-    /**
-     *
-     * @param aSubProtocols
-     * @return
-     */
-    public static String selectSubProtocol(List<String> aSubProtocols) {
-        // TODO: implement correct algorithm here!
-        String lSubProt;
-        if (null == aSubProtocols || aSubProtocols.size() <= 0) {
-            lSubProt = JWebSocketCommonConstants.WS_SUBPROT_JSON;
-        } else {
-            lSubProt = aSubProtocols.get(0);
-        }
-        return lSubProt;
-    }
+	/**
+	 *
+	 * @param aSubProtocols
+	 * @return
+	 */
+	public static String selectSubProtocol(List<String> aSubProtocols) {
+		// TODO: implement correct algorithm here!
+		String lSubProt;
+		if (null == aSubProtocols || aSubProtocols.size() <= 0) {
+			lSubProt = JWebSocketCommonConstants.WS_SUBPROT_JSON;
+		} else {
+			lSubProt = aSubProtocols.get(0);
+		}
+		return lSubProt;
+	}
 
-    /**
-     *
-     * @param aEngine
-     * @param aRequest
-     * @param aSubProtocol
-     */
-    public TomcatWrapper(TomcatEngine aEngine, HttpServletRequest aRequest, String aSubProtocol) {
-        super();
+	/**
+	 *
+	 * @param aEngine
+	 * @param aRequest
+	 * @param aSubProtocol
+	 */
+	public TomcatWrapper(TomcatEngine aEngine, HttpServletRequest aRequest, String aSubProtocol) {
+		super();
 
-        mEngine = aEngine;
-        // setting the max frame size
-        setByteBufferMaxSize(aEngine.getMaxFrameSize());
-        mRequest = aRequest;
-        mIsSecure = aRequest.isSecure();
-        mSession = aRequest.getSession();
+		mEngine = aEngine;
+		// setting the max frame size
+		setByteBufferMaxSize(aEngine.getMaxFrameSize());
+		mRequest = aRequest;
+		mIsSecure = aRequest.isSecure();
+		mSession = aRequest.getSession();
 
-        mRemotePort = mRequest.getRemotePort();
-        InetAddress lAddr;
-        try {
-            lAddr = InetAddress.getByName(mRequest.getRemoteAddr());
-        } catch (Exception lEx) {
-            lAddr = null;
-        }
-        mRemoteHost = lAddr;
+		mRemotePort = mRequest.getRemotePort();
+		InetAddress lAddr;
+		try {
+			lAddr = InetAddress.getByName(mRequest.getRemoteAddr());
+		} catch (Exception lEx) {
+			lAddr = null;
+		}
+		mRemoteHost = lAddr;
 
-        RequestHeader lHeader = new RequestHeader();
+		RequestHeader lHeader = new RequestHeader();
 
-        // iterate throught URL args
-        Map<String, String> lArgs = new FastMap<String, String>();
-        Map<String, String[]> lReqArgs = aRequest.getParameterMap();
-        for (String lArgName : lReqArgs.keySet()) {
-            String[] lArgVals = lReqArgs.get(lArgName);
-            if (lArgVals != null && lArgVals.length > 0) {
-                lArgs.put(lArgName, lArgVals[0]);
-            }
-        }
-        lHeader.put(RequestHeader.URL_ARGS, lArgs);
+		// iterate throught URL args
+		Map<String, String> lArgs = new FastMap<String, String>();
+		Map<String, String[]> lReqArgs = aRequest.getParameterMap();
+		for (String lArgName : lReqArgs.keySet()) {
+			String[] lArgVals = lReqArgs.get(lArgName);
+			if (lArgVals != null && lArgVals.length > 0) {
+				lArgs.put(lArgName, lArgVals[0]);
+			}
+		}
+		lHeader.put(RequestHeader.URL_ARGS, lArgs);
 
-        // set default sub protocol if none passed
-        if (null == aSubProtocol) {
-            aSubProtocol = JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
-        }
-        lHeader.put(RequestHeader.WS_PROTOCOL, aSubProtocol);
-        lHeader.put(RequestHeader.WS_PATH, aRequest.getRequestURI());
+		// set default sub protocol if none passed
+		if (null == aSubProtocol) {
+			aSubProtocol = JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
+		}
+		lHeader.put(RequestHeader.WS_PROTOCOL, aSubProtocol);
+		lHeader.put(RequestHeader.WS_PATH, aRequest.getRequestURI());
 
-        // iterate throught header params
-        Enumeration<String> lHeaderNames = aRequest.getHeaderNames();
-        while (lHeaderNames.hasMoreElements()) {
-            String lHeaderName = lHeaderNames.nextElement();
-            if (null != lHeaderName) {
-                lHeaderName = lHeaderName.toLowerCase();
-                lHeader.put(lHeaderName, aRequest.getHeader(lHeaderName));
-            }
-        }
+		// iterate throught header params
+		Enumeration<String> lHeaderNames = aRequest.getHeaderNames();
+		while (lHeaderNames.hasMoreElements()) {
+			String lHeaderName = lHeaderNames.nextElement();
+			if (null != lHeaderName) {
+				lHeaderName = lHeaderName.toLowerCase();
+				lHeader.put(lHeaderName, aRequest.getHeader(lHeaderName));
+			}
+		}
 
-        lHeader.put(RequestHeader.WS_SEARCHSTRING, aRequest.getQueryString());
+		lHeader.put(RequestHeader.WS_SEARCHSTRING, aRequest.getQueryString());
 
-        // Setting client cookies
-        Cookie[] lCookies = aRequest.getCookies();
-        Map lCookiesMap = new FastMap().shared();
-        if (null != lCookies) {
-            for (int lIdx = 0; lIdx < lCookies.length; lIdx++) {
-                lCookiesMap.put(lCookies[lIdx].getName(), lCookies[lIdx].getValue());
-            }
-        }
-        lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
+		// Setting client cookies
+		Cookie[] lCookies = aRequest.getCookies();
+		Map lCookiesMap = new FastMap().shared();
+		if (null != lCookies) {
+			for (int lIdx = 0; lIdx < lCookies.length; lIdx++) {
+				lCookiesMap.put(lCookies[lIdx].getName(), lCookies[lIdx].getValue());
+			}
+		}
+		lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
 
-        mHeader = lHeader;
-    }
+		mHeader = lHeader;
+	}
 
-    /**
-     *
-     * @param aOutbound
-     */
-    @Override
-    protected void onOpen(WsOutbound aOutbound) {
-        // closing if server is not ready
-        if (JWebSocketInstance.STARTED != JWebSocketInstance.getStatus()) {
-            try {
-                aOutbound.close(0, null);
-            } catch (IOException lEx) {
-            }
-            return;
-        }
+	/**
+	 *
+	 * @param aOutbound
+	 */
+	@Override
+	protected void onOpen(WsOutbound aOutbound) {
+		// closing if server is not ready
+		if (JWebSocketInstance.STARTED != JWebSocketInstance.getStatus()) {
+			try {
+				aOutbound.close(0, null);
+			} catch (IOException lEx) {
+			}
+			return;
+		}
 
-        // super.onOpen(aOutbound);
-        if (mLog.isDebugEnabled()) {
-            mLog.debug("Connecting Tomcat ("
-                    + (mIsSecure ? "SSL" : "plain")
-                    + ") client...");
-        }
+		// super.onOpen(aOutbound);
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Connecting Tomcat ("
+					+ (mIsSecure ? "SSL" : "plain")
+					+ ") client...");
+		}
 
-        // supporting max connections reached strategy
-        if (mEngine.getConnectors().size() == mEngine.getConfiguration().getMaxConnections()) {
-            String lMessage = "Client(" + mRemoteHost.getHostAddress() + ") not accepted due to max connections reached.";
-            if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("close")) {
-                if (mLog.isDebugEnabled()) {
-                    mLog.debug(lMessage + " Connection closed!");
-                }
-                try {
-                    aOutbound.close(0, null);
-                } catch (IOException lEx) {
-                }
-            } else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("reject")) {
-                if (mLog.isDebugEnabled()) {
-                    mLog.debug(lMessage + " Connection rejected!");
-                }
-                try {
-                    aOutbound.close(CloseReason.SERVER_REJECT_CONNECTION.getCode(), null);
-                } catch (IOException lEx) {
-                }
-            }
+		// supporting max connections reached strategy
+		if (mEngine.getConnectors().size() == mEngine.getConfiguration().getMaxConnections()) {
+			String lMessage = "Client(" + mRemoteHost.getHostAddress() + ") not accepted due to max connections reached.";
+			if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("close")) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug(lMessage + " Connection closed!");
+				}
+				try {
+					aOutbound.close(0, null);
+				} catch (IOException lEx) {
+				}
+			} else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("reject")) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug(lMessage + " Connection rejected!");
+				}
+				try {
+					aOutbound.close(CloseReason.SERVER_REJECT_CONNECTION.getCode(), null);
+				} catch (IOException lEx) {
+				}
+			}
 
-            return;
-        }
-        mConnector = new TomcatConnector(mEngine, mRequest, aOutbound);
-        mConnector.setSSL(mIsSecure);
-        mConnector.getSession().setSessionId(mSession.getId());
-        if (JWebSocketConfig.isWebApp()) {
-            mConnector.getSession().setStorage(new HttpSessionStorage(mSession));
-            // setting creation time 
-            mConnector.getSession().getStorage().put(WebSocketSession.CREATED_AT, mSession.getCreationTime());
-        }
-        mConnector.setHeader(mHeader);
-        mConnector.setSubprot(mHeader.getSubProtocol());
-        mConnector.setRemotePort(mRemotePort);
-        mConnector.setRemoteHost(mRemoteHost);
-        mEngine.addConnector(mConnector);
+			return;
+		}
+		mConnector = new TomcatConnector(mEngine, mRequest, aOutbound);
+		mConnector.setSSL(mIsSecure);
+		mConnector.getSession().setSessionId(mSession.getId());
+		if (JWebSocketConfig.isWebApp()) {
+			mConnector.getSession().setStorage(new HttpSessionStorage(mSession));
+			// setting creation time 
+			mConnector.getSession().getStorage().put(WebSocketSession.CREATED_AT, mSession.getCreationTime());
+		}
+		mConnector.setHeader(mHeader);
+		mConnector.setSubprot(mHeader.getSubProtocol());
+		mConnector.setRemotePort(mRemotePort);
+		mConnector.setRemoteHost(mRemoteHost);
+		mEngine.addConnector(mConnector);
 
-        mConnector.startConnector();
-    }
+		mConnector.startConnector();
+	}
 
-    /**
-     *
-     * @param aStatus
-     */
-    @Override
-    protected void onClose(int aStatus) {
-        if (null != mConnector) {
-            if (mLog.isDebugEnabled()) {
-                mLog.debug("Disconnecting Tomcat Client...");
-            }
-            mConnector.stopConnector(CloseReason.CLIENT);
-        }
-    }
+	/**
+	 *
+	 * @param aStatus
+	 */
+	@Override
+	protected void onClose(int aStatus) {
+		if (null != mConnector) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Disconnecting Tomcat Client...");
+			}
+			mConnector.stopConnector(CloseReason.CLIENT);
+		}
+	}
 
-    /**
-     *
-     * @param aMessage
-     * @throws IOException
-     */
-    @Override
-    protected void onBinaryMessage(ByteBuffer aMessage) throws IOException {
-        if (aMessage.remaining() > mConnector.getMaxFrameSize()) {
-            mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.remaining()));
-            return;
-        }
-        if (null != mConnector) {
-            // TODO: implement binary Tomcat messages!
-            WebSocketPacket lDataPacket = new RawPacket(aMessage.array());
-            lDataPacket.setFrameType(WebSocketFrameType.BINARY);
-            mConnector.processPacket(lDataPacket);
-        }
-    }
+	/**
+	 *
+	 * @param aMessage
+	 * @throws IOException
+	 */
+	@Override
+	protected void onBinaryMessage(ByteBuffer aMessage) throws IOException {
+		if (aMessage.remaining() > mConnector.getMaxFrameSize()) {
+			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.remaining()));
+			return;
+		}
+		if (null != mConnector) {
+			// TODO: implement binary Tomcat messages!
+			WebSocketPacket lDataPacket = new RawPacket(aMessage.array());
+			lDataPacket.setFrameType(WebSocketFrameType.BINARY);
+			mConnector.processPacket(lDataPacket);
+		}
+	}
 
-    /**
-     *
-     * @param aMessage
-     * @throws IOException
-     */
-    @Override
-    protected void onTextMessage(CharBuffer aMessage) throws IOException {
-        if (aMessage.remaining() > mConnector.getMaxFrameSize()) {
-            mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.length()));
-            return;
-        }
-        if (null != mConnector) {
-            WebSocketPacket lDataPacket = new RawPacket(aMessage.toString());
-            mConnector.processPacket(lDataPacket);
-        }
-    }
+	/**
+	 *
+	 * @param aMessage
+	 * @throws IOException
+	 */
+	@Override
+	protected void onTextMessage(CharBuffer aMessage) throws IOException {
+		if (aMessage.remaining() > mConnector.getMaxFrameSize()) {
+			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.length()));
+			return;
+		}
+		if (null != mConnector) {
+			WebSocketPacket lDataPacket = new RawPacket(aMessage.toString());
+			mConnector.processPacket(lDataPacket);
+		}
+	}
 }
