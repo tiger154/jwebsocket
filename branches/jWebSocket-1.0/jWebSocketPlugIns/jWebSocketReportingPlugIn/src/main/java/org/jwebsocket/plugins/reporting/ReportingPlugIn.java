@@ -41,6 +41,7 @@ import org.jwebsocket.plugins.reporting.api.IJasperReportService;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -79,7 +80,7 @@ public class ReportingPlugIn extends ActionPlugIn {
 			if (mLog.isInfoEnabled()) {
 				mLog.info("Reporting plugin succesfully instantiated");
 			}
-		} catch (Exception lEx) {
+		} catch (BeansException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating ReportingPlugIn"));
 		}
 	}
@@ -212,7 +213,7 @@ public class ReportingPlugIn extends ActionPlugIn {
 		// crating a response token for client
 		Token lResponse = createResponse(aToken);
 		String lUserHome = getUserHome(aConnector);
-		String lReportPath = "";
+		String lReportPath;
 		try {
 			lReportPath = mJasperReportService.generateReport(lUserHome, lReportName,
 					lReportParams, lReportFields, lConnection, lReportFormat);

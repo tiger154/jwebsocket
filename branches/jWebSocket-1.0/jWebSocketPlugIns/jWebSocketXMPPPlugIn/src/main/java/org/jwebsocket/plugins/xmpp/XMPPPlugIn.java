@@ -58,8 +58,8 @@ public class XMPPPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_XMPP =
-			JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";
+	private static final String NS_XMPP
+			= JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket XMPPPlugIn";
@@ -333,11 +333,11 @@ public class XMPPPlugIn extends TokenPlugIn {
 			XMPPConnection lXMPPConn = getXMPPConnection(aConnector);
 			if (lXMPPConn == null) {
 				// Create a connection to the xmpp server on a specific port.
-				ConnectionConfiguration lConnCfg =
-						new ConnectionConfiguration(
-						lCredentials.getHost(),
-						lCredentials.getPort(),
-						lCredentials.getDomain());
+				ConnectionConfiguration lConnCfg
+						= new ConnectionConfiguration(
+								lCredentials.getHost(),
+								lCredentials.getPort(),
+								lCredentials.getDomain());
 				// especially for google talk!
 				lConnCfg.setSASLAuthenticationEnabled(false);
 				lXMPPConn = new XMPPConnection(lConnCfg);
@@ -355,7 +355,7 @@ public class XMPPPlugIn extends TokenPlugIn {
 			if (mLog.isInfoEnabled()) {
 				mLog.info(lMsg);
 			}
-		} catch (Exception lEx) {
+		} catch (XMPPException lEx) {
 			lMsg = lEx.getClass().getSimpleName() + ": " + lEx.getMessage();
 			mLog.error(lMsg);
 			lResponse.setInteger("code", -1);
@@ -453,7 +453,7 @@ public class XMPPPlugIn extends TokenPlugIn {
 					mLog.info(lMsg);
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (XMPPException lEx) {
 			lMsg = lEx.getClass().getSimpleName() + ": " + lEx.getMessage();
 			mLog.error(lMsg);
 			lResponse.setInteger("code", -1);
@@ -677,7 +677,7 @@ public class XMPPPlugIn extends TokenPlugIn {
 				lResponse.setInteger("code", -1);
 				lMsg = "No chat active.";
 			}
-		} catch (Exception lEx) {
+		} catch (XMPPException lEx) {
 			lMsg = lEx.getClass().getSimpleName() + ": " + lEx.getMessage();
 			mLog.error(lMsg);
 			lResponse.setInteger("code", -1);

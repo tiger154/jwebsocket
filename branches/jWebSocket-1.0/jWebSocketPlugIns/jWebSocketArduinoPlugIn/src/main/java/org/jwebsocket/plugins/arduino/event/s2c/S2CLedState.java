@@ -26,10 +26,10 @@ import org.jwebsocket.token.Token;
  */
 public class S2CLedState extends S2CEvent {
 
-	private Boolean mBlue;
-	private Boolean mRed;
-	private Boolean mGreen;
-	private Boolean mYellow;
+	private final Boolean mBlue;
+	private final Boolean mRed;
+	private final Boolean mGreen;
+	private final Boolean mYellow;
 
 	/**
 	 *

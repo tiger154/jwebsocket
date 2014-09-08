@@ -32,7 +32,10 @@ import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaAlreadyExist;
  */
 public class QuotaDiskSpace extends BaseQuota {
 
-    public static final String JWS_HOME = JWebSocketServerConstants.JWEBSOCKET_HOME;
+	/**
+	 *
+	 */
+	public static final String JWS_HOME = JWebSocketServerConstants.JWEBSOCKET_HOME;
     /**
      * Private directory.
      */

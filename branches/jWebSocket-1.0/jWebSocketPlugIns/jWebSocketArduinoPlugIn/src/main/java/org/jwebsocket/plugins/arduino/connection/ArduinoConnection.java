@@ -47,7 +47,7 @@ public class ArduinoConnection extends ObservableObject implements SerialPortEve
 	private Integer mDataBits;
 	private Integer mStopBits;
 	private Integer mParity;
-	private byte[] mBuffer;
+	private final byte[] mBuffer;
 
 	/**
 	 *

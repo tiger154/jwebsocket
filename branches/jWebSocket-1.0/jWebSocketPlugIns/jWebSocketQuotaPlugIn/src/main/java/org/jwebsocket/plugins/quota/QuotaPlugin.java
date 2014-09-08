@@ -52,8 +52,10 @@ public class QuotaPlugin extends ActionPlugIn {
     private QuotaServices mQuotaService;
     private JMSManager mMessageHub;
 
-
-    public static final String NS = JWebSocketServerConstants.NS_BASE + ".plugins.quota";
+	/**
+	 *
+	 */
+	public static final String NS = JWebSocketServerConstants.NS_BASE + ".plugins.quota";
     private final static String VERSION = "1.0.0";
     private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
     private final static String LABEL = "jWebSocket QuotaPlugIn";

@@ -26,5 +26,5 @@ import javolution.util.FastMap;
  */
 public class SharedMaps {
 
-	private Map mMaps = new FastMap();
+	private final Map mMaps = new FastMap();
 }

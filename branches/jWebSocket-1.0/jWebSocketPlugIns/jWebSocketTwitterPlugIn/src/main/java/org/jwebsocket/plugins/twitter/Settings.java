@@ -94,9 +94,9 @@ public class Settings {
 	}
 
 	/**
-	 * @param mConsumerKey the mConsumerKey to set
+	 * @param aConsumerKey the mConsumerKey to set
 	 */
-	public void setConsumerKey(String mConsumerKey) {
-		this.mConsumerKey = mConsumerKey;
+	public void setConsumerKey(String aConsumerKey) {
+		mConsumerKey = aConsumerKey;
 	}
 }

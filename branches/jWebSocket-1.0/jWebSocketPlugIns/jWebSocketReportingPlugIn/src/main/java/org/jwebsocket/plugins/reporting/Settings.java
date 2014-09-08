@@ -67,17 +67,21 @@ public class Settings {
 		mOutputFolder = aOutputFolder;
 	}
 
-	/** Gets the mJdbcAlias
-	 * 
+	/**
+	 * Gets the mJdbcAlias
+	 *
 	 * @return the mJdbcAlias
 	 */
 	public String getJdbcAlias() {
 		return mJdbcAlias;
 	}
 
+	/**
+	 *
+	 * @param aJdbcAlias
+	 */
 	public void setJdbcAlias(String aJdbcAlias) {
 		mJdbcAlias = aJdbcAlias;
 	}
-	
-	
+
 }

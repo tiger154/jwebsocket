@@ -136,7 +136,6 @@ public class TimeStream extends TokenStream {
 					 *
 					 * lToken.setMap("record", lRecord);
 					 */
-
 					// log.debug("Time streamer queues '" + lData + "'...");
 					put(lToken);
 				} catch (InterruptedException lEx) {

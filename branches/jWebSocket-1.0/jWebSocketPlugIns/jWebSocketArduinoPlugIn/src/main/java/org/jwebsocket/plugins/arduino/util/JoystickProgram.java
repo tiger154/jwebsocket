@@ -23,16 +23,16 @@ package org.jwebsocket.plugins.arduino.util;
  */
 public class JoystickProgram {
 
-    /**
-     * 
-     * @param aData
-     * @return
-     */
-    public static Integer[] treatValues(String aData) {
-        Integer lX = Integer.valueOf(aData.split("_")[0]);
-        String lTempY = aData.split("_")[1];
-        Integer lY = Integer.valueOf(lTempY.substring(0, lTempY.length() - 1));
+	/**
+	 *
+	 * @param aData
+	 * @return
+	 */
+	public static Integer[] treatValues(String aData) {
+		Integer lX = Integer.valueOf(aData.split("_")[0]);
+		String lTempY = aData.split("_")[1];
+		Integer lY = Integer.valueOf(lTempY.substring(0, lTempY.length() - 1));
 
-        return new Integer[]{lX, lY};
-    }
+		return new Integer[]{lX, lY};
+	}
 }
