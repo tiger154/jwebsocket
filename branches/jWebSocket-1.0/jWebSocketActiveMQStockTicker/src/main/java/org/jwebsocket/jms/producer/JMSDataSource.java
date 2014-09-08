@@ -39,7 +39,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JMSDataSource implements Runnable {
 
-	private JmsTemplate mJMSTemplate;
+	private final JmsTemplate mJMSTemplate;
 	private static final Object[] mSTOCKS_ORIG = {
 		"3m Co", "MMM", 71.72F,
 		"AT&T Inc.", "T", 31.61F,
@@ -52,7 +52,7 @@ public class JMSDataSource implements Runnable {
 		"Microsoft Corporation", "MSFT", 25.84F,
 		"Verizon Communications", "VZ", 35.57F,
 		"Wal-Mart Stores, Inc.", "WMT", 45.45F,};
-	private static Object[] mSTOCKS = new Object[mSTOCKS_ORIG.length];
+	private static final Object[] mSTOCKS = new Object[mSTOCKS_ORIG.length];
 	private static final int STOCK_COLUMN_COUNT = 3;
 	private static final int STOCK_ROW_COUNT = mSTOCKS.length / STOCK_COLUMN_COUNT;
 	private static final int TICKER_COLUMN_INDEX = 1;
@@ -63,7 +63,7 @@ public class JMSDataSource implements Runnable {
 	static private Random mRandom;
 	// formatter used to send prices as decimal currency (Locale.ENGLISH allows
 	// us to always use period as separator)
-	static private DecimalFormat mDisplayFormat = new DecimalFormat("####.00", new DecimalFormatSymbols(Locale.ENGLISH));
+	private static final DecimalFormat mDisplayFormat = new DecimalFormat("####.00", new DecimalFormatSymbols(Locale.ENGLISH));
 
 	/**
 	 *
@@ -100,8 +100,8 @@ public class JMSDataSource implements Runnable {
 				mChangeStock();
 				Thread.sleep(500L);
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		} catch (InterruptedException lEx) {
+			lEx.printStackTrace();
 		}
 	}
 
