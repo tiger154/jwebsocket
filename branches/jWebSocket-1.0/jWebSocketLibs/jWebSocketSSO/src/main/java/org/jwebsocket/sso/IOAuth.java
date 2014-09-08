@@ -37,7 +37,7 @@ public interface IOAuth {
 	 * @return
 	 * @throws SSOException
 	 */
-	String getSSOSession (String aUsername, String aPassword, long aTimeout) throws SSOException;
+	String getSSOSession(String aUsername, String aPassword, long aTimeout) throws SSOException;
 
 	/**
 	 *

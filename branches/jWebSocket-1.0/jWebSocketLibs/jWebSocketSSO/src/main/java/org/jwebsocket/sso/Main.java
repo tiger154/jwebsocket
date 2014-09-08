@@ -21,7 +21,6 @@ package org.jwebsocket.sso;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -98,12 +97,13 @@ public class Main {
 		lOAuth.setOAuthAppId(lOAuthAppId);
 		lOAuth.setOAuthAppSecret(lOAuthAppSecret);
 
-		
 		String lSMSession = SiteMinder.getSSOSession(5000);
 		mLog.info("Getting SM Session: " + lSMSession);
-		
-		if(true) return;
-		
+
+		if (true) {
+			return;
+		}
+
 		int lMax = 1;
 		Map<String, Object> lJSON;
 		for (int lCount = 0; lCount < lMax; lCount++) {
@@ -142,5 +142,5 @@ public class Main {
 			 */
 		}
 	}
-	
+
 }
