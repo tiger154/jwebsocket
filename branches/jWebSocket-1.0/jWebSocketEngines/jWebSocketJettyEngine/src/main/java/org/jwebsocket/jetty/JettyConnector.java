@@ -18,7 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jetty;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Map;
 import javax.servlet.http.Cookie;
@@ -45,7 +47,7 @@ public class JettyConnector extends BaseConnector {
 	private static final Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
 	private CloseReason mCloseReason = CloseReason.TIMEOUT;
-	private Connection mConnection;
+	private final Connection mConnection;
 	private HttpServletRequest mRequest = null;
 
 	/**
@@ -99,8 +101,8 @@ public class JettyConnector extends BaseConnector {
 		//Setting client cookies
 		Cookie[] lCookies = aRequest.getCookies();
 		Map lCookiesMap = new FastMap().shared();
-		for (int i = 0; i < lCookies.length; i++) {
-			lCookiesMap.put(lCookies[i].getName(), lCookies[i].getValue());
+		for (Cookie lCookie : lCookies) {
+			lCookiesMap.put(lCookie.getName(), lCookie.getValue());
 		}
 		lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
 
@@ -167,7 +169,7 @@ public class JettyConnector extends BaseConnector {
 			} else {
 				mConnection.sendMessage(aDataPacket.getUTF8());
 			}
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " sending data packet: " + lEx.getMessage());
 		}
 		if (mLog.isDebugEnabled()) {
@@ -197,7 +199,7 @@ public class JettyConnector extends BaseConnector {
 		InetAddress lAddr;
 		try {
 			lAddr = InetAddress.getByName(mRequest.getRemoteAddr());
-		} catch (Exception lEx) {
+		} catch (UnknownHostException lEx) {
 			lAddr = null;
 		}
 		return lAddr;

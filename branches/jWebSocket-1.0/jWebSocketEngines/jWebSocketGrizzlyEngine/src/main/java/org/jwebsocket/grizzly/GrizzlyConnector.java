@@ -20,6 +20,7 @@ package org.jwebsocket.grizzly;
 
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.HttpRequestPacket;
@@ -42,7 +43,7 @@ public class GrizzlyConnector extends BaseConnector {
 
 	private static final Logger mLog = Logging.getLogger();
 	private boolean mRunning = false;
-	private WebSocket mConnection;
+	private final WebSocket mConnection;
 	private HttpRequestPacket mRequest = null;
 	private String mProtocol = null;
 	/**
@@ -235,7 +236,7 @@ public class GrizzlyConnector extends BaseConnector {
 		InetAddress lAddr;
 		try {
 			lAddr = InetAddress.getByName(mRequest.getRemoteAddress());
-		} catch (Exception lEx) {
+		} catch (UnknownHostException lEx) {
 			lAddr = null;
 		}
 		return lAddr;

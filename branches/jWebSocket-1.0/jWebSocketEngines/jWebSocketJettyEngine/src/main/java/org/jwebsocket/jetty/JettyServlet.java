@@ -39,13 +39,24 @@ public class JettyServlet extends WebSocketServlet {
 	private static final Logger mLog = Logging.getLogger();
 	private JettyEngine mEngine;
 
+	/**
+	 *
+	 * @param aEngine
+	 */
 	public JettyServlet(JettyEngine aEngine) {
 		mEngine = aEngine;
 	}
 
+	/**
+	 *
+	 */
 	public JettyServlet() {
 	}
 
+	/**
+	 *
+	 * @throws ServletException
+	 */
 	@Override
 	public void init() throws ServletException {
 		if (null == mEngine) {
@@ -74,8 +85,7 @@ public class JettyServlet extends WebSocketServlet {
 	}
 
 	/**
-	 * Handles the HTTP
-	 * <code>POST</code> method.
+	 * Handles the HTTP <code>POST</code> method.
 	 *
 	 * @param aRequest servlet request
 	 * @param aResponse servlet response

@@ -191,7 +191,7 @@ public class TomcatEngine extends BaseEngine {
 	@Override
 	public void stopEngine(CloseReason aCloseReason) throws WebSocketException {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Stopping Tomcat '" + mTomcatVersion	+ "' engine '" + getId() + "...");
+			mLog.debug("Stopping Tomcat '" + mTomcatVersion + "' engine '" + getId() + "...");
 		}
 
 		// resetting "isRunning" causes engine listener to terminate

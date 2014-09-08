@@ -55,7 +55,7 @@ import org.jwebsocket.util.Tools;
 public class CometServlet extends HttpServlet implements CometProcessor {
 
 	private static Logger mLog;
-	private Map<String, Queue<WebSocketPacket>> mPacketsQueue = new FastMap<String, Queue<WebSocketPacket>>();
+	private final Map<String, Queue<WebSocketPacket>> mPacketsQueue = new FastMap<String, Queue<WebSocketPacket>>();
 	private TomcatEngine mEngine;
 	Map<String, String> mInternalConnectorIds = new FastMap<String, String>();
 
@@ -116,7 +116,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 					log("The request has been paused because the jWebSocket server is not started."
 							+ " Waiting for 3 seconds the jWebSocket server startup...");
 					Thread.sleep(3000);
-				} catch (Exception lEx) {
+				} catch (InterruptedException lEx) {
 					throw new ServletException(lEx);
 				}
 				mServerStartupTimeoutConsumed = true;
@@ -325,7 +325,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 			if (null == lConnector) {
 				try {
 					aEvent.close();
-				} catch (Exception lEx) {
+				} catch (IOException lEx) {
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "discarding invalid request!"));
 				}
 				return;
@@ -351,7 +351,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 					mLog.debug("Discarding incoming data message...");
 				}
 				aEvent.close();
-			} catch (Exception lEx) {
+			} catch (IOException lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "discarding data message!"));
 			}
 			return;
@@ -372,7 +372,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 			} else {
 				try {
 					aEvent.close();
-				} catch (Exception ex) {
+				} catch (IOException ex) {
 					mLog.error("Unexpected error closing comet event!");
 				}
 			}
