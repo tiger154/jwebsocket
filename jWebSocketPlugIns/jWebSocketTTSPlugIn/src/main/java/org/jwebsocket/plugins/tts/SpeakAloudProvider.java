@@ -62,51 +62,53 @@ public class SpeakAloudProvider implements ITTSProvider {
 	@Override
 	public byte[] generateAudioFromString(String aText, String aGender,
 			String aSpeaker, String aFormat) {
-		byte[] lResult = null;
-		Process lProcess = null;
-		try {
-			String lUUID = "speak"; // UUID.randomUUID().toString();
-			String lTextFN = mTextPath + lUUID + ".txt";
+		synchronized (this) {
+			byte[] lResult = null;
+			Process lProcess = null;
+			try {
+				String lUUID = "speak"; // UUID.randomUUID().toString();
+				String lTextFN = mTextPath + lUUID + ".txt";
 
-			mLog.debug("Executing '" + mExePath + " " + lTextFN + "'...");
+				mLog.debug("Executing '" + mExePath + " " + lTextFN + "'...");
 
-			// write text from client into text file of server harddisk
-			File lTextFile = new File(lTextFN);
-			FileUtils.writeStringToFile(lTextFile, aText, "Cp1252");
+				// write text from client into text file of server harddisk
+				File lTextFile = new File(lTextFN);
+				FileUtils.writeStringToFile(lTextFile, aText, "Cp1252");
 
-			// call conversion tool with appropriate arguments
-			Runtime lRT = Runtime.getRuntime();
-			// pass the text file to be converted.
-			String[] lCmd = {mExePath, lTextFN};
-			lProcess = lRT.exec(lCmd);
+				// call conversion tool with appropriate arguments
+				Runtime lRT = Runtime.getRuntime();
+				// pass the text file to be converted.
+				String[] lCmd = {mExePath, lTextFN};
+				lProcess = lRT.exec(lCmd);
 
-			InputStream lIS = lProcess.getInputStream();
-			InputStreamReader lISR = new InputStreamReader(lIS);
-			BufferedReader lBR = new BufferedReader(lISR);
-			String lLine;
-			while ((lLine = lBR.readLine()) != null) {
+				InputStream lIS = lProcess.getInputStream();
+				InputStreamReader lISR = new InputStreamReader(lIS);
+				BufferedReader lBR = new BufferedReader(lISR);
+				String lLine;
+				while ((lLine = lBR.readLine()) != null) {
 //						System.out.println(lLine);
-			}
-			// wait until process has performed completely
-			if (lProcess.waitFor() != 0) {
-				mLog.error("Converter exited with value " + lProcess.exitValue());
-			} else {
-				mLog.info("Audiostream successfully generated!");
-			}
-			String lAudioFN = mTextPath + lUUID + ".MP3";
-			File lAudioFile = new File(lAudioFN);
-			lResult = FileUtils.readFileToByteArray(lAudioFile);
+				}
+				// wait until process has performed completely
+				if (lProcess.waitFor() != 0) {
+					mLog.error("Converter exited with value " + lProcess.exitValue());
+				} else {
+					mLog.info("Audiostream successfully generated!");
+				}
+				String lAudioFN = mTextPath + lUUID + ".MP3";
+				File lAudioFile = new File(lAudioFN);
+				lResult = FileUtils.readFileToByteArray(lAudioFile);
 
-			FileUtils.deleteQuietly(lTextFile);
-			FileUtils.deleteQuietly(lAudioFile);
+				FileUtils.deleteQuietly(lTextFile);
+				FileUtils.deleteQuietly(lAudioFile);
 
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "performing TTS conversion"));
-		} finally {
-			if (null != lProcess) {
-				lProcess.destroy();
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "performing TTS conversion"));
+			} finally {
+				if (null != lProcess) {
+					lProcess.destroy();
+				}
 			}
+			return lResult;
 		}
-		return lResult;
 	}
 }
