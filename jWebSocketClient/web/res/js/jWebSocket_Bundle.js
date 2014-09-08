@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC3 (build 40709)
+	//:const:*:VERSION:String:1.0.0 RC3 (build 40908)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC3 (build 40709)",
+	VERSION: "1.0.0 RC3 (build 40908)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -7909,6 +7909,8 @@ jws.FileSystemPlugIn = {
 	// core aliases
 	ALIAS_PRIVATE: "privateDir",
 	ALIAS_PUBLIC: "publicDir",
+	ALIAS_SESSION: "sessionDir",
+	ALIAS_USER_SESSION: "uuidDir",
 
 	NOT_FOUND_ERR: 1,
 	SECURITY_ERR: 2,
@@ -10552,14 +10554,14 @@ jws.MailPlugIn = {
 	//:r:*:::void:none
 	processToken: function( aToken ) {
 		// check if namespace matches
-		if( aToken.ns == jws.MailPlugIn.NS ) {
+		if( aToken.ns === jws.MailPlugIn.NS ) {
 			// here you can handle incomimng tokens from the server
 			// directy in the plug-in if desired.
-			if( "sendMail" == aToken.reqType ) {
+			if( "sendMail" === aToken.reqType ) {
 				if( this.OnMailSent ) {
 					this.OnMailSent( aToken );
 				}
-			} else if( "createMail" == aToken.reqType ) {
+			} else if( "createMail" === aToken.reqType ) {
 				if( this.OnMailCreated ) {
 					this.OnMailCreated( aToken );
 				}
@@ -10577,7 +10579,7 @@ jws.MailPlugIn = {
 	//:r:*:::void:none
 	sendMail: function( aId, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.MailPlugIn.NS,
 				type: "sendMail",
@@ -10604,7 +10606,7 @@ jws.MailPlugIn = {
 	//:r:*:::void:none
 	createMail: function( aFrom, aTo, aCC, aBCC, aSubject, aBody, aIsHTML, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.MailPlugIn.NS,
 				type: "createMail",
@@ -10631,7 +10633,7 @@ jws.MailPlugIn = {
 	//:r:*:::void:none
 	dropMail: function( aId, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.MailPlugIn.NS,
 				type: "dropMail",
@@ -10654,31 +10656,31 @@ jws.MailPlugIn = {
 	//:r:*:::void:none
 	addAttachment: function( aId, aFilename, aData, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lEncoding = "base64";
 			var lSuppressEncoder = false;
 			var lScope = jws.SCOPE_PRIVATE;
 			var lVolumeSize = null;
 			var lArchiveName = null;
 			if( aOptions ) {
-				if( aOptions.scope != undefined ) {
+				if( aOptions.scope !== undefined ) {
 					lScope = aOptions.scope;
 				}
-				if( aOptions.encoding != undefined ) {
+				if( aOptions.encoding !== undefined ) {
 					lEncoding = aOptions.encoding;
 				}
-				if( aOptions.suppressEncoder != undefined ) {
+				if( aOptions.suppressEncoder !== undefined ) {
 					lSuppressEncoder = aOptions.suppressEncoder;
 				}
-				if( aOptions.volumeSize != undefined ) {
+				if( aOptions.volumeSize !== undefined ) {
 					lVolumeSize = aOptions.volumeSize;
 				}
-				if( aOptions.archiveName != undefined ) {
+				if( aOptions.archiveName !== undefined ) {
 					lArchiveName = aOptions.archiveName;
 				}
 			}
 			if( !lSuppressEncoder ) {
-				if( lEncoding == "base64" ) {
+				if( lEncoding === "base64" ) {
 					aData = Base64.encode( aData );
 				}
 			}
@@ -10726,7 +10728,7 @@ jws.MailPlugIn = {
 		}
 	}
 
-}
+};
 
 // add the jWebSocket Mail PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.MailPlugIn );
