@@ -17,7 +17,10 @@ if "%1"=="/y" goto dontAsk1
 echo This will run the semi-automated installation tests for jWebSocket v%JWEBSOCKET_VER%. Are you sure?
 pause
 echo ----------------------------------------------------------------------------
-echo Please check if Apache has properly been started...
+echo Please check if the following instances are running properly:
+echo   1) Apache httpd server
+echo   2) Apache AMQ server
+echo   3) Mongo DB server
 echo ----------------------------------------------------------------------------
 pause
 :dontAsk1
