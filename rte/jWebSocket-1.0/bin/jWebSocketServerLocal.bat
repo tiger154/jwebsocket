@@ -1,5 +1,6 @@
 @echo off
-echo Starting the jWebSocket Server in the current path (temporarily overwriting JWEBSOCKET_HOME!)...
+echo Starting the jWebSocket Server in the current path, 
+echo temporarily overwriting JWEBSOCKET_HOME and JWEBSOCKET_EE_HOME!
 echo (C) Copyright 2010-2014 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
 echo.
 

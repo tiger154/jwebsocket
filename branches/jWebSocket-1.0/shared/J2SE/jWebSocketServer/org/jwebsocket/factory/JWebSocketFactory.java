@@ -79,7 +79,7 @@ public class JWebSocketFactory {
         // the following 3 lines must not be removed due to Apache 2.0 license!
         System.out.println("jWebSocket Ver. "
                 + JWebSocketServerConstants.VERSION_STR
-                + " (" + System.getProperty("sun.arch.data.model") + "bit)");
+                + " (Java " + System.getProperty("java.version") + " " + System.getProperty("sun.arch.data.model") + "bit)");
         System.out.println(JWebSocketCommonConstants.COPYRIGHT_CE);
         System.out.println(JWebSocketCommonConstants.LICENSE_CE);
     }
