@@ -37,6 +37,11 @@ public class SiteMinder {
 			// "https://nvsso.nvidia.com/siteminderagent/ntlm/creds.ntc?CHALLENGE=&SMAGENTNAME=-SM-%2f25dnMFQEkTBZ60WR2gFLZBV%2btENJyujCQSz%2bUL%2bHF5JSldPw4nhSWg3lb%2b7oMeX&TARGET=-SM-https%3a%2f%2falsius%2envidia%2ecom%2falsius%2f"
 			"https://alsius.nvidia.com/alsius/";
 
+	/**
+	 *
+	 * @param aTimeout
+	 * @return
+	 */
 	public static String getSSOSession(long aTimeout) {
 		String lPostBody;
 		try {

@@ -250,7 +250,7 @@ public class Main {
 		ADDistributionList lDL = lADTools.getDLfromName(mTestDL1);
 		mLog.info(mTestDL1 + " from name: " + lDL.toString());
 		lDL = lADTools.getDLfromGUID(lDL.getGUID());
-		mLog.info(mTestDL1 +" from GUID: " + lDL.toString());
+		mLog.info(mTestDL1 + " from GUID: " + lDL.toString());
 
 		mLog.info("----------------------");
 
