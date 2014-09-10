@@ -1516,18 +1516,18 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<!-- if you remove this setting the plug-in uses an internal
+				<!--  if you remove this setting the plug-in uses an internal
 				     "allow all ports and domains" default crossdomain.xml -->
 				<setting key="crossdomain_xml">${JWEBSOCKET_HOME}conf/FlashPlugIn/crossdomain.xml</setting>
-				 <!-- Please don't change this configuration if not necessary -->
-				 <!-- In case that you are running the server from linux you will 
+				 <!-- Please don't change this configuration if not necessary.
+				 In case that you are running the server from linux you will 
 				 need special privileges to use any port under 1024, for special 
                  requirements in Linux OS, please refer to our Linux Tips page:
 				 http://jwebsocket.org/documentation/reference-guide/linux-tips. -->
 				<!-- <setting key="port">8843</setting> -->
 			</settings>
 		</plugin>
-
+		
 		<!-- jWebSocket Chat PlugIn -->
 		<!--
 		<plugin>
@@ -1541,12 +1541,12 @@
 		</plugin>
 		-->
 		
-                <plugin>
+		<plugin>
 			<name>org.jwebsocket.plugins.paypal.PayPalPlugIn</name>
 			<id>jws.paypal</id>
 			<ns>org.jwebsocket.plugins.paypal</ns>
 			<jar>jWebSocketPayPalPlugIn-1.0.jar</jar>
-                        <settings>
+            <settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/PayPalPlugIn/paypal.xml</setting>
 			</settings>
 			<server-assignments>
@@ -1886,7 +1886,7 @@
 			</server-assignments>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/QuotaPlugin/quota.xml</setting>
-                <setting key="authentication_method">spring</setting>
+				<setting key="authentication_method">spring</setting>
 			</settings>
 		</plugin>
 		
@@ -2074,6 +2074,66 @@
 			<jar>jWebSocketCloudPlugIn-1.0.jar</jar>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/CloudPlugIn/cloud.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
+		<!-- StringTemplatePlugIn plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.stringtemplate.StringTemplatePlugIn</name>
+			<id>jWebSocketStringTemplatePlugIn</id>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketStringTemplatePlugInEE-1.0.jar</jar>
+			</jars>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/StringTemplatePlugInEE/stringtemplate.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
+		<!-- ANTLR plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.antlr.ANTLRPlugIn</name>
+			<id>jWebSocketANTLRPlugIn</id>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketANTLRPlugInEE-1.0.jar</jar>
+			</jars>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/ANTLRPlugInEE/antlr.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
+		<!-- Ontology plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.ontology.OntologyPlugIn</name>
+			<id>jWebSocketOntologyPlugIn</id>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketOntologyPlugInEE-1.0.jar</jar>
+			</jars>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/OntologyPlugInEE/ontology.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
+		<!-- BPMN plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.bpmn.BPMNPlugIn</name>
+			<id>jWebSocketBPMNPlugIn</id>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketBPMNPlugInEE-1.0.jar</jar>
+			</jars>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/BPMNPlugInEE/bpmn.xml</setting>
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
