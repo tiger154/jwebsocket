@@ -32,7 +32,7 @@ import org.jwebsocket.jms.JMSEngine;
 public interface IConnectorsManager extends IInitializable {
 
 	/**
-	 * Stores new JMSConnector data and returns a JMSConnector instance.
+	 * Store new JMSConnector data and returns a JMSConnector instance.
 	 *
 	 * @param aConnectionId The JMS client connecton id.
 	 * @param aConsumerId The JMS client consumer id.
@@ -45,7 +45,7 @@ public interface IConnectorsManager extends IInitializable {
 			String aSessionId) throws Exception;
 
 	/**
-	 * Returns TRUE if a given replySelector is associated to an existing
+	 * Return TRUE if a given replySelector is associated to an existing
 	 * JMSConnector data, FALSE otherwise.
 	 *
 	 * @param aReplySelector
@@ -55,7 +55,7 @@ public interface IConnectorsManager extends IInitializable {
 	boolean exists(String aReplySelector) throws Exception;
 
 	/**
-	 * Gets a JMSConnector instance given it replySelector. Returns NULL if
+	 * Get a JMSConnector instance given it replySelector. Returns NULL if
 	 * connector data does not exists.
 	 *
 	 * @param aReplySelector
@@ -65,7 +65,7 @@ public interface IConnectorsManager extends IInitializable {
 	JMSConnector get(String aReplySelector) throws Exception;
 
 	/**
-	 * Removes a connector data given it's consumer id.
+	 * Remove a connector data given it's consumer id.
 	 *
 	 * @param aConsumerId
 	 * @throws Exception
@@ -73,7 +73,7 @@ public interface IConnectorsManager extends IInitializable {
 	void remove(String aConsumerId) throws Exception;
 
 	/**
-	 * Sets the JMSEngine instance.
+	 * Set the JMSEngine instance.
 	 *
 	 * @param aEngine
 	 */
@@ -97,7 +97,7 @@ public interface IConnectorsManager extends IInitializable {
 	Map<String, WebSocketConnector> getSharedSession(String aSessionId) throws Exception;
 
 	/**
-	 * Gets the client replySelector by it's JMS consumer id.
+	 * Get the client replySelector by it's JMS consumer id.
 	 *
 	 * @param aConsumerId The client JMS consumer id.
 	 * @return The client replySelector value.
@@ -106,11 +106,19 @@ public interface IConnectorsManager extends IInitializable {
 	String getReplySelectorByConsumerId(String aConsumerId) throws Exception;
 
 	/**
-	 * Sets the connector status. 0 == ONLINE, 1 = OFFLINE
+	 * Set the connector status. 0 == ONLINE, 1 = OFFLINE
 	 *
 	 * @param aReplySelector
 	 * @param aStatus
 	 * @throws java.lang.Exception
 	 */
 	void setStatus(String aReplySelector, int aStatus) throws Exception;
+
+	/**
+	 * Get the active connectors count.
+	 *
+	 * @return
+	 * @throws Exception
+	 */
+	Long count() throws Exception;
 }

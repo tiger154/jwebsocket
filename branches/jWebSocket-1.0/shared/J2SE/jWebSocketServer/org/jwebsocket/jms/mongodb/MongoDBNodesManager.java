@@ -22,6 +22,10 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.jwebsocket.jms.Attributes;
 import org.jwebsocket.jms.NodeStatus;
 import org.jwebsocket.jms.api.IClusterSynchronizer;
@@ -90,6 +94,7 @@ public class MongoDBNodesManager implements INodesManager {
 							.append(Attributes.DESCRIPTION, aDescription)
 							.append(Attributes.IP_ADDRESS, aIpAddress)
 							.append(Attributes.STATUS, NodeStatus.UP)
+							.append(Attributes.START_TIME, new Date().getTime())
 							.append(Attributes.CPU, aCpuUsage)));
 		} else {
 			mNodes.save(new BasicDBObject()
@@ -98,6 +103,7 @@ public class MongoDBNodesManager implements INodesManager {
 					.append(Attributes.DESCRIPTION, aDescription)
 					.append(Attributes.IP_ADDRESS, aIpAddress)
 					.append(Attributes.STATUS, NodeStatus.UP)
+					.append(Attributes.START_TIME, new Date().getTime())
 					.append(Attributes.CPU, aCpuUsage));
 		}
 	}
@@ -123,6 +129,14 @@ public class MongoDBNodesManager implements INodesManager {
 		mNodes.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId), new BasicDBObject()
 				.append("$set", new BasicDBObject()
 						.append(Attributes.STATUS, aStatus)));
+	}
+
+	@Override
+	public Integer getStatus(String aNodeId) throws Exception {
+		Assert.isTrue(exists(aNodeId), "The target node does not exists!");
+		return (Integer) mNodes.findOne(new BasicDBObject().append(Attributes.NODE_ID, aNodeId), new BasicDBObject()
+				.append(Attributes.STATUS, 1))
+				.get(Attributes.STATUS);
 	}
 
 	@Override
@@ -189,5 +203,35 @@ public class MongoDBNodesManager implements INodesManager {
 	@Override
 	public long count() {
 		return mNodes.count(new BasicDBObject().append(Attributes.STATUS, NodeStatus.UP));
+	}
+
+	@Override
+	public double getNodesLoadAvg() throws Exception {
+		DBCursor lCursor = mNodes.find(new BasicDBObject().append(Attributes.STATUS, NodeStatus.UP),
+				new BasicDBObject().append(Attributes.CPU, 1));
+
+		int lCount = 0;
+		double lSum = 0;
+		while (lCursor.hasNext()) {
+			lCount++;
+			lSum += (Double) lCursor.next().get(Attributes.CPU);
+		}
+
+		return (lCount > 0) ? lSum / lCount : 0;
+	}
+
+	@Override
+	public List<Map<String, Object>> listNodes() throws Exception {
+		DBCursor lCursor = mNodes.find(
+				new BasicDBObject(),
+				new BasicDBObject().append("_id", 0))
+				.sort(new BasicDBObject().append(Attributes.START_TIME, 1));
+
+		List<Map<String, Object>> lNodes = new LinkedList<Map<String, Object>>();
+		while (lCursor.hasNext()) {
+			lNodes.add(lCursor.next().toMap());
+		}
+
+		return lNodes;
 	}
 }
