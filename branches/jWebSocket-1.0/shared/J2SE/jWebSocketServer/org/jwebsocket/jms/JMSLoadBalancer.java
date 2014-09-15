@@ -76,6 +76,10 @@ public class JMSLoadBalancer implements IInitializable {
 		mHostname = aHostname;
 	}
 
+	public MessageProducer getNodesMessagesProducer() {
+		return mNodesMessagesProducer;
+	}
+
 	@Override
 	public void initialize() throws Exception {
 		if (mLog.isDebugEnabled()) {
@@ -87,7 +91,7 @@ public class JMSLoadBalancer implements IInitializable {
 		// clients topic
 		final Topic lClientsTopic = mClientsSession.createTopic(mServerDestination);
 		// nodes topic
-		final Topic lNodesTopic = mClientsSession.createTopic(mServerDestination + "_nodes");
+		final Topic lNodesTopic = mServerSession.createTopic(mServerDestination + "_nodes");
 
 		mClientsMessagesConsumer = mClientsSession.createConsumer(lClientsTopic,
 				Attributes.MESSAGE_TYPE + " IS NOT NULL" + " AND " + Attributes.MESSAGE_ID + " IS NOT NULL");
@@ -119,6 +123,10 @@ public class JMSLoadBalancer implements IInitializable {
 					if (!lType.equals(MessageType.ACK)) {
 						// getting optimum node id
 						lNodeId = mNodesManager.getOptimumNode();
+						if (null == lNodeId) {
+							mLog.error("Missing running cluster node. Client message can't be processed!");
+							return;
+						}
 						if (mLog.isDebugEnabled()) {
 							mLog.info("Node '" + lNodeId + "' selected as optimum from (" + mNodesManager.count() + ") nodes...");
 						}
@@ -134,7 +142,7 @@ public class JMSLoadBalancer implements IInitializable {
 							if (mLog.isDebugEnabled()) {
 								mLog.info("Processing message(CONNECTION) from client...");
 							}
-							Message lRequest = mClientsSession.createMessage();
+							Message lRequest = mServerSession.createMessage();
 							// the message type
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							// setting the worker node selected by the LB
@@ -157,7 +165,7 @@ public class JMSLoadBalancer implements IInitializable {
 							if (mLog.isDebugEnabled()) {
 								mLog.info("Processing message(MESSAGE) from client...");
 							}
-							TextMessage lRequest = mClientsSession.createTextMessage(aMessage.getStringProperty(Attributes.DATA));
+							TextMessage lRequest = mServerSession.createTextMessage(aMessage.getStringProperty(Attributes.DATA));
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							lRequest.setStringProperty(Attributes.REPLY_SELECTOR, lReplySelector);
 
@@ -172,7 +180,7 @@ public class JMSLoadBalancer implements IInitializable {
 							if (mLog.isDebugEnabled()) {
 								mLog.info("Processing message(ACK) from client...");
 							}
-							TextMessage lRequest = mClientsSession.createTextMessage(aMessage.getStringProperty(Attributes.DATA));
+							TextMessage lRequest = mServerSession.createTextMessage(aMessage.getStringProperty(Attributes.DATA));
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.MESSAGE.name());
 							lRequest.setStringProperty(Attributes.REPLY_SELECTOR, lReplySelector);
 
@@ -187,7 +195,7 @@ public class JMSLoadBalancer implements IInitializable {
 							if (mLog.isDebugEnabled()) {
 								mLog.info("Processing message(DISCONNECTION) from client...");
 							}
-							Message lRequest = mClientsSession.createMessage();
+							Message lRequest = mServerSession.createMessage();
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							lRequest.setStringProperty(Attributes.REPLY_SELECTOR, lReplySelector);
 
@@ -282,15 +290,14 @@ public class JMSLoadBalancer implements IInitializable {
 		if (mLog.isDebugEnabled()) {
 			mLog.info("Stopping load balancer...");
 		}
+		// setting node status to offline
+		mNodesManager.setStatus(mNodeId, NodeStatus.DOWN);
 
 		// closing consumers and producers
 		mClientsConnectionAdvisor.close();
 		mClientsMessagesConsumer.close();
 		mNodesConnectionAdvisor.close();
 		mNodesMessagesProducer.close();
-
-		// setting status to offline
-		mNodesManager.setStatus(mNodeId, NodeStatus.DOWN);
 
 		// shutting down nodes manager
 		mNodesManager.shutdown();
@@ -303,13 +310,12 @@ public class JMSLoadBalancer implements IInitializable {
 	private void register() throws Exception {
 		Map<String, String> lConsumerData = mNodesManager.getConsumerAdviceTempStorage().getData(mNodeId);
 		// registering node
-
 		mNodesManager.register(lConsumerData.get(Attributes.CONSUMER_ID),
 				mNodeId, mNodesManager.getNodeDescription(),
 				InetAddress.getByName(mHostname).getHostAddress(),
 				Tools.getCpuUsage());
 
-		// registering node CPU usage updater
+		// registering node CPU usage continuous updater
 		Tools.getTimer().scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
