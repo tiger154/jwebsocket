@@ -92,37 +92,55 @@ public class PayPalPlugIn extends TokenPlugIn {
         if (getNamespace().equals(aToken.getNS())) {
             if (TT_PP_PAYMENT.equals(aToken.getType())) {
                 try {
-                    createPayment(aConnector, aToken);
+                    if (hasAuthority(aConnector, this.getNamespace() + ".buy"))
+                        createPayment(aConnector, aToken);
+                    else
+                        sendToken(aConnector, createAccessDenied(aToken));
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_EXECUTE.equals(aToken.getType())) {
                 try {
-                    executePayment(aConnector, aToken);
+                    if (hasAuthority(aConnector, this.getNamespace() + ".buy"))
+                        executePayment(aConnector, aToken);
+                    else
+                        sendToken(aConnector, createAccessDenied(aToken));                    
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_LIST.equals(aToken.getType())) {
                 try {
-                    listPayments(aConnector, aToken);
+                    if (hasAuthority(aConnector, this.getNamespace() + ".check"))
+                        listPayments(aConnector, aToken);
+                    else
+                        sendToken(aConnector, createAccessDenied(aToken));
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_GET.equals(aToken.getType())) {
                 try {
-                    getPayment(aConnector, aToken);
+                    if (hasAuthority(aConnector, this.getNamespace() + ".check"))
+                        getPayment(aConnector, aToken);
+                    else
+                        sendToken(aConnector, createAccessDenied(aToken));
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_SALE.equals(aToken.getType())) {
                 try {
-                    getSale(aConnector, aToken);
+                    if (hasAuthority(aConnector, this.getNamespace() + ".check"))
+                        getSale(aConnector, aToken);
+                    else
+                        sendToken(aConnector, createAccessDenied(aToken));
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_REFUND.equals(aToken.getType())) {
                 try {
-                    refundSale(aConnector, aToken);
+                    if (hasAuthority(aConnector, this.getNamespace() + ".check"))
+                        refundSale(aConnector, aToken);
+                    else
+                        sendToken(aConnector, createAccessDenied(aToken));
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
