@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import org.apache.activemq.command.ActiveMQTextMessage;
@@ -169,6 +170,16 @@ public class JMSEngine extends BaseEngine {
 		return mConnectorsManager;
 	}
 
+	public void shutdownNode(String aNodeId) throws Exception {
+		Assert.isTrue(mNodesManager.exists(aNodeId), "The node '" + aNodeId + "' does not exists!");
+
+		MapMessage lMessage = mSessionForServer.createMapMessage();
+		lMessage.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.SHUTDOWN_NODE.toString());
+		lMessage.setStringProperty(Attributes.NODE_ID, aNodeId);
+		
+		mLB.getNodesMessagesProducer().send(lMessage);
+	}
+
 	@Override
 	public void startEngine() throws WebSocketException {
 		try {
@@ -205,22 +216,22 @@ public class JMSEngine extends BaseEngine {
 			if (null == lHostname) {
 				lHostname = JWebSocketServerConstants.DEFAULT_HOSTNAME;
 			}
-			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSessionForClients, 
+			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSessionForClients,
 					mSessionForServer, mNodesManager, lHostname) {
-				@Override
-				public void shutdown() throws Exception {
-					// close clients if all nodes are down
-					if (lNodesManager.count() == 1) {
-						Iterator<WebSocketConnector> lIt = getConnectors().values().iterator();
-						while (lIt.hasNext()) {
-							lIt.next().stopConnector(CloseReason.SHUTDOWN);
-						}
-					}
+						@Override
+						public void shutdown() throws Exception {
+							// close clients if all nodes are down
+							if (lNodesManager.count() == 1) {
+								Iterator<WebSocketConnector> lIt = getConnectors().values().iterator();
+								while (lIt.hasNext()) {
+									lIt.next().stopConnector(CloseReason.SHUTDOWN);
+								}
+							}
 
-					// shutdown load balancer
-					super.shutdown();
-				}
-			};
+							// shutdown load balancer
+							super.shutdown();
+						}
+					};
 		} catch (Exception lEx) {
 			throw new WebSocketException(lEx);
 		}
