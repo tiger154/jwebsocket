@@ -161,14 +161,18 @@
 				
 				lWSC.addPlugIn({
 					processToken: function(aToken){
-						if (0 == aToken.code){
-							if (aToken.reqType == 'login'){
-								// fill app names in select
+						if (aToken.type === 'welcome') {
+							if (aToken.username !== 'anonymous')
 								fillAppsSelect();
-							} else if (aToken.reqType == 'welcome'){
-								if (aToken.username != 'anonymous')
-								// fill app names in select
-									fillAppsSelect();
+						}
+						if (0 === aToken.code) {
+							if (aToken.reqType === 'login') {
+								fillAppsSelect();
+							} else if (aToken.reqType === 'logout') {
+								var select = document.getElementById("appsselect");
+								while (select.options.length > 0) {
+									select.options.remove(select.options.length - 1);
+								}
 							}
 						}
 					}
