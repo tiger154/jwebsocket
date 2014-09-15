@@ -79,6 +79,22 @@
 			<id>send</id>
 			<description>Send message to a single target client.</description>
 		</right>
+		<!-- Cluster Admin plug-in rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.clusteradmin</ns>
+			<id>pausenode</id>
+			<description>Allows to pause/resume a jWebSocket cluster node.</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.clusteradmin</ns>
+			<id>shutdownnode</id>
+			<description>Allows to shutdown a jWebSocket cluster node.</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.clusteradmin</ns>
+			<id>getinfo</id>
+			<description>Allows to get information from the jWebSocket cluster.</description>
+		</right>
 
 		<!-- Channel rights -->
 		<right>
@@ -286,6 +302,11 @@
 			<id>Administrator</id>
 			<description>Administrators</description>
 			<rights>
+				<!-- Cluster admin rights -->
+				<right>org.jwebsocket.plugins.clusteradmin.getinfo</right>
+				<right>org.jwebsocket.plugins.clusteradmin.pausenode</right>
+				<right>org.jwebsocket.plugins.clusteradmin.shutdownnode</right>
+				
 				<!-- list of rights for "Administrator" role (ns + . + id) -->
 				<right>org.jwebsocket.plugins.system.broadcast</right>
 				<right>org.jwebsocket.plugins.system.send</right>
@@ -461,7 +482,7 @@
 			</jars>
 			<!-- plug-in specific settings -->
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/FileSystemPlugIn/filesystem.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/FileSystemPlugInEE/filesystem.xml</setting>
 				<!-- Authorization method 
 				     - spring: Uses the user Spring authentication to check for granted authorities 
 					 - static: Uses the user static (jWebSocket.xml users definition) authentication
@@ -497,6 +518,19 @@
 			<jar>jWebSocketScriptingPlugIn-1.0.jar</jar>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripting.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		<plugin>
+			<name>org.jwebsocket.enterprise.cluster.jms.JMSClusterAdminPlugIn</name>
+			<id>jWebSocketJMSClusterAdminPlugInEE</id>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketJMSClusterAdminPlugInEE-1.0.jar</jar>
+			</jars>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/JWSClusterAdminPlugInEE/jmsclusteradmin.xml</setting>
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
