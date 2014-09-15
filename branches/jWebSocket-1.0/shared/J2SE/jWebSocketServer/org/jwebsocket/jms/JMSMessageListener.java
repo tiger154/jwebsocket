@@ -24,6 +24,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import org.jwebsocket.api.IInitializable;
+import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.jms.api.IConnectorsManager;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
@@ -72,6 +73,10 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 						JMSConnector lConnector = lConnManager.get(lReplySelector);
 						lConnector.startConnector();
 					}
+					break;
+				}
+				case SHUTDOWN_NODE: {
+					JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
 					break;
 				}
 				case MESSAGE: {
