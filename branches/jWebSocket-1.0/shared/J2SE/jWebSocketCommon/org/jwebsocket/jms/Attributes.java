@@ -73,6 +73,10 @@ public class Attributes {
 	 *
 	 */
 	public static final String CONSUMER_ID = "consumerId";
+	/**
+	 *
+	 */
+	public static final String START_TIME = "startTime";
 
 	/**
 	 *
