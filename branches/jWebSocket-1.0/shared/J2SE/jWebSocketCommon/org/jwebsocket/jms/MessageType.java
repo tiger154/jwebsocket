@@ -38,6 +38,11 @@ public enum MessageType {
 	 *
 	 */
 	DISCONNECTION,
+	
+	/**
+	 *
+	 */
+	SHUTDOWN_NODE,
 
 	/**
 	 *
