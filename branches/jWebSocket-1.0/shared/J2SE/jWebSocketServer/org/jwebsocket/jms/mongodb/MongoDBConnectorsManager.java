@@ -66,6 +66,12 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
+	public Long count() throws Exception {
+		return mConnectors.count(new BasicDBObject()
+				.append(Attributes.STATUS, ConnectorStatus.UP));
+	}
+
+	@Override
 	public boolean exists(String aReplySelector) throws Exception {
 		return null != mConnectors.findOne(new BasicDBObject()
 				.append(Attributes.STATUS, ConnectorStatus.UP)

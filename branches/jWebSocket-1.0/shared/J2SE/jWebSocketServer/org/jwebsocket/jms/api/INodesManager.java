@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.api;
 
+import java.util.List;
+import java.util.Map;
 import org.jwebsocket.api.IInitializable;
 
 /**
@@ -28,7 +30,23 @@ import org.jwebsocket.api.IInitializable;
 public interface INodesManager extends IInitializable {
 
 	/**
-	 * Register a new jWebSocket server node.
+	 * 
+	 * @return
+	 * @throws Exception 
+	 */
+	List<Map<String, Object>> listNodes() throws Exception;
+	
+	/**
+	 * Get the nodes load average.
+	 *
+	 * @return The nodes load percent (cluster load)
+	 * @throws Exception
+	 */
+	double getNodesLoadAvg() throws Exception;
+
+	/**
+	 * Register a new jWebSocket server node. Stores the registration date/time
+	 * (startup time)
 	 *
 	 * @param aConsumerId The consumer id
 	 * @param aNodeId The node id
@@ -50,7 +68,7 @@ public interface INodesManager extends IInitializable {
 	void updateCPU(String aNodeId, double aCpuUsage) throws Exception;
 
 	/**
-	 * Sets the a jWebSocket server node status.
+	 * Set a jWebSocket server node status.
 	 *
 	 * @param aNodeId
 	 * @param aStatus 0 = ready, 1 = paused (does not accept new requests), 2 =
@@ -58,9 +76,18 @@ public interface INodesManager extends IInitializable {
 	 * @throws java.lang.Exception
 	 */
 	void setStatus(String aNodeId, int aStatus) throws Exception;
+	
+	/**
+	 * Get a jWebSocket server node status
+	 * 
+	 * @param aNodeId The node identifier
+	 * @return
+	 * @throws Exception 
+	 */
+	Integer getStatus(String aNodeId) throws Exception;
 
 	/**
-	 * Gets the optimum jWebSocket server node name.
+	 * Get the optimum jWebSocket server node name.
 	 *
 	 * @return
 	 * @throws java.lang.Exception
@@ -68,7 +95,7 @@ public interface INodesManager extends IInitializable {
 	String getOptimumNode() throws Exception;
 
 	/**
-	 * Increases a jWebSocket server node number of processed requests.
+	 * Increase a jWebSocket server node number of processed requests.
 	 *
 	 * @param aNodeId
 	 * @throws java.lang.Exception
@@ -76,7 +103,7 @@ public interface INodesManager extends IInitializable {
 	void increaseRequests(String aNodeId) throws Exception;
 
 	/**
-	 * Gets the jWebSocket server node name by its consumer identifier.
+	 * Get the jWebSocket server node name by its consumer identifier.
 	 *
 	 * @param aConsumerId
 	 * @return
@@ -85,7 +112,7 @@ public interface INodesManager extends IInitializable {
 	String getNodeId(String aConsumerId) throws Exception;
 
 	/**
-	 * Returns TRUE if exists a jWebSocket server node id, matches the given
+	 * Return TRUE if exists a jWebSocket server node id, matches the given
 	 * node id, FALSE otherwise
 	 *
 	 * @param aNodeId
@@ -95,42 +122,42 @@ public interface INodesManager extends IInitializable {
 	boolean exists(String aNodeId) throws Exception;
 
 	/**
-	 * Sets the jWebSocket server node description.
+	 * Set the jWebSocket server node description.
 	 *
 	 * @param aNodeDescription
 	 */
 	void setNodeDescription(String aNodeDescription);
 
 	/**
-	 * Gets tje jWebSocket server node description.
+	 * Get the jWebSocket server node description.
 	 *
 	 * @return
 	 */
 	String getNodeDescription();
 
 	/**
-	 * Gets the available jWebSocket server nodes count.
+	 * Get the available jWebSocket server nodes count.
 	 *
 	 * @return
 	 */
 	long count();
 
 	/**
-	 * Gets the jWebSocket server nodes synchronizer.
+	 * Get the jWebSocket server nodes synchronizer.
 	 *
 	 * @return
 	 */
 	IClusterSynchronizer getSynchronizer();
 
 	/**
-	 * Gets the IConsumerAdviceTempStorage instance.
+	 * Get the IConsumerAdviceTempStorage instance.
 	 *
 	 * @return
 	 */
 	IConsumerAdviceTempStorage getConsumerAdviceTempStorage();
 
 	/**
-	 * Sets the IConsumerAdviceTempStorage instance.
+	 * Set the IConsumerAdviceTempStorage instance.
 	 *
 	 * @param aConsumerAdviceTempStorage
 	 */
