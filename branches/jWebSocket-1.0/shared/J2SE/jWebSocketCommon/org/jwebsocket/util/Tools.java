@@ -1067,13 +1067,10 @@ public class Tools {
 	 * @return TRUE if the cookie is valid, FALSE otherwise
 	 */
 	public static boolean isCookieValid(URI aURI, HttpCookie aCookie) {
-		if (!aCookie.hasExpired()
+		return !aCookie.hasExpired()
 				&& (null == aCookie.getDomain() || HttpCookie.domainMatches(aCookie.getDomain(), aURI.getHost()))
 				&& (null == aCookie.getPath() || (null != aURI.getPath() && aURI.getPath().startsWith(aCookie.getPath())))
-				&& (aCookie.getSecure() == (aURI.getScheme().equals("wss")))) {
-			return true;
-		}
-		return false;
+				&& (aCookie.getSecure() == (aURI.getScheme().equals("wss")));
 	}
 
 	/**
