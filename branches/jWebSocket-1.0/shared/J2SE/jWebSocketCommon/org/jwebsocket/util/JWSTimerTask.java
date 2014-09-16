@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket JWSTimerTask (Community Edition, CE)
+//	jWebSocket - JWSTimerTask (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
@@ -19,45 +19,31 @@
 package org.jwebsocket.util;
 
 import java.util.TimerTask;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
+ * A subclass of TimerTask which runs TimerTask code within a try/catch block to
+ * avoid killing the global jWebSocket timer thread.
  *
- * @author Rolando Santamaria Maso
+ * Note: subclasses MUST not override run(); instead they should override
+ * runTask().
+ *
+ * @author Alexander Schulze
  */
-public class JWSTimerTask extends TimerTask {
+public abstract class JWSTimerTask extends TimerTask {
 
-	private Runnable mTask;
+	// Implements code to be run when the JWSTimerTask is executed.
+	protected abstract void runTask();
 
-	public JWSTimerTask() {
-	}
-
-	/**
-	 * Optionally received the Runnable object that is called in the wrapped run
-	 * method.
-	 *
-	 * @param aTask
-	 */
-	public JWSTimerTask(Runnable aTask) {
-		this.mTask = aTask;
-	}
-
+	/// The run() method is final to ensure that all subclasses inherit the exception handling
 	@Override
-	public void run() {
+	public final void run() {
 		try {
 			runTask();
 		} catch (Exception lEx) {
-
+			Logger lLogger = Logger.getLogger(JWSTimerTask.class.getName());
+			lLogger.log(Level.ERROR, lEx.getClass().getSimpleName() + " in timertask: " + lEx.getMessage(), lEx);
 		}
 	}
-
-	/**
-	 * Replacement for classic run method.Descendant classes will optionally
-	 * override this method.
-	 */
-	public void runTask() {
-		if (null != mTask) {
-			mTask.run();
-		}
-	}
-
 }
