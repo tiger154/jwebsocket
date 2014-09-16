@@ -916,70 +916,7 @@ public class Tools {
 		}
 
 		if (null == mTimer) {
-			mTimer = new Timer("jWebSocket Utility Timer") {
-
-				@Override
-				public void schedule(final TimerTask aTask, Date aTime) {
-					super.schedule(new TimerTask() {
-
-						@Override
-						public void run() {
-							try {
-								aTask.run();
-							} catch (Exception lEx) {
-
-							}
-						}
-					}, aTime);
-				}
-
-				@Override
-				public void schedule(final TimerTask aTask, Date aFirstTime, long aPeriod) {
-					super.schedule(new TimerTask() {
-
-						@Override
-						public void run() {
-							try {
-								aTask.run();
-							} catch (Exception lEx) {
-
-							}
-						}
-					}, aFirstTime, aPeriod);
-				}
-
-				@Override
-				public void scheduleAtFixedRate(final TimerTask aTask, Date aFirstTime, long aPeriod) {
-					super.scheduleAtFixedRate(new TimerTask() {
-
-						@Override
-						public void run() {
-							try {
-								aTask.run();
-							} catch (Exception lEx) {
-
-							}
-						}
-					}, aFirstTime, aPeriod);
-				}
-
-				@Override
-				public void scheduleAtFixedRate(final TimerTask aTask, long aDelay, long aPeriod) {
-					super.scheduleAtFixedRate(new TimerTask() {
-
-						@Override
-						public void run() {
-							try {
-								aTask.run();
-							} catch (Exception lEx) {
-
-							}
-						}
-					}, aDelay, aPeriod);
-				}
-
-			};
-
+			mTimer = new Timer("jWebSocket Utility Timer");
 			final Timer lTimer = mTimer;
 			mTimer.scheduleAtFixedRate(new TimerTask() {
 				@Override
