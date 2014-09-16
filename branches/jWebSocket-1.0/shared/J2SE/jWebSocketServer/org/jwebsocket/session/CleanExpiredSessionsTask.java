@@ -53,9 +53,15 @@ public class CleanExpiredSessionsTask extends TimerTask {
 		Iterator<String> lKeys = mSessionIdsTrash.keySet().iterator();
 		while (lKeys.hasNext()) {
 			final String lKey = lKeys.next();
-			if (((Long) (mSessionIdsTrash.get(lKey)) < System.currentTimeMillis())) {
+
+			Long lExpirationTime = (Long) mSessionIdsTrash.get(lKey);
+			if (null == lExpirationTime) {
+				break;
+			}
+			if (lExpirationTime < System.currentTimeMillis()) {
 				try {
-					if (null != mSessionIdsTrash.remove(lKey)) { // protection for clustering (DO NOT CHANGE)
+					// extra check to avoid issues on servers cluster (DO NOT CHANGE)
+					if (null != mSessionIdsTrash.remove(lKey)) { 
 						IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(lKey);
 
 						if (null != lStorage) {
@@ -85,5 +91,4 @@ public class CleanExpiredSessionsTask extends TimerTask {
 			}
 		}
 	}
-	// TODO: check if this task has a name for rdebug purposes
 }
