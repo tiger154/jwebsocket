@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -46,6 +45,7 @@ import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.MessagingControl;
 import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
@@ -300,9 +300,9 @@ public abstract class BaseClient implements WebSocketClient {
 
 			// schedule the timer task
 			try {
-				Tools.getTimer().schedule(new TimerTask() {
+				Tools.getTimer().schedule(new JWSTimerTask() {
 					@Override
-					public void run() {
+					public void runTask() {
 						Tools.getThreadPool().submit(new Runnable() {
 							@Override
 							public void run() {

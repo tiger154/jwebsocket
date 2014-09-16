@@ -22,15 +22,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jwebsocket.util.JWSTimerTask;
 
 /**
  *
  * @author Rolando Santamaria Maso
  */
-public class PurgeCancelledTimeoutsTask extends TimerTask {
+public class PurgeCancelledTimeoutsTask extends JWSTimerTask {
 
-	private Timer t;
-	private static Log logger = LogFactory.getLog(PurgeCancelledTimeoutsTask.class);
+	private final Timer t;
+	private static final Log logger = LogFactory.getLog(PurgeCancelledTimeoutsTask.class);
 
 	/**
 	 *
@@ -41,7 +42,7 @@ public class PurgeCancelledTimeoutsTask extends TimerTask {
 	}
 
 	@Override
-	public void run() {
+	public void runTask() {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Purging the timeout callbacks queue...");
 		}

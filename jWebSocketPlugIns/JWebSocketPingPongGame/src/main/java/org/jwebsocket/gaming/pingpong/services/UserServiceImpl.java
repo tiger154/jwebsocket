@@ -24,13 +24,13 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.jwebsocket.gaming.pingpong.api.IUserService;
 import java.util.Date;
-import java.util.TimerTask;
+import org.jwebsocket.util.JWSTimerTask;
 
 /**
  *
  * @author armando
  */
-public class UserServiceImpl extends TimerTask implements IUserService {
+public class UserServiceImpl extends JWSTimerTask implements IUserService {
 
 	private final DBCollection mCollection;
 	private final int mRemoveExpiredUsersTime;
@@ -123,7 +123,7 @@ public class UserServiceImpl extends TimerTask implements IUserService {
 	}
 
 	@Override
-	public void run() {
+	public void runTask() {
 		removeUser(mRemoveExpiredUsersTime);
 	}
 }

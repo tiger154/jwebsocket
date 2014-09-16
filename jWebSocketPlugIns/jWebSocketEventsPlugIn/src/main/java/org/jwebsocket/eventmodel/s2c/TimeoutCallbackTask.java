@@ -18,20 +18,20 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.s2c;
 
-import java.util.TimerTask;
 import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
+import org.jwebsocket.util.JWSTimerTask;
 
 /**
  *
  * @author Rolando Santamaria Maso
  */
-public class TimeoutCallbackTask extends TimerTask {
+public class TimeoutCallbackTask extends JWSTimerTask {
 
-	private String mConnectorId;
-	private String mNotificationId;
-	private S2CEventNotificationHandler mNotificationHandler;
-	private static Logger mLog = Logging.getLogger(TimeoutCallbackTask.class);
+	private final String mConnectorId;
+	private final String mNotificationId;
+	private final S2CEventNotificationHandler mNotificationHandler;
+	private static final Logger mLog = Logging.getLogger(TimeoutCallbackTask.class);
 
 	/**
 	 *
@@ -46,7 +46,7 @@ public class TimeoutCallbackTask extends TimerTask {
 	}
 
 	@Override
-	public void run() {
+	public void runTask() {
 		//Execute only if the OnResponse callback was not called before
 		if (mNotificationHandler.getCallbacks().containsKey(mConnectorId)
 				&& mNotificationHandler.getCallbacks().get(mConnectorId).containsKey(mNotificationId)) {

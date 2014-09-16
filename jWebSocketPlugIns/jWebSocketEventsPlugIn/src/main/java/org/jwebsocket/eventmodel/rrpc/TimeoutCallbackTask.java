@@ -18,22 +18,22 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.rrpc;
 
-import java.util.TimerTask;
 import javolution.util.FastMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jwebsocket.eventmodel.api.IRRPCOnResponseCallback;
+import org.jwebsocket.util.JWSTimerTask;
 
 /**
  *
  * @author Rolando Santamaria Maso
  */
-public class TimeoutCallbackTask extends TimerTask {
+public class TimeoutCallbackTask extends JWSTimerTask {
 
-	private String connectorId;
-	private String upcid;
-	private FastMap<String, FastMap<String, IRRPCOnResponseCallback>> callsMap;
-	private static Log logger = LogFactory.getLog(TimeoutCallbackTask.class);
+	private final String connectorId;
+	private final String upcid;
+	private final FastMap<String, FastMap<String, IRRPCOnResponseCallback>> callsMap;
+	private static final Log logger = LogFactory.getLog(TimeoutCallbackTask.class);
 
 	/**
 	 *
@@ -48,7 +48,7 @@ public class TimeoutCallbackTask extends TimerTask {
 	}
 
 	@Override
-	public void run() {
+	public void runTask() {
 		//Execute only if the OnResponse callback was not called before
 		if (callsMap.containsKey(connectorId)
 				&& callsMap.get(connectorId).containsKey(upcid)) {

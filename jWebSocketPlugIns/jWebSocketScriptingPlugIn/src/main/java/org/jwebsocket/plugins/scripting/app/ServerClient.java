@@ -21,7 +21,6 @@ package org.jwebsocket.plugins.scripting.app;
 import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.Queue;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.script.Invocable;
 import org.jwebsocket.api.IInternalConnectorListener;
@@ -32,6 +31,7 @@ import org.jwebsocket.server.InternalClient;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -86,8 +86,8 @@ public class ServerClient {
 			this.mPacket = mPacket;
 		}
 	}
-	private InternalClient mClient;
-	private BaseScriptApp mScriptApp;
+	private final InternalClient mClient;
+	private final BaseScriptApp mScriptApp;
 	/**
 	 * The ServerClient operations that finally invoke internal plug-ins
 	 * operations should be called out of the script app calling thread, its
@@ -97,9 +97,9 @@ public class ServerClient {
 	private static Queue<Operation> mQueuedOperations = new ConcurrentLinkedQueue<Operation>();
 
 	static {
-		Tools.getTimer().scheduleAtFixedRate(new TimerTask() {
+		Tools.getTimer().scheduleAtFixedRate(new JWSTimerTask() {
 			@Override
-			public void run() {
+			public void runTask() {
 				if (!mQueuedOperations.isEmpty()) {
 					Operation lOp = mQueuedOperations.poll();
 					if (lOp instanceof SendPacketOperation) {

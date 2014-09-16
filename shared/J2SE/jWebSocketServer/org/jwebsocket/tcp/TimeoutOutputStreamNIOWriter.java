@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -30,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -194,9 +194,9 @@ public class TimeoutOutputStreamNIOWriter {
 			final SendOperation lSend = new SendOperation(aDataPacket);
 
 			// create a timeout timer task to cancel the send operation in case of disconnection
-			mTimer.schedule(new TimerTask() {
+			mTimer.schedule(new JWSTimerTask() {
 				@Override
-				public void run() {
+				public void runTask() {
 					try {
 						if (!lSend.isDone()) {
 							// close the outbound stream to fire exception
