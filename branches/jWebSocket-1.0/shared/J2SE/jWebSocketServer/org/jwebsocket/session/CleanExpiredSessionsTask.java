@@ -19,20 +19,20 @@
 package org.jwebsocket.session;
 
 import java.util.Iterator;
-import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.IStorageProvider;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.system.SystemPlugIn;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 
 /**
  *
  * @author Rolando Santamaria Maso, Alexander Schulze
  */
-public class CleanExpiredSessionsTask extends TimerTask {
+public class CleanExpiredSessionsTask extends JWSTimerTask {
 
 	private final IBasicStorage<String, Object> mSessionIdsTrash;
 	private final IStorageProvider mStorageProvider;
@@ -49,7 +49,7 @@ public class CleanExpiredSessionsTask extends TimerTask {
 	}
 
 	@Override
-	public void run() {
+	public void runTask() {
 		Iterator<String> lKeys = mSessionIdsTrash.keySet().iterator();
 		while (lKeys.hasNext()) {
 			final String lKey = lKeys.next();
