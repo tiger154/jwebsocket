@@ -92,55 +92,37 @@ public class PayPalPlugIn extends TokenPlugIn {
         if (getNamespace().equals(aToken.getNS())) {
             if (TT_PP_PAYMENT.equals(aToken.getType())) {
                 try {
-                    if (hasAuthority(aConnector, this.getNamespace() + ".buy"))
-                        createPayment(aConnector, aToken);
-                    else
-                        sendToken(aConnector, createAccessDenied(aToken));
+                    createPayment(aConnector, aToken);
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_EXECUTE.equals(aToken.getType())) {
                 try {
-                    if (hasAuthority(aConnector, this.getNamespace() + ".buy"))
-                        executePayment(aConnector, aToken);
-                    else
-                        sendToken(aConnector, createAccessDenied(aToken));                    
+                    executePayment(aConnector, aToken);
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_LIST.equals(aToken.getType())) {
                 try {
-                    if (hasAuthority(aConnector, this.getNamespace() + ".check"))
-                        listPayments(aConnector, aToken);
-                    else
-                        sendToken(aConnector, createAccessDenied(aToken));
+                    listPayments(aConnector, aToken);
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_GET.equals(aToken.getType())) {
                 try {
-                    if (hasAuthority(aConnector, this.getNamespace() + ".check"))
-                        getPayment(aConnector, aToken);
-                    else
-                        sendToken(aConnector, createAccessDenied(aToken));
+                    getPayment(aConnector, aToken);
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_SALE.equals(aToken.getType())) {
                 try {
-                    if (hasAuthority(aConnector, this.getNamespace() + ".check"))
-                        getSale(aConnector, aToken);
-                    else
-                        sendToken(aConnector, createAccessDenied(aToken));
+                    getSale(aConnector, aToken);
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
             } else if (TT_PP_REFUND.equals(aToken.getType())) {
                 try {
-                    if (hasAuthority(aConnector, this.getNamespace() + ".check"))
-                        refundSale(aConnector, aToken);
-                    else
-                        sendToken(aConnector, createAccessDenied(aToken));
+                    refundSale(aConnector, aToken);
                 } catch (Exception lEx) {
                     mLog.error(lEx);
                 }
@@ -196,6 +178,12 @@ public class PayPalPlugIn extends TokenPlugIn {
      * @throws Exception
      */
     public void createPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+        if (! hasAuthority(aConnector, getNamespace() + ".buy")){
+            sendToken(aConnector, createAccessDenied(aToken));
+            return;
+        }
+        
+        
         aToken.setString("return_url", mPayPalSettings.getReturnUrl());
         aToken.setString("cancel_url", mPayPalSettings.getCancelUrl());
         
@@ -214,6 +202,11 @@ public class PayPalPlugIn extends TokenPlugIn {
      * @throws Exception
      */
     public void executePayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+        if (! hasAuthority(aConnector, getNamespace() + ".buy")){
+            sendToken(aConnector, createAccessDenied(aToken));
+            return;
+        }
+        
         Payment lResult = mFacade.executePayment(aToken);
         Token lRespToken = createResponse(aToken);
 
@@ -229,6 +222,11 @@ public class PayPalPlugIn extends TokenPlugIn {
      * @throws Exception
      */
     public void listPayments(WebSocketConnector aConnector, Token aToken) throws Exception {
+        if (! hasAuthority(aConnector, getNamespace() + ".check")){
+            sendToken(aConnector, createAccessDenied(aToken));
+            return;
+        }
+        
         PaymentHistory lResult = mFacade.listPayments(aConnector, aToken);
 
         Token lRespToken = createResponse(aToken);
@@ -245,6 +243,11 @@ public class PayPalPlugIn extends TokenPlugIn {
      * @throws Exception
      */
     public void getPayment(WebSocketConnector aConnector, Token aToken) throws Exception {
+        if (! hasAuthority(aConnector, getNamespace() + ".check")){
+            sendToken(aConnector, createAccessDenied(aToken));
+            return;
+        }
+        
         Payment lResult = mFacade.getPayment(aConnector, aToken);
 
         Token lRespToken = createResponse(aToken);
@@ -261,6 +264,11 @@ public class PayPalPlugIn extends TokenPlugIn {
      * @throws Exception
      */
     public void getSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+        if (! hasAuthority(aConnector, getNamespace() + ".check")){
+            sendToken(aConnector, createAccessDenied(aToken));
+            return;
+        }
+        
         Sale lResult = mFacade.getSale(aConnector, aToken);
 
         Token lRespToken = createResponse(aToken);
@@ -277,6 +285,11 @@ public class PayPalPlugIn extends TokenPlugIn {
      * @throws Exception
      */
     public void refundSale(WebSocketConnector aConnector, Token aToken) throws Exception {
+        if (! hasAuthority(aConnector, getNamespace() + ".check")){
+            sendToken(aConnector, createAccessDenied(aToken));
+            return;
+        }
+        
         Refund lResult = mFacade.getRefundSale(aConnector, aToken);
 
         Token lRespToken = createResponse(aToken);
