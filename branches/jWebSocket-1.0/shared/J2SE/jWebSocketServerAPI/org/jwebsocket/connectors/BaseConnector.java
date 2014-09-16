@@ -21,7 +21,6 @@ package org.jwebsocket.connectors;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -37,6 +36,7 @@ import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.MessagingControl;
 import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
@@ -407,9 +407,9 @@ public class BaseConnector implements WebSocketConnector {
 
 			// schedule the timer task
 			try {
-				Tools.getTimer().schedule(new TimerTask() {
+				Tools.getTimer().schedule(new JWSTimerTask() {
 					@Override
-					public void run() {
+					public void runTask() {
 						Tools.getThreadPool().submit(new Runnable() {
 							@Override
 							public void run() {

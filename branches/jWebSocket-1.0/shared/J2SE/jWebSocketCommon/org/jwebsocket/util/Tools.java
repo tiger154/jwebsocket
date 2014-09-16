@@ -918,9 +918,9 @@ public class Tools {
 		if (null == mTimer) {
 			mTimer = new Timer("jWebSocket Utility Timer");
 			final Timer lTimer = mTimer;
-			mTimer.scheduleAtFixedRate(new TimerTask() {
+			mTimer.scheduleAtFixedRate(new JWSTimerTask() {
 				@Override
-				public void run() {
+				public void runTask() {
 					lTimer.purge();
 				}
 			}, 0, 300000);

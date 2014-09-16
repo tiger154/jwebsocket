@@ -21,7 +21,6 @@ package org.jwebsocket.server;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -37,6 +36,7 @@ import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -248,9 +248,9 @@ public class InternalClient {
 		mResponseListenersQueue.put(aToken.getInteger("utid"), aListener);
 
 		final Integer lUTID = aToken.getInteger("utid");
-		mTimer.schedule(new TimerTask() {
+		mTimer.schedule(new JWSTimerTask() {
 			@Override
-			public void run() {
+			public void runTask() {
 				mThreadPool.submit(new Runnable() {
 					@Override
 					public void run() {

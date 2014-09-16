@@ -19,7 +19,6 @@
 package org.jwebsocket.jms.endpoint;
 
 import java.util.Map;
-import java.util.TimerTask;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
@@ -33,6 +32,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
@@ -249,9 +249,9 @@ public class JMSEndPointSender {
 				mResponseListeners.put(aCorrelationID, aResponseListener);
 
 				// schedule the timer task
-				Tools.getTimer().schedule(new TimerTask() {
+				Tools.getTimer().schedule(new JWSTimerTask(){
 					@Override
-					public void run() {
+					public void runTask() {
 						Thread lThread = new Thread() {
 							@Override
 							public void run() {

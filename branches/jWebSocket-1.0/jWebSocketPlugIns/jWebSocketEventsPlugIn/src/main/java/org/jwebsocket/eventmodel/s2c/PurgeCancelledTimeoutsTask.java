@@ -19,17 +19,17 @@
 package org.jwebsocket.eventmodel.s2c;
 
 import java.util.Timer;
-import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.util.JWSTimerTask;
 
 /**
  *
  * @author Rolando Santamaria Maso
  */
-public class PurgeCancelledTimeoutsTask extends TimerTask {
+public class PurgeCancelledTimeoutsTask extends JWSTimerTask {
 
-	private Timer mTimer;
+	private final Timer mTimer;
 	private static final Logger mLog = Logging.getLogger();
 
 	/**
@@ -41,7 +41,7 @@ public class PurgeCancelledTimeoutsTask extends TimerTask {
 	}
 
 	@Override
-	public void run() {
+	public void runTask() {
 		int lPurged = mTimer.purge(); // Keep the timer cleaned up
 		if (lPurged > 0 && mLog.isDebugEnabled()) {
 			mLog.debug("Purged " + lPurged + " items from timeout callbacks queue.");

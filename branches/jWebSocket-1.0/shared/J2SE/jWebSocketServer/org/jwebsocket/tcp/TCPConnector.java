@@ -26,7 +26,6 @@ import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
-import java.util.TimerTask;
 import javax.net.ssl.SSLSocket;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
@@ -39,6 +38,7 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.flashbridge.FlashBridgePlugIn;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 // import org.krakenapps.pcap.decoder.ethernet.MacAddress;
 // import org.krakenapps.pcap.util.Arping;
@@ -519,10 +519,10 @@ public class TCPConnector extends BaseConnector {
 		return lHeader;
 	}
 
-	private class S2CPingTimeoutTask extends TimerTask {
+	private class S2CPingTimeoutTask extends JWSTimerTask {
 
 		@Override
-		public void run() {
+		public void runTask() {
 			synchronized (mSyncPing) {
 				// to allow a new ping timeout task to be created ...
 				// set existing one to null
@@ -553,10 +553,10 @@ public class TCPConnector extends BaseConnector {
 		}
 	}
 
-	private class S2CPingIntervalTask extends TimerTask {
+	private class S2CPingIntervalTask extends JWSTimerTask {
 
 		@Override
-		public void run() {
+		public void runTask() {
 			synchronized (mSyncPing) {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Sending S2C ping to connector '" + getId() + "' "
