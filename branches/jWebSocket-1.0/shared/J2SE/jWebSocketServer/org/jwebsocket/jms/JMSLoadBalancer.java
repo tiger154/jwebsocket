@@ -20,7 +20,6 @@ package org.jwebsocket.jms;
 
 import java.net.InetAddress;
 import java.util.Map;
-import java.util.TimerTask;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -37,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.jms.api.INodesManager;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -316,9 +316,9 @@ public class JMSLoadBalancer implements IInitializable {
 				Tools.getCpuUsage());
 
 		// registering node CPU usage continuous updater
-		Tools.getTimer().scheduleAtFixedRate(new TimerTask() {
+		Tools.getTimer().scheduleAtFixedRate(new JWSTimerTask() {
 			@Override
-			public void run() {
+			public void runTask() {
 				Tools.getThreadPool().submit(new Runnable() {
 					@Override
 					public void run() {

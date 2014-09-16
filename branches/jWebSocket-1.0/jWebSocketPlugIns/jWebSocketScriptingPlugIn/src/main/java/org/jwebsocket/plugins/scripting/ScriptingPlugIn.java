@@ -679,10 +679,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 					lResponse.setString("msg", aResult.getFailure().getLocalizedMessage());
 				}
 
-				lScript.notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{lResponse, aConnector});
-
 				// sending response back
-				sendToken(aConnector, lResponse);
+				lScript.sendToken(aConnector, lResponse.getMap());
 			}
 		};
 		// passing the handler as method last argument to support async responses

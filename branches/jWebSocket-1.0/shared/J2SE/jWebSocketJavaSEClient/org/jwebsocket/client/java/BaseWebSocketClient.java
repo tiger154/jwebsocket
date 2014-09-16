@@ -36,6 +36,7 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.ReliabilityOptions;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.util.HttpCookie;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -710,10 +711,10 @@ public class BaseWebSocketClient extends BaseClient {
 			return mIsRunning;
 		}
 
-		class PingSenderTask extends TimerTask {
+		class PingSenderTask extends JWSTimerTask {
 
 			@Override
-			public void run() {
+			public void runTask() {
 				while (isAlive()) {
 					try {
 						Thread.currentThread().setName("jWebSocket-Client " + getId() + " PingPong processor");

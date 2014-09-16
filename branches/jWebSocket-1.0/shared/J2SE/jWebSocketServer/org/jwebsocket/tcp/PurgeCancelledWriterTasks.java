@@ -19,13 +19,13 @@
 package org.jwebsocket.tcp;
 
 import java.util.Timer;
-import java.util.TimerTask;
+import org.jwebsocket.util.JWSTimerTask;
 
 /**
  *
  * @author Rolando Santamaria Maso, Alexander Schulze
  */
-public class PurgeCancelledWriterTasks extends TimerTask {
+public class PurgeCancelledWriterTasks extends JWSTimerTask {
 
 	private final Timer mTimer;
 
@@ -38,7 +38,7 @@ public class PurgeCancelledWriterTasks extends TimerTask {
 	}
 
 	@Override
-	public void run() {
+	public void runTask() {
 		mTimer.purge(); // Keep the timer cleaned up
 	}
 }

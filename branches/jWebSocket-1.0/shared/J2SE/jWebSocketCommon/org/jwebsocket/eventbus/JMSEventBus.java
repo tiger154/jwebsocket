@@ -19,7 +19,6 @@
 package org.jwebsocket.eventbus;
 
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 import org.jwebsocket.api.IEventBus;
 import javax.jms.Connection;
@@ -34,6 +33,7 @@ import javax.jms.Topic;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
@@ -123,10 +123,10 @@ public class JMSEventBus extends BaseEventBus {
 				lExpiration = aHandler.getTimeout();
 				aToken.setLong(BaseToken.EXPIRES, System.currentTimeMillis() + aHandler.getTimeout());
 
-				mTimer.schedule(new TimerTask() {
+				mTimer.schedule(new JWSTimerTask() {
 
 					@Override
-					public void run() {
+					public void runTask() {
 						final IHandler lH = removeResponseHandler(lUUID);
 						if (null != lH) {
 							Tools.getThreadPool().submit(new Runnable() {
@@ -142,9 +142,7 @@ public class JMSEventBus extends BaseEventBus {
 							});
 						}
 					}
-				}, aHandler
-						.getTimeout()
-				);
+				}, aHandler.getTimeout());
 			}
 		}
 		sendGeneric(mQueueProducer, aToken, lExpiration);

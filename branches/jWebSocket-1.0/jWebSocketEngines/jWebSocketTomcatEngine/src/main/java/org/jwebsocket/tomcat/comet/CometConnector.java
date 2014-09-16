@@ -40,6 +40,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.JWSTimerTask;
 
 /**
  *
@@ -57,7 +58,7 @@ public class CometConnector extends BaseConnector {
 	private HttpServletRequest mRequest;
 	private TimerTask mCloseTask;
 
-	class CloseTimerTask extends TimerTask {
+	class CloseTimerTask extends JWSTimerTask {
 
 		private final CometConnector mConnector;
 
@@ -66,7 +67,7 @@ public class CometConnector extends BaseConnector {
 		}
 
 		@Override
-		public void run() {
+		public void runTask() {
 			mConnector.setReadyState(3);
 			mConnector.stopConnector(CloseReason.BROKEN);
 		}

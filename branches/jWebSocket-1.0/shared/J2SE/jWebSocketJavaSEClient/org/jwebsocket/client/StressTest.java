@@ -2,7 +2,6 @@ package org.jwebsocket.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jwebsocket.api.WebSocketClientEvent;
@@ -10,6 +9,7 @@ import org.jwebsocket.api.WebSocketClientListener;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.client.token.BaseTokenClient;
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -67,9 +67,9 @@ public class StressTest {
 				Thread.sleep(50);
 			}
 
-			Tools.getTimer().scheduleAtFixedRate(new TimerTask() {
+			Tools.getTimer().scheduleAtFixedRate(new JWSTimerTask() {
 				@Override
-				public void run() {
+				public void runTask() {
 					for (BaseTokenClient lClient : lClients) {
 						try {
 							if (lClient.isConnected()) {
