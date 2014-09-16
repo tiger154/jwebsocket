@@ -39,8 +39,8 @@ import org.jwebsocket.logging.Logging;
  */
 public class BasePlugInChain implements WebSocketPlugInChain {
 
-	private static Logger mLog = Logging.getLogger();
-	private List<WebSocketPlugIn> mPlugins = new FastList<WebSocketPlugIn>();
+	private static final Logger mLog = Logging.getLogger();
+	private final List<WebSocketPlugIn> mPlugins = new FastList<WebSocketPlugIn>();
 	private WebSocketServer mServer = null;
 
 	/**
@@ -57,7 +57,8 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Notifying plug-ins of server '" + getServer().getId() + "' that engine '" + aEngine.getId() + "' started...");
+			mLog.debug("Notifying plug-ins of server '" + getServer().getId() 
+					+ "' that engine '" + aEngine.getId() + "' started...");
 		}
 		try {
 			for (WebSocketPlugIn lPlugIn : getPlugIns()) {
@@ -115,7 +116,8 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Notifying plug-ins that connector '"
+			mLog.debug("Notifying plug-ins of server '" + getServer().getId() 
+					+ "' that connector '"
 					+ aConnector.getId() + "' started...");
 		}
 		try {
@@ -146,7 +148,8 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 	@Override
 	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Notifying plug-ins that client session '"
+			mLog.debug("Notifying plug-ins of server '" + getServer().getId() 
+					+ "' that client session '"
 					+ aSession.getSessionId() + "' started...");
 		}
 		for (Iterator<WebSocketPlugIn> lIterator = getPlugIns().iterator(); lIterator.hasNext();) {
@@ -195,7 +198,9 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Notifying plug-ins that connector '" + aConnector.getId() + "' stopped (" + aCloseReason.name() + ")...");
+			mLog.debug("Notifying plug-ins of server '" + getServer().getId() 
+					+ "'that connector '" + aConnector.getId() 
+					+ "' stopped (" + aCloseReason.name() + ")...");
 		}
 		for (Iterator<WebSocketPlugIn> lIterator = getPlugIns().iterator(); lIterator.hasNext();) {
 			WebSocketPlugIn lPlugIn = lIterator.next();
@@ -217,7 +222,8 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 	@Override
 	public void sessionStopped(WebSocketSession aSession) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Notifying plug-ins that client session '"
+			mLog.debug("Notifying plug-ins of server '" + getServer().getId() 
+					+ "' that client session '"
 					+ aSession.getSessionId() + "' stopped...");
 		}
 		for (Iterator<WebSocketPlugIn> lIterator = getPlugIns().iterator(); lIterator.hasNext();) {
