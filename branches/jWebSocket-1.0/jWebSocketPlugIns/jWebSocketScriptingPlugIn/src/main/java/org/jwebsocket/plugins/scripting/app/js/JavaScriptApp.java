@@ -20,6 +20,7 @@ package org.jwebsocket.plugins.scripting.app.js;
 
 import java.io.File;
 import java.security.PrivilegedAction;
+import java.util.Collection;
 import java.util.Map;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -126,11 +127,14 @@ public class JavaScriptApp extends BaseScriptApp {
 	/**
 	 * {@inheritDoc }
 	 *
+	 * @param aObjectId
+	 * @param aMethod
+	 * @param aArgs
 	 * @return
 	 * @throws java.lang.Exception
 	 */
 	@Override
-	public Object callMethod(final String aObjectId, final String aMethod, final Object[] aArgs) throws Exception {
+	public Object callMethod(final String aObjectId, final String aMethod, final Collection aArgs) throws Exception {
 		final Invocable lInvocable = (Invocable) getScriptApp();
 		Boolean lExists = (Boolean) lInvocable.invokeMethod(mApp, "isPublished", new Object[]{aObjectId});
 		Assert.isTrue(lExists, "The object with id ' " + aObjectId + "' is not published for client access!");
