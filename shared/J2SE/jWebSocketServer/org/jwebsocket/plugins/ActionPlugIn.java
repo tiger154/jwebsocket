@@ -18,24 +18,16 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.config.JWebSocketServerConstants;
-import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.annotations.Authenticated;
-import org.jwebsocket.plugins.annotations.RequireConnection;
-import org.jwebsocket.plugins.annotations.RequirePlugIn;
-import org.jwebsocket.plugins.annotations.RequirePlugIns;
-import org.jwebsocket.plugins.annotations.Role;
-import org.jwebsocket.plugins.annotations.Roles;
-import org.jwebsocket.plugins.system.SystemPlugIn;
+import org.jwebsocket.plugins.annotations.AnnotationManager;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.util.ConnectionManager;
 
 /**
  *
@@ -62,6 +54,7 @@ public class ActionPlugIn extends TokenPlugIn {
 				mLog.debug("Processing action '" + lActionName + "'...");
 			}
 			callAction(lActionName, aConnector, aToken);
+			aResponse.abortChain();
 		}
 	}
 
@@ -94,72 +87,20 @@ public class ActionPlugIn extends TokenPlugIn {
 			// calling before execute action method on plug-in
 			beforeExecuteAction(aMethodName, aConnector, aToken);
 
-			// processing action annotations
-			if (lMethod.isAnnotationPresent(Role.class)) {
-				Role lAnnotation = lMethod.getAnnotation(Role.class);
-				if (!hasAuthority(aConnector, lAnnotation.name())) {
-					sendToken(aConnector, createAccessDenied(aToken));
-					return;
-				}
-			} else if (lMethod.isAnnotationPresent(Roles.class)) {
-				Roles lAnnotation = lMethod.getAnnotation(Roles.class);
-				String[] lRoles = lAnnotation.names();
-				if (lAnnotation.requireAll()) {
-					for (String lRole : lRoles) {
-						if (!hasAuthority(aConnector, lRole)) {
-							sendToken(aConnector, createAccessDenied(aToken));
-							return;
-						}
-					}
-				} else {
-					boolean lHasOne = false;
-					for (String lRole : lRoles) {
-						if (hasAuthority(aConnector, lRole)) {
-							lHasOne = true;
-							break;
-						}
-					}
-					if (!lHasOne) {
-						sendToken(aConnector, createAccessDenied(aToken));
-						return;
-					}
-				}
-			} else if (lMethod.isAnnotationPresent(Authenticated.class)) {
-				if (null == aConnector.getUsername() || SystemPlugIn.ANONYMOUS_USER.equals(aConnector.getUsername())) {
-					sendToken(aConnector, createAccessDenied(aToken));
-					return;
-				}
-			} else if (lMethod.isAnnotationPresent(RequireConnection.class)) {
-				RequireConnection lAnnotation = lMethod.getAnnotation(RequireConnection.class);
-				ConnectionManager lConnManager = (ConnectionManager) JWebSocketBeanFactory.getInstance()
-						.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
-				if (!lConnManager.isValid(lAnnotation.name())) {
-					Token lResponse = createResponse(aToken);
-					lResponse.setCode(-1);
-					lResponse.setString("msg", "Required '" + lAnnotation.name()
-							+ "' connection is not valid. Action execution was canceled!");
+			// processing annotations
+			AnnotationManager lAnnotationManager = (AnnotationManager) JWebSocketBeanFactory
+					.getInstance().getBean("annotationManager");
 
-					return;
-				}
-			} else if (lMethod.isAnnotationPresent(RequirePlugIn.class)) {
-				RequirePlugIn lAnnotation = lMethod.getAnnotation(RequirePlugIn.class);
-				if (null == JWebSocketFactory.getTokenServer().getPlugInById(lAnnotation.id())) {
-					Token lResponse = createResponse(aToken);
-					lResponse.setCode(-1);
-					lResponse.setString("msg", "Required '" + lAnnotation.id()
-							+ "' plug-in not found. Action execution was canceled!");
-				}
-
-				return;
-			} else if (lMethod.isAnnotationPresent(RequirePlugIns.class)) {
-				RequirePlugIns lAnnotation = lMethod.getAnnotation(RequirePlugIns.class);
-				for (String lPlugInId : lAnnotation.ids()) {
-					if (null == JWebSocketFactory.getTokenServer().getPlugInById(lPlugInId)) {
+			for (Annotation lA : lMethod.getAnnotations()) {
+				if (lAnnotationManager.supports(lA.annotationType())) {
+					try {
+						lAnnotationManager.processAnnotation(lA, lMethod, new Object[]{aConnector, aToken});
+					} catch (Exception lEx) {
 						Token lResponse = createResponse(aToken);
 						lResponse.setCode(-1);
-						lResponse.setString("msg", "Required '" + lPlugInId
-								+ "' plug-in not found. Action execution was canceled!");
+						lResponse.setString("msg", lEx.getLocalizedMessage());
 
+						sendToken(aConnector, lResponse);
 						return;
 					}
 				}
