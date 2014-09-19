@@ -120,8 +120,8 @@ App.on('appLoaded', function() {
 						username: aConnector.getUsername()
 					}));
 		},
-		getType: function(aConnector) {
-			return "username: " + aConnector.getUsername();
+		getType: function(aValue) {
+			return App.getType(aValue);
 		}
 	});
 
@@ -214,13 +214,5 @@ App.on('appLoaded', function() {
 //		}
 //	});
 //
-//	EventBus.registerService('org.jwebsocket.paypal', {
-//		doPayment: {
-//			autority: 'ADMIN',
-//			authenticated: true,
-//			
-//			handler: function(user, amount, account) {
-//
-//			}}
-//	});
+
 });
