@@ -245,4 +245,9 @@
 		<constructor-arg index="0" ref="jmsConnection0"/>
 		<constructor-arg index="1" value="event_bus"/>
 	</bean>
+	
+	<!-- Annotation Manager for ActionPlugIn annotations support -->
+	<!-- Default implementation supports annotations from package org.jwebsocket.plugins.annotations -->
+	<bean id="annotationManager" class="org.jwebsocket.plugins.annotations.DefaultAnnotationManager">
+	</bean>
 </beans>
