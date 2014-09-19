@@ -139,7 +139,7 @@ var App = (function() {
 						} else if ('object' === typeof (lObj[lMethod]['ebBridge'])) {
 							lObjAPI.methods.push({
 								name: lMethod,
-								length: lObj[lMethod]['ebBridge']['args'].length
+								length: lObj[lMethod]['args'].length
 							});
 						}
 					}
@@ -236,6 +236,16 @@ var App = (function() {
 				while (lIt.hasNext()) {
 					lIt.next().apply(this, lArgs);
 				}
+
+				// simulating Token/Map instance reference
+				if ('filterIn' === aEventName || 'filterOut' === aEventName) {
+					var lInToken = aArgs[0];
+					if (lInToken instanceof Packages.org.jwebsocket.token.Token) {
+						lInToken.setMap(App.toJava(lArgs[0]));
+					} else {
+						lInToken.putAll(App.toJava(lArgs[0]));
+					}
+				}
 			}
 		},
 		invokeObject: function(aObjectId, aMethod, aArgs) {
@@ -275,7 +285,7 @@ var App = (function() {
 				App.notifyEvent('controller.method.annotation.evaluation', [aMethod, lDef, aArgs, aArgs[aArgs.length - 2]]);
 
 				if ('function' === typeof (lObject[aMethod]['handler'])) {
-					return lObject[aMethod].handler.apply(lObject, App.toJS(aArgs));
+					return App.toJava(lObject[aMethod].handler.apply(lObject, App.toJS(aArgs)));
 				} else {
 					// supporting EventBus bridge
 					var lBridge = lObject[aMethod]['ebBridge'];
@@ -378,50 +388,58 @@ var App = (function() {
 			return AppUtils.isClusterEnabled();
 		},
 		toMap: function(aObject) {
-			var lMap = new Packages.java.util.HashMap();
-			if (aObject instanceof Packages.java.util.Map) {
-				lMap = aObject;
-			} else {
-				for (var lAttr in aObject) {
-					var lValue = aObject[lAttr];
-					if ('function' !== typeof (lValue)) {
-						lMap.put(lAttr, App.toJava(lValue));
+			try {
+				// processing only raw JSON objects
+				if (aObject.constructor.toString().indexOf("function Object") === 0) {
+					var lMap = new Packages.java.util.HashMap();
+					for (var lAttr in aObject) {
+						var lValue = aObject[lAttr];
+						if ('function' !== typeof (lValue)) {
+							lMap.put(lAttr, App.toJava(lValue));
+						}
 					}
+
+					return lMap;
 				}
+			} catch (e) {
+
 			}
 
-			return lMap;
+			return aObject;
 		},
 		toJava: function(aObject) {
 			if (App.isObject(aObject)) {
 				return App.toMap(aObject);
 			} else if (App.isArray(aObject)) {
 				return App.toList(aObject);
-			} else {
-				return aObject;
 			}
+
+			return aObject;
 		},
 		toJS: function(aObject) {
-			var lJSON;
-			if (aObject instanceof Packages.java.util.Map) {
-				lJSON = {};
+			if (aObject instanceof Packages.org.jwebsocket.token.Token) {
+				return App.toJS(aObject.getMap());
+			} else if (aObject instanceof Packages.java.util.Map) {
+				var lMap = {};
 				var lIt = aObject.keySet().iterator();
 				while (lIt.hasNext()) {
 					var lProp = lIt.next();
-					lJSON[lProp] = App.toJS(aObject.get(lProp));
+					lMap[lProp] = App.toJS(aObject.get(lProp));
 				}
 
-				return lJSON;
+				return lMap;
 			} else if (aObject instanceof Packages.java.util.List) {
-				lJSON = [];
+				var lList = [];
 				var lIt = aObject.iterator();
 				while (lIt.hasNext()) {
-					lJSON.push(App.toJS(lIt.next()));
+					lList.push(App.toJS(lIt.next()));
 				}
 
-				return lJSON;
+				return lList;
 			} else if (aObject instanceof Packages.java.lang.Boolean) {
 				return true === aObject;
+			} else if (aObject instanceof Packages.java.lang.String) {
+				return "" + aObject;
 			}
 
 			return aObject;
