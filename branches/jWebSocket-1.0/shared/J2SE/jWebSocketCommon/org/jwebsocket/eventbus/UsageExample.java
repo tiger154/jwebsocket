@@ -85,7 +85,7 @@ public class UsageExample {
 					reply(createResponse(aToken));
 				}
 			});
-			// registering other handler to "test.topic" name-space. should never be called
+			// registering other handler to "test.topic" name-space. 
 			lEB1.register("test.queue", new Handler() {
 
 				@Override
@@ -93,7 +93,7 @@ public class UsageExample {
 					System.out.println("Queue Listener 2:" + aToken);
 				}
 			});
-			// registering other handler to "test.topic" name-space. should never be called
+			// registering other handler to "test.topic" name-space.
 			lEB2.register("test.queue", new Handler() {
 
 				@Override
