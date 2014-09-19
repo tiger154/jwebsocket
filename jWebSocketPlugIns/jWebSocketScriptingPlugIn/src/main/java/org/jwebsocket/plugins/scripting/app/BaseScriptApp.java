@@ -712,7 +712,7 @@ abstract public class BaseScriptApp {
 	 * @return The result of the method execution.
 	 * @throws Exception
 	 */
-	public abstract Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception;
+	public abstract Object callMethod(String aObjectId, String aMethod, Collection aArgs) throws Exception;
 
 	/**
 	 * Get the Spring bean factory instance associated to the given namespace.

@@ -27,6 +27,7 @@ import java.security.AccessControlException;
 import java.security.Permissions;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -202,6 +203,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			mLog.error("Exception catched while getting the JMS Manager instance with the following message: " + aException.getMessage());
 		}
 
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Scripting plug-in finished startup process!");
+		}
 	}
 
 	@Override
@@ -642,7 +646,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Call a custom method on a public application object. 
+	 * Call a custom method on a public application object.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -686,7 +690,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// passing the handler as method last argument to support async responses
 		lArgs.add(lResultHandler);
 		// calling the method
-		Object lResult = callMethod(lApp, lObjectId, lMethod, lArgs.toArray());
+		Object lResult = callMethod(lApp, lObjectId, lMethod, lArgs);
 		// supporting synchronous responses
 		if (null != lResult) {
 			new AsyncResult<Object>(lResultHandler).setResult(lResult);
@@ -750,7 +754,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * @return
 	 * @throws Exception
 	 */
-	public Object callMethod(String aApp, String aObjectId, String aMethod, Object[] aArgs) throws Exception {
+	public Object callMethod(String aApp, String aObjectId, String aMethod, Collection aArgs) throws Exception {
 		Assert.notNull(aApp, "The 'app' argument cannot be null!");
 		Assert.notNull(aObjectId, "The 'objectId' argument cannot be null!");
 		Assert.notNull(aMethod, "The 'method' argument cannot be null!");
