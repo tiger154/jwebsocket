@@ -37,7 +37,7 @@
     /*width: 97px !important;*/
     min-width: 97px !important;
     position: absolute !important;
-	margin-top: 76px;
+	margin-top: 83px;
 	margin-right: 20px !important;
     border: 1px solid #C8C8C8;
     border-top: none;
@@ -135,13 +135,6 @@ canvas{
 	height: 23px;
 	padding: 8px 5px 0 12px;
 }
-
-#color_fields{
-    margin-left: 8px; 
-    margin-top: -7px;
-    float: left;
-}
-
 
 #color_fields  div{
     float: left;

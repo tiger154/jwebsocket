@@ -39,7 +39,7 @@ $.widget( "jws.paint", {
 			purple: this.element.find( "#color_purple" ),
 			gray: this.element.find( "#color_gray" ),
 			black: this.element.find( "#color_black" )
-		}
+		};
 
 		this.eStatus = null;
 		this.mColor = "#000000";

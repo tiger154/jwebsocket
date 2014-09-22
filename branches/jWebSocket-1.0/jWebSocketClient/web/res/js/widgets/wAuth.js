@@ -176,7 +176,7 @@ $.widget("jws.auth", {
 				if (aToken.sourceId) {
 					w.auth.eClientId.text("Client-ID: " + aToken.sourceId);
 				}
-				if (aToken.username !== "anonymous") {
+				if (aToken.username && aToken.username !== "anonymous") {
 					lCallbacks.OnLogon(aToken);
 					//w.auth.setLoggedOn(aToken);
 				}
