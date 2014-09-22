@@ -1554,12 +1554,23 @@
 			</server-assignments>
 		</plugin>
                 
-		<!-- plug-in for shared objects -->
+		<!-- Plug-in for shared objects -->
 		<plugin>
 			<name>org.jwebsocket.plugins.sharedobjects.SharedObjectsPlugIn</name>
 			<id>jws.sharedObjects</id>
 			<ns>org.jwebsocket.plugins.sharedobjects</ns>
 			<jar>jWebSocketSharedObjectsPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		
+		<!-- Plug-in for shared canvas -->
+		<plugin>
+			<name>org.jwebsocket.plugins.sharedcanvas.SharedCanvasPlugIn</name>
+			<id>jws.sharedCanvas</id>
+			<ns>jws.canvas</ns>
+			<jar>jWebSocketSharedCanvasPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
