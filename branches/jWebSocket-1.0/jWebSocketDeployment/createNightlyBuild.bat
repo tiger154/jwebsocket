@@ -4,6 +4,16 @@ echo jWebSocket Nightly Build Generator
 echo (C) Copyright 2013-2014 Innotrade GmbH
 echo -------------------------------------------------------------------------
 
+set path=C:\Program Files\Java\jdk1.7.0_51\bin;%PATH%
+rem set path=C:\Program Files\Java\jdk1.8.0_20\bin;%PATH%
+set JAVA_HOME=C:\Program Files\Java\jdk1.7.0_51
+rem set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_20
+
+echo Java Version:
+java -version
+echo -------------------------------------------------------------------------
+
+
 
 if "%JWEBSOCKET_HOME%"=="" goto error
 if "%JWEBSOCKET_VER%"=="" goto error
@@ -15,8 +25,6 @@ exit
 :continue
 
 echo This will create the entire jWebSocket v%JWEBSOCKET_VER% Nightly Build. 
-echo This java version is used:
-java -version 
 echo.
 echo PLEASE ENSURE....
 echo - that all build numbers are properly set (server, js client, java client)

@@ -75,11 +75,13 @@ echo Copying minified/obfuscated enterprise js files to ce version...
 copy %jsEE%jwsItemStoragePlugInEE_min.js %jsCE% /v
 copy %jsEE%jwsFileSystemPlugInEE_min.js %jsCE% /v
 copy %jsEE%jwsMailPlugInEE_min.js %jsCE% /v
-
 copy %jsEE%jwsOntologyPlugInEE_min.js %jsCE% /v
 copy %jsEE%jwsBPMNPlugInEE_min.js %jsCE% /v
 copy %jsEE%jwsANTLRPlugInEE_min.js %jsCE% /v
 copy %jsEE%jwsStringTemplatePlugInEE_min.js %jsCE% /v
+copy %jsEE%jwsClusterAdminPlugInEE_min.js %jsCE% /v
+copy %jsEE%jwsMASPlugInEE_min.js %jsCE% /v
+copy %jsEE%jwsEnapsoPlugInEE_min.js %jsCE% /v
 
 rem copy minified/obfuscated CE editions into EE deployment
 echo Copying minified/obfuscated community js files to enterprise version...
