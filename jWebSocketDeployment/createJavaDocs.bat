@@ -110,6 +110,26 @@ call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
 
+:jWebSocketMASPlugInEE
+echo ------------------------------------------------------------------------
+echo PlugInsEE/jWebSocketMASPlugInEE
+echo ------------------------------------------------------------------------
+cd %pluginsEE%jWebSocketMASPlugInEE
+if exist %javadocs%jWebSocketMASPlugInEE rd %javadocs%jWebSocketMASPlugInEE /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
+
+:jWebSocketEnapsoPlugInEE
+echo ------------------------------------------------------------------------
+echo PlugInsEE/jWebSocketEnapsoPlugInEE
+echo ------------------------------------------------------------------------
+cd %pluginsEE%jWebSocketEnapsoPlugInEE
+if exist %javadocs%jWebSocketEnapsoPlugInEE rd %javadocs%jWebSocketEnapsoPlugInEE /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
+
 :jWebSocketBPMNPlugInEE
 echo ------------------------------------------------------------------------
 echo PlugInsEE/jWebSocketBPMNPlugInEE
