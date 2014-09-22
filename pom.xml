@@ -60,6 +60,7 @@
 		<module>jWebSocketPlugIns/jWebSocketStatisticsPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketStockTickerPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketSharedObjectsPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketSharedCanvasPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketBenchmarkPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketAPIPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketProxyPlugIn</module>
