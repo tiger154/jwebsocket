@@ -2027,6 +2027,7 @@
 		
 		<!-- Scripting plug-in, e.g. to call JavaScript on the server side -->
 		<!-- will be released in jWebSocket 1.1 -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
 			<id>jWebSocketScriptingPlugIn</id>
@@ -2038,7 +2039,8 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		 
+		-->
+		
 		<!-- RTC plug-in -->
 		<plugin>
 			<name>org.jwebsocket.plugins.rtc.RTCPlugIn</name>
@@ -2145,6 +2147,36 @@
 			</jars>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/BPMNPlugInEE/bpmn.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
+		<!-- MAS plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.mas.MASPlugIn</name>
+			<id>jWebSocketMASPlugIn</id>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketMASPlugInEE-1.0.jar</jar>
+			</jars>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/MASPlugInEE/mas.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
+		<!-- Enapso plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.enapso.EnapsoPlugIn</name>
+			<id>jWebSocketEnapsoPlugIn</id>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketEnapsoPlugInEE-1.0.jar</jar>
+			</jars>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/EnapsoPlugInEE/enapso.xml</setting>
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
