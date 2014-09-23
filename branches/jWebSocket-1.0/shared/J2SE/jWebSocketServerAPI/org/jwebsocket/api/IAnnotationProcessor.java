@@ -28,7 +28,22 @@ import java.lang.annotation.Annotation;
  */
 public interface IAnnotationProcessor {
 
+	/**
+	 * Return TRUE if the given annotation type is supported by the processor,
+	 * FALSE otherwise
+	 *
+	 * @param aAnnotationType
+	 * @return
+	 */
 	boolean supports(Class aAnnotationType);
 
+	/**
+	 * Process annotation
+	 * 
+	 * @param aAnnotation The annotation type to be processed
+	 * @param aTarget The annotated object
+	 * @param aArgs The calling arguments in case of target be a method
+	 * @throws Exception 
+	 */
 	void processAnnotation(Annotation aAnnotation, Object aTarget, Object[] aArgs) throws Exception;
 }
