@@ -51,7 +51,9 @@ jws.CanvasPlugIn = {
 			 * @param {Event} aEvent the event received from the server
 			 * @param {Token} aToken the token received from the server
 			 */
-			OnMessage: jws.CanvasPlugIn.processToken,
+			OnMessage: function(aEvent, aToken){
+				jws.CanvasPlugIn.processToken(aToken);
+			},
 			/**
 			 * The first message from the server, here we register to the 
 			 * shared canvas demo, so the server will have better performance
@@ -94,8 +96,8 @@ jws.CanvasPlugIn = {
 		aPaintToken.data = aAction;
 		mWSC.sendToken(aPaintToken);
 	},
-	processToken: function(aEvent, aToken) {
-		if (aToken.ns === jws.CanvasPlugIn.NS) {
+	processToken: function(aToken) {
+		if (aToken && aToken.ns === jws.CanvasPlugIn.NS) {
 			if (aToken.type === "data") {
 				// We need to differentiate between who is sending the data 
 				// because we already executed the paint operation in our side
