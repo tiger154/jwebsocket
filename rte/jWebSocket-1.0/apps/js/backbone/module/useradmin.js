@@ -51,9 +51,11 @@ App.setModule('useradmin', {
                         
                         if (0 !== lResponse.getCode()) {
                             App.getLogger().error("UserAdmin - Could not register quota: " + lResponse.getString('msg'));
-                        }
+                        } else {
+							App.getLogger().debug("UserAdmin - Quota CountDown(SMS) successfully registered for '" + lUsername + "' user!")
+						}
                     } else {
-                        // if there is not a quota for SMSPlugin, create tue quota
+                        // if there is not a quota for SMSPlugin, create the quota
                         // for the new user that has been register
                         lResponse = App.invokePlugIn('jws.quota', null, {
                             type: 'createQuota',
