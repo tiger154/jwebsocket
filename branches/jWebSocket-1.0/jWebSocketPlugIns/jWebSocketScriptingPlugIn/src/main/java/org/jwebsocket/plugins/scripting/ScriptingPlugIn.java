@@ -198,7 +198,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 						mLog.error(Logging.getSimpleExceptionMessage(lEx, "processing cluster message: " + aMessage.toString()));
 					}
 				}
-			}, "NS = '" + NS + "'");
+			}, "ns = '" + NS + "'");
 		} catch (Exception aException) {
 			mLog.error("Exception catched while getting the JMS Manager instance with the following message: " + aException.getMessage());
 		}
