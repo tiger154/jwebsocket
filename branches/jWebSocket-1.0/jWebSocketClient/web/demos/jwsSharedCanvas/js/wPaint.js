@@ -87,6 +87,7 @@ $.widget( "jws.paint", {
 			mX1 = aEvent.clientX - w.paint.eCanvas.offsetLeft;
 			mY1 = aEvent.clientY - w.paint.eCanvas.offsetTop;
 		}
+		mWSC.canvasBeginPath( w.paint.CANVAS_ID );
 	},
 	mouseMoveLsnr: function( aEvent ) {
 		aEvent.preventDefault( );
@@ -111,6 +112,7 @@ $.widget( "jws.paint", {
 			mWSC.canvasLine( w.paint.CANVAS_ID, mX1, mY1, lX2, lY2, {
 				color: w.paint.mColor
 			} );
+			mWSC.canvasClosePath(w.paint.CANVAS_ID);
 			w.paint.mIsPainting = false;
 		}
 	},

@@ -21,9 +21,6 @@ jws.CanvasPlugIn = {
 	// namespace for shared objects plugin
 	// if namespace is changed update server plug-in accordingly!
 	NS: "jws.canvas",
-	mChannelId: "jWebSocketSharedCanvasDemo",
-	mChannelAccessKey: "access",
-	mChannelSecretKey: "secret",
 	mClientId: "",
 	TT_BEGIN_PATH: "beginPath",
 	TT_CLEAR: "clear",
@@ -74,11 +71,6 @@ jws.CanvasPlugIn = {
 					w.auth.auth();
 				}
 			},
-			/**
-			 * If the user is successfully authenticated, then we send a token
-			 * to the server to authenticate or subscribe to the channel
-			 * @param {Token} aToken the token received from the server with the user data
-			 */
 			OnLogon: function(aToken) {
 				w.switcher.eClientStatus.text(aToken.username).attr("title", "Authenticated as " + aToken.username);
 			}
@@ -97,7 +89,6 @@ jws.CanvasPlugIn = {
 		}
 		// Type of publication, when the user receive this message he will know 
 		// what to do by reading this variable in "aToken.data"
-		//mWSC.channelPublish(jws.CanvasPlugIn.mChannelId, aType, aPaintToken);
 		aPaintToken.ns = jws.CanvasPlugIn.NS;
 		aPaintToken.type = "data";
 		aPaintToken.data = aAction;
@@ -105,9 +96,6 @@ jws.CanvasPlugIn = {
 	},
 	processToken: function(aEvent, aToken) {
 		if (aToken.ns === jws.CanvasPlugIn.NS) {
-			// When information is published in the channel you can bind the type 
-			// of information coming within the variable "data" and get the object
-			// returned from the server inside the variable "map"
 			if (aToken.type === "data") {
 				// We need to differentiate between who is sending the data 
 				// because we already executed the paint operation in our side
