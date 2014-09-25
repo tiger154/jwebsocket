@@ -22,12 +22,14 @@ import java.util.Timer;
 import java.util.UUID;
 import org.jwebsocket.api.IEventBus;
 import javax.jms.Connection;
+import javax.jms.Destination;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
+import javax.jms.TemporaryQueue;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import org.jwebsocket.packetProcessors.JSONProcessor;
@@ -45,14 +47,18 @@ import org.springframework.util.Assert;
 public class JMSEventBus extends BaseEventBus {
 
 	protected static final String EVENT_BUS_MSG_UUID = "message_uuid";
+	protected static final String EVENT_BUS_MSG_REPLYTO = "jms_replyto";
 	private final Connection mConnection;
 	private Session mSession;
 	private MessageConsumer mTopicConsumer;
 	private MessageConsumer mQueueConsumer;
-	private MessageProducer mQueueProducer;
-	private MessageProducer mTopicProducer;
+	private MessageProducer mProducer;
 	private final String mDestinationId;
 	private final Timer mTimer = Tools.getTimer();
+	private MessageConsumer mReplyConsumer;
+	private TemporaryQueue mReplyQueue;
+	private Topic mTopic;
+	private Queue mQueue;
 
 	public Connection getConnection() {
 		return mConnection;
@@ -95,7 +101,7 @@ public class JMSEventBus extends BaseEventBus {
 	@Override
 	public IEventBus publish(Token aToken) {
 		setUTID(aToken);
-		sendGeneric(mTopicProducer, aToken, new Long(0));
+		sendGeneric(false, aToken, new Long(0));
 
 		return this;
 	}
@@ -145,13 +151,12 @@ public class JMSEventBus extends BaseEventBus {
 				}, aHandler.getTimeout());
 			}
 		}
-		sendGeneric(mQueueProducer, aToken, lExpiration);
+		sendGeneric(true, aToken, lExpiration);
 
 		return this;
 	}
 
-	void sendGeneric(MessageProducer aProducer, Token aToken, Long aExpiration
-	) {
+	void sendGeneric(boolean aSendOp, Token aToken, Long aExpiration) {
 		try {
 			TextMessage lMsg = mSession.createTextMessage(JSONProcessor.objectToJSONString(aToken));
 			if (aExpiration > 0) {
@@ -159,8 +164,18 @@ public class JMSEventBus extends BaseEventBus {
 			}
 			// setting higher priority for EventBus messages
 			lMsg.setJMSPriority(9);
-
-			aProducer.send(lMsg);
+			lMsg.setJMSReplyTo(mReplyQueue);
+			
+			if (aToken.getMap().containsKey(EVENT_BUS_MSG_REPLYTO)) {
+				// sending reply message
+				mProducer.send((Destination) aToken.getMap().get(EVENT_BUS_MSG_REPLYTO), lMsg);
+			} else if (aSendOp) {
+				// sending message
+				mProducer.send(mQueue, lMsg);
+			} else {
+				// publishing message
+				mProducer.send(mTopic, lMsg);
+			}
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx);
 		}
@@ -170,10 +185,11 @@ public class JMSEventBus extends BaseEventBus {
 	public void initialize() throws Exception {
 		mSession = mConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-		Topic lTopic = mSession.createTopic(mDestinationId);
-		Queue lQueue = mSession.createQueue(mDestinationId);
+		mTopic = mSession.createTopic(mDestinationId);
+		mQueue = mSession.createQueue(mDestinationId);
+		mReplyQueue = mSession.createTemporaryQueue();
 
-		mTopicConsumer = mSession.createConsumer(lTopic);
+		mTopicConsumer = mSession.createConsumer(mTopic);
 		mTopicConsumer.setMessageListener(new MessageListener() {
 
 			@Override
@@ -198,8 +214,36 @@ public class JMSEventBus extends BaseEventBus {
 				}
 			}
 		});
-		mQueueConsumer = mSession.createConsumer(lQueue);
+
+		mQueueConsumer = mSession.createConsumer(mQueue);
 		mQueueConsumer.setMessageListener(new MessageListener() {
+
+			@Override
+			public void onMessage(Message aMessage) {
+				try {
+					TextMessage lTextMsg = (TextMessage) aMessage;
+					final Token lToken = JSONProcessor.JSONStringToToken(lTextMsg.getText());
+					lToken.getMap().put(EVENT_BUS_MSG_REPLYTO, aMessage.getJMSReplyTo());
+
+					Tools.getThreadPool().submit(new Runnable() {
+
+						@Override
+						public void run() {
+							// discard if token has expired
+							if (!lToken.hasExpired()) {
+								invokeHandler(lToken.getNS(), lToken);
+							}
+						}
+					});
+
+				} catch (Exception lEx) {
+					// do nothing, invalid message
+				}
+			}
+		});
+
+		mReplyConsumer = mSession.createConsumer(mReplyQueue);
+		mReplyConsumer.setMessageListener(new MessageListener() {
 
 			@Override
 			public void onMessage(Message aMessage) {
@@ -213,12 +257,8 @@ public class JMSEventBus extends BaseEventBus {
 						public void run() {
 							// discard if token has expired
 							if (!lToken.hasExpired()) {
-								if ("response".equals(lToken.getType())) {
-									String lUTID = lToken.getString(EVENT_BUS_MSG_UUID);
-									invokeResponseHandler(lUTID, lToken);
-								} else {
-									invokeHandler(lToken.getNS(), lToken);
-								}
+								String lUTID = lToken.getString(EVENT_BUS_MSG_UUID);
+								invokeResponseHandler(lUTID, lToken);
 							}
 						}
 					});
@@ -229,16 +269,24 @@ public class JMSEventBus extends BaseEventBus {
 			}
 		});
 
-		mTopicProducer = mSession.createProducer(lTopic);
-		mQueueProducer = mSession.createProducer(lQueue);
+		mProducer = mSession.createProducer(null);
 	}
 
 	@Override
 	public void shutdown() throws Exception {
-		mQueueProducer.close();
-		mTopicProducer.close();
+		mProducer.close();
 		mTopicConsumer.close();
 		mQueueConsumer.close();
+		mReplyConsumer.close();
 		mSession.close();
 	}
+
+	@Override
+	public Token createResponse(Token aInToken) {
+		Token lResponse = super.createResponse(aInToken);
+		lResponse.getMap().put(JMSEventBus.EVENT_BUS_MSG_REPLYTO, aInToken.getMap().get(JMSEventBus.EVENT_BUS_MSG_REPLYTO));
+
+		return lResponse;
+	}
+
 }
