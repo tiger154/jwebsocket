@@ -120,7 +120,7 @@ public class UsageExample {
 			});
 			// sending message to "to_no_handlers_ns" name-space
 			// should invoke Timeout callback because no response will be received
-			lEB1.send(TokenFactory.createToken("to_no_handlers_ns", "action"), new Handler(new Long(1000)) {
+			lEB1.send(TokenFactory.createToken("to_no_handlers_ns", "action"), new Handler(new Long(3000)) {
 
 				@Override
 				public void OnTimeout(Token aToken) {
