@@ -508,13 +508,6 @@ var App = (function() {
 		getEventBus: function() {
 			if (!mEventBus) {
 				var lEventBus = App.getWebSocketServer().getEventBus();
-				var lSetResponseFields = function(aReq, aResponse) {
-					aResponse.ns = aReq.ns;
-					aResponse.type = 'response';
-					aResponse.reqType = aReq.type;
-					aResponse.code = 0;
-					aResponse.message_uuid = aReq.message_uuid;
-				};
 				var lToHandler = function(aListener) {
 					if (!aListener)
 						return null;
@@ -522,13 +515,16 @@ var App = (function() {
 						OnMessage: function(aToken) {
 							var lMessage = App.toJS(aToken.getMap());
 							lMessage.reply = function(aResponse, aListener) {
-								lSetResponseFields(lMessage, aResponse);
-								mEventBus.send(aResponse, aListener);
+								var lResponse = lEventBus.createResponse(aToken);
+								lResponse.getMap().putAll(App.toMap(aResponse));
+								
+								lEventBus.send(lResponse,  lToHandler(aListener));
 							};
 							lMessage.fail = function(aResponse, aListener) {
-								lSetResponseFields(lMessage, aResponse);
-								aResponse.code = -1;
-								mEventBus.send(aResponse, aListener);
+								var lResponse = lEventBus.createErrorResponse(aToken);
+								lResponse.getMap().putAll(App.toMap(aResponse));
+								
+								lEventBus.send(lResponse,  lToHandler(aListener));
 							};
 							if (aListener.OnMessage) {
 								aListener.OnMessage(lMessage);
