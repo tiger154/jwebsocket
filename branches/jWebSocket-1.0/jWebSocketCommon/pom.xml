@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<version>1.0</version>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jwebsocket</groupId>
@@ -21,9 +20,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn:http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/jWebSocketCommon/</connection>
-		<developerConnection>scm:svn:http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/jWebSocketCommon/</developerConnection>
-		<url>http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/jWebSocketCommon/</url>
+		<connection>scm:svn:http://jwebsocket.googlecode.com/svn/tags/RC3-b41002/jWebSocket-1.0/jWebSocketCommon</connection>
+		<developerConnection>scm:svn:http://jwebsocket.googlecode.com/svn/tags/RC3-b41002/jWebSocket-1.0/jWebSocketCommon</developerConnection>
+		<url>http://jwebsocket.googlecode.com/svn/tags/RC3-b41002/jWebSocket-1.0/jWebSocketCommon</url>
 	</scm>
 	<packaging>jar</packaging>
 	<properties>

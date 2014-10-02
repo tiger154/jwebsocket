@@ -1,6 +1,5 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>jWebSocket-Parent</artifactId>
 		<groupId>org.jwebsocket</groupId>
@@ -38,7 +37,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9.1</version>
 				<configuration>
-					<reportOutputDirectory>${project.build.directory}/../../javadocs/${project.name}</reportOutputDirectory> -->
+					<reportOutputDirectory>${project.build.directory}/../../javadocs/${project.name}</reportOutputDirectory> --&gt;
 					<stylesheetfile>${project.build.directory}/../../javadocs/stylesheet.css</stylesheetfile>
 				</configuration>
 			</plugin>
