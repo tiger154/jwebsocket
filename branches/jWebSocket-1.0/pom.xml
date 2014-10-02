@@ -24,9 +24,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn:http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/</connection>
-		<developerConnection>scm:svn:http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/</developerConnection>
-		<url>http://jwebsocket.googlecode.com/svn/branches/jWebSocket-1.0/</url>
+		<connection>scm:svn:http://jwebsocket.googlecode.com/svn/tags/RC3-b41002/jWebSocket-1.0</connection>
+		<developerConnection>scm:svn:http://jwebsocket.googlecode.com/svn/tags/RC3-b41002/jWebSocket-1.0</developerConnection>
+		<url>http://jwebsocket.googlecode.com/svn/tags/RC3-b41002/jWebSocket-1.0</url>
 	</scm>
 	<modules>
 		<module>jWebSocketLibs</module>
