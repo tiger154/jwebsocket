@@ -1,0 +1,40 @@
+{
+    "name": "BPMNUI",
+    "settings": {
+        "cmd": {
+            "license": "commercial"
+        },
+        "canvasControls": {
+            "viewportSize": {
+                "name": "Auto Expand",
+                "builtIn": true,
+                "height": null,
+                "width": null
+            }
+        },
+        "urlPrefix": "",
+        "exportPath": "/home/zcool/src/prototype"
+    },
+    "xdsVersion": "3.1.0",
+    "xdsBuild": 1934,
+    "schemaVersion": 1,
+    "upgradeVersion": 300000000007,
+    "framework": "ext50",
+    "viewOrderMap": {
+        "view": [
+            "21b707df-292e-407b-9043-e23805f22faf",
+            "106ba7a7-5ab2-4774-82d6-973f0462db2a",
+            "9352ad7d-827c-4328-9eb9-e439377717c1"
+        ],
+        "store": [],
+        "controller": [],
+        "model": [],
+        "resource": [
+            "f549f2f1-a721-41c6-be2c-c7b1027f051c",
+            "9a5a6513-d5d4-4668-996f-fd63d53c2c5a"
+        ],
+        "app": [
+            "application"
+        ]
+    }
+}
