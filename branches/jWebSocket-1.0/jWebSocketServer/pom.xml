@@ -262,14 +262,14 @@
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
-			<version>2.4.4</version>
+			<version>2.4.8</version>
 		</dependency>
 
 		<!-- mongodb dependency -->
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
-			<version>2.11.4</version>
+			<version>2.12.4</version>
 		</dependency>
 		
 		<dependency>
@@ -280,6 +280,11 @@
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketServerAPI</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketJMSEndPoint</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		
@@ -320,17 +325,12 @@
 		<dependency>
 			<groupId>com.j256.ormlite</groupId>
 			<artifactId>ormlite-core</artifactId>
-			<version>4.43</version>
+			<version>4.48</version>
 		</dependency>
 		<dependency>
 			<groupId>com.j256.ormlite</groupId>
 			<artifactId>ormlite-jdbc</artifactId>
-			<version>4.43</version>
-		</dependency>
-		<dependency>
-			<groupId>com.paypal.sdk</groupId>
-			<artifactId>rest-api-sdk</artifactId>
-			<version>0.9.1</version>
+			<version>4.48</version>
 		</dependency>
 		<!--
 		<dependency>
