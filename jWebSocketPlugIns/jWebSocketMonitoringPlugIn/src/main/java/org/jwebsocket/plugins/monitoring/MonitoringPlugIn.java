@@ -139,7 +139,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		mDBExchanges = null;
 		ConnectionManager lCM = (ConnectionManager) JWebSocketBeanFactory.getInstance()
 				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
-		if (lCM.isValid(NS_MONITORING)) {
+		try {
 			Mongo lMongo = (Mongo) lCM.getConnection(NS_MONITORING);
 			DB lDB = lMongo.getDB(DB_NAME);
 			if (null != lDB) {
@@ -154,7 +154,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			} else if (mLog.isInfoEnabled()) {
 				mLog.info("Monitoring Plug-in successfully instantiated.");
 			}
-		} else {
+		} catch (Exception lEx) {
 			mLog.error("Invalid MongoDB database connection, please check that the current "
 					+ "connection configuration (conf/Resources/bootstrap.xml) is correct "
 					+ "or consider to install and run MongoDB server. "
@@ -577,7 +577,17 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					String lDay = lDate.substring(3, 5);
 					DBObject lEntry;
 					for (int i = 0; i < 24; i++) {
-						lEntry = (DBObject) lDocument.get("h" + i);
+						try {
+							lEntry = (DBObject) lDocument.get("h" + i);
+						} catch (Exception lEx) {
+							lEntry = null;
+							long lOut = 0;
+							lOut = Long.parseLong(lDocument.get("h" + i).toString());
+							if (lOut > 0) {
+								lTotalOut += lOut / 2;
+								lTotalIn += lOut / 2;
+							}
+						}
 						if (lEntry != null) {
 							if (lEntry.get("in") != null) {
 								lTotalIn += Long.parseLong(lEntry.get("in").toString());
@@ -590,6 +600,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					lMap = new FastMap();
 					lMap.put("in", lTotalIn);
 					lMap.put("out", lTotalOut);
+
 					//System.out.println(lCursor);
 					lToken.setMap(lDay, lMap);
 					lFlag = true;
@@ -641,7 +652,17 @@ public class MonitoringPlugIn extends TokenPlugIn {
 							DBObject lEntry;
 							long lTotalIn = 0, lTotalOut = 0;
 							for (int i = 0; i < 24; i++) {
-								lEntry = (DBObject) lDocument.get("h" + i);
+								try {
+									lEntry = (DBObject) lDocument.get("h" + i);
+								} catch (Exception lEx) {
+									lEntry = null;
+									long lOut = 0;
+									lOut = Long.parseLong(lDocument.get("h" + i).toString());
+									if (lOut > 0) {
+										lTotalOut += lOut / 2;
+										lTotalIn += lOut / 2;
+									}
+								}
 								if (lEntry != null) {
 									if (lEntry.get("in") != null) {
 										lTotalIn += Long.parseLong(lEntry.get("in").toString());
