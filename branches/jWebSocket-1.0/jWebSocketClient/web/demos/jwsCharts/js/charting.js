@@ -256,7 +256,7 @@ jws.ChartingPlugIn = {
 					var lDate = new Date(),
 							lMonthNr = Ext.Array.indexOf(lDate.getMonths( ), lValue) + 1;
 					lScope.registerTo(lScope.TT_SERVER_XCHG_INFO_X_DAYS, {
-						month: lMonthNr < 10 ? "0" + lMonthNr : lMonthNr
+						month: lMonthNr < 10 ? "0" + lMonthNr.toString() : lMonthNr.toString()
 					})
 				}
 			}
@@ -311,7 +311,7 @@ jws.ChartingPlugIn = {
 					}
 
 					lScope.registerTo(lScope.TT_SERVER_XCHG_INFO, {
-						month: lMonthNr,
+						month: lMonthNr.toString(),
 						day: lDay,
 						year: lYear
 					});
@@ -578,7 +578,7 @@ jws.ChartingPlugIn = {
 						case 'tab_pkt_x_d':
 							var lMonthNr = new Date().getMonth() + 1;
 							lScope.registerTo(lScope.TT_SERVER_XCHG_INFO_X_DAYS, {
-								month: lMonthNr < 10 ? "0" + lMonthNr : lMonthNr
+								month: lMonthNr < 10 ? "0" + lMonthNr.toString() : lMonthNr.toString()
 							});
 							lScope.views.comboChooseMonth.show( );
 							lScope.views.panelChooseDate.hide( );
