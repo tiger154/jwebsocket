@@ -19,10 +19,9 @@ Ext.define('BPMNEditor.view.vpDiagram', {
 
     requires: [
         'BPMNEditor.view.vpDiagramViewModel',
-        'BPMNEditor.view.MyPanel2',
-        'BPMNEditor.view.bpmnPanel',
+        'BPMNEditor.view.pToolbox',
+        'BPMNEditor.view.tpCanvas',
         'Ext.tab.Panel',
-        'Ext.tab.Tab',
         'Ext.grid.Panel',
         'Ext.grid.View',
         'Ext.grid.column.Number'
@@ -42,18 +41,13 @@ Ext.define('BPMNEditor.view.vpDiagram', {
             title: 'Toolbar',
             items: [
                 {
-                    xtype: 'mypanel2'
+                    xtype: 'ptoolbox'
                 }
             ]
         },
         {
-            xtype: 'tabpanel',
-            region: 'center',
-            items: [
-                {
-                    xtype: 'bpmnpanel'
-                }
-            ]
+            xtype: 'tpcanvas',
+            region: 'center'
         },
         {
             xtype: 'gridpanel',

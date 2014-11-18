@@ -39,14 +39,14 @@
                         "type": "array"
                     },
                     "codeClass": null,
-                    "name": "mypanel2",
+                    "name": "ptoolbox",
                     "designerId": "97d0b0a2-4eb3-4268-afb1-ff6e54bf7a01",
                     "masterInstanceId": "da26b90d-e3bc-4130-b46f-c7c3840134dc"
                 }
             ]
         },
         {
-            "type": "Ext.tab.Panel",
+            "type": "linkedinstance",
             "reference": {
                 "name": "items",
                 "type": "array"
@@ -55,33 +55,9 @@
             "userConfig": {
                 "layout|region": "center"
             },
-            "name": "MyTabPanel",
-            "designerId": "d83425c3-e7f1-432e-bdce-e5f0b8d8ca60",
-            "cn": [
-                {
-                    "type": "linkedinstance",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "name": "bpmnpanel",
-                    "designerId": "2568daf3-9add-409b-a24e-c500ae85780a",
-                    "masterInstanceId": "33c5868c-5674-472e-9de5-ede547600257",
-                    "cn": [
-                        {
-                            "type": "Ext.tab.Tab",
-                            "reference": {
-                                "name": "tabConfig",
-                                "type": "object"
-                            },
-                            "codeClass": null,
-                            "name": "TabConfig1",
-                            "designerId": "3a6a094b-060e-47f4-9b73-28606aa6ba81"
-                        }
-                    ]
-                }
-            ]
+            "name": "tpcanvas",
+            "designerId": "c976ccb6-344d-4065-9798-f80fdd01b961",
+            "masterInstanceId": "a9872ee8-0611-499a-a7e3-91760d447a85"
         },
         {
             "type": "Ext.grid.Panel",
