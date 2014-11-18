@@ -1,0 +1,26 @@
+{
+    "type": "Ext.button.Button",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "action": null,
+        "designer|userAlias": "btnnew",
+        "designer|userClassName": "btnNew",
+        "itemId": "mybutton",
+        "text": "New"
+    },
+    "name": "MyButton",
+    "designerId": "9653e99f-d413-4b73-9c50-bbb93d739445",
+    "customConfigs": [
+        {
+            "group": "(Custom Properties)",
+            "name": "action",
+            "type": "string"
+        }
+    ],
+    "viewControllerInstanceId": "6a64b2d5-0985-4e61-8ad9-95d67755ba3e",
+    "viewModelInstanceId": "728e8688-5084-495f-925b-b127606371bf"
+}

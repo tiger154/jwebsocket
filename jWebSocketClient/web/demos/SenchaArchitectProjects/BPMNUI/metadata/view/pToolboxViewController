@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "ptoolbox",
+        "designer|userClassName": "pToolboxViewController"
+    },
+    "designerId": "1d501691-0756-4e0b-a774-a5072ad69183"
+}

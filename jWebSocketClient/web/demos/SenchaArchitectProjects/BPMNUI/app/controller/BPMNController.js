@@ -18,6 +18,25 @@ Ext.define('BPMNEditor.controller.BPMNController', {
     alias: 'controller.bpmnController',
 
     refs: {
-        panel: 'panel'
+        canvasTabPanel: 'tpcanvas',
+        btnNew: 'pCanvas btnNew'
+    },
+
+    control: {
+        "btnnew": {
+            click: 'onMybuttonClick'
+        },
+        "btnopen": {
+            click: 'onButtonClick'
+        }
+    },
+
+    onMybuttonClick: function(button, e, eOpts) {
+        this.getCanvasTabPanel().add(Ext.create('BPMNEditor.view.pCanvas'));
+    },
+
+    onButtonClick: function(button, e, eOpts) {
+        Ext.create('BPMNEditor.view.winLoadDiagram').show();
     }
+
 });
