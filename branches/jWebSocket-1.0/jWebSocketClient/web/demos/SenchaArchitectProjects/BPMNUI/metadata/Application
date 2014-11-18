@@ -12,9 +12,10 @@
         "name": "BPMNEditor",
         "views": [
             "vpDiagram",
-            "MyPanel2",
             "winLoadDiagram",
-            "MyPanel1"
+            "btnNew",
+            "tpCanvas",
+            "btnOpen"
         ]
     },
     "name": "Application",
