@@ -103,7 +103,10 @@ public class HTTPSupport {
 			};
 			lResponse = lHTTPClient.execute(lRequest, lResponseHandler);
 		} catch (Exception lEx) {
-			System.out.println("HTTP Request " + lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+			// System.out.println("HTTP request " + lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+			lResponse = "{\"code\": -1, \"msg\": \""
+					+ lEx.getClass().getSimpleName() 
+					+ " at http request: " + lEx.getMessage() + "\"}";
 		} finally {
 		}
 		return lResponse;

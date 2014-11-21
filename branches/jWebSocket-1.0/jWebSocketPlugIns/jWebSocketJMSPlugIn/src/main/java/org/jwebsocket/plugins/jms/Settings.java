@@ -31,6 +31,9 @@ public class Settings {
 	private String mGatewayTopic = null;
 	private String mAdvisoryTopic = null;
 
+	private Boolean mLoggerActive = false;
+	private Boolean mBroadcastTransportlisterEvents = true;
+
 	/**
 	 * @return the Endpoint Id
 	 */
@@ -85,5 +88,33 @@ public class Settings {
 	 */
 	public void setGatewayTopic(String aGatewayTopic) {
 		mGatewayTopic = aGatewayTopic;
+	}
+
+	/**
+	 * @return the mLoggerActive
+	 */
+	public Boolean getLoggerActive() {
+		return mLoggerActive;
+	}
+
+	/**
+	 * @param aLoggerActive the aLoggerActive to set
+	 */
+	public void setLoggerActive(Boolean aLoggerActive) {
+		mLoggerActive = aLoggerActive;
+	}
+
+	/**
+	 * @return the mBroadcastTransportlisterEvents
+	 */
+	public Boolean getBroadcastTransportlisterEvents() {
+		return mBroadcastTransportlisterEvents;
+	}
+
+	/**
+	 * @param aBroadcastTransportlisterEvents
+	 */
+	public void setBroadcastTransportlisterEvents(Boolean aBroadcastTransportlisterEvents) {
+		mBroadcastTransportlisterEvents = aBroadcastTransportlisterEvents;
 	}
 }

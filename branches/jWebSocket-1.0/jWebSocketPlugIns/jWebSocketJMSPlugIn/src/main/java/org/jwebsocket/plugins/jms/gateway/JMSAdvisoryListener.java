@@ -23,6 +23,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javolution.util.FastMap;
 import org.apache.activemq.command.ActiveMQMessage;
+import org.apache.activemq.command.ConnectionInfo;
 import org.apache.activemq.command.ConsumerId;
 import org.apache.activemq.command.ConsumerInfo;
 import org.apache.activemq.command.DataStructure;
@@ -149,6 +150,14 @@ public class JMSAdvisoryListener implements MessageListener {
 					} else {
 						mLog.warn("Unknown remove message: " + aMessage);
 					}
+				} else if (lDataStructure instanceof ConnectionInfo) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Received remove info: " + aMessage);
+					}
+					ConnectionInfo lConn = (ConnectionInfo) lMessage.getDataStructure();
+					if (mLog.isInfoEnabled()) {
+						mLog.info("JMS Connection Event:" + lConn.toString());
+					} 
 				} else {
 					mLog.warn("Unknown advisory message: " + aMessage);
 				}

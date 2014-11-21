@@ -76,11 +76,12 @@ public class Main {
 			return;
 		}
 
-		String lOAuthHost = lConfig.getString("OAuthHost");
-		String lOAuthAppId = lConfig.getString("OAuthAppId");
-		String lOAuthAppSecret = lConfig.getString("OAuthAppSecret");
-		String lOAuthUsername = lConfig.getString("OAuthUsername");
-		String lOAuthPassword = lConfig.getString("OAuthPassword");
+		final String lSMHost = lConfig.getString("SMHost");
+		final String lOAuthHost = lConfig.getString("OAuthHost");
+		final String lOAuthAppId = lConfig.getString("OAuthAppId");
+		final String lOAuthAppSecret = lConfig.getString("OAuthAppSecret");
+		final String lOAuthUsername = lConfig.getString("OAuthUsername");
+		final String lOAuthPassword = lConfig.getString("OAuthPassword");
 		long lOAuthTimeout = lConfig.getLong("OAuthTimeout", 5000);
 
 		// TODO: Validate config data here!
@@ -97,19 +98,23 @@ public class Main {
 		lOAuth.setOAuthAppId(lOAuthAppId);
 		lOAuth.setOAuthAppSecret(lOAuthAppSecret);
 
-		String lSMSession = SiteMinder.getSSOSession(5000);
-		mLog.info("Getting SM Session: " + lSMSession);
-
-		if (true) {
-			return;
-		}
-
-		int lMax = 1;
+//		SiteMinder.setSMHost(lSMHost);
+//		String lSMSession = SiteMinder.getSSOSession(5000);
+//		mLog.info("Getting SM Session: " + lSMSession);
+//
+//		if (true) {
+//			return;
+//		}
+		int lMaxTotalProcesses = 1;
+		int lMaxUserRequests = 100;
+		int lLoopDelay = 0;
+		int lRequestDelay = 1000;
 		Map<String, Object> lJSON;
-		for (int lCount = 0; lCount < lMax; lCount++) {
-			mLog.info("================== " + lCount + "/" + lMax + " ==================");
+		for (int lCount = 0; lCount < lMaxTotalProcesses; lCount++) {
+			mLog.info("================== " + (lCount + 1) + "/" + lMaxTotalProcesses + " ==================");
 			String lSessionCookie = lOAuth.getSSOSession(lOAuthUsername, lOAuthPassword, 5000);
-			mLog.info("Getting Session Cookie: " + lSessionCookie);
+			mLog.info("Getting Session Cookie: " + (null == lSessionCookie ? "[null]"
+					: lSessionCookie.replace("\r", "\\r").replace("\n", "\\n")));
 			try {
 				lJSON = lOAuth.parseJSON(lSessionCookie);
 			} catch (IOException ex) {
@@ -117,7 +122,8 @@ public class Main {
 				break;
 			}
 			String lAuthSession = lOAuth.authSession(lOAuth.getSessionId(), 5000);
-			mLog.info("Authenticate Session: " + lAuthSession);
+			mLog.info("Authenticate Session: " + (null == lAuthSession ? "[null]"
+					: lAuthSession.replace("\r", "\\r").replace("\n", "\\n")));
 			try {
 				lJSON = lOAuth.parseJSON(lAuthSession);
 			} catch (IOException ex) {
@@ -128,18 +134,31 @@ public class Main {
 			/*		
 			 mLog.info("JSON Direct Authentication: " + lOAuth.authDirect(lOAuthUsername, lOAuthPassword));
 			 */
-			String lUsername = lOAuth.getUser(lAccessToken);
-			mLog.info("JSON User from Access Token: " + lUsername);
-			try {
-				lJSON = lOAuth.parseJSON(lUsername);
-			} catch (IOException ex) {
-				mLog.error(ex.getMessage());
-				break;
+			for (int lGetUserIdx = 0; lGetUserIdx < lMaxUserRequests; lGetUserIdx++) {
+				if (lMaxUserRequests == lGetUserIdx + 1) {
+					lAccessToken += "xx";
+				}
+				try {
+					String lUsername = lOAuth.getUser(lAccessToken);
+					mLog.info((lGetUserIdx + 1) + " of " + lMaxUserRequests
+							+ ": JSON User from Access Token: "
+							+ (null == lUsername ? "[null]"
+							: lUsername.replace("\r", "\\r").replace("\n", "\\n")));
+					try {
+						lJSON = lOAuth.parseJSON(lUsername);
+					} catch (IOException ex) {
+						mLog.error(ex.getMessage());
+						break;
+					}
+					try {
+						Thread.currentThread().sleep(lRequestDelay);
+					} catch (InterruptedException lEx) {
+					}
+				} catch (Exception ex) {
+					mLog.error(ex.getMessage());
+					break;
+				}
 			}
-			/*
-			 mLog.info("JSON Refresh Access Token: " + lOAuth.refreshAccessToken());
-			 mLog.info("Username from OAuth Object: " + lOAuth.getUsername());
-			 */
 		}
 	}
 

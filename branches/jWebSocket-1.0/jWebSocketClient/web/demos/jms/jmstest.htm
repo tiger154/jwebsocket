@@ -65,7 +65,7 @@
 
 			function jmsPing() {
 				log("Sending 'Ping'...");
-				if( lWSC.isConnected() ) {
+				if (lWSC.isConnected()) {
 					lWSC.jmsPing(eTargetId.value, {
 						OnSuccess: function(aToken) {
 							log("Ping success: " + aToken.sourceId);
@@ -79,8 +79,8 @@
 						timeout: 2000
 					});
 				} else {
-					log( "Not connected." );
-				}	
+					log("Not connected.");
+				}
 			}
 
 			function jmsIdentify() {
@@ -94,6 +94,22 @@
 					},
 					OnTimeout: function() {
 						log("Identify timeout!");
+					},
+					timeout: 2000
+				});
+			}
+			
+			function jmsBrokerConnected() {
+				log("Sending 'isBrokerConnected' to server...");
+				lWSC.jmsIsBrokerConnected({
+					OnSuccess: function(aToken) {
+						log(" IsBrokerConnected: " + aToken.isConnected);
+					},
+					OnFailure: function(aToken) {
+						log("IsBrokerConnected: " + aToken.msg);
+					},
+					OnTimeout: function() {
+						log("IsBrokerConnected timeout!");
 					},
 					timeout: 2000
 				});
@@ -158,30 +174,27 @@
 
 			function jmsTestAuth() {
 				log("Sending 'Test Auth' to '" + eTargetId.value + "'...");
-				/*				
-				 lWSC.forwardJSON(
-				 eTargetId.value,
-				 "org.jwebsocket.jms.demo",
-				 "testAuth",
-				 {}, //
-				 "", // JSON
-				 {OnSuccess: function(aToken) {
-				 log("Auth success: " + aToken.sourceId);
-				 },
-				 OnFailure: function(aToken) {
-				 log("Auth failure: " + aToken.msg);
-				 }
-				 }
-				 );
-				 */
+				var lAT = eAccessToken.value;
+				var lAuthData;
+				if (lAT) {
+					lAuthData = {
+						accessToken: lAT,
+						username: eUsername.value
+
+					};
+				} else {
+					lAuthData = {
+						username: eUsername.value,
+						password: ePassword.value
+					};
+				}
+
 				lWSC.forwardJSON(
 						eTargetId.value,
 						"org.jwebsocket.jms.demo",
-						"testAuth",
-						{username: eUsername.value,
-							password: ePassword.value
-						},
-				"", // JSON
+						"testAuthToken",
+						lAuthData,
+						"", // JSON
 						{OnSuccess: function(aToken) {
 								log("Auth success: " + aToken.sourceId);
 							},
@@ -347,6 +360,32 @@
 				);
 			}
 
+			function jmsTestEchoClient() {
+				log("Sending 'Test Client' to '" + eTargetId.value + "'...");
+
+				var lToken = {
+					ns: "org.jwebsocket.plugins.jms",
+					type: "test",
+					sourceId: lWSC.getId(),
+					originId: lWSC.getId()
+				};
+
+				lWSC.sendToken(
+						lToken,
+						{OnSuccess: function(aToken) {
+								log("echo (server) success: " + JSON.stringify(aToken));
+							},
+							OnFailure: function(aToken) {
+								log("echo (server) failure: " + aToken.msg);
+							},
+							OnTimeout: function() {
+								log("echo (server) timeout!");
+							},
+							timeout: 2000
+						}
+				);
+			}
+
 			function initPage() {
 				eArgs = jws.$("stxfArgs");
 				eNS = jws.$("stxfNS");
@@ -361,6 +400,15 @@
 					},
 					OnIdentify: function(aToken) {
 						log("<b>Identity from: " + aToken.sourceId + ", " + aToken.hostname + ", " + aToken.ip + "</b>");
+					},
+					OnBrokerTransportInterupted: function(aToken) {
+						log("<b>JMS Broker Transport Interrupted!</b>");
+					},
+					OnBrokerTransportResumed: function(aToken) {
+						log("<b>JMS Broker Transport Resumed!</b>");
+					},
+					OnBrokerTransportException: function(aToken) {
+						log("<b>Broker Transport Interrupted! Message: " + aToken.message + "</b>");
 					}
 				});
 
@@ -439,6 +487,10 @@
 							   title="Requests an username from a given OAuth access token.">
 						<input class="sbtnDlg" id="sbtnSendRequest" type="button" value="JMS Request" onclick="sendJMSRequest();"
 							   title="Send a request using the access token to the JMS demo server.">
+						<input class="sbtnDlg" id="sbtnEchoClient" type="button" value="Echo Client" onclick="jmsTestEchoClient();"
+							   title="Tries to get an Echo from the internal JMS client of the jWebSocket gateway.">
+						<input class="sbtnDlg" id="sbtnBrokerConnected" type="button" value="BrokerConnected" onclick="jmsBrokerConnected();"
+							   title="Checks if the server is connected to the JMS queue/topic.">
 					</td>
 				</tr>
 				<tr class="strDlg">

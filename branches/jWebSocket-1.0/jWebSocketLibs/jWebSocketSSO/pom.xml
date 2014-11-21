@@ -25,6 +25,10 @@
 							<mainClass>org.jwebsocket.sso.App</mainClass>
 						</manifest>
 					</archive>
+					<excludes>
+						<exclude>private.properties</exclude>
+						<exclude>test.log</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>

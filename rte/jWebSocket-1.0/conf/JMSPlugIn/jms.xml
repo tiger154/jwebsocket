@@ -45,11 +45,18 @@
 		<!-- <property name="brokerURI" value="failover:(tcp://<host1>:61616,tcp://<host2>:61616)?initialReconnectDelay=100&amp;connectionTimeout=10000"/> -->
 		<!-- <property name="brokerURI" value="tcp://<host>:61616?connectionTimeout=10000"/> -->
 		<!-- <property name="brokerURI" value="tcp://localhost:61616?connectionTimeout=10000"/> -->
-		<beans:property name="brokerURI" value="failover:(tcp://localhost:61616)?initialReconnectDelay=100&amp;maxReconnectDelay=5000&amp;timeout=3000&amp;useExponentialBackOff=false"/>
+		<beans:property name="brokerURI" value="failover:(tcp://localhost:61616,tcp://127.0.01:61616)?initialReconnectDelay=100&amp;maxReconnectDelay=5000&amp;timeout=3000&amp;useExponentialBackOff=false"/>
+		
 		<beans:property name="gatewayTopic" value="org.jwebsocket.jms.gateway"/>
 		<beans:property name="advisoryTopic" value="ActiveMQ.Advisory.Consumer.Topic.org.jwebsocket.jms.gateway"/>
 		<!-- use id for this node in the cluster, must be unique per node -->
 		<beans:property name="endPointId" value="org.jwebsocket.jms.gateway"/>
+
+		<!-- activate the traffic logger -->
+		<beans:property name="loggerActive" value="false"/>
+		<!-- broadcast all JMS transport listener events to connected clients -->
+		<beans:property name="broadcastTransportlisterEvents" value="true"/>
+
 	</beans:bean>
 
 </beans:beans>

@@ -19,7 +19,12 @@
 package org.jwebsocket.jms.endpoint;
 
 import java.util.Map;
+import javax.jms.Connection;
 import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.Topic;
 import org.jwebsocket.token.Token;
 
 /**
@@ -78,6 +83,25 @@ public class JWSEndPoint extends JMSEndPoint {
 		lEP.init(aBrokerURI, aGatewayTopic,
 				aGatewayId, aEndPointId, aThreadPoolSize,
 				aDurable);
+
+		lEP.setListener(new JWSEndPointMessageListener(lEP));
+		lEP.setSender(new JWSEndPointSender(lEP));
+		lEP.getListener().setSender(lEP.getSender());
+		lEP.addListener(lEP.getListener());
+
+		// return JMS Endpoint instance in case of success
+		return lEP;
+	}
+
+	public static JWSEndPoint getInstance(Connection aConnection,
+			Session aSession, Topic aGatewayTopic, MessageProducer aProducer,
+			MessageConsumer aConsumer, int aThreadPoolSize,
+			boolean aDurable) throws JMSException {
+		// create an "empty" endpoint instance
+		JWSEndPoint lEP = new JWSEndPoint();
+		// and take over connection from JMS gateway
+		lEP.init(aConnection, aSession, aGatewayTopic, aProducer, aConsumer,
+				aThreadPoolSize, aDurable);
 
 		lEP.setListener(new JWSEndPointMessageListener(lEP));
 		lEP.setSender(new JWSEndPointSender(lEP));
