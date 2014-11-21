@@ -875,8 +875,8 @@ public class SystemPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Closing client "
 					+ (lTimeout > 0
-					? "with timeout " + lTimeout + "ms"
-					: "immediately") + "...");
+							? "with timeout " + lTimeout + "ms"
+							: "immediately") + "...");
 		}
 
 		// don't send a response here! We're about to close the connection!
@@ -894,17 +894,42 @@ public class SystemPlugIn extends TokenPlugIn {
 	private void echo(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = createResponse(aToken);
 
+		final String lEchoTestData = "jWebSocket Echo Simulation Data - ";
+		Integer lEchoTestSize = aToken.getInteger("echoTestSize", -1);
+		StringBuilder lSB = new StringBuilder();
+		int lPos = 0;
+		if (lEchoTestSize >= 0) {
+			for (int lIdx = 0; lIdx < lEchoTestSize; lIdx++) {
+				lSB.append(lEchoTestData.charAt(lPos));
+				lPos++;
+				if (lPos >= lEchoTestData.length()) {
+					lPos = 0;
+				}
+			}
+		}
+
 		String lData = aToken.getString("data");
+		Integer lDelay = aToken.getInteger("delay", -1);
 		if (lData != null) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("echo " + lData);
 			}
 			lResponse.setString("data", lData);
+			if (lSB.length() > 0) {
+				lResponse.setInteger("echoTestSize", lEchoTestSize);
+				lResponse.setString("echoTestData", lSB.toString());
+			}
+			if (lDelay > 0) {
+				lResponse.setInteger("delayed", lDelay);
+				try {
+					Thread.sleep(lDelay);
+				} catch (InterruptedException ex) {
+				}
+			}
 		} else {
 			lResponse.setInteger("code", -1);
 			lResponse.setString("msg", "missing 'data' argument for 'echo' command");
 		}
-
 		sendToken(aConnector, aConnector, lResponse);
 	}
 
@@ -941,7 +966,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		Boolean lIsResponseRequested = aToken.getBoolean("responseRequested", true);
 		if (lDuration != null && lDuration >= 0) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("duration " + lDuration);
+				mLog.debug("Waiting (duration: " + lDuration + "ms)...");
 			}
 			try {
 				Thread.sleep(lDuration);
@@ -1098,12 +1123,12 @@ public class SystemPlugIn extends TokenPlugIn {
 			mLog.debug(
 					"Authentication successful. Updating the user session (id: "
 					+ (null != aConnector.getSession()
-					? aConnector.getSession().getSessionId()
-					: "[null]")
+							? aConnector.getSession().getSessionId()
+							: "[null]")
 					+ ", storage: "
 					+ (null != aConnector.getSession()
-					? aConnector.getSession().getStorage()
-					: "[null]")
+							? aConnector.getSession().getStorage()
+							: "[null]")
 					+ ")...");
 		}
 

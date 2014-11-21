@@ -20,7 +20,11 @@ package org.jwebsocket.session;
 
 import java.util.Map;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.*;
+import org.jwebsocket.api.IBasicStorage;
+import org.jwebsocket.api.ISessionManager;
+import org.jwebsocket.api.ISessionReconnectionManager;
+import org.jwebsocket.api.IStorageProvider;
+import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 

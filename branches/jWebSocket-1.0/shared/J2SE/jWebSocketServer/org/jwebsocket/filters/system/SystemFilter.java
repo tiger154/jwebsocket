@@ -80,7 +80,7 @@ public class SystemFilter extends TokenFilter {
 			String lOut = aToken.getLogString();
 			mLog.debug("Filtering incoming token from "
 					+ (aConnector != null ? aConnector.getId() : "[not given]")
-					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
+					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut));
 		}
 
 		if (null != aConnector && !aConnector.isInternal()) {
@@ -132,7 +132,7 @@ public class SystemFilter extends TokenFilter {
 			mLog.debug("Filtering outgoing token from "
 					+ (aSource != null ? aSource.getId() : "[not given]")
 					+ " to " + (aTarget != null ? aTarget.getId() : "[not given]")
-					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
+					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut));
 		}
 
 		if (null != aTarget && !aTarget.isInternal()) {

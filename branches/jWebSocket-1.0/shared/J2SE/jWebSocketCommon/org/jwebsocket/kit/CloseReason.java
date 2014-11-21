@@ -25,6 +25,8 @@ package org.jwebsocket.kit;
  */
 
 /*
+
+ See http://docs.oracle.com/javaee/7/api/javax/websocket/CloseReason.CloseCodes.html for details:
   
  1000  indicates a normal closure, meaning that the purpose for
  which the connection was established has been fulfilled.

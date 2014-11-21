@@ -36,7 +36,7 @@ public abstract class JWSTimerTask extends TimerTask {
 	// Implements code to be run when the JWSTimerTask is executed.
 	protected abstract void runTask();
 
-	/// The run() method is final to ensure that all subclasses inherit the exception handling
+	// The run() method is final to ensure that all subclasses inherit the exception handling
 	@Override
 	public final void run() {
 		try {
