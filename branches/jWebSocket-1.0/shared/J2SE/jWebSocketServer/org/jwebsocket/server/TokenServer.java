@@ -885,7 +885,7 @@ public class TokenServer extends BaseServer {
 		Map<String, WebSocketPacket> lPackets = new FastMap<String, WebSocketPacket>();
 		String lFormat;
 		for (WebSocketConnector lConnector : selectTokenConnectors().values()) {
-			if (!aSource.equals(lConnector) || aBroadcastOptions.isSenderIncluded()) {
+			if (null == aSource || !aSource.equals(lConnector) || aBroadcastOptions.isSenderIncluded()) {
 				RequestHeader lHeader = lConnector.getHeader();
 				lFormat = lHeader.getFormat();
 				lPacket = lPackets.get(lFormat);

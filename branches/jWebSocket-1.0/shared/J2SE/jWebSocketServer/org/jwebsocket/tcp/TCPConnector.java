@@ -352,7 +352,7 @@ public class TCPConnector extends BaseConnector {
 
 	@Override
 	public IOFuture sendPacketAsync(WebSocketPacket aDataPacket) {
-		throw new UnsupportedOperationException("Underlying connector:"
+		throw new UnsupportedOperationException("Underlying connector: "
 				+ getClass().getName()
 				+ " doesn't support asynchronous send operation");
 	}
@@ -559,8 +559,9 @@ public class TCPConnector extends BaseConnector {
 		public void runTask() {
 			synchronized (mSyncPing) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug("Sending S2C ping to connector '" + getId() + "' "
-							+ (null != getUsername() ? "(" + getUsername() + ")" : "[not authenticated]")
+					// String lUsername = getUsername();
+					mLog.debug("Sending S2C ping to connector '" + getId() + "'"
+							// + " " + (null != lUsername ? "(" + lUsername + ")" : "[not authenticated]")
 							+ "...");
 				}
 				WebSocketPacket lPing = new RawPacket("");
@@ -764,9 +765,9 @@ public class TCPConnector extends BaseConnector {
 							mConnector.processPacket(lPacket);
 						}
 						// reading pending packets in the buffer (for high concurrency scenarios)
-						if (mIn.available() > 0) {
-							processHybi(aVersion, aEngine);
-						}
+						// if (mIn.available() > 0) {
+						//	processHybi(aVersion, aEngine);
+						// }
 					} else if (WebSocketFrameType.PING.equals(lPacket.getFrameType())) {
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Processing 'ping' frame (" + mLogInfo + ") from " + lFrom + "...");
