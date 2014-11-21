@@ -42,6 +42,21 @@ public interface IJWSAuthenticator {
 
 	/**
 	 *
+	 * @param aToken
+	 * @return
+	 * @throws org.jwebsocket.jms.endpoint.JMSEndpointException
+	 */
+	public String authToken(Token aToken) throws JMSEndpointException;
+
+	/**
+	 *
+	 * @param aToken
+	 * @return
+	 */
+	public boolean acceptsToken(Token aToken);
+
+	/**
+	 *
 	 * @throws JMSEndpointException
 	 */
 	public void shutdown() throws JMSEndpointException;

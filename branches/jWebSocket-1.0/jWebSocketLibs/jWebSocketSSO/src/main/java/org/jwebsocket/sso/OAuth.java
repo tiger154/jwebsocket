@@ -168,9 +168,9 @@ public class OAuth extends OAuthBase {
 					+ SSO_SESSION_COOKIE_NAME + "=" + lCodec.encode(aSessionId, "UTF-8");
 			Map lHeaders = new HashMap<String, String>();
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-			lHeaders.put("Authorization",
-					"Basic " + Base64.encodeBase64String(
-							(getOAuthAppId() + ":" + getOAuthAppSecret()).getBytes("UTF-8")));
+			String lAuthStr = Base64.encodeBase64String(
+					(getOAuthAppId() + ":" + getOAuthAppSecret()).getBytes("UTF-8"));
+			lHeaders.put("Authorization", "Basic " + lAuthStr);
 			String lJSONString = HTTPSupport.call2(mOAuthHost + OAUTH_AUTHSESSION_URL, "POST",
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
@@ -195,6 +195,9 @@ public class OAuth extends OAuthBase {
 		return authDirect(aUsername, aPassword, mDefaultTimeout);
 	}
 
+	
+	
+	
 	/**
 	 *
 	 * @param aAppId
@@ -218,13 +221,14 @@ public class OAuth extends OAuthBase {
 		mUsername = null;
 		mFullname = null;
 		mEmail = null;
+		String lJSONString = null;
 		try {
 			lPostBody = "access_token=" + aAccessToken;
 
 			Map lHeaders = new HashMap<String, String>();
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
-			String lJSONString = HTTPSupport.call2(mOAuthHost + OAUTH_GETUSER_URL, "POST",
+			lJSONString = HTTPSupport.call2(mOAuthHost + OAUTH_GETUSER_URL, "POST",
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			if (null != lJSON) {
@@ -246,7 +250,9 @@ public class OAuth extends OAuthBase {
 			mReturnCode = -1;
 			mReturnMsg = lEx.getClass().getSimpleName() + " validating acceess token to obtain user name from OAuth host.";
 			return "{\"code\":-1, \"msg\":\""
-					+ lEx.getClass().getSimpleName() + "\"}";
+					+ lEx.getClass().getSimpleName()
+					+ "\", \"serverMsg\":\""
+					+ (lJSONString != null ? lJSONString.replace("\"", "\\\"") : "[null]") + "\"}";
 		}
 	}
 

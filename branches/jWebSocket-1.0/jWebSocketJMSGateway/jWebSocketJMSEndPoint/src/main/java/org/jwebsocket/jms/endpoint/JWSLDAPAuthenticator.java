@@ -145,7 +145,7 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 			mADTools.getDirContext(lUsername, lPassword);
 			// cut potential trailing @domain, return pure username
 			int lIdx = lUsername.indexOf("@");
-			if( lIdx > 0 ) {
+			if (lIdx > 0) {
 				lUsername = lUsername.substring(0, lIdx);
 			}
 			return lUsername;
@@ -154,6 +154,41 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 			//  replace these to avoid subsequent JSON parse errors!
 			throw new JMSEndpointException(lEx.getMessage().replace((char) 0, (char) 32));
 		}
+	}
+
+	/**
+	 *
+	 * @return the username if authentication successful, otherwise null
+	 */
+	@Override
+	public String authToken(Token aToken) throws JMSEndpointException {
+		String lUsername = aToken.getString("username");
+		if (null == lUsername) {
+			throw new JMSEndpointException("No user name for LDAP authentication.");
+		}
+		String lPassword = aToken.getString("password");
+		if (null == lPassword) {
+			throw new JMSEndpointException("No password passed for LDAP authentication.");
+		}
+		try {
+			mADTools.getDirContext(lUsername, lPassword);
+			// cut potential trailing @domain, return pure username
+			int lIdx = lUsername.indexOf("@");
+			if (lIdx > 0) {
+				lUsername = lUsername.substring(0, lIdx);
+			}
+			return lUsername;
+		} catch (NamingException lEx) {
+			// "sometimes" spaces are returned as 0x00 characters,
+			//  replace these to avoid subsequent JSON parse errors!
+			throw new JMSEndpointException(lEx.getMessage().replace((char) 0, (char) 32));
+		}
+	}
+
+	@Override
+	public boolean acceptsToken(Token aToken) {
+		return (null != aToken.getString("username") 
+				&& null != aToken.getString("password"));
 	}
 
 }

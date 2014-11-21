@@ -44,10 +44,11 @@ jws.JMSPlugIn = {
 	UNLISTEN: "unlistenJms",
 	PING: "ping",
 	IDENTIFY: "identify",
-
-	processToken: function(aToken) {
+	IS_BROKER_CONNECTED: "isBrokerConnected",
+	
+	processToken: function (aToken) {
 		// check if namespace matches
-		if( aToken.ns === jws.JMSPlugIn.NS_JMS_GATEWAY ) {
+		if (aToken.ns === jws.JMSPlugIn.NS_JMS_GATEWAY) {
 			if ("response" === aToken.type) {
 				if ("ping" === aToken.reqType) {
 					if (this.OnPing) {
@@ -58,12 +59,24 @@ jws.JMSPlugIn = {
 						this.OnIdentify(aToken);
 					}
 				}
-			} 
-		} else if( aToken.ns === jws.JMSPlugIn.NS ) {
+			}
+		} else if (aToken.ns === jws.JMSPlugIn.NS) {
 			// here you can handle incoming tokens from the server
 			// directy in the plug-in if desired.
 			if ("event" === aToken.type) {
-				if ("handleJmsText" === aToken.name) {
+				if ("BrokerException" === aToken.name) {
+					if (this.OnBrokerTransportException) {
+						this.OnBrokerTransportException(aToken);
+					}
+				} else if ("BrokerTransportInterrupted" === aToken.name) {
+					if (this.OnBrokerTransportInterupted) {
+						this.OnBrokerTransportInterupted(aToken);
+					}
+				} else if ("BrokerTransportResumed" === aToken.name) {
+					if (this.OnBrokerTransportResumed) {
+						this.OnBrokerTransportResumed(aToken);
+					}
+				} else if ("handleJmsText" === aToken.name) {
 					if (this.OnHandleJmsText) {
 						this.OnHandleJmsText(aToken);
 					}
@@ -83,8 +96,7 @@ jws.JMSPlugIn = {
 			}
 		}
 	},
-			
-	jmsPing: function( aTargetId, aOptions ) {
+	jmsPing: function (aTargetId, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			this.sendToken({
@@ -94,24 +106,33 @@ jws.JMSPlugIn = {
 			}, aOptions);
 		}
 		return lRes;
-/*		
+		/*		
+		 var lRes = this.checkConnected();
+		 if (0 === lRes.code) {
+		 // aTarget, aNS, aType, aArgs, aJSON, aOptions
+		 this.forwardJSON(
+		 aTargetId,
+		 jws.JMSPlugIn.NS_JMS_GATEWAY,
+		 jws.JMSPlugIn.PING,
+		 {},
+		 "",
+		 aOptions
+		 );
+		 }
+		 return lRes;
+		 */
+	},
+	jmsIsBrokerConnected: function (aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
-			// aTarget, aNS, aType, aArgs, aJSON, aOptions
-			this.forwardJSON(
-				aTargetId,
-				jws.JMSPlugIn.NS_JMS_GATEWAY,
-				jws.JMSPlugIn.PING,
-				{},
-				"",
-				aOptions
-			);
+			this.sendToken({
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.IS_BROKER_CONNECTED,
+			}, aOptions);
 		}
 		return lRes;
-*/		
 	},
-			
-	jmsIdentify: function( aTargetId, aOptions ) {
+	jmsIdentify: function (aTargetId, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			this.sendToken({
@@ -122,23 +143,21 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
-			
-	jmsEcho: function( aTargetId, aPayload, aOptions ) {
+	jmsEcho: function (aTargetId, aPayload, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			this.forwardJSON(
-				aTargetId,
-				jws.JMSPlugIn.NS_JMS_DEMO,
-				"echo",
-				{},
-				aPayload,
-				aOptions
-			);	
+					aTargetId,
+					jws.JMSPlugIn.NS_JMS_DEMO,
+					"echo",
+					{},
+					aPayload,
+					aOptions
+					);
 		}
 		return lRes;
 	},
-			
-	listenJms: function(aConnectionFactoryName, aDestinationName,
+	listenJms: function (aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
@@ -152,8 +171,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
-			
-	listenJmsMessage: function(aConnectionFactoryName, aDestinationName,
+	listenJmsMessage: function (aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
@@ -167,8 +185,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
-			
-	unlistenJms: function(aConnectionFactoryName, aDestinationName,
+	unlistenJms: function (aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
@@ -182,7 +199,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
-	sendJmsText: function(aConnectionFactoryName, aDestinationName,
+	sendJmsText: function (aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aText, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
@@ -197,8 +214,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
-			
-	sendJmsTextMessage: function(aConnectionFactoryName, aDestinationName,
+	sendJmsTextMessage: function (aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aText, aJmsHeaderProperties, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
@@ -214,8 +230,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
-			
-	sendJmsMap: function(aConnectionFactoryName, aDestinationName,
+	sendJmsMap: function (aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aMap, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
@@ -230,8 +245,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
-			
-	sendJmsMapMessage: function(aConnectionFactoryName, aDestinationName,
+	sendJmsMapMessage: function (aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aMap, aJmsHeaderProperties, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
@@ -247,8 +261,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
-			
-	setJMSCallbacks: function(aListeners) {
+	setJMSCallbacks: function (aListeners) {
 		if (!aListeners) {
 			aListeners = {};
 		}
@@ -264,11 +277,21 @@ jws.JMSPlugIn = {
 		if (aListeners.OnHandleJmsMapMessage !== undefined) {
 			this.OnHandleJmsMapMessage = aListeners.OnHandleJmsMapMessage;
 		}
+
 		if (aListeners.OnPing !== undefined) {
 			this.OnPing = aListeners.OnPing;
 		}
 		if (aListeners.OnIdentify !== undefined) {
 			this.OnIdentify = aListeners.OnIdentify;
+		}
+		if (aListeners.OnBrokerTransportInterupted !== undefined) {
+			this.OnBrokerTransportInterupted = aListeners.OnBrokerTransportInterupted;
+		}
+		if (aListeners.OnBrokerTransportResumed !== undefined) {
+			this.OnBrokerTransportResumed = aListeners.OnBrokerTransportResumed;
+		}
+		if (aListeners.OnBrokerTransportException !== undefined) {
+			this.OnBrokerTransportException = aListeners.OnBrokerTransportException;
 		}
 	}
 

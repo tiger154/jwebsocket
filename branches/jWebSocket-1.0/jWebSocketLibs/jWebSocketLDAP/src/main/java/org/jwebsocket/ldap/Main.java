@@ -33,7 +33,7 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public class Main {
 
-	static final Logger mLog = Logger.getLogger(ADTools.class);
+	private static final Logger mLog = Logger.getLogger(ADTools.class);
 	// URL to AD Server
 	private static String LDAP_URL = "ldap://<yourLDAPHost>:389";
 	// DN to start search for groups

@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.jms.util;
 
 /**
  *
- * @author Johannes Smutny
+ * @author Johannes Smutny, Alexander Schulze
  */
 public enum ActionJms {
 
@@ -59,7 +59,15 @@ public enum ActionJms {
 	/**
 	 * ping, expecting pong
 	 */
-	PING("ping");
+	PING("ping"),
+	/**
+	 * test
+	 */
+	TEST("test"),
+	/**
+	 * isBrokerConnected
+	 */
+	IS_BROKER_CONNECTED("isBrokerConnected");
 	private final String mValue;
 
 	private ActionJms(String aValue) {

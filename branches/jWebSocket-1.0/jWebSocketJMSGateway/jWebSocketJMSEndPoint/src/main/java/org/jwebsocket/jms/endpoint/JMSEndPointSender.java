@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.endpoint;
 
+import java.util.Enumeration;
 import java.util.Map;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -92,8 +93,8 @@ public class JMSEndPointSender {
 						Token lToken = JSONProcessor.JSONStringToToken(aMessage.getText());
 						if (null != lToken) {
 							lKey = String.valueOf(lToken.getInteger("utid"));
-							lIsProgressEvent = 
-									"event".equals(lToken.getString("type")) 
+							lIsProgressEvent
+									= "event".equals(lToken.getString("type"))
 									&& "progress".equals(lToken.getString("name"));
 						}
 					}
@@ -106,7 +107,7 @@ public class JMSEndPointSender {
 						} else {
 							lRespListener = mResponseListeners.remove(lKey);
 						}
-		
+
 						// if listener exists
 						if (null != lRespListener) {
 							// getting the response text
@@ -125,8 +126,7 @@ public class JMSEndPointSender {
 
 				} catch (JMSException lEx) {
 				}
-				
-				
+
 //				try {
 //					boolean lIsProgressEvent = false;
 //					// getting the correlation ID
@@ -219,14 +219,6 @@ public class JMSEndPointSender {
 	public void sendText(String aTargetId, final String aCorrelationID,
 			final String aText, IJMSResponseListener aResponseListener,
 			long aTimeout) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Sending text: "
-					+ (JMSLogging.isFullTextLogging()
-					? aText
-					: "[content suppressed, length: " + aText.length() + " bytes]")
-					+ "...");
-		}
-
 		Message lMsg;
 		try {
 			lMsg = mSession.createTextMessage(aText);
@@ -235,6 +227,26 @@ public class JMSEndPointSender {
 			}
 			lMsg.setStringProperty("targetId", aTargetId);
 			lMsg.setStringProperty("sourceId", mEndPointId);
+
+			if (mLog.isDebugEnabled()) {
+				StringBuilder lPropStr = new StringBuilder();
+				Enumeration lPropNames = lMsg.getPropertyNames();
+				while(lPropNames.hasMoreElements()) {
+					String lPropName = (String)lPropNames.nextElement();
+					Object lValue = lMsg.getObjectProperty(lPropName);
+					lPropStr.append(lPropName).append("=").append(lValue);
+					if( lPropNames.hasMoreElements()) {
+						lPropStr.append(", ");
+					}
+				}	
+				mLog.debug("Sending text: "
+						+ (JMSLogging.isFullTextLogging()
+						? aText
+						: "[content suppressed, length: " + aText.length() + " bytes]")
+						+ ", props: " + lPropStr
+						+ "...");
+			}
+
 			mProducer.send(lMsg);
 
 			// processing callbacks
@@ -249,13 +261,13 @@ public class JMSEndPointSender {
 				mResponseListeners.put(aCorrelationID, aResponseListener);
 
 				// schedule the timer task
-				Tools.getTimer().schedule(new JWSTimerTask(){
+				Tools.getTimer().schedule(new JWSTimerTask() {
 					@Override
 					public void runTask() {
 						Thread lThread = new Thread() {
 							@Override
 							public void run() {
-								IJMSResponseListener lListener 
+								IJMSResponseListener lListener
 										= mResponseListeners.remove(aCorrelationID);
 								if (null != lListener) {
 									lListener.onTimeout();
@@ -268,8 +280,8 @@ public class JMSEndPointSender {
 				}, aTimeout);
 			}
 		} catch (JMSException lEx) {
-			mLog.error(lEx.getClass().getSimpleName() 
-					+ " sending message: " 
+			mLog.error(lEx.getClass().getSimpleName()
+					+ " sending message: "
 					+ lEx.getMessage() + " "
 					+ ExceptionUtils.getStackTrace(lEx));
 		}

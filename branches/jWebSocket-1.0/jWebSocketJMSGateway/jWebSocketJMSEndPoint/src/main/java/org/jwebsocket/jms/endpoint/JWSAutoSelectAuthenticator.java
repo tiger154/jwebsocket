@@ -69,6 +69,23 @@ public class JWSAutoSelectAuthenticator implements IJWSAuthenticator {
 		return null;
 	}
 
+	@Override
+	public String authToken(Token aToken) throws JMSEndpointException {
+
+		// iterate through list of authenticators and return first user
+		// name with could successfully be authenticated.
+		for (IJWSAuthenticator lAuthenticator : mAuthenticators) {
+			String lAuthenticatedUsername = null;
+			if (lAuthenticator.acceptsToken(aToken)) {
+				lAuthenticatedUsername = lAuthenticator.authToken(aToken);
+			}
+			if (null != lAuthenticatedUsername) {
+				return lAuthenticatedUsername;
+			}
+		}
+		throw new JMSEndpointException("No suitable authenticator installed for request.");
+	}
+
 	/**
 	 *
 	 * @param aAuthenticator
@@ -85,4 +102,8 @@ public class JWSAutoSelectAuthenticator implements IJWSAuthenticator {
 		mAuthenticators.remove(aAuthenticator);
 	}
 
+	@Override
+	public boolean acceptsToken(Token aToken) {
+		return true;
+	}
 }

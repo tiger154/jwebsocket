@@ -563,7 +563,6 @@ public class JMSServer {
 		}
 		// and show final status message in the console
 
-		mLog.info(
-				"JMS Server Endpoint properly shutdown.");
+		mLog.info("JMS Server Endpoint properly shutdown.");
 	}
 }

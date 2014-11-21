@@ -57,6 +57,8 @@ public class JMSEndPoint {
 	private Session mSession;
 	//
 	private MessageProducer mProducer;
+	//
+	private MessageConsumer mConsumer;
 	// id to address the jWebSocket JMS Gateway
 	private String mGatewayId;
 	// id to address a certain node on the JMS topic
@@ -65,7 +67,10 @@ public class JMSEndPoint {
 	private JMSEndPointListener mListener;
 	// flag to shutdown a non-self-termintaing console client
 	private boolean mShutDown = false;
-
+	// the selector equation
+	private String mSelector = null;
+	// reference to the gateway topic
+	private Topic mGatewayTopic = null;
 	/**
 	 *
 	 * @param aBrokerURI
@@ -93,33 +98,61 @@ public class JMSEndPoint {
 				Session.AUTO_ACKNOWLEDGE);
 
 		// create a producer for the given gateway topic (JMS destination)
-		Topic lGatewayTopic = mSession.createTopic(aGatewayTopic);
-		mProducer = mSession.createProducer(lGatewayTopic);
+		mGatewayTopic = mSession.createTopic(aGatewayTopic);
+		mProducer = mSession.createProducer(mGatewayTopic);
 
 		// create a consumer for the given gateway topic (JMS destination)
 		// use endPointId to listen on a certain target address only
-		String lSelector = "targetId='" + mEndPointId
+		mSelector = "targetId='" + mEndPointId
 				+ "' or (targetId='*' and sourceId<>'" + mEndPointId + "')";
-		MessageConsumer lConsumer;
 		if (aDurable) {
-			lConsumer = mSession.createDurableSubscriber(lGatewayTopic, lSelector);
+			mConsumer = mSession.createDurableSubscriber(mGatewayTopic, mSelector);
 		} else {
-			lConsumer = mSession.createConsumer(lGatewayTopic, lSelector);
+			mConsumer = mSession.createConsumer(mGatewayTopic, mSelector);
 		}
 		// create a listener and pass the sender to easily answer requests
 		mListener = new JMSEndPointListener(aThreadPoolSize);
 		// pass the listener to the JMS consumer object
-		lConsumer.setMessageListener(mListener);
-		
+		mConsumer.setMessageListener(mListener);
+
+	}
+
+	protected void init(Connection aConnection, Session aSession,
+			Topic aGatewayTopic, 
+			MessageProducer aProducer, MessageConsumer aConsumer,
+			int aThreadPoolSize, boolean aDurable) throws JMSException {
+		// take over the connection
+		mConnection = aConnection;
+		// get endpoint id of JMS gateway
+		mEndPointId = mConnection.getClientID();
+		// take over the session
+		mSession = aSession;
+		// take over the topic
+		mGatewayTopic = aGatewayTopic;
+		// gateway id, the endpoint id of the gateway.
+		mGatewayId = mEndPointId;
+		// create the connection object
+
+		// take over producer from JMS gateway
+		mProducer = aProducer;
+
+		if (aDurable) {
+			mConsumer = mSession.createDurableSubscriber(mGatewayTopic, mSelector);
+		} else {
+			mConsumer = mSession.createConsumer(mGatewayTopic, mSelector);
+		}
+		// create a listener and pass the sender to easily answer requests
+		mListener = new JMSEndPointListener(aThreadPoolSize);
+		// pass the listener to the JMS consumer object
+		// mConsumer.setMessageListener(mListener);
 	}
 
 	// private constructor, public API only allows contructors 
 	// with various arguments.
-
 	/**
 	 *
 	 */
-		protected JMSEndPoint() {
+	protected JMSEndPoint() {
 	}
 
 	/**
@@ -194,6 +227,19 @@ public class JMSEndPoint {
 		lEP.init(aBrokerURI, aGatewayTopic,
 				aGatewayId, aEndPointId, aThreadPoolSize,
 				aDurable);
+		// return JMS Endpoint instance in case of success
+		return lEP;
+	}
+
+	public static JMSEndPoint getInstance(Connection aConnection,
+			Session aSession, Topic aGatewayTopic, MessageProducer aProducer,
+			MessageConsumer aConsumer, int aThreadPoolSize,
+			boolean aDurable) throws JMSException {
+		// create an "empty" endpoint instance
+		JMSEndPoint lEP = new JMSEndPoint();
+		// and take over settings from JMS gateway
+		lEP.init(aConnection, aSession, aGatewayTopic, aProducer, aConsumer,
+				aThreadPoolSize, aDurable);
 		// return JMS Endpoint instance in case of success
 		return lEP;
 	}

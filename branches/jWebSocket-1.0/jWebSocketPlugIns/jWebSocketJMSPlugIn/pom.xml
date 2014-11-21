@@ -116,6 +116,11 @@
 			<artifactId>jWebSocketServer</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketJMSEndPoint</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 	</dependencies>
 
