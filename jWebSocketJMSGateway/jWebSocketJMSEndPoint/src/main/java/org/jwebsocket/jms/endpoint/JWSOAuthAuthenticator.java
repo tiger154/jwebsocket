@@ -137,10 +137,39 @@ public class JWSOAuthAuthenticator implements IJWSAuthenticator {
 
 	/**
 	 *
+	 * @return the username if authentication successful, otherwise null
+	 */
+	@Override
+	public String authToken(Token aToken) throws JMSEndpointException {
+		String lAccessToken = aToken.getString("accessToken");
+		if (null == lAccessToken || lAccessToken.length() <= 0) {
+			throw new JMSEndpointException(
+					"No or empty access token passed for OAuth authentication.");
+		}
+		mOAuth.getUser(lAccessToken, mDefautTimeout);
+		int lCode = mOAuth.getReturnCode();
+		if(0 != lCode) {
+			throw new JMSEndpointException("OAuth returned error code " 
+					+ lCode + ": " + mOAuth.getReturnMsg());
+		}
+		String lUsername = mOAuth.getUsername();
+		if (null == lUsername) {
+			throw new JMSEndpointException("No username available for access token '" 
+					+ lAccessToken + "'.");
+		}
+		return lUsername;
+	}
+	
+	/**
+	 *
 	 * @return the current access token of the OAuth object
 	 */
 	public String getAccessToken() {
 		return mOAuth.getAccessToken();
 	}
 
+	@Override
+	public boolean acceptsToken(Token aToken) {
+		return (null != aToken.getString("accessToken"));
+	}
 }

@@ -25,13 +25,16 @@ package org.jwebsocket.plugins.jms;
 import java.util.List;
 import java.util.Map;
 import javax.jms.Connection;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
 import javolution.util.FastList;
+import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.transport.TransportListener;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -41,6 +44,8 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.config.xml.EngineConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.jms.endpoint.JWSEndPoint;
+import org.jwebsocket.jms.endpoint.JWSResponseTokenListener;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -49,7 +54,9 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.jms.gateway.JMSAdvisoryListener;
 import org.jwebsocket.plugins.jms.gateway.JMSEngine;
 import org.jwebsocket.plugins.jms.gateway.JMSListener;
+import org.jwebsocket.plugins.jms.gateway.JMSLogger;
 import org.jwebsocket.plugins.jms.gateway.JMSSender;
+import org.jwebsocket.plugins.jms.gateway.JMSTransportListener;
 import org.jwebsocket.plugins.jms.util.ActionJms;
 import org.jwebsocket.plugins.jms.util.FieldJms;
 import org.jwebsocket.plugins.jms.util.RightJms;
@@ -67,7 +74,7 @@ public class JMSPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
 	private static final String NS_JMS = JWebSocketServerConstants.NS_BASE + ".plugins.jms";
-	private final static String VERSION = "1.0.1";
+	private final static String VERSION = "1.0.5";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JMSPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
@@ -79,6 +86,8 @@ public class JMSPlugIn extends TokenPlugIn {
 	private Connection mConnection;
 	private Session mSession;
 	private MessageConsumer mConsumer;
+	private JMSLogger mJMSLogger;
+	private MessageProducer mProducer;
 	private JMSSender mSender;
 	private JMSListener mListener;
 	private MessageConsumer mAdvisoryConsumer;
@@ -87,8 +96,12 @@ public class JMSPlugIn extends TokenPlugIn {
 	private String mEndPointId;
 	private String mGatewayTopicId;
 	private String mAdvisoryTopicId;
+	private JMSTransportListener mTransportListener;
+
 	private List<String> mDomains = new FastList<String>();
 	private boolean mInitialized = false;
+	private JWSEndPoint mJWSEndPoint = null;
+	private Topic mGatewayTopic = null;
 
 	/**
 	 *
@@ -165,25 +178,31 @@ public class JMSPlugIn extends TokenPlugIn {
 			}
 
 			mConnection = mConnectionFactory.createConnection();
-			// setting the clientID is required for durable subscribers
+
+			// add the transport listener to listen to connect and disconnect from broker events
+			mTransportListener = new JMSTransportListener(this);
+			((ActiveMQConnection) mConnection).addTransportListener(mTransportListener);
+
+			// setting the clientID is required for durable subscribers as well as to avoid/identify multiple endpoints with same endpoint id
 			mConnection.setClientID(mEndPointId);
-			// if we detect a duplicate endponin id this start operation 
-			// will fail and cause an exception,such that we cannot 
+			
+			// if we detect a duplicate endpoint id this start operation
+			// will fail and cause an exception, such that we cannot
 			// connect to the queue or topic.
 			mConnection.start();
 
 			mSession = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
 
-			Topic lGatewayTopic = mSession.createTopic(mGatewayTopicId);
-			MessageProducer lProducer = mSession.createProducer(lGatewayTopic);
-			mSender = new JMSSender(mSession, lProducer, mEndPointId);
+			mGatewayTopic = mSession.createTopic(mGatewayTopicId);
+			mProducer = mSession.createProducer(mGatewayTopic);
+			mSender = new JMSSender(mSession, mProducer, mEndPointId);
 
 			// we use a durable subscriber here to allow a restart 
 			// of the jWebSocket server instance.
 			mConsumer = // mSession.createDurableSubscriber(
 					mSession.createConsumer(
-							lGatewayTopic,
+							mGatewayTopic,
 							"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
 			mListener = new JMSListener(mJMSEngine, mSender);
 			mConsumer.setMessageListener(mListener);
@@ -195,10 +214,40 @@ public class JMSPlugIn extends TokenPlugIn {
 					mJMSEngine, mSender);
 			mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
 
+			/*
+			 Topic lConnectionTopic = mSession.createTopic("ActiveMQ.Advisory.Connection");
+			 MessageConsumer mConnectionConsumer = mSession.createConsumer(lConnectionTopic);
+			 mConnectionConsumer.setMessageListener(lAdvisoryListener);
+			 */
+			if (mSettings.getLoggerActive()) {
+				mJMSLogger = new JMSLogger(mConnection, new Destination[]{mGatewayTopic, lAdvisoryTopic});
+			}
+
 			// give a success message to the administrator
 			if (mLog.isInfoEnabled()) {
 				mLog.info("JMS plug-in successfully instantiated, JMS Gateway endpoint id: '" + mEndPointId + "'.");
 			}
+			/*
+			 mJWSEndPoint = JWSEndPoint.getInstance(
+			 mConnection,
+			 mSession,
+			 mGatewayTopic,
+			 mProducer,
+			 mConsumer,
+			 5,
+			 JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
+			 );
+			 lJWSEndPoint.addRequestListener(
+			 "org.jwebsocket.jms.gateway", "echo", new JWSMessageListener(lJWSEndPoint) {
+			 @Override
+			 public void processToken(String aSourceId, Token aToken) {
+			 mLog.info("Answering 'echo'...");
+			 Token lToken = TokenFactory.createToken("org.jwebsocket.jms.gateway", "echo");
+			 sendToken(aSourceId, lToken);
+			 }
+			 }
+			 );
+			 */
 		} catch (JMSException lEx) {
 			// cleanup engines and servers to allow at least other engines to run without side effects
 			Map<String, WebSocketEngine> lEngines = JWebSocketFactory.getEngines();
@@ -291,6 +340,10 @@ public class JMSPlugIn extends TokenPlugIn {
 			} catch (JMSException lEx) {
 			}
 		}
+
+		// this one processes potential exceptions itself
+		mJMSLogger.close();
+
 		if (null != mConnection) {
 			try {
 				mConnection.stop();
@@ -353,6 +406,12 @@ public class JMSPlugIn extends TokenPlugIn {
 				break;
 			case PING:
 				ping(aConnector, aToken);
+				break;
+			case IS_BROKER_CONNECTED:
+				isBrokerConnected(aConnector, aToken);
+				break;
+			case TEST:
+				test(aConnector, aToken);
 		}
 	}
 
@@ -591,6 +650,41 @@ public class JMSPlugIn extends TokenPlugIn {
 		return mSettings;
 	}
 
+	/**
+	 * @return the mConnection
+	 */
+	public Connection getConnection() {
+		return mConnection;
+	}
+
+	/**
+	 * @return the mSession
+	 */
+	public Session getSession() {
+		return mSession;
+	}
+
+	/**
+	 * @return the mConsumer
+	 */
+	public MessageConsumer getConsumer() {
+		return mConsumer;
+	}
+
+	/**
+	 * @return the mProducer
+	 */
+	public MessageProducer getProducer() {
+		return mProducer;
+	}
+
+	/**
+	 * @return the mAdvisoryConsumer
+	 */
+	public MessageConsumer getAdvisoryConsumer() {
+		return mAdvisoryConsumer;
+	}
+
 	class ActionInput {
 
 		WebSocketConnector mConnector;
@@ -659,4 +753,50 @@ public class JMSPlugIn extends TokenPlugIn {
 			sendNotConnectedToken(aConnector, aToken);
 		}
 	}
+
+	private void isBrokerConnected(WebSocketConnector aConnector, Token aToken) {
+		Token lResponse = createResponse(aToken);
+		lResponse.setBoolean("isConnected", mTransportListener.isConnected());
+		sendToken(aConnector, lResponse);
+	}
+
+	private void test(final WebSocketConnector aConnector, Token aToken) {
+		if (null != mSender) {
+			final Token lResponse = createResponse(aToken);
+			lResponse.setInteger("code", 0);
+			lResponse.setString("msg", "Ok");
+			lResponse.setString("text", "JMS plug-in test ok.");
+			mJWSEndPoint.sendPayload("JMSServer", "org.jwebsocket.jms.demo",
+					"echo", aToken.getInteger("utid"), aToken.getString("originId"),
+					null, "{}", new JWSResponseTokenListener() {
+
+						@Override
+						public void onTimeout() {
+							lResponse.setInteger("code", -1);
+							lResponse.setString("msg", "Timeout");
+							lResponse.setString("text", "JMS plug-in test timed out.");
+						}
+
+						@Override
+						public void onFailure(Token aReponse) {
+							lResponse.setInteger("code", -1);
+							lResponse.setString("msg", "Failure");
+							lResponse.setString("text", "JMS plug-in test failed.");
+							sendToken(aConnector, lResponse);
+						}
+
+						@Override
+						public void onSuccess(Token aReponse) {
+							lResponse.setInteger("code", 0);
+							lResponse.setString("msg", "Ok");
+							lResponse.setString("text", "JMS plug-in test succeeded.");
+							sendToken(aConnector, lResponse);
+						}
+
+					}, 3000);
+		} else {
+			sendNotConnectedToken(aConnector, aToken);
+		}
+	}
+
 }

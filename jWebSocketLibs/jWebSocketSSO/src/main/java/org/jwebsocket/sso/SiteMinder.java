@@ -32,10 +32,7 @@ import java.util.Map;
  */
 public class SiteMinder {
 
-	private static String mSMHost
-			= // "https://nvsso.nvidia.com"
-			// "https://nvsso.nvidia.com/siteminderagent/ntlm/creds.ntc?CHALLENGE=&SMAGENTNAME=-SM-%2f25dnMFQEkTBZ60WR2gFLZBV%2btENJyujCQSz%2bUL%2bHF5JSldPw4nhSWg3lb%2b7oMeX&TARGET=-SM-https%3a%2f%2falsius%2envidia%2ecom%2falsius%2f"
-			"https://alsius.nvidia.com/alsius/";
+	private static String mSMHost = null;
 
 	/**
 	 *
@@ -47,12 +44,14 @@ public class SiteMinder {
 		try {
 			lPostBody = null;
 			Map lHeaders = new HashMap<String, String>();
-			lHeaders.put("Connection", "keep-alive");
-			lHeaders.put("Host", "172.20.144.115"); // alsius.nvidia.com
 			lHeaders.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-			lHeaders.put("Cache-Control", "no-cache");
-			lHeaders.put("Pragma", "no-cache");
 			lHeaders.put("Accept-Encoding", "gzip,deflate");
+			lHeaders.put("Cache-Control", "no-cache");
+			lHeaders.put("Connection", "keep-alive");
+			// lHeaders.put("Host", "<host>");
+			// lHeaders.put("Host", "alsius.nvidia.com" );
+			lHeaders.put("Host", "aschulze-dt" );
+			lHeaders.put("Pragma", "no-cache");
 			lHeaders.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.3 Safari/537.36");
 			String lResult = HTTPSupport.call2(mSMHost, "GET",
 					lHeaders, lPostBody, aTimeout);
