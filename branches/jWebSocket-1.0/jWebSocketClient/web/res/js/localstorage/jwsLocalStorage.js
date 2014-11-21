@@ -169,7 +169,7 @@ jws.LocalStorage = {
 	clearItems: function (aOnSuccess, aOnFailure) {
 		return jws.AbstractStorage.clearItems(window.localStorage, aOnSuccess, aOnFailure);
 	},
-	hasItem: function (aKey, aOnSuccess, aOnFailure, aOnSuccess, aOnFailure) {
+	hasItem: function (aKey, aOnSuccess, aOnFailure) {
 		return jws.AbstractStorage.hasItem(window.localStorage, aKey);
 	}
 };
