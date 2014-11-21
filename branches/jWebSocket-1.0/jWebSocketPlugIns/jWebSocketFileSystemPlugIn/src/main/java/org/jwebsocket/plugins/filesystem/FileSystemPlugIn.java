@@ -20,7 +20,11 @@ package org.jwebsocket.plugins.filesystem;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import javax.activation.MimetypesFileTypeMap;
 import javolution.util.FastList;
@@ -71,7 +75,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 */
 	public static final String NS_FILESYSTEM
 			= JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
-	private final static String VERSION = "1.0.0";
+	private final static String VERSION = "1.0.1";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket FileSystemPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
@@ -85,6 +89,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 * Private Session alias directory settings map key.
 	 */
 	public static final String SESSION_ALIAS_DIR_KEY = "sessionDir";
+
+	/**
+	 *
+	 */
 	public static final String UUID_ALIAS_DIR_KEY = "uuidDir";
 	/**
 	 * Public alias directory settings map key.
@@ -180,14 +188,16 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 	@Override
 	public synchronized void engineStarted(WebSocketEngine aEngine) {
-		if (getServer().getEngines().size() == 1) {
-			startAliasesMonitor(1000);
+		if (mSettings.isMonitoringActive() 
+				&& getServer().getEngines().size() >= 1) {
+			startAliasesMonitor(mSettings.getMonitoringInterval());
 		}
 	}
 
 	@Override
 	public synchronized void engineStopped(WebSocketEngine aEngine) {
-		if (getServer().getEngines().size() == 1) {
+		if (mSettings.isMonitoringActive() 
+				&& getServer().getEngines().size() >= 1) {
 			stopAliasesMonitor();
 		}
 	}
@@ -1010,7 +1020,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 *
 	 * @param aInterval Changes checks interval value.
 	 */
-	public void startAliasesMonitor(int aInterval) {
+	public void startAliasesMonitor(long aInterval) {
 		if (null == mFileSystemMonitor) {
 			mFileSystemMonitor = new FileAlterationMonitor(aInterval);
 			mFileSystemMonitor.setThreadFactory(new FileSystemPlugIn.MonitorThreadFactory());

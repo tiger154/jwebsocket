@@ -17,6 +17,10 @@
 				<entry key="webRoot" value="http://localhost/public/" />
 			</map>
 		</property>
+		<!-- allow file system monitoring, includ ing notifciation in casde of changes -->
+		<property name="monitoringActive" value="false"/>
+		<!-- define the interval of scanning -->
+		<property name="monitoringInterval" value="10000"/>
 	</bean>
 	
 </beans>
