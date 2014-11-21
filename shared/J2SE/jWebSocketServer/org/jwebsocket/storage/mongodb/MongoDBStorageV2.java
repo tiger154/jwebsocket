@@ -46,7 +46,7 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 	 * @param aCollection The MongoDB database collection instance
 	 */
 	public MongoDBStorageV2(String aName, DBCollection aCollection) {
-		this.mName = aName;
+		mName = aName;
 		mCollection = aCollection;
 	}
 

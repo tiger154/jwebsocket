@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC3 (build 40908)
+	//:const:*:VERSION:String:1.0.0 RC3 (build 41121)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC3 (build 40908)",
+	VERSION: "1.0.0 RC3 (build 41121)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -3691,14 +3691,24 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:d:en:the same message with a prefix.
 	//:a:en::aData:String:An arbitrary string to be returned by the server.
 	//:r:*:::void:none
-	echo: function( aData ) {
+	echo: function( aData, aOptions ) {
 		var lRes = this.checkWriteable();
+		if( !aOptions ) {
+			aOptions = {};
+		}
 		if( 0 === lRes.code ) {
-			this.sendToken({
+			var lToken = {
 				ns: jws.NS_SYSTEM,
 				type: "echo",
 				data: aData
-			});
+			};
+			if( aOptions.delay ) {
+				lToken.delay = aOptions.delay;
+			}
+			if( aOptions.echoTestSize ) {
+				lToken.echoTestSize = aOptions.echoTestSize;
+			}
+			this.sendToken(lToken, aOptions);
 		}
 		return lRes;
 	},
