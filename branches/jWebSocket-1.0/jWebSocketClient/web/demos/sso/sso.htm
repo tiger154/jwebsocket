@@ -37,21 +37,25 @@
 
 			var eUsername, ePassword;								// the elements for username and password
 
-			var APP_URL = "https://hqdvalsap01.nvidia.com/sso/index.html";
+			var APP_URL = "https://<host>/sso/index.html";
 			var OAUTH_DEFAULT_TIMEOUT = 5000;						// the default timeout for request against the OAuth server
-			var OAUTH_APP_ID = "alsiusdev";							// the application id
-			var OAUTH_APP_SECRET = "ffdf1D56-5825-49e5-Afb9-335393a94606]";
-			// the application secret
-			var OAUTH_HOST = "https://aschulze-dt.nvidia.com";		// the OAuth host 
+			var OAUTH_APP_ID = "<ID>";								// the application id
+			var OAUTH_APP_SECRET = "<SECRET>";
+			// the application secret		
+			var OAUTH_HOST = "https://<HOST>";						// the OAuth host 
 			var OAUTH_AUTHSESSION_URL = "/auth/oauth/v2/token";		// the URL to authenticate a user by session id
 			var OAUTH_GETUSER_URL = "/use-token";					// the URL to obtain the user data by access token
 			var OAUTH_REFRESHTOKEN_URL = "/auth/oauth/v2/token";	// the URL to obtain a new access token by refresh token
 			var OAUTH_GETSESSION_URL = "/get-smsession";			// the URL to obtain a session id by user credentials
 			var OAUTH_INVALIDATETOKEN_URL = "/delete-token";		// the URL to invalidate an access token
 
-			var SSO_COOKIE_PAGE = "https://alsius.dev.nvidia.com/getcookie/index.html";
+			var SSO_COOKIE_PAGE = "https://<HOST>/getcookie/index.html";
 			// URL to a SSO enabled web page, which provides the session cookie (session id)
 			var SSO_SESSION_COOKIE = "SMSESSION";					// the name of the SSO server's session cookie
+
+			var mIsStressTest = false;
+			var hStressTest = null;
+			var mIsStressCounter = 0;
 
 			// obtaining a session id from user credentials
 			function getSSOSession() {
@@ -59,13 +63,13 @@
 				// pass username and password to obtain SSO session cookie
 				lWSC.ssoGetSSOSession(eUsername.value, ePassword.value, {
 					// timeout: 5000, // timeout in milliseconds, if required different from default
-					OnSuccess: function(aToken) {
+					OnSuccess: function (aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function(aToken) {
+					OnFailure: function (aToken) {
 						log("Failure: " + JSON.stringify(aToken));
 					},
-					OnTimeout: function(aToken) {
+					OnTimeout: function (aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					},
 					// use this app specific URL
@@ -79,13 +83,13 @@
 				// authenticate against OAuth/SSO server directly
 				lWSC.ssoAuthDirect(eUsername.value, ePassword.value, {
 					// timeout: 5000, // timeout in milliseconds, if required different from default
-					OnSuccess: function(aToken) {
+					OnSuccess: function (aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function(aToken) {
+					OnFailure: function (aToken) {
 						log("Failure: " + JSON.stringify(aToken));
 					},
-					OnTimeout: function(aToken) {
+					OnTimeout: function (aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					}
 				});
@@ -99,13 +103,13 @@
 				// authenticate against OAuth server using SSO session id
 				lWSC.ssoAuthSession(lWSC.ssoGetSessionId(), {
 					// timeout: 5000, // timeout in milliseconds, if required different from default
-					OnSuccess: function(aToken) {
+					OnSuccess: function (aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function(aToken) {
+					OnFailure: function (aToken) {
 						log("Failure: " + JSON.stringify(aToken));
 					},
-					OnTimeout: function(aToken) {
+					OnTimeout: function (aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					},
 					URL: OAUTH_HOST + OAUTH_AUTHSESSION_URL
@@ -118,13 +122,13 @@
 				log("Calling 'getUser' using access token...");
 				lWSC.ssoGetUser({
 					// timeout: 5000, // timeout in milliseconds, if required different from default
-					OnSuccess: function(aToken) {
+					OnSuccess: function (aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function(aToken) {
+					OnFailure: function (aToken) {
 						log("Failure: " + JSON.stringify(aToken));
 					},
-					OnTimeout: function(aToken) {
+					OnTimeout: function (aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					},
 					URL: OAUTH_HOST + OAUTH_GETUSER_URL
@@ -138,17 +142,33 @@
 				log("Invalidating access token...");
 				lWSC.ssoInvalidateAccessToken({
 					// timeout: 5000, // timeout in milliseconds, if required different from default
-					OnSuccess: function(aToken) {
+					OnSuccess: function (aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function(aToken) {
+					OnFailure: function (aToken) {
 						log("Failure: " + JSON.stringify(aToken));
 					},
-					OnTimeout: function(aToken) {
+					OnTimeout: function (aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
 					},
 					URL: OAUTH_HOST + OAUTH_INVALIDATETOKEN_URL
 				});
+			}
+
+			function resetStressTest() {
+				mIsStressTest = false;
+				mIsStressCounter = 0;
+				if (hStressTest) {
+					clearTimeout(hStressTest);
+					hStressTest = null;
+				}
+			}
+
+			function toggleStressTest() {
+				mIsStressTest = eStressTest.checked;
+				if (!eStressTest.checked) {
+					resetStressTest();
+				}
 			}
 
 			// refreshing access token
@@ -158,14 +178,25 @@
 				log("Refreshing access token...");
 				lWSC.ssoRefreshAccessToken({
 					// timeout: 5000, // timeout in milliseconds, if required different from default
-					OnSuccess: function(aToken) {
+					OnSuccess: function (aToken) {
 						log("Success: " + JSON.stringify(aToken));
+						if (mIsStressTest) {
+							mIsStressCounter++;
+							log("Stress test iteration #" + mIsStressCounter + "...");
+							hStresstest = setTimeout(function () {
+								refreshAccessToken();
+							}, 1);
+						}
 					},
-					OnFailure: function(aToken) {
+					OnFailure: function (aToken) {
 						log("Failure: " + JSON.stringify(aToken));
+						eStressTest.checked = false;
+						resetStressTest();
 					},
-					OnTimeout: function(aToken) {
+					OnTimeout: function (aToken) {
 						log("Timeout: " + JSON.stringify(aToken));
+						eStressTest.checked = false;
+						resetStressTest();
 					},
 					URL: OAUTH_HOST + OAUTH_REFRESHTOKEN_URL
 				});
@@ -176,10 +207,10 @@
 			function loadOAuthData() {
 				log("Loading OAuth data...");
 				lWSC.ssoLoadOAuthData({
-					OnSuccess: function(aToken) {
+					OnSuccess: function (aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function(aToken) {
+					OnFailure: function (aToken) {
 						log("Failure: " + JSON.stringify(aToken));
 					}
 				});
@@ -190,10 +221,10 @@
 			function saveOAuthData() {
 				log("Saving OAuth data...");
 				lWSC.ssoSaveOAuthData({
-					OnSuccess: function(aToken) {
+					OnSuccess: function (aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function(aToken) {
+					OnFailure: function (aToken) {
 						log("Failure: " + JSON.stringify(aToken));
 					}
 				});
@@ -212,10 +243,10 @@
 				//	aJSON payload, 
 				"{}",
 						{
-							OnSuccess: function(aToken) {
+							OnSuccess: function (aToken) {
 								log("Success: " + JSON.stringify(aToken));
 							},
-							OnFailure: function(aToken) {
+							OnFailure: function (aToken) {
 								log("Failure: " + JSON.stringify(aToken));
 							}
 						});
@@ -240,18 +271,53 @@
 					// pass 'external' cookie from the iframe 
 					// instead of reading it from the document
 					cookie: lJSON.cookie,
-					OnSuccess: function(aToken) {
+					OnSuccess: function (aToken) {
 						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function(aToken) {
+					OnFailure: function (aToken) {
 						log("Failure: " + JSON.stringify(aToken));
 					}
 				});
 			}
 
+			function getURL(a) {
+				log("Getting URL...");
+
+				// var lURL = "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from";
+				var lURL = "http://localhost/ExtJS/#!/api/Ext.Array";
+
+				eIfrHTML = jws.$("ifrHTML");
+				eIfrHTML.src = lURL;
+				setTimeout(
+						function () {
+							log("Content:");
+							var lHTML = eIfrHTML.contentWindow.document.body.innerHTML;
+							var lStrippedHTML = lHTML.replace(/(<([^>]+)>)/ig,"");
+							// lHTML = lHTML.replace(/\</g, "&lt;");
+							// lHTML = lHTML.replace(/\>/g, "&gt;");
+							log(lStrippedHTML);
+						},
+						3000);
+/*
+				lWSC.ssoGetURL({
+					URL: lURL,
+					OnSuccess: function (aToken) {
+						log("Success: " + JSON.stringify(aToken));
+					},
+					OnTimeout: function () {
+						log("Timeout: " + JSON.stringify(aToken));
+					},
+					OnFailure: function (aToken) {
+						log("Failure: " + JSON.stringify(aToken));
+					}
+				});
+*/		
+			}
+
 			function initPage() {
 				eUsername = jws.$("stxfUsername");
 				ePassword = jws.$("spwfPassword");
+				eStressTest = jws.$("schkStressTest");
 
 				// turn on logging in debug mode
 				jws.console.setActive(true);
@@ -263,19 +329,19 @@
 				lWSC.ssoSetOAuthAppSecret(OAUTH_APP_SECRET);
 				lWSC.ssoSetSessionCookieName(SSO_SESSION_COOKIE);
 				lWSC.ssoSetAppURL(APP_URL);
-
-				lWSC.ssoSetRefreshTokenInterval(300 * 1000, {// 300 seconds = 5 min
-					OnSuccess: function(aToken) {
-						log("Refresh: Success: " + JSON.stringify(aToken));
-					},
-					OnFailure: function(aToken) {
-						log("Refresh: Failure: " + JSON.stringify(aToken));
-					},
-					OnTimeout: function() {
-						log("Refresh: Timeout!");
-					}
-				});
-
+				/*
+				 lWSC.ssoSetRefreshTokenInterval(300 * 1000, {// 300 seconds = 5 min
+				 OnSuccess: function (aToken) {
+				 log("Refresh: Success: " + JSON.stringify(aToken));
+				 },
+				 OnFailure: function (aToken) {
+				 log("Refresh: Failure: " + JSON.stringify(aToken));
+				 },
+				 OnTimeout: function () {
+				 log("Refresh: Timeout!");
+				 }
+				 });
+				 */
 				// Adding event handler to obtain message from embedded iframe
 				window.addEventListener("message", receiveMessage, false);
 
@@ -343,8 +409,18 @@
                                title="Send a request using the access token to the JMS demo server.">
                     </td>
                 </tr>
+                <tr class="strDlg">
+					Stresstest: <input class="schkDlg" id="schkStressTest" type="checkbox" value="" onclick="toggleStressTest();"
+								   title="...">
+                </tr>
+                <tr class="strDlg">
+				<input class="sbtnDlg" id="sbtnGetURL" type="button" value="JMS Request" onclick="getURL();"
+					   title="Tries to get the content of a certain URL.">
+                </tr>
             </table>
         </div>
+        <iframe id="ifrHTML" style="display:block; width:99%; height:200px">
+        </iframe>
 
     </body>
 </html>
