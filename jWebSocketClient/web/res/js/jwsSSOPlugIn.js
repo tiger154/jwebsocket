@@ -232,7 +232,7 @@ jws.SSOPlugIn = {
 						} catch (lEx) {
 							break;
 						}
-					// do we read the SSO server cookie?
+						// do we read the SSO server cookie?
 					} else if (jws.SSOPlugIn.SSO_SESSION_COOKIE_NAME === lKey) {
 						this.sso.sessionId = lValue;
 						lFound = true;
@@ -405,7 +405,9 @@ jws.SSOPlugIn = {
 						if (aOptions.OnFailure) {
 							aOptions.OnFailure({
 								code: -1,
-								msg: "JSON parse error"
+								msg: "JSON parse error",
+								status: lXHR.status,
+								text: lResponseText
 							});
 						}
 					}
@@ -430,8 +432,8 @@ jws.SSOPlugIn = {
 					if (aOptions.OnFailure) {
 						aOptions.OnFailure({
 							code: (lXHR.status !== 0 ? lXHR.status : -1),
-							msg: (lXHR.statusText !== "" 
-									? lXHR.statusText 
+							msg: (lXHR.statusText !== ""
+									? lXHR.statusText
 									: "No response from OAuth server " + aOptions.URL)
 						});
 					}
@@ -515,7 +517,8 @@ jws.SSOPlugIn = {
 								aOptions.OnFailure({
 									code: -1,
 									msg: "JSON parse error",
-									response: lResponseText
+									status: lXHR.status,
+									text: lResponseText
 								});
 							}
 						}
@@ -553,8 +556,8 @@ jws.SSOPlugIn = {
 					if (aOptions.OnFailure) {
 						aOptions.OnFailure({
 							code: (lXHR.status !== 0 ? lXHR.status : -1),
-							msg: (lXHR.statusText !== "" 
-									? lXHR.statusText 
+							msg: (lXHR.statusText !== ""
+									? lXHR.statusText
 									: "No response from OAuth server " + aOptions.URL)
 						});
 					}
@@ -886,26 +889,43 @@ jws.SSOPlugIn = {
 						if (aOptions.OnSuccess) {
 							var lJSON;
 							try {
+								// try to parse the JSON result
 								lJSON = JSON.parse(lResponseText);
+								// setup the SSO sub record
+								if (!lInstance.sso) {
+									lInstance.sso = {};
+								}
+								// check if JSON is complete and has access and refresh token
+								if (lJSON
+										&& lJSON.access_token
+										&& lJSON.refresh_token) {
+									lInstance.sso.accessToken = lJSON.access_token;
+									lInstance.sso.refreshToken = lJSON.refresh_token;
+									aOptions.OnSuccess({
+										JSON: lJSON,
+										text: lResponseText
+									});
+								} else {
+									if (aOptions.OnFailure) {
+										aOptions.OnFailure({
+											code: -1,
+											msg: "No both valid access and resfreh token detected in OAuth result",
+											status: lXHR.status,
+											json: lJSON,
+											text: lResponseText
+										});
+									}
+								}
 							} catch (lEx) {
 								if (aOptions.OnFailure) {
 									aOptions.OnFailure({
 										code: -1,
-										msg: "JSON parse error"
+										msg: "JSON parse error",
+										status: lXHR.status,
+										text: lResponseText
 									});
 								}
 							}
-							if (!lInstance.sso) {
-								lInstance.sso = {};
-							}
-							lInstance.sso.accessToken = lJSON.access_token;
-							if (lJSON.refresh_token) {
-								lInstance.sso.refreshToken = lJSON.refresh_token;
-							}
-							aOptions.OnSuccess({
-								JSON: lJSON,
-								text: lResponseText
-							});
 						}
 					}
 				} else {
@@ -1112,8 +1132,90 @@ jws.SSOPlugIn = {
 		if (aListeners.OnRefreshAccessTokenTimeout !== undefined) {
 			this.OnRefreshAccessTokenTimeout = aListeners.OnRefreshAccessTokenTimeout;
 		}
-	}
+	},
 
+	//
+	//
+	ssoGetURL: function(aOptions) {
+
+		// set default options for OAuth call
+		aOptions = jws.getOptions(aOptions, {
+			timeout: jws.SSOPlugIn.DEFAULT_TIMEOUT,
+			OnSuccess: null,
+			OnFailure: null,
+			OnTimeout: null,
+			URL: ""
+		});
+
+		// get browser's XHR object
+		var lXHR = jws.SSOPlugIn.mGetXHR();
+
+		var lURL = aOptions.URL;
+		lXHR.open("GET", lURL, jws.SSOPlugIn.XHR_ASYNCHRONOUS);
+
+		// lXHR.setRequestHeader("Cache-Control", "no-cache");
+
+		// save instance of WebSocket client to obtain OAuth data 
+		// get refresh token and set new access token
+		var lInstance = this;
+		var hTimeout = null;
+
+		var lResponseText = "";
+		lXHR.onreadystatechange = function() {
+			jws.console.debug(
+					lXHR.readyState
+					+ ", " + lXHR.status
+					+ ", " + lXHR.responseText
+					);
+			if (lXHR.readyState === 3) {
+				lResponseText = lXHR.responseText;
+			}
+			if (lXHR.readyState >= 4) {
+				clearTimeout(hTimeout);
+				if (lXHR.status === 200 || lResponseText) {
+					if (lXHR.responseText) {
+						lResponseText = lXHR.responseText;
+					}
+					if (lResponseText) {
+						if (aOptions.OnSuccess) {
+							aOptions.OnSuccess({
+								code: 0,
+								msg: "ok",
+								html: lResponseText
+							});
+						}
+					}
+				} else {
+					if (aOptions.OnFailure) {
+						aOptions.OnFailure({
+							code: (lXHR.status !== 0
+									? lXHR.status
+									: -1),
+							msg: (lXHR.statusText !== ""
+									? lXHR.statusText
+									: "No response from host " + aOptions.URL)
+						});
+					}
+				}
+			}
+		};
+
+		var lPostBody = null;
+
+		hTimeout = setTimeout(function( ) {
+			hTimeout = null;
+			if (aOptions.OnTimeout) {
+				aOptions.OnTimeout({
+					code: -1,
+					msg: "timeout"
+				});
+			}
+			lXHR.abort();
+		}, aOptions.timeout);
+
+		lXHR.send(lPostBody);
+	}
+	
 };
 
 // add the JWebSocket SSO PlugIn into the TokenClient class
