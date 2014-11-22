@@ -80,10 +80,10 @@
 		<module>jWebSocketPlugIns/jWebSocketJCRPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketTTSPlugIn</module>
 		<module>jWebSocketJMSGateway</module>
-		<module>jWebSocketSwingGUI</module>
-		<module>jWebSocketProxy</module>
 		<module>jWebSocketEngines</module>
 		<module>jWebSocketAppSrvDemo</module>
+		<module>jWebSocketSwingGUI</module>
+		<module>jWebSocketProxy</module>
 	</modules>
 	
 	<properties>

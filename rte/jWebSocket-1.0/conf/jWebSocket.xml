@@ -165,7 +165,10 @@
 				maximum size of the data packet that the engine will read,
 				if the frame size is larger than this the connection will be closed.
 			-->
-			<maxframesize>1048840</maxframesize>
+			<!-- <maxframesize>1048576</maxframesize> --> <!-- 1 MB -->
+			<!-- <maxframesize>2097152</maxframesize> --> <!-- 2 MB -->
+			<!-- <maxframesize>4194304</maxframesize> --> <!-- 4 MB -->
+			<maxframesize>8388608</maxframesize> <!-- 8 MB -->
 			<!-- 
 				Indicates if the engine requires to notify connected clients 
 				during the jWebSocket stopping process. If the jWebSocket server
@@ -2027,7 +2030,6 @@
 		
 		<!-- Scripting plug-in, e.g. to call JavaScript on the server side -->
 		<!-- will be released in jWebSocket 1.1 -->
-		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
 			<id>jWebSocketScriptingPlugIn</id>
@@ -2039,7 +2041,6 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		-->
 		
 		<!-- RTC plug-in -->
 		<plugin>

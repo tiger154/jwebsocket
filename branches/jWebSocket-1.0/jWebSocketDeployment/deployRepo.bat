@@ -60,7 +60,7 @@ pause
 
 :jWebSocketDynamicSQL
 cd %base%jWebSocketLibs\jWebSocketDynamicSQL
-call mvn clean deploy
+call mvn clean deploy -Dversion=1.0RC3
 
 goto end
 
