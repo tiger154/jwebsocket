@@ -27,14 +27,17 @@
 				<include>com.healthmarketscience.common:common-util</include>
 				<include>com.healthmarketscience.sqlbuilder:sqlbuilder</include>
 
-				<!-- from jWebSocketSSO -->
+				<!-- from jWebSocketSSO (required e.g. for JMS request authentication) -->
 				<include>org.jwebsocket:jWebSocketSSO</include>
 				<include>org.apache.httpcomponents:httpclient</include>
 				<include>org.apache.httpcomponents:httpcore</include>
 
-				<!-- from jWebSocketLDAP -->
+				<!-- from jWebSocketLDAP (required e.g. for JMS request authentication) -->
 				<include>org.jwebsocket:jWebSocketLDAP</include>
 																																				
+				<!-- from jWebSocketJMSEndpoint (required for JMS communication) -->
+				<include>org.jwebsocket:jWebSocketJMSEndPoint</include>
+				
 				<!-- from org.jwebsocket:jWebSocketCommon -->
 				<include>org.jwebsocket:jWebSocketCommon</include>
 				<include>javolution:javolution</include>
