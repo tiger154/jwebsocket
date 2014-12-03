@@ -1,0 +1,199 @@
+<!--
+//	***************************************************************************
+//	jWebSocket Calendar script app demo (Community Edition, CE)
+//	***************************************************************************
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	***************************************************************************
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Chat Script App demo</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" type="text/css" href="../../../res/css/jwebsocket.css">
+		<script src="../../../res/js/jWebSocket.js" type="text/javascript"></script>
+		<script src="../../../res/js/jwsScriptingPlugIn.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			String.prototype.replaceAll = function (find, replace) {
+				var str = this;
+				return str.replace(new RegExp(find, 'g'), replace);
+			};
+			
+			lUsers = [];
+			
+			var lClient  = new jws.jWebSocketJSONClient();
+			lClient.open(jws.JWS_SERVER_URL, {
+				OnWelcome: function(){
+					lClient.addPlugIn({
+						processToken: function(aToken){
+							if ('event' === aToken.type){
+								if ('connection' == aToken.name){
+									lUsers.push(aToken.user);
+									renderUsers();
+										
+									log('# user "' + aToken.user + '" connected!');
+								} else if ('disconnection' === aToken.name){
+									var lIndex = lUsers.indexOf(aToken.user);
+									lUsers.splice(lIndex, 1);
+									renderUsers();
+										
+									log('# user "' + aToken.user + '" disconnected!');
+								} else if ('pubmessage' === aToken.name){
+									log('public: ' + aToken.user + ', ' + aToken.message);
+								} else if ('privmessage' === aToken.name){
+									log('private from ' + aToken.user + ', ' + aToken.message);
+								}
+							}
+						}
+					});
+				},
+				OnClose: function(){
+					alert('Connection to the server has been closed!');
+				}
+			});
+			
+			list = function(){
+				lClient.callScriptAppMethod('simplechat', 'Chat', 'getUsers', [], {
+					OnFailure: function(aResponse){
+						alert('Failure: ' + aResponse['msg']);
+					},
+					OnSuccess: function(aResponse){
+						lUsers = aResponse.result;
+						renderUsers();
+					}
+				});
+			};
+			
+			printTpl = function(aTplStr, aVars){
+				for (var lVar in aVars){
+					aTplStr = aTplStr.replaceAll('{' + lVar + '}', aVars[lVar]);
+				}
+				
+				return aTplStr;
+			};
+			
+			log = function(aMessage){
+				var lDate = new Date();
+				var e = document.createElement('div');
+				e.innerHTML = lDate.getDay() + '/' + lDate.getMonth() + '/' + lDate.getFullYear() + ' ' 
+					+ lDate.getHours() + ':' + lDate.getMinutes() + ':' + lDate.getSeconds()
+					+ ' ' + aMessage;
+				
+				jws.$('messageconsole').appendChild(e);
+			};
+			
+			renderUsers = function(){
+				jws.$('statsbox').innerHTML = '';
+				
+				var lTplStr = jws.$('users-template').innerHTML;
+				var lHtml = printTpl(lTplStr, {'users': lUsers.toString()});
+				
+				var e = document.createElement('div');
+				e.innerHTML = lHtml;
+					
+				jws.$('statsbox').appendChild(e);
+			};
+			
+			login = function(){
+				lClient.login(jws.$('username').value, jws.$('password').value, {
+					OnSuccess: function(){
+						jws.$('password').value = null;
+						jws.$('loginbox').hidden = 'hidden';
+						jws.$('mainbox').hidden = null;
+						
+						lClient.callScriptAppMethod('simplechat', 'Chat', 'register', [], {
+							OnFailure: function(aToken){
+								alert(aToken.msg);
+								logout();
+							}
+						});
+						list();
+						jws.$('message').focus();
+					},
+					OnFailure: function(){
+						alert('Invalid credentials, try again!');
+						jws.$('username').focus();
+					}
+				});
+			};
+			
+			logout = function(){
+				clearConsole();
+				lClient.logout();
+				jws.$('loginbox').hidden = null;
+				jws.$('mainbox').hidden = 'hidden';
+				jws.$('username').focus();
+			};
+			
+			sendMessage = function(){
+				var lMessage = jws.$('message').value;
+				if (lMessage.indexOf('@') === 0){
+					var lTargetUser = lMessage.split(' ', 1)[0].substr(1);
+					if (lUsers.indexOf(lTargetUser) > -1){
+						lMessage = lMessage.substr(lMessage.indexOf(' '));
+						lClient.callScriptAppMethod('simplechat', 'Chat', 'sendPrivate', [lTargetUser, lMessage]);
+						log('private to ' + lTargetUser + ', ' + lMessage);
+						jws.$('message').value = '';
+						jws.$('message').focus();
+						return;
+					}
+				}
+				
+				lClient.callScriptAppMethod('simplechat', 'Chat', 'broadcast', [lMessage]);
+				jws.$('message').value = '';
+				jws.$('message').focus();
+			};
+			
+			clearConsole = function(){
+				jws.$('messageconsole').innerHTML = '';
+			};
+		</script>
+	</head>
+	<body>
+		<div>
+			<h1>Welcome to SimpleChat</h1>
+			<div id="loginbox">
+				Username: <input type="text" id="username" /><br>
+				Password: <input type="password" id="password" />
+				<input type="button" value="Login" onclick="login();"/>
+			</div>
+
+			<div id="mainbox" hidden="hidden">
+				<input type="button" value="Logout" onclick="logout();"/>
+				<div id="statsbox">
+
+				</div> 
+				<hr>
+				<div id="messagesbox"> 
+					<div id="messageconsole" style="height: 300px; background-color: #EAF4DC;overflow: auto">
+
+
+					</div>
+					<div>
+						Message: <input type="text" style="width: 300px;" id="message" />
+						<input type="button" value="Send" onclick="sendMessage();"/>
+						<input type="button" value="Clear" onclick="clearConsole();"/>
+					</div>
+				</div>
+				<div hidden="hidden"> 
+					<div id="users-template">
+						Users: {users}
+					</div> 
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

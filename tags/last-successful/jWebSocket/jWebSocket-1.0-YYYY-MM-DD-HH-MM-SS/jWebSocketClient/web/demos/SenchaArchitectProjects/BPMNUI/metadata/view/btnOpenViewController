@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "mybutton11",
+        "designer|userClassName": "btnOpenViewController"
+    },
+    "designerId": "6958360b-1879-4fb3-b039-6abb3bdbca1a"
+}

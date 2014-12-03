@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <!-- If Google's chrome frame installed, use it! -->
+        <!-- Comment needs to be BELOW this meta tag! -->
+        <!--
+                //	****************************************************************************
+                //	jWebSocket ExtJS Demo (Community Edition, CE)
+                //	****************************************************************************
+                //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+                //  Alexander Schulze, Germany (NRW)
+                //
+                //	Licensed under the Apache License, Version 2.0 (the "License");
+                //	you may not use this file except in compliance with the License.
+                //	You may obtain a copy of the License at
+                //
+                //	http://www.apache.org/licenses/LICENSE-2.0
+                //
+                //	Unless required by applicable law or agreed to in writing, software
+                //	distributed under the License is distributed on an "AS IS" BASIS,
+                //	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                //	See the License for the specific language governing permissions and
+                //	limitations under the License.
+                //	****************************************************************************
+        -->
+        <meta http-equiv="Content-Language" content="en"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <title>jWebSocket Sencha Demo</title>
+
+        <!-- ExtJS STYLES  -->
+        <link rel="stylesheet" type="text/css" href="../../lib/ExtJS/css/ext-all.css" />
+
+
+        <!-- DEMO STYLES  -->
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+        <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+        <!-- EXTJS LIBRARIES	-->
+        <script type="text/javascript" src="../../lib/ExtJS/ext-all-debug.js"></script>
+
+        <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+        <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+
+        <!--DEMO LIBRARIES -->
+        <script type="text/javascript" src="app/App.js"></script> 
+
+        <script>
+
+            Ext.tip.QuickTipManager.init();
+
+            Ext.Loader.setConfig({
+                enabled: true,
+                // Don't set to true, it's easier to use the debugger option to disable caching
+                disableCaching: false,
+                paths: {
+                    'Ext.jws': 'extjs/plugins/jws/'
+					// TODO: we need to use this one to avoid redundancy
+					// but this one screws up the demo, please check!
+                    // 'Ext.jws': '../../lib/ExtJS/jWebSocketSenchaPlugIn/'
+                }
+            });
+
+            Ext.require([
+                'Ext.jws.Client',
+                'Ext.jws.form.action.Submit',
+                'Ext.jws.data.Proxy'
+            ]);
+
+
+            jws.ExtJSDemo = {
+                //"org.jwebsocket"
+                NS_EXTJS_DEMO: jws.NS_BASE + '.plugins.sencha',
+                // Type of tokens
+                TT_OPEN: 'open',
+                TT_CLOSE: 'close',
+                TT_LOGON: 'logon',
+                TT_REGISTER: 'register',
+                TT_WELCOME: 'welcome',
+                TT_CREATE: 'create',
+                TT_READ: 'read',
+                TT_UPDATE: 'update',
+                TT_DESTROY: 'destroy',
+                TT_RESET: 'reset',
+                TT_NOTIFY_CREATE: 'notifyCreate',
+                TT_NOTIFY_UPDATE: 'notifyUpdate',
+                TT_NOTIFY_DESTROY: 'notifyDestroy',
+                TT_NOTIFY_RESET: 'notifyReset',
+                // Texts
+                TEXT_CONNECTED: "connected",
+                TEXT_AUTHENTICATED: "authenticated",
+                TEXT_DISCONNECTED: "disconnected",
+                TEXT_WEBSOCKET: "WebSocket: ",
+                TEXT_CLIENT_ID: "Client-ID: ",
+                // Styles
+                CLS_AUTH: "authenticated",
+                CLS_ONLINE: "online",
+                CLS_OFFLINE: "offline"
+            };
+
+            Ext.onReady(function() {
+                // DOM elements
+                var eDisconnectMessage = Ext.get("not_connected"),
+                        eBtnDisconnect = Ext.get("disconnect_button"),
+                        eBtnConnect = Ext.get("connect_button"),
+                        eClient = document.getElementById("client_status");
+                eClientId = document.getElementById("client_id");
+                eWebSocketType = document.getElementById("websocket_type");
+
+                Ext.jwsClient.on(jws.ExtJSDemo.TT_OPEN, function() {
+                    // Registering to the Sencha demo to receive notifications 
+                    // from the server when other clients create, update or remove 
+                    // users from the server users list
+                    eClient.innerHTML = jws.ExtJSDemo.TEXT_CONNECTED;
+                    eClient.className = jws.ExtJSDemo.CLS_ONLINE;
+
+                    eBtnDisconnect.show();
+                    eBtnConnect.hide();
+                    eDisconnectMessage.hide();
+                });
+
+
+                Ext.jwsClient.on(jws.ExtJSDemo.TT_LOGON, function(aToken) {
+                    if (aToken.username) {
+                        eClient.innerHTML = aToken.username;
+                    }
+                    Ext.jwsClient.send(jws.ExtJSDemo.NS_EXTJS_DEMO, jws.ExtJSDemo.TT_REGISTER);
+
+                    eClient.className = jws.ExtJSDemo.CLS_AUTH;
+
+                    eBtnDisconnect.show();
+                    eBtnConnect.hide();
+                    eDisconnectMessage.hide();
+                    initDemo();
+                });
+
+                Ext.jwsClient.on(jws.ExtJSDemo.TT_CLOSE, function() {
+                    eBtnDisconnect.hide();
+                    eBtnConnect.show();
+                    eClient.innerHTML = jws.ExtJSDemo.TEXT_DISCONNECTED;
+                    eClient.className = jws.ExtJSDemo.CLS_OFFLINE;
+
+
+
+                });
+
+                eBtnDisconnect.hide();
+                eBtnConnect.on("click", function() {
+
+                    Ext.jwsClient.open();
+
+
+
+                });
+
+                eBtnDisconnect.on("click", function() {
+
+                    Ext.jwsClient.close();
+                    Ext.ComponentQuery.query('window vwork displayfield')[0].setValue('Fail');
+                    Ext.ComponentQuery.query('window vwork displayfield')[0].setFieldStyle('color:red');
+
+                });
+
+                Ext.jwsClient.open();
+            });
+
+
+
+
+
+        </script>  
+
+
+    </head>
+    <body>
+        <div id="demo_box">
+            <!--       DEMO_HEADER       -->
+            <div id="demo_box_header">
+                <h1>jWebSocket Sencha Demo using Scripting Plugin and JavaScript Server-Side</h1>
+                <div id="demo_box_header_login">
+                    <div id="connect_area">
+                        <div id="connect_button" class="button onmouseup" 
+                             onmouseover="this.className = 'button onmouseover'" 
+                             onmousedown="this.className = 'button onmousedown'" 
+                             onmouseup="this.className = 'button onmouseup'" 
+                             onmouseout="this.className = 'button onmouseout'" 
+                             onclick="this.className = 'button onmouseover'">
+                            <div class="btn_left"></div>
+                            <div class="btn_center">Connect</div>
+                            <div class="btn_right"></div>
+                        </div>
+
+                        <div id="disconnect_button" 
+                             style="margin-left: -90px; display: none;" 
+                             class="button onmouseup" 
+                             onmouseover="this.className = 'button onmouseover'" 
+                             onmousedown="this.className = 'button onmousedown'" 
+                             onmouseup="this.className = 'button onmouseup'" 
+                             onmouseout="this.className = 'button onmouseout'" 
+                             onclick="this.className = 'button onmouseover'">
+                            <div class="btn_left"></div>
+                            <div class="btn_center">Disconnect</div>
+                            <div class="btn_right"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="container">
+
+                <!--       STATUSBAR         -->
+                <div id="demo_box_statusbar">
+                    <div id='status'>Status: </div>
+                    <div id="client_status" class='offline'>disconnected</div><div class="line"></div>
+                    <!--<div id='client_id'>Client-ID: - </div><div class="line"></div> -->
+                    <div id='websocket_type'>WebSocket: Scripting Plugin (JavaScript Server Side) </div>
+                </div>
+
+                <!--       SCENARIO          -->
+                <div id="scenario_container">
+                    <div id="demo_box_description">
+                        This demo shows a simple CRUD (Create for yourself, Read, Update, Delete) interacting 
+                        with the Scripting Plugin and Javascript Server-Side, using a data base MySQL connected with JDBC Plugin.                        
+                    </div>
+                    <div id="main_content">
+                        <div  style="display: none;">
+                            <div id="contact">
+                                <b id="header">jWebSocket Sencha Demo</b>
+                                <div id="line"></div>
+                                <div id="image"></div>
+                                <p class="text">
+                                    This demo shows the jWebSocket potencial 
+                                    to make real time app and the integration 
+                                    with ExtJS-Sencha framework.
+                                </p>
+                                <p class="feeds">Authors:
+                                    <b>Osvaldo Aguilar Lauzurique, Alexander Rojas Hern&aacute;ndez</b>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--       DOWNLOAD_BUTTON   -->
+                <div id="demo_box_footer">
+                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className = 'button onmouseover'" 
+                         onmousedown="this.className = 'button onmousedown'" 
+                         onmouseup="this.className = 'button onmouseup'" 
+                         onmouseout="this.className = 'button onmouseout'" 
+                         onclick="this.className = 'button onmouseover'">
+                        <div class="btn_left"></div>
+                        <div class="btn_center"><a href="http://jwebsocket.org/downloads/jwebsocket-latest-versions" 
+                                                   target="blank">Download jWebSocket</a></div>
+                        <div class="r_download"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

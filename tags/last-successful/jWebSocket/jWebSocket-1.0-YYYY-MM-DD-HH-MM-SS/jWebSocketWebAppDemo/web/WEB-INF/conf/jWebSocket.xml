@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jWebSocket>
+	<installation>prod</installation>
+	<protocol>json</protocol>
+	<node_id>01</node_id>
+	
+	<libraries>
+	</libraries>
+
+	<!-- jWebSocket logging configuration -->
+	<logging>
+		<log4j>
+			<config>${JWEBSOCKET_HOME}conf/log4j.xml</config>
+			<autoreload>20000</autoreload>
+		</log4j>
+	</logging>
+
+	<initializerClass>org.jwebsocket.factory.JWebSocketInitializer</initializerClass>
+
+	<engines>
+		<!-- Tomcat Engine Configuration -->
+		<engine>
+			<name>org.jwebsocket.tomcat.TomcatEngine</name>
+			<id>tomcat0</id>
+			<jar>jWebSocketTomcatEngine-1.0.jar</jar>
+			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
+			<!-- The jWebSocket TomcatEngine can either work in embedded mode 
+				 or in standard web app mode. In standard wep app mode the 
+				 jWebSocket Tomcat engine listens on same port like
+				 Tomcats's http. The http protocol is upgraded to use WebSockets.
+				 The http/websocket port can be configured via the Tomcat
+				 configuration in the server.xml configuration file.
+			-->
+			<!-- set both port settings to "0" (null) if running Tomcat
+				 Servlet Container for Web Apps and embed jWebSocket library.
+				 This uses the settings from server.xml, wraps the existing
+				 Tomcat WebSocket servlet and does NOT instantiate a separate
+				 embedded engine at run time within jWebSocket.
+			-->
+			<port>0</port>
+			<sslport>0</sslport>
+			
+			<!-- use 80/443 for default http/ws or https/wss connections
+				 when running a jWebSocket Server and use Tomcat as an embedded 
+				 engine. These settings are recommended only when running 
+				 jWebSocket on a SEPARATE server beside a WebServer and the 
+				 firewall does not allow access to ports 8787 and 9797.
+			-->
+			<!--
+			<port>80</port>
+			<sslport>443</sslport>
+			-->
+			<!-- use 8787/9797 for default http/ws or https/wss connections
+				 These settings are recommended only when running jWebSocket
+				 on the same server beside a Tomcat WebServer and the firewall
+				 grants access to ports 8787 and 9797.
+			
+            <port>8787</port>
+            <sslport>9797</sslport>
+            -->
+            <!-- these domains are accepted by the engine listening
+            on the above mentioned port -->
+            <domains>
+                <domain>*</domain>
+                <!-- limit allowed domains here -->
+                <!--
+                <domain>http*://jwebsocket.org</domain>
+                <domain>http*://jwebsocket.com</domain>
+                <domain>http*://*.jwebsocket.org</domain>
+                <domain>http*://*.jwebsocket.com</domain>
+                <domain>http*://10.10.*</domain>
+                <domain>http*://10.21.*</domain>
+                <domain>http*://192.168.*</domain>
+                <domain>http*://localhost*</domain>
+                -->
+            </domains>
+            <!-- default session timeout (minutes) -->
+            <timeout>1</timeout>
+
+            <!-- context and servlet settings, these settings are applied only
+            in embedded mode. In standard web app mode the context is specified 
+            by the context.xml of the web-app and the servlet is specified 
+            in the web.xml of the web-app. -->
+            <!-- Tomcat provides a WebSocket Servlet, set the context path here -->
+            <context>/jWebSocket</context>
+            <!-- Tomcat provides a WebSocket Servlet, set the servlet path here -->
+            <servlet>/jWebSocket</servlet>
+            <!--
+                    maximum size of the data packet that the engine will read,
+                    if the frame size is larger than this the connection will be closed.
+            -->
+            <maxframesize>1048840</maxframesize>
+            <!-- maximun number of connections allowed by this engine -->
+            <maxconnections>10000</maxconnections>
+            <!-- on max connections reached strategy -->
+            <!-- close, reject --> 
+            <onmaxconnections>reject</onmaxconnections>
+            <settings>
+                <!-- directory that contains the public web folder path -->
+                <setting key="document_root">${JWEBSOCKET_HOME}web/</setting>
+                <!-- max threads property value for each tomcat connector -->
+                <setting key="max_threads">200</setting>
+            </settings>
+        </engine>	
+    </engines>
+
+    <!-- server types to be instantiated for jWebSocket -->
+    <servers>
+        <server>
+            <name>org.jwebsocket.server.TokenServer</name>
+            <id>ts0</id>
+            <jar>jWebSocketTokenServer-1.0.jar</jar>
+            <threadPool>
+                <corePoolSize>10</corePoolSize>
+                <maximumPoolSize>100</maximumPoolSize>
+                <keepAliveTime>60</keepAliveTime>
+                <blockingQueueSize>1000</blockingQueueSize>
+            </threadPool>
+        </server>
+    </servers>
+
+    <!-- jWebSocket global rights -->
+    <rights>
+        <right>
+            <ns>org.jwebsocket.plugins.system</ns>
+            <id>broadcast</id>
+            <description>Broadcast message to all other clients.</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.system</ns>
+            <id>send</id>
+            <description>Send message to a single target client.</description>
+        </right>
+
+        <!-- Channel rights -->
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>start</id>
+            <description>Allows to start a channel</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>stop</id>
+            <description>Allows to stop a channel</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>suspend</id>
+            <description>Allows to suspend a channel</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>resume</id>
+            <description>Allows to resume a channel</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>subscribe</id>
+            <description>Allows to subscribe to and unsubscribe from a channel</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>publish</id>
+            <description>Allows to publish to a channel</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>getChannels</id>
+            <description>Allows to retrieve the list of available channels</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>getSubscribers</id>
+            <description>Allows to retrieve the list of scubscribers of a certain channel</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>getSubscriptions</id>
+            <description>Allows to retrieve the list of channels the current client subscribed to</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>createChannel</id>
+            <description>Allows to create a new channel</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>removeChannel</id>
+            <description>Allows to remove an existing channel</description>
+        </right>
+        <right>
+            <ns>org.jwebsocket.plugins.channels</ns>
+            <id>manageSystemChannels</id>
+            <description>Allows to manage (create and remove) system channels from clients</description>
+        </right>
+    </rights>
+
+    <!-- jWebSocket roles -->
+    <roles>
+        <role>
+            <id>Administrator</id>
+            <description>Administrators</description>
+            <rights>
+                <!-- list of rights for "Administrator" role (ns + . + id) -->
+                <right>org.jwebsocket.plugins.system.broadcast</right>
+                <right>org.jwebsocket.plugins.system.send</right>
+            </rights>
+        </role>
+        <role>
+            <id>User</id>
+            <description>Registered and authenticated users.</description>
+            <rights>
+                <!-- list of rights for "User" role (ns + . + id) -->
+                <right>org.jwebsocket.plugins.system.broadcast</right>
+                <right>org.jwebsocket.plugins.system.send</right>
+            </rights>
+        </role>
+        <role>
+            <id>Guest</id>
+            <description>Anonymous users (not registered)</description>
+            <rights>
+                <!-- list of rights for "Guest" role (ns + . + id) -->
+                <right>org.jwebsocket.plugins.system.broadcast</right>
+                <right>org.jwebsocket.plugins.system.send</right>
+            </rights>
+        </role>
+    </roles>
+
+    <users>
+        <user>
+            <uuid>000-000-001-2011-07-14-11-32-40-223</uuid>
+            <loginname>guest</loginname>
+            <firstname>jWebSocket Guest User</firstname>
+            <lastname>(Guest Role)</lastname>
+            <password>guest</password>
+            <description>jWebSocket Guest User</description>
+            <status>1</status>
+            <roles>
+                <role>Guest</role>
+            </roles>
+        </user>
+        <user>
+            <uuid>000-000-002-2011-07-14-11-33-20-493</uuid>
+            <loginname>user</loginname>
+            <firstname>jWebSocket Authenticated User</firstname>
+            <lastname>(User Role)</lastname>
+            <password>user</password>
+            <description>jWebSocket Standard User</description>
+            <status>1</status>
+            <roles>
+                <role>Guest</role>
+                <role>User</role>
+            </roles>
+        </user>
+        <user>
+            <uuid>000-000-003-2011-07-14-11-34-17-189</uuid>
+            <loginname>root</loginname>
+            <firstname>jWebSocket Root User</firstname>
+            <lastname>(Administrator Role)</lastname>
+            <password>root</password>
+            <description>jWebSocket Root User</description>
+            <status>1</status>
+            <roles>
+                <role>Guest</role>
+                <role>User</role>
+                <role>Administrator</role>
+            </roles>
+        </user>
+        <user>
+            <uuid>000-000-004-2011-07-14-11-35-54-871</uuid>
+            <loginname>anonymous</loginname>
+            <firstname>jWebSocket Anonymous User</firstname>
+            <lastname>(Roles to be specified!)</lastname>
+            <password></password>
+            <description>jWebSocket Anonymous User (Specify if anonymous logins should be supported at all in System Plug-in)</description>
+            <status>1</status>
+            <roles>
+                <role>Guest</role>
+                <role>User</role>
+                <role>Administrator</role>
+            </roles>
+        </user>
+    </users>
+    <plugins>
+        <!-- the system plug-in, do not remove, mandatory for basic WebsScket communication operations -->
+        <plugin>
+            <name>org.jwebsocket.plugins.system.SystemPlugIn</name>
+            <ns>org.jwebsocket.plugins.system</ns>
+            <id>jws.system</id>
+            <jar>jWebSocketServer-1.0.jar</jar>
+            <!-- plug-in specific settings -->
+            <settings>
+                <setting key="spring_config">${JWEBSOCKET_HOME}conf/SystemPlugIn/system.xml</setting>
+                <setting key="broadcastOpenEvent">true</setting>
+                <setting key="broadcastCloseEvent">true</setting>
+                <setting key="broadcastLoginEvent">true</setting>
+                <setting key="broadcastLogoutEvent">true</setting>
+                <setting key="allowAnonymousLogin">true</setting>
+                <setting key="anonymousLoginName">anonymous</setting>
+                <setting key="loginNameCaseInsensitive">true</setting>
+                <setting key="allowAutoAnonymous">true</setting>
+            </settings>
+            <server-assignments>
+                <server-assignment>ts0</server-assignment>
+            </server-assignments>
+        </plugin>
+        <plugin>
+            <name>org.jwebsocket.appserver.SampleWebSocketPlugIn</name>
+            <ns>org.jwebsocket.appserver</ns>
+            <id>jws.appserver</id>
+            <settings>
+            </settings>
+            <server-assignments>
+                <server-assignment>ts0</server-assignment>
+            </server-assignments>
+        </plugin>
+
+    </plugins>
+
+    <filters>
+        <filter>
+            <name>org.jwebsocket.filters.system.SystemFilter</name>
+            <id>jws.sampleFilter</id>
+            <ns>org.jwebsocket.filters.system</ns>
+            <jar>jWebSocketServer-1.0.jar</jar>
+            <server-assignments>
+                <server-assignment>ts0</server-assignment>
+            </server-assignments>
+        </filter>
+    </filters>
+
+</jWebSocket>
