@@ -1,0 +1,165 @@
+{
+    "type": "Ext.container.Viewport",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|initialView": true,
+        "designer|userAlias": "vpdiagram",
+        "designer|userClassName": "vpDiagram",
+        "layout": "border"
+    },
+    "name": "MyViewport",
+    "designerId": "21b707df-292e-407b-9043-e23805f22faf",
+    "viewControllerInstanceId": "9352ad7d-827c-4328-9eb9-e439377717c1",
+    "viewModelInstanceId": "106ba7a7-5ab2-4774-82d6-973f0462db2a",
+    "cn": [
+        {
+            "type": "Ext.panel.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "layout": "accordion",
+                "layout|region": "west",
+                "title": "Toolbar",
+                "width": 150
+            },
+            "name": "MyPanel",
+            "designerId": "6aabcf67-698d-41aa-834d-3be465c730f5",
+            "cn": [
+                {
+                    "type": "linkedinstance",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "name": "ptoolbox",
+                    "designerId": "97d0b0a2-4eb3-4268-afb1-ff6e54bf7a01",
+                    "masterInstanceId": "da26b90d-e3bc-4130-b46f-c7c3840134dc"
+                }
+            ]
+        },
+        {
+            "type": "linkedinstance",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "layout|region": "center"
+            },
+            "name": "tpcanvas",
+            "designerId": "c976ccb6-344d-4065-9798-f80fdd01b961",
+            "masterInstanceId": "a9872ee8-0611-499a-a7e3-91760d447a85"
+        },
+        {
+            "type": "Ext.grid.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "animCollapse": true,
+                "collapsed": true,
+                "collapsible": true,
+                "height": 50,
+                "layout|collapseMode": "header",
+                "layout|region": "south",
+                "title": "Logs"
+            },
+            "name": "MyGridPanel",
+            "designerId": "1d54c0ca-1066-48c2-9451-a9f73904dff4",
+            "cn": [
+                {
+                    "type": "Ext.grid.column.Column",
+                    "reference": {
+                        "name": "columns",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dataIndex": "string",
+                        "text": "Log",
+                        "weight": 1,
+                        "width": 720
+                    },
+                    "name": "MyColumn",
+                    "designerId": "27f0969e-417a-4a13-a7c3-f4ef07a263c0"
+                },
+                {
+                    "type": "Ext.grid.View",
+                    "reference": {
+                        "name": "viewConfig",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "name": "MyGridView",
+                    "designerId": "5974d01e-fc5c-4f6d-a427-65302c7d88c7"
+                }
+            ]
+        },
+        {
+            "type": "Ext.grid.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "layout|region": "east",
+                "title": "Properties",
+                "width": 150
+            },
+            "name": "MyGridPanel1",
+            "designerId": "f9ae0a92-0843-485c-af1d-34eafacf5bfb",
+            "cn": [
+                {
+                    "type": "Ext.grid.column.Column",
+                    "reference": {
+                        "name": "columns",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dataIndex": "string",
+                        "text": "Property"
+                    },
+                    "name": "MyColumn1",
+                    "designerId": "c93a758e-7001-4f1e-a9e6-f6f104cff7df"
+                },
+                {
+                    "type": "Ext.grid.column.Number",
+                    "reference": {
+                        "name": "columns",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dataIndex": "number",
+                        "text": "Value"
+                    },
+                    "name": "MyNumberColumn",
+                    "designerId": "649df86d-83a0-4d90-98ce-8a6a4b406b6f"
+                },
+                {
+                    "type": "Ext.grid.View",
+                    "reference": {
+                        "name": "viewConfig",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "name": "MyGridView1",
+                    "designerId": "efb588b9-0b55-4c45-8417-6e284e0b74c6"
+                }
+            ]
+        }
+    ]
+}
