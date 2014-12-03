@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- set default settings for ALL web apps within Jetty -->
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+	<!-- add default servlet to serve static content -->
+	<servlet>
+		<servlet-name>default</servlet-name>
+		<servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+		<init-param>
+			<param-name>acceptRanges</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>dirAllowed</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>redirectWelcome</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>maxCacheSize</param-name>
+			<param-value>2000000</param-value>
+		</init-param>
+		<init-param>
+			<param-name>maxCachedFileSize</param-name>
+			<param-value>254000</param-value>
+		</init-param>
+		<init-param>
+			<param-name>maxCachedFiles</param-name>
+			<param-value>1000</param-value>
+		</init-param>
+		<init-param>
+			<param-name>useFileMappedBuffer</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+</web-app>
