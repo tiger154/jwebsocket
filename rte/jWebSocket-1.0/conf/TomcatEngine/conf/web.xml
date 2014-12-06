@@ -3,7 +3,7 @@
     <display-name>jWebSocket Tomcat Engine</display-name>
     <listener>
         <description>Context listener used to start and stop the jWebSocket application server.</description>
-        <listener-class>org.jwebsocket.tomcat.ContextListener</listener-class>
+        <listener-class>org.jwebsocket.http.ContextListener</listener-class>
     </listener>
     <listener>
         <description>Session management listener</description>

@@ -3,42 +3,39 @@
 <beans>
 	
 	<!-- Service Cluster 1 definition -->
-	<bean id="service1cluster" class="org.jwebsocket.plugins.loadbalancer.Cluster">
+	<bean id="service1cluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
 		<property name="password" value="admin"/>
+		<property name="alias" value="service1"/>
 		<property name="namespace" value="org.jwebsocket.plugins.sample1"/>
 	</bean>
 	
 	<!-- Service Cluster 2 definition -->
-	<bean id="service2cluster" class="org.jwebsocket.plugins.loadbalancer.Cluster">
+	<bean id="service2cluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
 		<property name="password" value="admin"/>
+		<property name="alias" value="service2"/>
 		<property name="namespace" value="org.jwebsocket.plugins.sample2"/>
 	</bean>
 	
 	<!-- Service Cluster 3 definition -->
-	<bean id="service3cluster" class="org.jwebsocket.plugins.loadbalancer.Cluster">
+	<bean id="service3cluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
 		<property name="password" value="admin"/>
+		<property name="alias" value="service3"/>
 		<property name="namespace" value="org.jwebsocket.plugins.sample3"/>
 	</bean>
 	
 	<!-- Service Cluster alias/instance assignment -->
 	<bean id="org.jwebsocket.plugins.loadbalancer.settings" class="org.jwebsocket.plugins.loadbalancer.Settings">
-		<property name="clusters">
-			<map>
-				<!-- "service1" is the name of the first balanced service -->
-				<entry key="service1" >
-					<ref bean="service1cluster" />
-				</entry>
-				
-				<!-- "service2" is the name of the second balanced service -->
-				<entry key="service2" >
-					<ref bean="service2cluster" />
-				</entry>
-				
-				<!-- "service3" is the name of the third balanced service -->
-				<entry key="service3" >
-					<ref bean="service3cluster" />
-				</entry>
-			</map>
+		<property name="clusterManager">
+			<bean class="org.jwebsocket.plugins.loadbalancer.memory.MemoryClusterManager">
+				<property name="balancerAlgorithm" value="3" />
+				<property name="clustersList">
+					<list>
+						<ref bean="service1cluster" />
+						<ref bean="service2cluster" />
+						<ref bean="service3cluster" />
+					</list>
+				</property>
+			</bean>
 		</property>
 		
 		<!-- load balancer message delivery timeout -->
@@ -49,7 +46,7 @@
 		
 		<!-- As we know, in the load balancer the client applications will functions as services. 
 		Until now these services only can to be Web client (JavaScript) or Java client (java). 
-		As consequence of this, It have implemented 3 types of algorithms differently for load 
+		As consequence of this, it have implemented 3 types of algorithms differently for load 
 		balancing considering the type of service (Web or Java) .The algorithm "1" to behave as 
 		a simple round robin. This algorithm will work with both types of services. For example:
 		
@@ -86,7 +83,6 @@
 		CPU Usage |____|90%_|32%_|____|45%_|____|60%_|15%_|____|____|____|					  
 								                                       
 		-->
-		<property name="balancerAlgorithm" value="3" />
 	</bean>
 	
 </beans>

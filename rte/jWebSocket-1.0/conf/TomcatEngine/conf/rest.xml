@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
+<beans>
+	
+	<bean id="clusterName" class="java.lang.String">
+		<!-- the cluster topic name for client2server communication	-->
+		<constructor-arg value="rest_cloud1"/>
+	</bean>
+
+	<!-- the MongoDB server connection instance 
+	<bean id="mongodbConnection" class="com.mongodb.MongoClient" destroy-method="close">
+		<constructor-arg value="localhost"/>
+	</bean>
+	-->
+
+	<!-- the MongoDB database instance to store the engine data -->
+	<bean id="connectorsDatabase" class="org.jwebsocket.storage.mongodb.MongoDBUtils" factory-method="getDB">
+		<constructor-arg ref="mongodbConnection0"/>
+		<constructor-arg ref="clusterName"/>
+		<!-- database user/password for authentication if required
+		<constructor-arg value="user"/>
+		<constructor-arg value="pass"/>
+		-->
+	</bean>
+
+	<!-- the cluster 'connectorsManager' instance for client connections management -->
+	<bean id="connectorsManager" class="org.jwebsocket.http.MongoDBConnectorsManager">
+		<property name="collection">
+			<bean factory-bean="connectorsDatabase" factory-method="getCollection">
+				<constructor-arg value="connectors"/>
+			</bean>
+		</property>
+		<property name="packetsQueue">
+			<bean class="org.jwebsocket.util.MongoDBConnectorsPacketQueue" init-method="initialize">
+				<constructor-arg>
+					<bean factory-bean="connectorsDatabase" factory-method="getCollection">
+						<constructor-arg value="packets"/>
+					</bean>
+				</constructor-arg>
+			</bean>
+			
+		</property>
+	</bean>
+	
+</beans>
