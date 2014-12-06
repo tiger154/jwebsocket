@@ -18,7 +18,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.engines;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Contains utility methods and constants for servlet engines
@@ -77,4 +84,41 @@ public class ServletUtils {
 	 * The bootstrap override path parameter name
 	 */
 	public static final String CONTEXT_BOOTSTRAP_PARAMETER = "jws_bootstrap";
+
+	/**
+	 * Send a file using the HttpServletResponse object. The connection is
+	 * closed once the file is sent.
+	 *
+	 * @param aResponse
+	 * @param aFile
+	 * @throws Exception
+	 */
+	public static void sendFile(HttpServletResponse aResponse, File aFile) throws Exception {
+		// sending file
+		String lMimeType = new MimetypesFileTypeMap().getContentType(aFile);
+		aResponse.setContentType(lMimeType);
+		aResponse.setHeader("Content-Disposition", "attachment; filename=" + aFile.getName());
+		aResponse.setHeader("Content-Type", lMimeType);
+		aResponse.setContentLength((int) aFile.length());
+
+		ServletOutputStream lOS = null;
+		BufferedInputStream lBuffer = null;
+		try {
+			int lByteRead;
+			lOS = aResponse.getOutputStream();
+			lBuffer = new BufferedInputStream(new FileInputStream(aFile));
+			while ((lByteRead = lBuffer.read()) != -1) {
+				lOS.write(lByteRead);
+			}
+		} catch (Exception lEx) {
+			throw new ServletException(lEx.getMessage());
+		} finally {
+			if (null != lOS) {
+				lOS.close();
+			}
+			if (null != lBuffer) {
+				lBuffer.close();
+			}
+		}
+	}
 }
