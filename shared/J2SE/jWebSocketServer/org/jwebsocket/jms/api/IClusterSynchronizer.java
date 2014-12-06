@@ -22,7 +22,7 @@ import org.jwebsocket.api.IInitializable;
 
 /**
  * Load balancer instances require to be synchronized in order to allow only one
- * load balancer instance to process client messages.
+ * load balancer instance to process a message.
  *
  * @author Rolando Santamaria Maso
  */
@@ -31,7 +31,7 @@ public interface IClusterSynchronizer extends IInitializable {
 	/**
 	 * Returns TRUE if the calling node is allowed to process a message, FALSE
 	 * otherwise. Multiples nodes can request permission to process the same
-	 * message, but only one should gets granted.
+	 * message, but only one should be granted.
 	 *
 	 * @param aMessageId A custom message id
 	 * @return

@@ -30,7 +30,6 @@ import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.system.SystemPlugIn;
 
 /**
  * JMS Connector
@@ -67,22 +66,8 @@ public class JMSConnector extends BaseConnector {
 		mConsumerId = aConsumerId;
 	}
 
-	/**
-	 *
-	 * @param aMap
-	 */
 	public void setCustomVarsContainer(Map<String, Object> aMap) {
 		mCustomVars = aMap;
-	}
-
-	@Override
-	public void setUsername(String aUsername) {
-		setString(SystemPlugIn.USERNAME, aUsername);
-	}
-
-	@Override
-	public String getUsername() {
-		return getString(SystemPlugIn.USERNAME);
 	}
 
 	@Override
