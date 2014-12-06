@@ -73,32 +73,6 @@ public class JMSEventBus extends BaseEventBus {
 	}
 
 	@Override
-	public IRegistration register(final String aNS, final IHandler aHandler) {
-		Assert.notNull(aNS, "The 'NS' argument cannot be null!");
-		Assert.notNull(aHandler, "The 'handler' argument cannot be null!");
-
-		storeHandler(aNS, aHandler);
-
-		return new IRegistration() {
-
-			@Override
-			public String getNS() {
-				return aNS;
-			}
-
-			@Override
-			public void cancel() {
-				removeHandler(aNS, aHandler);
-			}
-
-			@Override
-			public IHandler getHandler() {
-				return aHandler;
-			}
-		};
-	}
-
-	@Override
 	public IEventBus publish(Token aToken) {
 		setUTID(aToken);
 		sendGeneric(false, aToken, new Long(0));
