@@ -89,6 +89,15 @@ public class BaseTokenClient implements WebSocketTokenClient {
 	private WebSocketClient mClient;
 
 	/**
+	 * Get the WebSocketClient implementation instance
+	 *
+	 * @return
+	 */
+	public WebSocketClient getWebSocketClient() {
+		return mClient;
+	}
+
+	/**
 	 *
 	 * @param aClient
 	 */
@@ -904,12 +913,12 @@ public class BaseTokenClient implements WebSocketTokenClient {
 			sendTokenInTransaction(lCurrentChunk, aChunkable.getFragmentSize(),
 					new InChunkingResponseListener(aResponseListener, lSentTime),
 					new ChunkableListener(
-					lCurrentChunk,
-					lChunksIterator,
-					aResponseListener,
-					aDeliveryListener,
-					lSentTime,
-					aChunkable.getFragmentSize()));
+							lCurrentChunk,
+							lChunksIterator,
+							aResponseListener,
+							aDeliveryListener,
+							lSentTime,
+							aChunkable.getFragmentSize()));
 		} catch (Exception lEx) {
 			aDeliveryListener.OnFailure(lEx);
 		}
