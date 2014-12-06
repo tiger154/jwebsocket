@@ -16,7 +16,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.tomcat;
+package org.jwebsocket.tomcat.http;
 
 import java.io.File;
 import java.util.Map;
@@ -26,35 +26,34 @@ import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
-import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketConfig;
-import org.jwebsocket.engines.BaseEngine;
+import org.jwebsocket.http.HTTPEngine;
+import org.jwebsocket.http.IConnectorsManager;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 
 /**
  *
- * @author Alexander Schulze
  * @author Rolando Santamaria Maso
  */
-public class TomcatEngine extends BaseEngine {
+public class TomcatHTTPEngine extends HTTPEngine {
 
 	private static final Logger mLog = Logging.getLogger();
-	private boolean mIsRunning = false;
 	private Tomcat mTomcat = null;
 	private String mTomcatVersion = "7+";
 	private String mDocumentRoot;
 	private final String DOCUMENT_ROOT_CONFIG_KEY = "document_root";
 	private final String MAX_THREADS_CONFIG_KEY = "max_threads";
+	private final String NS_TOMCAT_HTTP = "org.jwebsocket.engine.tomcathttp";
 	private final Integer DEFAULT_MAX_THREADS = 200;
 
 	/**
 	 *
 	 * @param aConfiguration
 	 */
-	public TomcatEngine(EngineConfiguration aConfiguration) {
-
+	public TomcatHTTPEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
 
 		// load the ports
@@ -144,12 +143,19 @@ public class TomcatEngine extends BaseEngine {
 				lCtx.setConfigFile(new File(lContextConfig).toURI().toURL());
 			}
 
-			String lWebXML = JWebSocketConfig.getConfigFolder("TomcatEngine/conf/web.xml");
+			String lWebXML = JWebSocketConfig.getConfigFolder("TomcatEngine/conf/rest-web.xml");
 			if (null != lWebXML) {
 				ContextConfig lContextListener = new ContextConfig();
 				lCtx.addLifecycleListener(lContextListener);
 				lContextListener.setDefaultWebXml(lWebXML);
 			}
+
+			// loading connectors manager bean
+			JWebSocketBeanFactory.load(NS_TOMCAT_HTTP,
+					JWebSocketConfig.getConfigFolder("TomcatEngine/conf/rest.xml"),
+					getClass().getClassLoader());
+			setConnectorsManager((IConnectorsManager) JWebSocketBeanFactory
+					.getInstance(NS_TOMCAT_HTTP).getBean("connectorsManager"));
 
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Starting embedded Tomcat Server '"
@@ -171,34 +177,7 @@ public class TomcatEngine extends BaseEngine {
 	}
 
 	@Override
-	public void startEngine() throws WebSocketException {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Starting Tomcat '" + mTomcatVersion + "' engine '" + getId() + "...");
-		}
-
-		mIsRunning = true;
-		super.startEngine();
-
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Tomcat '" + mTomcatVersion + "' engine '" + getId() + "' started.");
-		}
-
-		// fire the engine start event
-		engineStarted();
-	}
-
-	@Override
 	public void stopEngine(CloseReason aCloseReason) throws WebSocketException {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Stopping Tomcat '" + mTomcatVersion + "' engine '" + getId() + "...");
-		}
-
-		// resetting "isRunning" causes engine listener to terminate
-		mIsRunning = false;
-
-		// inherited method stops all connectors
-		super.stopEngine(aCloseReason);
-
 		try {
 			if (mTomcat != null) {
 				mTomcat.stop();
@@ -221,30 +200,11 @@ public class TomcatEngine extends BaseEngine {
 					+ lEx.getMessage());
 		}
 
-		// fire the engine stopped event
-		engineStopped();
+		super.stopEngine(aCloseReason);
 	}
 
 	@Override
-	public void connectorStarted(WebSocketConnector aConnector) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Detected new connector at port "
-					+ aConnector.getRemotePort() + ".");
-		}
-		super.connectorStarted(aConnector);
-	}
-
-	@Override
-	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Detected stopped connector at port "
-					+ aConnector.getRemotePort() + ".");
-		}
-		super.connectorStopped(aConnector, aCloseReason);
-	}
-
-	@Override
-	public boolean isAlive() {
-		return mIsRunning;
+	public void systemStarted() throws Exception {
+		getConnectorsManager().initialize();
 	}
 }
