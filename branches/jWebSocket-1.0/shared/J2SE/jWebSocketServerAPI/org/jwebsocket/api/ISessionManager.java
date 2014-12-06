@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
+import org.jwebsocket.kit.CloseReason;
+
 /**
  * Provides methods to retrieve sessions from the global session storage.
  *
@@ -65,8 +67,9 @@ public interface ISessionManager extends IInitializable {
 	/**
 	 *
 	 * @param aConnector
+	 * @param aCloseReason
 	 * @param aIsSessionShared
 	 * @throws Exception
 	 */
-	void connectorStopped(WebSocketConnector aConnector, boolean aIsSessionShared) throws Exception;
+	void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason, boolean aIsSessionShared) throws Exception;
 }
