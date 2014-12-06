@@ -18,13 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -34,6 +28,9 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.annotations.Role;
+import org.jwebsocket.plugins.loadbalancer.api.ICluster;
+import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
+import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.JWSTimerTask;
@@ -73,23 +70,11 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	/**
 	 * Load balancer clusters.
 	 */
-	protected Map<String, Cluster> mClusters;
-	/**
-	 * Clusters name space/alias.
-	 */
-	private Map<String, String> mNamespaceToService;
+	protected IClusterManager mClusterManager;
 	/**
 	 * Load balancer message delivery timeout.
 	 */
 	protected long mMessageDeliveryTimeout;
-	/**
-	 * Load balancer algorithm.
-	 */
-	private int mBalancerAlgorithm;
-	/**
-	 * Delay connectors queue for to be stopped.
-	 */
-	private List<WebSocketConnector> mDelayConnectorsQueue;
 	/**
 	 * Delay time for stop the connector when the client can't stop it.
 	 */
@@ -116,12 +101,10 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.loadbalancer.settings");
 				if (null != mSettings) {
-					mClusters = mSettings.getClusters();
+					mClusterManager = mSettings.getClusterManager();
 					mMessageDeliveryTimeout = mSettings.getMessageTimeout();
 					mConnectorStopDelay = mSettings.getConnectorStopDelay();
-					mBalancerAlgorithm = mSettings.getBalancerAlgorithm();
-					buildMap();
-					mDelayConnectorsQueue = new FastList<WebSocketConnector>();
+
 					if (mLog.isInfoEnabled()) {
 						mLog.info("Load balancer plug-in successfully instantiated.");
 					}
@@ -173,11 +156,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
-		if (mDelayConnectorsQueue.contains(aConnector)) {
-			mDelayConnectorsQueue.remove(aConnector);
-		}
-
-		int lRemoved = removeConnector(aConnector);
+		int lRemoved = mClusterManager.removeConnectorEndPoints(aConnector.getId());
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(lRemoved + " services where removed due to client '" + aConnector.getId()
@@ -195,18 +174,14 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 */
 	@Role(name = NS_LOADBALANCER + ".clustersInfo")
 	public void clustersInfoAction(WebSocketConnector aConnector, Token aToken) {
-		List<Map<String, Object>> lInfo = new FastList<Map<String, Object>>();
-		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
-			lInfo.add(lEntry.getValue().getInfo(lEntry.getKey()));
-		}
-
 		Token lResponse = createResponse(aToken);
-		lResponse.setList("data", lInfo);
+		lResponse.setList("data", mClusterManager.getClustersInfo());
+
 		sendToken(aConnector, lResponse);
 	}
 
 	/**
-	 * Sends a list of all sticky routes man-aged by the load balancer,
+	 * Sends a list of all sticky routes managed by the load balancer,
 	 * consisting of cluster-alias, client endpoint-id, service endpoint-id.
 	 *
 	 * @param aConnector
@@ -214,13 +189,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 */
 	@Role(name = NS_LOADBALANCER + ".clustersInfo")
 	public void stickyRoutesAction(WebSocketConnector aConnector, Token aToken) {
-		List<Map<String, String>> lStickyRoutes = new FastList<Map<String, String>>();
-		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
-			lEntry.getValue().getStickyRoutes(lEntry.getKey(), lStickyRoutes);
-		}
-
 		Token lResponse = createResponse(aToken);
-		lResponse.setList("data", lStickyRoutes);
+		lResponse.setList("data", mClusterManager.getStickyRoutes());
 
 		sendToken(aConnector, lResponse);
 	}
@@ -237,19 +207,19 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 */
 	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
 	public void registerServiceEndPointAction(WebSocketConnector aConnector, Token aToken) {
-		String lClusterAlias = aToken.getString("clusterAlias");
+		String lAlias = aToken.getString("clusterAlias");
 		String lPassword = aToken.getString("password");
 
-		Assert.isTrue(mClusters.containsKey(lClusterAlias), "The target cluster does not exists!");
+		ICluster lCluster = mClusterManager.getClusterByAlias(lAlias);
+		Assert.notNull(lCluster, "The target cluster does not exists!");
 
-		Cluster lCluster = getClusterByAlias(lClusterAlias);
 		// checking password.
 		if (null != lCluster.getPassword()) {
 			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
 		}
 
 		Token lResponse = createResponse(aToken);
-		ClusterEndPoint lEndPoint = lCluster.registerEndPoint(aConnector);
+		IClusterEndPoint lEndPoint = lCluster.registerEndPoint(aConnector);
 		Assert.notNull(lEndPoint, "The new endpoint can't be created");
 		lResponse.setString("endPointId", lEndPoint.getServiceId());
 
@@ -270,21 +240,22 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
 	public void deregisterServiceEndPointAction(WebSocketConnector aConnector, Token aToken) {
 		String lEndPointId = aToken.getString("endPointId");
-		String lClusterAlias = aToken.getString("clusterAlias");
+		String lAlias = aToken.getString("clusterAlias");
 		String lPassword = aToken.getString("password");
 
-		// checking arguments.
-		Assert.notNull(lClusterAlias, "The argument 'clusterAlias' cannot be null!");
+		// checking arguments
+		Assert.notNull(lAlias, "The argument 'clusterAlias' cannot be null!");
 		Assert.notNull(lEndPointId, "The argument 'endPointId' cannot be null!");
-		Assert.isTrue(mClusters.containsKey(lClusterAlias), "The target cluster does not exists!");
 
-		final Cluster lCluster = getClusterByAlias(lClusterAlias);
-		// checking password.
+		ICluster lCluster = mClusterManager.getClusterByAlias(lAlias);
+		Assert.notNull(lCluster, "The target cluster does not exists!");
+
+		// checking password
 		if (null != lCluster.getPassword()) {
 			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
 		}
 
-		ClusterEndPoint lClusterEndPoint = lCluster.containsEndPoint(lEndPointId);
+		IClusterEndPoint lClusterEndPoint = lCluster.getEndPoint(lEndPointId);
 
 		Assert.notNull(lClusterEndPoint, "The target endpoint does not exists!");
 		Assert.isTrue(lClusterEndPoint.getStatus().equals(EndPointStatus.ONLINE),
@@ -296,7 +267,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		lEvent.setString("endPointId", lEndPointId);
 
 		// sending event to endpoint connector.
-		sendToken(lClusterEndPoint.getConnector(), lEvent);
+		sendToken(getConnector(lClusterEndPoint.getConnectorId()), lEvent);
 
 		// removing endpoint.
 		lCluster.removeEndPoint(lClusterEndPoint);
@@ -319,21 +290,22 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	@Role(name = NS_LOADBALANCER + ".shutdownEndPoint")
 	public void shutdownServiceEndPointAction(final WebSocketConnector aConnector, final Token aToken) {
 		String lEndPointId = aToken.getString("endPointId");
-		String lClusterAlias = aToken.getString("clusterAlias");
+		String lAlias = aToken.getString("clusterAlias");
 		String lPassword = aToken.getString("password");
 
 		// checking arguments.
-		Assert.notNull(lClusterAlias, "The argument 'clusterAlias' cannot be null!");
+		Assert.notNull(lAlias, "The argument 'clusterAlias' cannot be null!");
 		Assert.notNull(lEndPointId, "The argument 'endPointId' cannot be null!");
-		Assert.isTrue(mClusters.containsKey(lClusterAlias), "The target cluster does not exists!");
 
-		final Cluster lCluster = getClusterByAlias(lClusterAlias);
+		ICluster lCluster = mClusterManager.getClusterByAlias(lAlias);
+		Assert.notNull(lCluster, "The target cluster does not exists!");
+
 		// checking password
 		if (null != lCluster.getPassword()) {
-			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
+			Assert.isTrue(lCluster.getPassword().equals(lPassword), "The given password is invalid!");
 		}
 
-		final ClusterEndPoint lClusterEndPoint = lCluster.containsEndPoint(lEndPointId);
+		final IClusterEndPoint lClusterEndPoint = lCluster.getEndPoint(lEndPointId);
 
 		Assert.notNull(lClusterEndPoint, "The target endpoint does not exists!");
 		Assert.isTrue(lClusterEndPoint.getStatus().equals(EndPointStatus.ONLINE),
@@ -349,12 +321,10 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		lClusterEndPoint.setStatus(EndPointStatus.SHUTTING_DOWN);
 
 		Token lShutdown = TokenFactory.createToken(NS_LOADBALANCER, "shutdown");
-		lShutdown.setString("connectorId", lClusterEndPoint.getConnector().getId());
-
-		Assert.isTrue(mDelayConnectorsQueue.add(lClusterEndPoint.getConnector()), "The connector can't be added to connectors queue!");
+		lShutdown.setString("connectorId", lClusterEndPoint.getConnectorId());
 
 		// sending shutdown to endpoint connector.
-		sendToken(lClusterEndPoint.getConnector(), lShutdown);
+		sendToken(getConnector(lClusterEndPoint.getConnectorId()), lShutdown);
 
 		// if the endpoint does not was stopped, then the connector Stopped is execute it with 10 seconds of delay.
 		Tools.getTimer().schedule(new JWSTimerTask() {
@@ -362,11 +332,12 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 			@Override
 			public void runTask() {
 				try {
-					if (!mDelayConnectorsQueue.isEmpty()) {
-						lClusterEndPoint.getConnector().stopConnector(CloseReason.TIMEOUT);
+					WebSocketConnector lConnector = getConnector(lClusterEndPoint.getConnectorId());
+					if (null != lConnector) {
+						lConnector.stopConnector(CloseReason.TIMEOUT);
 					}
 				} catch (Exception lEx) {
-					Logger.getLogger(LoadBalancerPlugIn.class.getName()).log(Priority.FATAL, lEx + " while the load balancer stopped the endpoint!");
+					mLog.error(lEx + " while the load balancer stopped the endpoint!");
 				}
 			}
 		}, mConnectorStopDelay);
@@ -387,11 +358,11 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		Assert.isTrue((lAlgorithm > 0 && lAlgorithm < 4), "The argument 'algorithm' only must be (1, 2 or 3)!");
 
 		// set the current algorithm.
-		setBalancerAlgorithm(lAlgorithm);
+		mClusterManager.setBalancerAlgorithm(lAlgorithm);
 
 		String lAlgorithmName = "Round Robin [1]";
 
-		switch (getBalancerAlgorithm()) {
+		switch (lAlgorithm) {
 			case 1:
 				lAlgorithmName = "Round Robin [1]";
 				break;
@@ -405,6 +376,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		Token lResponse = createResponse(aToken);
 		lResponse.setString("currentAlgorithm", lAlgorithmName);
+
 		sendToken(aConnector, lResponse);
 	}
 
@@ -419,10 +391,10 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		aToken.setString("sourceId", aConnector.getId());
 		String lNS = aToken.getNS();
 
-		final ClusterEndPoint lEndPoint = getOptimumServiceEndPoint(lNS);
+		final IClusterEndPoint lEndPoint = mClusterManager.getOptimumServiceEndPoint(lNS);
 
 		if (null != lEndPoint) {
-			final WebSocketConnector lConnector = lEndPoint.getConnector();
+			final WebSocketConnector lConnector = getConnector(lEndPoint.getConnectorId());
 
 			sendTokenInTransaction(lConnector, aToken, new IPacketDeliveryListener() {
 
@@ -433,10 +405,9 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 				@Override
 				public void OnTimeout() {
-
-                                        // deregister target connector services because a possible 
+					// deregister target connector services because a possible 
 					// connection bottleneck or node shutdown.
-					int lDeregistered = removeConnector(lConnector);
+					int lDeregistered = mClusterManager.removeConnectorEndPoints(aConnector.getId());
 
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Remote client not received a message on required '"
@@ -475,7 +446,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	public void responseAction(WebSocketConnector aConnector, Token aToken) {
 		String lSourceId = aToken.getString("sourceId");
 
-		sendToken(getSourceConnector(lSourceId), aToken);
+		sendToken(getConnector(lSourceId), aToken);
 	}
 
 	/**
@@ -484,120 +455,18 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 * @param aConnector
 	 * @param aToken
 	 */
+	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
 	public void updateCpuUsageAction(WebSocketConnector aConnector, Token aToken) {
-		Iterator<Cluster> lCluster = mClusters.values().iterator();
-		while (lCluster.hasNext()) {
-			lCluster.next().refreshCpuUsage(aConnector.getId(), aToken.getDouble("usage"));
-		}
+		mClusterManager.updateCpuUsage(aConnector.getId(), aToken.getDouble("usage"));
 	}
 
 	/**
-	 * @param aNamespace Incoming token's name space
-	 * @return <code>true</code> if any cluster supports the incoming name space
-	 * ; <code>false</code> otherwise
-	 */
-	public boolean supportsNamespace(String aNamespace) {
-		Iterator<Cluster> lCluster = mClusters.values().iterator();
-		while (lCluster.hasNext()) {
-			if (lCluster.next().getNamespace().equals(aNamespace)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * @param mBalancerAlgorithm the balancer algorithm to set.
-	 */
-	public void setBalancerAlgorithm(int aBalancerAlgorithm) {
-		this.mBalancerAlgorithm = aBalancerAlgorithm;
-	}
-
-	/**
-	 * @return the balancer algorithm.
-	 */
-	public int getBalancerAlgorithm() {
-		return mBalancerAlgorithm;
-	}
-
-	/**
-	 * Gets a optimum cluster endpoint.
+	 * The method is required for the Load Balancer Filter.
 	 *
-	 * @param aNamespace cluster name space.
-	 * @return the optimum service.
+	 * @param aNS
+	 * @return
 	 */
-	private ClusterEndPoint getOptimumServiceEndPoint(String aNamespace) {
-		Cluster lCluster = getClusterByNamespace(aNamespace);
-		if (lCluster.availableEndPoint()) {
-			if (getAlgorithm() == 1) {
-				return lCluster.getRoundRobinEndPoint();
-			} else if (getAlgorithm() == 2) {
-				return lCluster.getOptimumEndPoint();
-			} else {
-				return lCluster.getOptimumRREndPoint();
-			}
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @return the current algorithm (1,2 or 3).
-	 */
-	private int getAlgorithm() {
-		Assert.isTrue(getBalancerAlgorithm() > 0 && getBalancerAlgorithm() < 4,
-				"'" + getBalancerAlgorithm() + "' : is not a valid algorithm type!");
-
-		return getBalancerAlgorithm();
-	}
-
-	/**
-	 * @param aAlias cluster alias.
-	 * @return an specified cluster
-	 */
-	private Cluster getClusterByAlias(String aAlias) {
-		return mClusters.get(aAlias);
-	}
-
-	/**
-	 * @param aSourceId Source client connector
-	 * @return an specified connector.
-	 */
-	private WebSocketConnector getSourceConnector(String aSourceId) {
-		return getServer().getConnector(aSourceId);
-	}
-
-	/**
-	 * @param aNamespace cluster name space.
-	 * @return an specified cluster.
-	 */
-	private Cluster getClusterByNamespace(String aNamespace) {
-		return mClusters.get(mNamespaceToService.get(aNamespace));
-	}
-
-	/**
-	 * Build a map with the clusters name space and your alias.
-	 */
-	private void buildMap() {
-		mNamespaceToService = new FastMap<String, String>();
-		Iterator<String> lKeys = mClusters.keySet().iterator();
-		while (lKeys.hasNext()) {
-			String lKey = lKeys.next();
-			mNamespaceToService.put(mClusters.get(lKey).getNamespace(), lKey);
-		}
-	}
-
-	/**
-	 * @param aConnector cluster endpoint connector.
-	 * @return the amount of cluster endpoint removed.
-	 */
-	private int removeConnector(WebSocketConnector aConnector) {
-		int lRemoved = 0;
-		Iterator<Cluster> lCluster = mClusters.values().iterator();
-		while (lCluster.hasNext()) {
-			lRemoved += lCluster.next().removeEndPointsByConnector(aConnector);
-		}
-
-		return lRemoved;
+	public boolean isNamespaceSupported(String aNS) {
+		return mClusterManager.isNamespaceSupported(aNS);
 	}
 }

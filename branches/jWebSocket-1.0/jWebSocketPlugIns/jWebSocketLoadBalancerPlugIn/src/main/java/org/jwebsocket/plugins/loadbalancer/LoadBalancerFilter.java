@@ -58,8 +58,7 @@ public class LoadBalancerFilter extends TokenFilter {
 	}
 
 	/**
-	 * Allow that the incoming tokens with name space equals to cluster name
-	 * space can be processed by load balancer plugIn.
+	 * Automatically redirects incoming tokens to the load balancer plug-in.
 	 *
 	 * @param aResponse
 	 * @param aConnector
@@ -67,7 +66,7 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		if (mLoadBalancerPlugIn.supportsNamespace(aToken.getNS())) {
+		if (mLoadBalancerPlugIn.isNamespaceSupported(aToken.getNS())) {
 			// redirect token
 			if (null != aToken.getInteger("utid", null)) {
 				if (mLog.isDebugEnabled()) {
@@ -75,7 +74,7 @@ public class LoadBalancerFilter extends TokenFilter {
 				}
 				mLoadBalancerPlugIn.sendToService(aConnector, aToken);
 
-				// stops token propagation
+				// stop token propagation
 				aResponse.rejectMessage();
 			}
 		}
