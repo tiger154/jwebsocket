@@ -137,16 +137,13 @@ jws.tests.Scripting = {
 
 		it(lSpec, function() {
 			var lApp = null;
-			var lAppReady = false;
 			var lResponse = null;
 			jws.Tests.getAdminTestConn().getScriptApp(self.TEST_APP1, function(aApp) {
 				lApp = aApp;
-				lAppReady = true;
 
 				// calling method toMap on Main controller
 				lApp.Main.toMap(function(aResponse) {
 					lResponse = aResponse;
-					console.log(aResponse);
 				});
 			});
 
