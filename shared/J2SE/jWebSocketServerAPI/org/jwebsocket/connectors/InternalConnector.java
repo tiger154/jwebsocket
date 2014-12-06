@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import javolution.util.FastList;
-import org.apache.log4j.Logger;
 import org.jwebsocket.api.IInternalConnectorListener;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
@@ -34,7 +33,6 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RequestHeader;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.Tools;
 
@@ -45,7 +43,6 @@ import org.jwebsocket.util.Tools;
 public class InternalConnector extends BaseConnector {
 
 	private final ExecutorService mThreadPool;
-	private final Logger mLog = Logging.getLogger();
 	private final Collection<IInternalConnectorListener> mListeners = new FastList<IInternalConnectorListener>().shared();
 	static RequestHeader mHeader = new RequestHeader() {
 		@Override
