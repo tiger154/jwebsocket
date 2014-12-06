@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.admin;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
@@ -336,9 +337,10 @@ public class AdminPlugIn extends TokenPlugIn {
 		Token lResponse = lServer.createResponse(aToken);
 		try {
 			List<Map> lResultList = new FastList<Map>();
-			Map lConnectorMap = lServer.getAllConnectors();
-			Collection<WebSocketConnector> lConnectors = lConnectorMap.values();
-			for (WebSocketConnector lConnector : lConnectors) {
+			Iterator<WebSocketConnector> lAll = lServer.getAllConnectorsIterator();
+			while (lAll.hasNext()) {
+				WebSocketConnector lConnector = lAll.next();
+
 				Map lResultItem = new FastMap<String, Object>();
 				lResultItem.put("host", lConnector.getRemoteHost());
 				lResultItem.put("port", lConnector.getRemotePort());
