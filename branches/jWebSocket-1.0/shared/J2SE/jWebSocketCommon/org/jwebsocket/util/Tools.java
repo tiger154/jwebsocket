@@ -62,7 +62,9 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.Sigar;
 import org.springframework.util.Assert;
@@ -326,6 +328,34 @@ public class Tools {
 	 */
 	public static String getJavaClassnameFromGenericType(String aGenericType) {
 		return GENERIC_2_JAVA_MAP.get(aGenericType);
+	}
+
+	/**
+	 * Return TRUE if the file is located inside of the given base path, FALSE
+	 * otherwise
+	 *
+	 * @param aFile
+	 * @param aBasePath
+	 * @return
+	 */
+	public static boolean isParentPath(File aFile, String aBasePath) {
+		try {
+			String lCanonicalPath = FilenameUtils
+					.separatorsToSystem(aFile.getCanonicalPath()) + File.separator;
+			String lBasePath = FilenameUtils.separatorsToSystem(aBasePath);
+			if (SystemUtils.IS_OS_WINDOWS) {
+				if (lCanonicalPath.toLowerCase().startsWith(lBasePath.toLowerCase())) {
+					return false;
+				}
+			} else {
+				if (!lCanonicalPath.startsWith(lBasePath)) {
+					return false;
+				}
+			}
+		} catch (IOException lEx) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
