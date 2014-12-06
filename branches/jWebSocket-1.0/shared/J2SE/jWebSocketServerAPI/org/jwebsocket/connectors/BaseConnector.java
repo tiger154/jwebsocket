@@ -184,14 +184,10 @@ public class BaseConnector implements WebSocketConnector {
 	public boolean supportTokens() {
 		if (null == mSupportTokens) {
 			String lFormat = mHeader.getFormat();
-			if ((lFormat != null)
+			mSupportTokens = (lFormat != null)
 					&& (lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_JSON)
 					|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_XML)
-					|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_CSV))) {
-				mSupportTokens = true;
-			} else {
-				mSupportTokens = false;
-			}
+					|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_CSV));
 		}
 
 		return mSupportTokens;
@@ -592,8 +588,7 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	@Override
-	public void setSubprot(String aSubprot
-	) {
+	public void setSubprot(String aSubprot) {
 		setString(BaseConnector.VAR_SUBPROT, aSubprot);
 	}
 
@@ -603,8 +598,7 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	@Override
-	public void setVersion(int aVersion
-	) {
+	public void setVersion(int aVersion) {
 		mVersion = aVersion;
 	}
 
@@ -630,8 +624,7 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	@Override
-	public void setNodeId(String aNodeId
-	) {
+	public void setNodeId(String aNodeId) {
 		setString(BaseConnector.VAR_NODEID, aNodeId);
 	}
 
