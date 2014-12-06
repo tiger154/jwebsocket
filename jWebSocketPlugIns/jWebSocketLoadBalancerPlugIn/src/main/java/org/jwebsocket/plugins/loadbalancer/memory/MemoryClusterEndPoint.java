@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Load Balancer ClusterEndPoint (Community Edition, CE)
+//	jWebSocket Load Balancer MemoryClusterEndPoint (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
@@ -16,11 +16,12 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.plugins.loadbalancer;
+package org.jwebsocket.plugins.loadbalancer.memory;
 
+import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 import java.util.UUID;
-import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.plugins.loadbalancer.EndPointStatus;
 import org.jwebsocket.token.Token;
 
 /**
@@ -30,7 +31,7 @@ import org.jwebsocket.token.Token;
  * @author Rolando Betancourt Toucet
  * @author Rolando Santamaria Maso
  */
-public class ClusterEndPoint implements ITokenizable {
+public class MemoryClusterEndPoint implements IClusterEndPoint {
 
 	/**
 	 * Cluster endpoint status, default value 'ONLINE'.
@@ -39,7 +40,7 @@ public class ClusterEndPoint implements ITokenizable {
 	/**
 	 * Cluster endpoint connector.
 	 */
-	private WebSocketConnector mConnector;
+	private String mConnectorId;
 	/**
 	 * Cluster endpoint requests, initial value '0'.
 	 */
@@ -53,89 +54,65 @@ public class ClusterEndPoint implements ITokenizable {
 	 */
 	private double mCpuUsage = -1.0;
 
-	public ClusterEndPoint() {
+	private String mClientRuntimePlatform;
+
+	public MemoryClusterEndPoint(WebSocketConnector aConnector) {
 		// creates an unique service id. 
 		mServiceId = UUID.randomUUID().toString();
+		mConnectorId = aConnector.getId();
 	}
 
-	/**
-	 *
-	 * @param aConnector
-	 */
-	public ClusterEndPoint(WebSocketConnector aConnector) {
-		this();
-		mConnector = aConnector;
+	@Override
+	public String getClientRuntimePlatform() {
+		return mClientRuntimePlatform;
 	}
 
-	/**
-	 * @return the cluster endpoint status.
-	 */
+	@Override
+	public void setClientRuntimePlatform(String aPlatform) {
+		mClientRuntimePlatform = aPlatform;
+	}
+
+	@Override
 	public EndPointStatus getStatus() {
 		return mStatus;
 	}
 
-	/**
-	 * @param aStatus the status to set.
-	 */
+	@Override
 	public void setStatus(EndPointStatus aStatus) {
 		mStatus = aStatus;
 	}
 
-	/**
-	 * @return the cluster endpoint connector.
-	 */
-	public WebSocketConnector getConnector() {
-		return mConnector;
+	@Override
+	public String getConnectorId() {
+		return mConnectorId;
 	}
 
-	/**
-	 * @param aConnector the connector to set.
-	 */
-	public void setConnector(WebSocketConnector aConnector) {
-		this.mConnector = aConnector;
-	}
-
-	/**
-	 *
-	 * @return the cluster endpoint id.
-	 */
+	@Override
 	public String getServiceId() {
 		return mServiceId;
 	}
 
-	/**
-	 * Increase requests for this cluster endpoint.
-	 */
+	@Override
 	public void increaseRequests() {
 		mRequests++;
 	}
 
-	/**
-	 *
-	 * @return cluster endpoint requests.
-	 */
+	@Override
 	public long getRequests() {
 		return mRequests;
 	}
 
-	/**
-	 *
-	 * @param aRequests the requests to set.
-	 */
+	@Override
 	public void setRequests(int aRequests) {
 		this.mRequests = aRequests;
 	}
 
-	/**
-	 * @return the CPU usage.
-	 */
+	@Override
 	public double getCpuUsage() {
 		return mCpuUsage;
 	}
 
-	/**
-	 * @param aCpuUsage the CPU usage to set.
-	 */
+	@Override
 	public void setCpuUsage(double aCpuUsage) {
 		this.mCpuUsage = aCpuUsage;
 	}
