@@ -343,12 +343,21 @@ var jws = {
 	},
 	
 	//:m:*:enableCometSupportForWebSockets
-	//:d:en:Sets the XHRWebSocket implementation as default WebSocket class.
-	//:d:en:Uses Comet technique to provide a WebSocket simulation.
+	//:d:en:Set the XHRWebSocket implementation as default WebSocket class.
+	//:d:en:Uses Comet technique to provides a WebSocket connection simulation.
 	//:a:en::::none
 	enableCometSupportForWebSockets: function(){
 		// setting the XHRWebSocket implementation 
 		window.WebSocket = XHRWebSocket;
+	},
+	
+	//:m:*:enableHTTPSupportForWebSockets
+	//:d:en:Set the HTTPWebSocket implementation as default WebSocket class.
+	//:d:en:Uses HTTP to provide a WebSocket connection simulation.
+	//:a:en::::none
+	enableHTTPSupportForWebSockets: function(){
+		// setting the HTTPWebSocket implementation 
+		window.WebSocket = HTTPWebSocket;
 	},
 
 	//:m:*:browserSupportsNativeWebSockets
