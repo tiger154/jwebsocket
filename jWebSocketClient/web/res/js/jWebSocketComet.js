@@ -139,18 +139,11 @@
 
 
 		self.__createMessageEvent = function(aType, aData) {
-			if (document.createEvent && window.MessageEvent && !window.opera) {
-				var lEvent = document.createEvent("MessageEvent");
-				lEvent.initMessageEvent("message", false, false, aData, null, null, window, null);
-				return lEvent;
-			} else {
-				// IE and Opera, the latter one truncates the data parameter after any 0x00 bytes.
-				return {
-					type: aType,
-					data: aData,
-					bubbles: false,
-					cancelable: false
-				};
+			return {
+				type: aType,
+				data: aData,
+				bubbles: false,
+				cancelable: false
 			}
 		};
 
@@ -204,7 +197,7 @@
 							if (1 == self.readyState) {
 								setTimeout(function() {
 									self.keepConnection();
-								}, 50);
+								}, 200);
 							}
 						}
 					}
