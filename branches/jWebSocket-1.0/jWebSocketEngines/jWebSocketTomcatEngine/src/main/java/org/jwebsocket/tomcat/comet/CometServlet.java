@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingDeque;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,7 +45,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 import org.jwebsocket.tcp.EngineUtils;
-import org.jwebsocket.tomcat.ContextListener;
+import org.jwebsocket.http.ContextListener;
 import org.jwebsocket.tomcat.TomcatEngine;
 import org.jwebsocket.util.Tools;
 
@@ -165,7 +166,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	 */
 	@Override
 	public void event(CometEvent aEvent) throws IOException, ServletException {
-		String lHttpSessionId = aEvent.getHttpServletRequest().getSession().getId();
+		String lHttpSessionId = getSessionId(aEvent.getHttpServletRequest().getSession());
 		aEvent.setTimeout(mEngine.getConfiguration().getTimeout());
 		String lConnectorId = getInternalId(lHttpSessionId);
 
@@ -240,6 +241,16 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		}
 	}
 
+	String getSessionId(HttpSession aSession) {
+		String lSessionId = (String) aSession.getAttribute("sessionId");
+		if (null == lSessionId) {
+			lSessionId = UUID.randomUUID().toString();
+			aSession.setAttribute("sessionId", lSessionId);
+		}
+
+		return Tools.getMD5(lSessionId);
+	}
+
 	/**
 	 * if the connection message is received for the first time, answer with the
 	 * open ready state else just update the ready state or close the
@@ -251,7 +262,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	 */
 	private void handleConnectionMessage(String aSubProt, int aState, CometEvent aEvent) {
 		HttpSession lSession = aEvent.getHttpServletRequest().getSession();
-		String lHttpSessionId = lSession.getId();
+		String lHttpSessionId = getSessionId(lSession);
 		String lConnectorId = getInternalId(lHttpSessionId);
 
 		// client tries to open a connection
@@ -343,8 +354,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	}
 
 	private void handleDataMessage(int aState, Object aData, CometEvent aEvent) {
-		String lConnectorId = getInternalId(aEvent.getHttpServletRequest().
-				getSession().getId());
+		String lConnectorId = getInternalId(getSessionId(aEvent.getHttpServletRequest().getSession()));
 		if (null == lConnectorId) {
 			try {
 				if (mLog.isDebugEnabled()) {
