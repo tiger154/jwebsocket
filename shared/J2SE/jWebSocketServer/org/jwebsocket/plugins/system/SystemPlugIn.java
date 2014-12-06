@@ -338,7 +338,7 @@ public class SystemPlugIn extends TokenPlugIn {
 				Token lToken = TokenFactory.createToken(NS_SYSTEM, "event");
 				lToken.setString("name", "systemStopping");
 
-				Iterator<WebSocketConnector> lIt = aEngine.getConnectors().values().iterator();
+				Iterator<WebSocketConnector> lIt = aEngine.getConnectorsIterator();
 				while (lIt.hasNext()) {
 					WebSocketConnector aConnector = lIt.next();
 					if (aConnector.supportTokens()) {
@@ -436,7 +436,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			try {
 				boolean lSessionShared = !getServer().getSharedSessionConnectors(
 						aConnector.getSession().getSessionId()).isEmpty();
-				mSessionManager.connectorStopped(aConnector, lSessionShared);
+				mSessionManager.connectorStopped(aConnector, aCloseReason, lSessionShared);
 			} catch (Exception lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping connector session"), lEx);
 			}
@@ -449,13 +449,13 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	private void broadcastEvent(WebSocketConnector aConnector, Token aEvent) {
-		Collection<WebSocketConnector> lAllConnectors = getServer().getAllConnectors().values();
-		// excluding sender connector
-		lAllConnectors.remove(aConnector);
-
-		Iterator<WebSocketConnector> lTargetConnectors = lAllConnectors.iterator();
+		Iterator<WebSocketConnector> lTargetConnectors = getServer().getAllConnectorsIterator();
 		while (lTargetConnectors.hasNext()) {
 			WebSocketConnector lConnector = lTargetConnectors.next();
+			if (lConnector.getId().equals(aConnector.getId())) {
+				// excluding sender connector
+				continue;
+			}
 
 			// checking per user events notification configuration
 			String lExcludedEvents = (String) getConfigParam(lConnector, "events.exclude", "");
@@ -490,7 +490,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			if (false == getServer() instanceof JMSServer) {
 				// exclude if running in a cluster, since the connectors data 
 				// stored in database
-				lEvent.setInteger("clientCount", getConnectorCount());
+				lEvent.setLong("clientCount", getConnectorsCount());
 			}
 
 			// broadcast to all except source
@@ -525,7 +525,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			if (false == getServer() instanceof JMSServer) {
 				// exclude if running in a cluster, since the connectors data 
 				// stored in database
-				lEvent.setInteger("clientCount", getConnectorCount());
+				lEvent.setLong("clientCount", getConnectorsCount());
 			}
 
 			// broadcast to all except source
@@ -615,7 +615,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			if (false == getServer() instanceof JMSServer) {
 				// exclude if running in a cluster, since the connectors data 
 				// stored in database
-				lEvent.setInteger("clientCount", getConnectorCount());
+				lEvent.setLong("clientCount", getConnectorsCount());
 			}
 			lEvent.setString("sourceId", aConnector.getId());
 			// if a unique node id is specified for the client include that
@@ -657,7 +657,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			if (false == getServer() instanceof JMSServer) {
 				// exclude if running in a cluster, since the connectors data 
 				// stored in database
-				lEvent.setInteger("clientCount", getConnectorCount());
+				lEvent.setLong("clientCount", getConnectorsCount());
 			}
 			lEvent.setString("sourceId", aConnector.getId());
 			// if a unique node id is specified for the client include that
@@ -1167,11 +1167,13 @@ public class SystemPlugIn extends TokenPlugIn {
 		lResponse.setList("authorities", Tools.parseStringArrayToList(lAuthorities.split(" ")));
 
 		// sending the response to requester
+		sendToken(aConnector, lResponse);
+		
 		// sending response to clients that share the requester session
 		getServer().broadcastToSharedSession(aConnector.getId(),
 				aConnector.getSession().getSessionId(),
 				lResponse,
-				true);
+				false);
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logon process finished successfully!");
@@ -1199,11 +1201,14 @@ public class SystemPlugIn extends TokenPlugIn {
 					null != ANONYMOUS_USER
 					&& ANONYMOUS_USER.equals(lUsername));
 		}
+		// sending the response to requester
+		sendToken(aConnector, lResponse);
+		
 		// broadcasting response to all sharing session connectors
 		getServer().broadcastToSharedSession(aConnector.getId(),
 				aConnector.getSession().getSessionId(),
 				lResponse,
-				true);
+				false);
 
 		// broadcast the logout event
 		broadcastLogoutEvent(aConnector);
