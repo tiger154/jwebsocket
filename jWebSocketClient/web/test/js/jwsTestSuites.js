@@ -40,16 +40,19 @@ function runFullTestSuite(aArgs) {
 
 	describe("jWebSocket Test Suite", function() {
 
-		var lTestSSL = $('#tls_set').val() == 'wss';
+		var lTestSSL = $('#tls_set').val() === 'wss';
 		// open connections for admin and guest
-		describe("Opening shared connections...", function() {
-			jws.Tests.testOpenSharedAdminConn();
-			jws.Tests.testOpenSharedGuestConn();
-			if (lTestSSL) {
-				jws.Tests.testOpenSharedAdminConnSSL();
-				jws.Tests.testOpenSharedGuestConnSSL();
-			}
-		});
+
+		if ($("#test_set").val() !== "REST") {
+			describe("Opening shared connections...", function() {
+				jws.Tests.testOpenSharedAdminConn();
+				jws.Tests.testOpenSharedGuestConn();
+				if (lTestSSL) {
+					jws.Tests.testOpenSharedAdminConnSSL();
+					jws.Tests.testOpenSharedGuestConnSSL();
+				}
+			});
+		}
 
 		// running selected tests
 		for (var lIndex in aArgs.tests) {
@@ -60,15 +63,16 @@ function runFullTestSuite(aArgs) {
 		}
 
 		// close connections for admin and guest
-		describe("Closing shared connections...", function() {
-			jws.Tests.testCloseSharedAdminConn();
-			jws.Tests.testCloseSharedGuestConn();
-			if (lTestSSL) {
-				jws.Tests.testCloseSharedAdminConnSSL();
-				jws.Tests.testCloseSharedGuestConnSSL();
-			}
-		});
-
+		if ($("#test_set").val() !== "REST") {
+			describe("Closing shared connections...", function() {
+				jws.Tests.testCloseSharedAdminConn();
+				jws.Tests.testCloseSharedGuestConn();
+				if (lTestSSL) {
+					jws.Tests.testCloseSharedAdminConnSSL();
+					jws.Tests.testCloseSharedGuestConnSSL();
+				}
+			});
+		}
 		jasmine.DEFAULT_UPDATE_INTERVAL = lIntv;
 	});
 }
