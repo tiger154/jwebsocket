@@ -183,13 +183,11 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 	}
 
 	/**
-	 * Convenience method, just a wrapper for token server method
-	 * <tt>getServer().getAllConnectors().size()</tt> to simplify token plug-in
-	 * code.
+	 * Convenience method to simplify token plug-in code.
 	 *
 	 * @return
 	 */
 	public int getConnectorCount() {
-		return ((TokenServer) getServer()).getAllConnectors().size();
+		return ((TokenServer) getServer()).getConnectorsCount().intValue();
 	}
 }
