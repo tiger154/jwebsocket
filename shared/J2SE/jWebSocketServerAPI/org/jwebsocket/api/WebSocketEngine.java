@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
+import java.util.Iterator;
 import java.util.Map;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
@@ -103,14 +104,23 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	 * @return the connector clients
 	 */
 	Map<String, WebSocketConnector> getConnectors();
+	
+	/**
+	 * Returns an java.util.Iterator instance with all clients connected to this engine. Please consider that
+	 * a server can support multiple engines. This method only returns the
+	 * clients of this engine.
+	 *
+	 * @return the connectors iterator 
+	 */
+	Iterator<WebSocketConnector> getConnectorsIterator();
 
 	/**
 	 * Returns the TCP connector identified by its remote port number or
-	 * {@code null} if there's no client connector to the port passed.
+	 * {@literal null} if there's no client connector to the port passed.
 	 *
 	 * @param aRemotePort the remote TCP port searched for.
 	 * @return WebSocketConnector that matches the given remote port or
-	 * {@code null} if no connector matches the remote port.
+	 * {@literal null} if no connector matches the remote port.
 	 */
 	WebSocketConnector getConnectorByRemotePort(int aRemotePort);
 
@@ -123,7 +133,7 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	WebSocketConnector getConnectorById(String aConnectorId);
 
 	/**
-	 * Returns {@code true} if the engine is running or {@code false} otherwise.
+	 * Returns {@literal true} if the engine is running or {@literal false} otherwise.
 	 * The alive status usually represents the state of the main engine listener
 	 * thread.
 	 *
@@ -273,4 +283,19 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	 * @param aStrategy
 	 */
 	void setSystemStoppingNotificationStrategy(Runnable aStrategy);
+
+	/**
+	 * Get shared session connectors
+	 *
+	 * @param aSessionId
+	 * @return
+	 */
+	Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId);
+
+	/**
+	 * Get the number of active managed connections
+	 *
+	 * @return
+	 */
+	Long getConnectorsCount();
 }
