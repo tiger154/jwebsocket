@@ -25,6 +25,7 @@ import org.jwebsocket.api.ISessionManager;
 import org.jwebsocket.api.ISessionReconnectionManager;
 import org.jwebsocket.api.IStorageProvider;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 
@@ -171,16 +172,17 @@ public class SessionManager implements ISessionManager {
 	/**
 	 *
 	 * @param aConnector
+	 * @param aCloseReason
 	 * @param aIsSessionShared
 	 * @throws Exception
 	 */
 	@Override
-	public void connectorStopped(WebSocketConnector aConnector, boolean aIsSessionShared) throws Exception {
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason, boolean aIsSessionShared) throws Exception {
 		Map<String, Object> lStorage = aConnector.getSession().getStorage();
 
-		// ommiting if running in embedded session mode (HTTP servlet containers)
-		if (!aIsSessionShared) {
-			if (lStorage != null && !(lStorage instanceof HttpSessionStorage)) {
+		if (null != lStorage && !aCloseReason.equals(CloseReason.TIMEOUT) && !aIsSessionShared) {
+			// ommiting if running in embedded session mode (HTTP servlet containers)
+			if (!(lStorage instanceof HttpSessionStorage)) {
 				String lSessionId = aConnector.getSession().getSessionId();
 
 				if (mLog.isDebugEnabled()) {
