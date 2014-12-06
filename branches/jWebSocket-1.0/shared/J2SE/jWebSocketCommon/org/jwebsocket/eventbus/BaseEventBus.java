@@ -28,6 +28,7 @@ import static org.jwebsocket.eventbus.Handler.STATUS_OK;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.util.Assert;
 
 /**
  *
@@ -35,6 +36,8 @@ import org.jwebsocket.util.Tools;
  */
 public abstract class BaseEventBus implements IEventBus, IInitializable {
 
+	protected static final String SEND_METHOD = "SEND";
+	protected static final String PUBLISH_METHOD = "PUBLISH";
 	private final Map<String, IHandler> mResponseHandlers = new FastMap<String, IHandler>().shared();
 	private final Map<String, List<IHandler>> mHandlers = new FastMap<String, List<IHandler>>().shared();
 	private IExceptionHandler mExceptionHandler = new IExceptionHandler() {
@@ -68,21 +71,21 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 		return lResponse;
 	}
 
-	IHandler removeResponseHandler(String aTokenUID) {
+	protected IHandler removeResponseHandler(String aTokenUID) {
 		return mResponseHandlers.remove(aTokenUID);
 	}
 
-	void storeResponseHandler(String aTokenUID, IHandler aHandler) {
+	protected void storeResponseHandler(String aTokenUID, IHandler aHandler) {
 		mResponseHandlers.put(aTokenUID, aHandler);
 	}
 
-	void removeHandler(String aNS, IHandler aHandler) {
+	protected void removeHandler(String aNS, IHandler aHandler) {
 		if (mHandlers.containsKey(aNS)) {
 			mHandlers.get(aNS).remove(aHandler);
 		}
 	}
 
-	synchronized void storeHandler(String aNS, IHandler aHandler) {
+	protected synchronized void storeHandler(String aNS, IHandler aHandler) {
 		if (!mHandlers.containsKey(aNS)) {
 			mHandlers.put(aNS, new FastList<IHandler>());
 		}
@@ -90,7 +93,7 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 		mHandlers.get(aNS).add(aHandler);
 	}
 
-	void invokeHandlers(String aNS, final Token aToken) {
+	protected void invokeHandlers(String aNS, final Token aToken) {
 		for (String lNS : mHandlers.keySet()) {
 			if ((!aNS.matches(lNS) && !Tools.wildCardMatch(aNS, lNS)) || mHandlers.get(lNS).isEmpty()) {
 				continue;
@@ -98,7 +101,62 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 
 			List<IHandler> lHandlers = mHandlers.get(lNS);
 			final IEventBus lEB = this;
-			for (final IHandler lH : lHandlers) {
+
+			if (isAllowedToProcess(false, aToken)) {
+				for (final IHandler lH : lHandlers) {
+					Tools.getThreadPool().submit(new Runnable() {
+
+						@Override
+						public void run() {
+							try {
+								lH.setEventBus(lEB);
+								lH.OnMessage(aToken);
+							} catch (Exception lEx) {
+								mExceptionHandler.handle(lEx);
+							}
+						}
+					});
+				}
+			}
+		}
+	}
+
+	@Override
+	public IRegistration register(final String aNS, final IHandler aHandler) {
+		Assert.notNull(aNS, "The 'NS' argument cannot be null!");
+		Assert.notNull(aHandler, "The 'handler' argument cannot be null!");
+
+		storeHandler(aNS, aHandler);
+
+		return new IRegistration() {
+
+			@Override
+			public String getNS() {
+				return aNS;
+			}
+
+			@Override
+			public void cancel() {
+				removeHandler(aNS, aHandler);
+			}
+
+			@Override
+			public IHandler getHandler() {
+				return aHandler;
+			}
+		};
+	}
+
+	protected void invokeHandler(String aNS, final Token aToken) {
+		for (String lNS : mHandlers.keySet()) {
+			if (!aNS.matches(lNS) && !Tools.wildCardMatch(aNS, lNS) || mHandlers.get(lNS).isEmpty()) {
+				continue;
+			}
+
+			final IHandler lH = mHandlers.get(lNS).get(0);
+			final IEventBus lEB = this;
+
+			if (isAllowedToProcess(true, aToken)) {
 				Tools.getThreadPool().submit(new Runnable() {
 
 					@Override
@@ -112,35 +170,12 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 					}
 				});
 			}
-		}
-	}
-
-	void invokeHandler(String aNS, final Token aToken) {
-		for (String lNS : mHandlers.keySet()) {
-			if (!aNS.matches(lNS) && !Tools.wildCardMatch(aNS, lNS) || mHandlers.get(lNS).isEmpty()) {
-				continue;
-			}
-
-			final IHandler lH = mHandlers.get(lNS).get(0);
-			final IEventBus lEB = this;
-			Tools.getThreadPool().submit(new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						lH.setEventBus(lEB);
-						lH.OnMessage(aToken);
-					} catch (Exception lEx) {
-						mExceptionHandler.handle(lEx);
-					}
-				}
-			});
 
 			return;
 		}
 	}
 
-	void invokeResponseHandler(String aTokenUID, final Token aResponse) {
+	protected void invokeResponseHandler(String aTokenUID, final Token aResponse) {
 		final IHandler lH = removeResponseHandler(aTokenUID);
 		if (null != lH) {
 			Tools.getThreadPool().submit(new Runnable() {
@@ -173,5 +208,9 @@ public abstract class BaseEventBus implements IEventBus, IInitializable {
 
 	public IExceptionHandler getExceptionHandler() {
 		return mExceptionHandler;
+	}
+
+	protected boolean isAllowedToProcess(boolean aSendOp, Token aToken) {
+		return true;
 	}
 }
