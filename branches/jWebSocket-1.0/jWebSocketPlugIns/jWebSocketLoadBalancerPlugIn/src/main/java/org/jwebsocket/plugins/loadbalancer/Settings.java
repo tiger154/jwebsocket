@@ -18,8 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
-import java.util.Map;
-import javolution.util.FastMap;
+import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
 
 /**
  * Load balancer settings.
@@ -31,35 +30,25 @@ import javolution.util.FastMap;
 public class Settings {
 
 	/**
-	 * List of (services) clusters.
+	 * The clusters manager.
 	 */
-	private Map<String, Cluster> mClusters = new FastMap<String, Cluster>();
+	private IClusterManager mClusters;
 	/**
-	 * Default message delivery timeout, default value '5000 milliseconds '.
+	 * Default message delivery timeout, default value 5000 milliseconds.
 	 */
 	private long mMessageTimeout = 5000;
 	/**
-	 * Load balancer algorithm, default value '1 = round robin '.
-	 */
-	private int mBalancerAlgorithm = 1;
-	/**
 	 * Delay time for stop the connector when the client can't stop it, default
-	 * value '10000 milliseconds '.
+	 * value 10000 milliseconds.
 	 */
 	private long mConnectorStopDelay = 10000;
 
-	/**
-	 * @return the clusters.
-	 */
-	public Map<String, Cluster> getClusters() {
+	public IClusterManager getClusterManager() {
 		return mClusters;
 	}
 
-	/**
-	 * @param aClusters clusters to set.
-	 */
-	public void setClusters(Map aClusters) {
-		mClusters = aClusters;
+	public void setClusterManager(IClusterManager aCM) {
+		mClusters = aCM;
 	}
 
 	/**
@@ -70,24 +59,10 @@ public class Settings {
 	}
 
 	/**
-	 * @param mMessageTimeout the message timeout to set.
+	 * @param aMessageTimeout the message timeout to set.
 	 */
 	public void setMessageTimeout(long aMessageTimeout) {
 		this.mMessageTimeout = aMessageTimeout;
-	}
-
-	/**
-	 * @return the load balancer algorithm (1,2 or 3).
-	 */
-	public int getBalancerAlgorithm() {
-		return mBalancerAlgorithm;
-	}
-
-	/**
-	 * @param mBalancerAlgorithm the load balancer algorithm to set.
-	 */
-	public void setBalancerAlgorithm(int aBalancerAlgorithm) {
-		this.mBalancerAlgorithm = aBalancerAlgorithm;
 	}
 
 	/**
