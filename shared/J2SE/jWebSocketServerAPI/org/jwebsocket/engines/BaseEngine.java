@@ -18,6 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.engines;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import javolution.util.FastMap;
 import org.jwebsocket.api.*;
@@ -27,8 +30,8 @@ import org.jwebsocket.kit.WebSocketException;
 
 /**
  * Provides the basic implementation of the jWebSocket engines. The
- * {@code BaseEngine} is supposed to be used as ancestor for the engine
- * implementations like e.g. the {@code TCPEngine} or the {@code NettyEngine}.
+ * {@literal BaseEngine} is supposed to be used as ancestor for the engine
+ * implementations like e.g. the {@literal TCPEngine} or the {@literal NettyEngine}.
  *
  * @author Alexander Schulze
  */
@@ -274,5 +277,29 @@ public abstract class BaseEngine implements WebSocketEngine {
 
 	@Override
 	public void systemStopped() throws Exception {
+	}
+
+	@Override
+	public Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId) {
+		Map<String, WebSocketConnector> lShared = new HashMap<String, WebSocketConnector>();
+
+		Collection<WebSocketConnector> lConnectors = getConnectors().values();
+		for (WebSocketConnector lConnector : lConnectors) {
+			if (aSessionId.equals(lConnector.getSession().getSessionId())) {
+				lShared.put(lConnector.getId(), lConnector);
+			}
+		}
+
+		return lShared;
+	}
+
+	@Override
+	public Long getConnectorsCount() {
+		return new Long(getConnectors().size());
+	}
+
+	@Override
+	public Iterator<WebSocketConnector> getConnectorsIterator() {
+		return getConnectors().values().iterator();
 	}
 }
