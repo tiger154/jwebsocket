@@ -19,9 +19,8 @@
 package org.jwebsocket.jms;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.IEventBus;
 import org.jwebsocket.api.ServerConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
@@ -60,10 +59,22 @@ public class JMSServer extends TokenServer {
 	public void engineStarted(WebSocketEngine aEngine) {
 		if (aEngine instanceof JMSEngine) {
 			JMSEngine lEngine = (JMSEngine) aEngine;
+
+			// instantiating the JMSManager
 			mJMSManager = new JMSManager(false, lEngine.getConnection(), "topic://"
 					+ lEngine.getDestination() + "_messagehub");
 			mSynchronizer = lEngine.getNodesManager().getSynchronizer();
 			mConnectorsManager = lEngine.getConnectorsManager();
+
+			// instantiating the EventBus
+			mEventBus = new JMSSynchronizedEventBus(lEngine.getConnection(),
+					lEngine.getDestination() + "_eventbus", mSynchronizer);
+
+			try {
+				((JMSSynchronizedEventBus) mEventBus).initialize();
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing cluster event bus"));
+			}
 		}
 
 		super.engineStarted(aEngine);
@@ -119,9 +130,10 @@ public class JMSServer extends TokenServer {
 	@Override
 	public void systemStopping() throws Exception {
 		super.systemStopping();
-
 		// shutdown message hub
 		mJMSManager.shutdown();
+		// shutdown event bus
+		((JMSSynchronizedEventBus) mEventBus).shutdown();
 	}
 
 	@Override
@@ -130,12 +142,7 @@ public class JMSServer extends TokenServer {
 	}
 
 	@Override
-	public Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId) {
-		try {
-			return mConnectorsManager.getSharedSession(aSessionId);
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "getting connectors that share the session id"));
-			return new HashMap<String, WebSocketConnector>();
-		}
+	public IEventBus getEventBus() {
+		return mEventBus;
 	}
 }

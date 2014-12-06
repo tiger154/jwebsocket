@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.api;
 
+import java.util.Iterator;
 import java.util.Map;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.WebSocketConnector;
@@ -62,7 +63,18 @@ public interface IConnectorsManager extends IInitializable {
 	 * @return
 	 * @throws Exception
 	 */
-	JMSConnector get(String aReplySelector) throws Exception;
+	JMSConnector getConnectorById(String aReplySelector) throws Exception;
+
+	/**
+	 * Get a JMSConnector instance given it replySelector. Returns NULL if
+	 * connector data does not exists.
+	 *
+	 * @param aReplySelector
+	 * @param aStartupConnector
+	 * @return
+	 * @throws Exception
+	 */
+	JMSConnector getConnectorById(String aReplySelector, boolean aStartupConnector) throws Exception;
 
 	/**
 	 * Remove a connector data given it's consumer id.
@@ -121,4 +133,11 @@ public interface IConnectorsManager extends IInitializable {
 	 * @throws Exception
 	 */
 	Long count() throws Exception;
+
+	/**
+	 * Get a connectors java.util.Iterator instance.
+	 *
+	 * @return
+	 */
+	Iterator<WebSocketConnector> getIterator();
 }

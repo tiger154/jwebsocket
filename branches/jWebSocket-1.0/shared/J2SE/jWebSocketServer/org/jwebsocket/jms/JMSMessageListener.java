@@ -70,7 +70,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 								aMessage.getStringProperty(Attributes.SESSION_ID));
 
 						// getting the connector instance
-						JMSConnector lConnector = lConnManager.get(lReplySelector);
+						JMSConnector lConnector = lConnManager.getConnectorById(lReplySelector);
 						lConnector.startConnector();
 					}
 					break;
@@ -83,7 +83,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					String lReplySelector = aMessage.getStringProperty(Attributes.REPLY_SELECTOR);
 					if (lConnManager.exists(lReplySelector)) {
 						// getting the connector
-						JMSConnector lConnector = lConnManager.get(lReplySelector);
+						JMSConnector lConnector = lConnManager.getConnectorById(lReplySelector);
 						// getting the packet content
 						TextMessage lMessage = (TextMessage) aMessage;
 						// notifying process packet
@@ -106,7 +106,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 
 					if (null != lReplySelector && lConnManager.exists(lReplySelector)) {
 						// getting the connector
-						JMSConnector lConnector = lConnManager.get(lReplySelector);
+						JMSConnector lConnector = lConnManager.getConnectorById(lReplySelector);
 						// stopping the connector
 						lConnector.stopConnector(CloseReason.CLIENT);
 					}

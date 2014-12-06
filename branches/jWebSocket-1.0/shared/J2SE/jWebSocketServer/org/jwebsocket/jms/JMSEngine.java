@@ -36,6 +36,7 @@ import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.engines.BaseEngine;
+import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.jms.api.IConnectorsManager;
 import org.jwebsocket.jms.api.INodesManager;
 import org.jwebsocket.kit.CloseReason;
@@ -46,6 +47,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 /**
+ * TODO: Support origin based authorization check.
  *
  * @author Rolando Santamaria Maso
  */
@@ -53,7 +55,7 @@ public class JMSEngine extends BaseEngine {
 
 	private final static Logger mLog = Logging.getLogger();
 	private String mDestination;
-	private final String NS = "org.jwebsocket.jms.engine";
+	public static final String NS = "org.jwebsocket.jms.engine";
 	private final ApplicationContext mBeanFactory;
 	private Connection mConnection;
 	private Session mSessionForClients, mSessionForServer;
@@ -156,7 +158,7 @@ public class JMSEngine extends BaseEngine {
 	@Override
 	public WebSocketConnector getConnectorById(String aConnectorId) {
 		try {
-			return mConnectorsManager.get(aConnectorId);
+			return mConnectorsManager.getConnectorById(aConnectorId);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx);
 		}
@@ -176,7 +178,7 @@ public class JMSEngine extends BaseEngine {
 		MapMessage lMessage = mSessionForServer.createMapMessage();
 		lMessage.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.SHUTDOWN_NODE.toString());
 		lMessage.setStringProperty(Attributes.NODE_ID, aNodeId);
-		
+
 		mLB.getNodesMessagesProducer().send(lMessage);
 	}
 
@@ -222,7 +224,9 @@ public class JMSEngine extends BaseEngine {
 						public void shutdown() throws Exception {
 							// close clients if all nodes are down
 							if (lNodesManager.count() == 1) {
-								Iterator<WebSocketConnector> lIt = getConnectors().values().iterator();
+								Iterator<WebSocketConnector> lIt = JWebSocketFactory
+								.getTokenServer().getAllConnectorsIterator();
+
 								while (lIt.hasNext()) {
 									lIt.next().stopConnector(CloseReason.SHUTDOWN);
 								}
@@ -282,6 +286,16 @@ public class JMSEngine extends BaseEngine {
 	}
 
 	@Override
+	public Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId) {
+		try {
+			return mConnectorsManager.getSharedSession(aSessionId);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "getting connectors that share the session"));
+			return new HashMap<String, WebSocketConnector>();
+		}
+	}
+
+	@Override
 	public void systemStopping() throws Exception {
 		if (mLog.isDebugEnabled()) {
 			mLog.info("Stopping engine...");
@@ -302,5 +316,19 @@ public class JMSEngine extends BaseEngine {
 		if (mLog.isDebugEnabled()) {
 			mLog.info("Engine successfully stopped!");
 		}
+	}
+
+	@Override
+	public Long getConnectorsCount() {
+		try {
+			return mConnectorsManager.count();
+		} catch (Exception lEx) {
+			throw new RuntimeException(lEx);
+		}
+	}
+
+	@Override
+	public Iterator<WebSocketConnector> getConnectorsIterator() {
+		return mConnectorsManager.getIterator();
 	}
 }

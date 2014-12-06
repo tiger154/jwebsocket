@@ -22,7 +22,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.WebSocketConnector;
@@ -30,6 +32,7 @@ import org.jwebsocket.jms.Attributes;
 import org.jwebsocket.jms.BaseConnectorsManager;
 import org.jwebsocket.jms.ConnectorStatus;
 import org.jwebsocket.jms.JMSConnector;
+import org.jwebsocket.kit.CloseReason;
 import org.springframework.util.Assert;
 
 /**
@@ -59,10 +62,11 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 					.append(Attributes.CONSUMER_ID, aConsumerId)
 					.append(Attributes.REPLY_SELECTOR, aReplySelector)
 					.append(Attributes.STATUS, ConnectorStatus.UP)
-					.append(Attributes.SESSION_ID, aSessionId));
+					.append(Attributes.SESSION_ID, aSessionId),
+					WriteConcern.SAFE);
 		}
 
-		return get(aConnectionId);
+		return getConnectorById(aConnectionId);
 	}
 
 	@Override
@@ -78,7 +82,20 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 				.append(Attributes.REPLY_SELECTOR, aReplySelector));
 	}
 
-	private JMSConnector toConnector(DBObject aRecord) throws Exception {
+	@Override
+	public JMSConnector getConnectorById(String aReplySelector, boolean aStartupConnector) throws Exception {
+		if (!exists(aReplySelector)) {
+			return null;
+		}
+
+		// getting the connector entry on database
+		DBObject lRecord = mConnectors.findOne(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector));
+
+		// creating connector from database entry
+		return toConnector(lRecord, aStartupConnector);
+	}
+
+	private JMSConnector toConnector(DBObject aRecord, boolean aStartupConnection) throws Exception {
 		String lReplySelector = (String) aRecord.get(Attributes.REPLY_SELECTOR);
 
 		JMSConnector lConnector = new JMSConnector(getEngine(),
@@ -89,8 +106,13 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 		// setting the session identifier
 		String lSessionId = (String) aRecord.get(Attributes.SESSION_ID);
 		lConnector.getSession().setSessionId(lSessionId);
-		IBasicStorage<String, Object> lSessionStorage = getSessionManager().getStorageProvider()
-				.getStorage(lSessionId);
+		IBasicStorage<String, Object> lSessionStorage;
+		if (!aStartupConnection) {
+			lSessionStorage = getSessionManager().getStorageProvider()
+					.getStorage(lSessionId);
+		} else {
+			lSessionStorage = getSessionManager().getSession(lSessionId);
+		}
 		lConnector.getSession().setStorage(lSessionStorage);
 		// using the session storage as connector custom vars container
 		lConnector.setCustomVarsContainer(lSessionStorage);
@@ -99,21 +121,13 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
-	public JMSConnector get(String aReplySelector) throws Exception {
-		if (!exists(aReplySelector)) {
-			return null;
-		}
-
-		// getting the connector entry on database
-		DBObject lRecord = mConnectors.findOne(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector));
-
-		// creating connector from database entry
-		return toConnector(lRecord);
+	public JMSConnector getConnectorById(String aReplySelector) throws Exception {
+		return getConnectorById(aReplySelector, false);
 	}
 
 	@Override
 	public void remove(String aConsumerId) throws Exception {
-		mConnectors.remove(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
+		mConnectors.remove(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId), WriteConcern.SAFE);
 	}
 
 	/**
@@ -147,7 +161,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
 		Map<String, WebSocketConnector> lConnectors = new HashMap<String, WebSocketConnector>();
 		while (lCursor.hasNext()) {
-			WebSocketConnector lConnector = toConnector(lCursor.next());
+			WebSocketConnector lConnector = toConnector(lCursor.next(), false);
 			lConnectors.put(lConnector.getId(), lConnector);
 		}
 
@@ -161,7 +175,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
 		Map<String, WebSocketConnector> lConnectors = new HashMap<String, WebSocketConnector>();
 		while (lCursor.hasNext()) {
-			WebSocketConnector lConnector = toConnector(lCursor.next());
+			WebSocketConnector lConnector = toConnector(lCursor.next(), false);
 			lConnectors.put(lConnector.getId(), lConnector);
 		}
 
@@ -186,5 +200,31 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 		mConnectors.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1));
 		mConnectors.ensureIndex(new BasicDBObject().append(Attributes.REPLY_SELECTOR, 1),
 				new BasicDBObject().append("unique", true));
+	}
+
+	@Override
+	public Iterator<WebSocketConnector> getIterator() {
+		final DBCursor lCursor = mConnectors.find(new BasicDBObject().append(Attributes.STATUS, ConnectorStatus.UP));
+		return new Iterator<WebSocketConnector>() {
+
+			@Override
+			public boolean hasNext() {
+				return lCursor.hasNext();
+			}
+
+			@Override
+			public WebSocketConnector next() {
+				try {
+					return toConnector(lCursor.next(), false);
+				} catch (Exception lEx) {
+					throw new RuntimeException(lEx);
+				}
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException("remove"); 
+			}
+		};
 	}
 }
