@@ -64,7 +64,7 @@ public class JWebSocketJMSClient extends BaseClient {
 	private String mUsername, mPassword, mClusterName;
 	private MessageConsumer mConsumer;
 	private MessageProducer mProducer;
-	private String mReplySelector = UUID.randomUUID().toString();
+	private final String mReplySelector = UUID.randomUUID().toString();
 	private String mSessionId;
 
 	/**

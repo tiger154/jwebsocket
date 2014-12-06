@@ -92,7 +92,7 @@ public abstract class BaseClient implements WebSocketClient {
 	 * fragmentation model
 	 */
 	private Map<String, IPacketDeliveryListener> mPacketDeliveryListeners = new FastMap<String, IPacketDeliveryListener>().shared();
-	private Integer mMaxFrameSize;
+	private Integer mMaxFrameSize = 1048840;
 	private Map<String, String> mFragments = new LinkedHashMap<String, String>();
 
 	/**

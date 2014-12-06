@@ -19,7 +19,6 @@
 package org.jwebsocket.client.plugins;
 
 import java.util.Timer;
-import java.util.TimerTask;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketTokenClient;
 import org.jwebsocket.token.Token;
@@ -75,12 +74,12 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 		Integer lTokenId = null;
 		String lType = null;
 		String lNS = null;
-		String lSourceID = null;
+		String lSourceConnector = null;
 		if (aInToken != null) {
 			lTokenId = aInToken.getInteger("utid", -1);
 			lType = aInToken.getString("type");
 			lNS = "org.jwebsocket.plugins.loadbalancer";
-			lSourceID = aInToken.getString("sourceId");
+			lSourceConnector = aInToken.getString("sourceId");
 		}
 		aOutToken.setType("response");
 
@@ -97,8 +96,8 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 		if (lType != null) {
 			aOutToken.setString("reqType", lType);
 		}
-		if (lSourceID != null) {
-			aOutToken.setString("sourceId", lSourceID);
+		if (lSourceConnector != null) {
+			aOutToken.setString("sourceId", lSourceConnector);
 		}
 	}
 
@@ -131,5 +130,10 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 				}
 			}
 		}, 2000, 2000);
+	}
+
+	@Override
+	public void processClosed(WebSocketClientEvent aEvent) {
+		getTimer().cancel();
 	}
 }
