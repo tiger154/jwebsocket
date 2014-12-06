@@ -279,14 +279,23 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	}
 
 	/**
-	 * Convenience method, just a wrapper for token server method
-	 * <tt>getServer().getAllConnectors().size()</tt> to simplify token plug-in
-	 * code.
+	 * Convenience method to simplify token plug-in code. Method is deprecated,
+	 * please use <tt>Long getConnectorsCount()</tt>
 	 *
 	 * @return
 	 */
+	@Deprecated
 	public int getConnectorCount() {
-		return getServer().getAllConnectors().size();
+		return getConnectorsCount().intValue();
+	}
+
+	/**
+	 * Convenience method to simplify token plug-in code.
+	 *
+	 * @return
+	 */
+	public Long getConnectorsCount() {
+		return getServer().getConnectorsCount();
 	}
 
 	/**
