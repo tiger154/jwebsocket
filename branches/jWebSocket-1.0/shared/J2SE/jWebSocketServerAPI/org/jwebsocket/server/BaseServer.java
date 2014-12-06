@@ -21,6 +21,7 @@ package org.jwebsocket.server;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
@@ -112,6 +113,7 @@ public class BaseServer implements WebSocketServer {
 
 	/**
 	 * {@inheritDoc }
+	 *
 	 * @throws org.jwebsocket.kit.WebSocketException
 	 */
 	@Override
@@ -130,6 +132,7 @@ public class BaseServer implements WebSocketServer {
 
 	/**
 	 * {@inheritDoc }
+	 *
 	 * @throws org.jwebsocket.kit.WebSocketException
 	 */
 	@Override
@@ -244,8 +247,10 @@ public class BaseServer implements WebSocketServer {
 	 */
 	@Override
 	public void broadcastPacket(WebSocketConnector aSource, WebSocketPacket aDataPacket, BroadcastOptions aBroadcastOptions) {
-		for (WebSocketConnector lConnector : getAllConnectors().values()) {
-			if (!aSource.equals(lConnector) || aBroadcastOptions.isSenderIncluded()) {
+		Iterator<WebSocketConnector> lConnectors = getAllConnectorsIterator();
+		while (lConnectors.hasNext()) {
+			WebSocketConnector lConnector = lConnectors.next();
+			if (!aSource.getId().equals(lConnector.getId()) || aBroadcastOptions.isSenderIncluded()) {
 				if (aBroadcastOptions.isAsync()) {
 					sendPacketAsync(lConnector, aDataPacket);
 				} else {
@@ -415,15 +420,12 @@ public class BaseServer implements WebSocketServer {
 	 */
 	@Override
 	public WebSocketConnector getConnectorByUsername(String aUsername) {
-		for (Iterator<WebSocketEngine> lEngineIt = mEngines.values().iterator(); lEngineIt.hasNext();) {
-			WebSocketEngine lEngine = lEngineIt.next();
-			for (Iterator<WebSocketConnector> lConnectorsIt = lEngine.getConnectors().values().iterator();
-					lConnectorsIt.hasNext();) {
-				WebSocketConnector lConnector = lConnectorsIt.next();
-				Object lUsername = lConnector.getUsername();
-				if (null != lUsername && aUsername.equals(lUsername)) {
-					return lConnector;
-				}
+		Iterator<WebSocketConnector> lConnectors = getAllConnectorsIterator();
+		while (lConnectors.hasNext()) {
+			WebSocketConnector lConnector = lConnectors.next();
+			Object lUsername = lConnector.getUsername();
+			if (null != lUsername && aUsername.equals(lUsername)) {
+				return lConnector;
 			}
 		}
 
@@ -637,13 +639,55 @@ public class BaseServer implements WebSocketServer {
 	public Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId) {
 		Map<String, WebSocketConnector> lShared = new HashMap<String, WebSocketConnector>();
 
-		Collection<WebSocketConnector> lConnectors = getAllConnectors().values();
-		for (WebSocketConnector lConnector : lConnectors) {
-			if (aSessionId.equals(lConnector.getSession().getSessionId())) {
-				lShared.put(lConnector.getId(), lConnector);
-			}
+		for (WebSocketEngine lEngine : mEngines.values()) {
+			lShared.putAll(lEngine.getSharedSessionConnectors(aSessionId));
 		}
 
 		return lShared;
+	}
+
+	@Override
+	public Long getConnectorsCount() {
+		Long lTotal = new Long(0);
+		for (WebSocketEngine lEngine : getEngines().values()) {
+			lTotal += lEngine.getConnectorsCount();
+		}
+
+		return lTotal;
+	}
+
+	@Override
+	public Iterator<WebSocketConnector> getAllConnectorsIterator() {
+		final List<Iterator<WebSocketConnector>> lIterators = new LinkedList<Iterator<WebSocketConnector>>();
+		for (WebSocketEngine lEngine : getEngines().values()) {
+			lIterators.add(lEngine.getConnectorsIterator());
+		}
+
+		return new Iterator<WebSocketConnector>() {
+
+			@Override
+			public boolean hasNext() {
+				if (lIterators.isEmpty()) {
+					return false;
+				}
+
+				if (lIterators.get(0).hasNext()) {
+					return true;
+				} else {
+					lIterators.remove(0);
+					return hasNext();
+				}
+			}
+
+			@Override
+			public WebSocketConnector next() {
+				return hasNext() ? lIterators.get(0).next() : null;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException("remove");
+			}
+		};
 	}
 }
