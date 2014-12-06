@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.jwebsocket.async.IOFuture;
@@ -365,4 +366,18 @@ public interface WebSocketServer extends ISystemLifecycle {
 	 * @return
 	 */
 	Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId);
+
+	/**
+	 * Get the connectors count
+	 *
+	 * @return
+	 */
+	Long getConnectorsCount();
+
+	/**
+	 * Get all the connectors through a java.util.Iterator instance
+	 *
+	 * @return
+	 */
+	Iterator<WebSocketConnector> getAllConnectorsIterator();
 }
