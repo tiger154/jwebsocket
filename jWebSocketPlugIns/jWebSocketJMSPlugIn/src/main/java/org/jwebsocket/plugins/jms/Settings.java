@@ -32,7 +32,8 @@ public class Settings {
 	private String mAdvisoryTopic = null;
 
 	private Boolean mLoggerActive = false;
-	private Boolean mBroadcastTransportlisterEvents = true;
+	private Boolean mBroadcastTransportlisterEvents = false;
+	private Boolean mBroadcastAdvisoryEvents = false;
 
 	/**
 	 * @return the Endpoint Id
@@ -116,5 +117,19 @@ public class Settings {
 	 */
 	public void setBroadcastTransportlisterEvents(Boolean aBroadcastTransportlisterEvents) {
 		mBroadcastTransportlisterEvents = aBroadcastTransportlisterEvents;
+	}
+
+	/**
+	 * @return the mBroadcastAdvisoryEvents
+	 */
+	public Boolean getBroadcastAdvisoryEvents() {
+		return mBroadcastAdvisoryEvents;
+	}
+
+	/**
+	 * @param aBroadcastAdvisoryEvents the mBroadcastAdvisoryEvents to set
+	 */
+	public void setBroadcastAdvisoryEvents(Boolean aBroadcastAdvisoryEvents) {
+		mBroadcastAdvisoryEvents = aBroadcastAdvisoryEvents;
 	}
 }

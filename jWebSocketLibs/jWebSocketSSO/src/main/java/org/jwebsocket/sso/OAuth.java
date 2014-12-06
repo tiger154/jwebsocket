@@ -23,19 +23,22 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.sso;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.URLCodec;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Alexander Schulze
  */
 public class OAuth extends OAuthBase {
+
+	static final Logger mLog = Logger.getLogger(OAuth.class);
 
 	/**
 	 *
@@ -58,9 +61,17 @@ public class OAuth extends OAuthBase {
 	 * @param aAppSecret
 	 */
 	public OAuth(String aHost, String aAppId, String aAppSecret) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Instantiating OAuth instance for host: '"
+					+ aHost + "', app-id: " + aAppId + ", app-secret: '******'");
+		}
 		mOAuthHost = aHost;
 		mOAuthAppId = aAppId;
 		mOAuthAppSecret = aAppSecret;
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Initiated OAuth instance for host: '"
+					+ aHost + "', app-id: " + aAppId + ", app-secret: '******'");
+		}
 	}
 
 	/**
@@ -71,10 +82,20 @@ public class OAuth extends OAuthBase {
 	 * @param aDefaultTimeout
 	 */
 	public OAuth(String aHost, String aAppId, String aAppSecret, long aDefaultTimeout) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Instantiating OAuth instance for host: '"
+					+ aHost + "', app-id: " + aAppId + ", app-secret: '******'"
+					+ ", default-timeout: " + aDefaultTimeout);
+		}
 		mOAuthHost = aHost;
 		mOAuthAppId = aAppId;
 		mOAuthAppSecret = aAppSecret;
 		mDefaultTimeout = aDefaultTimeout;
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Initiated OAuth instance for host: '"
+					+ aHost + "', app-id: " + aAppId + ", app-secret: '******'"
+					+ ", default-timeout: " + aDefaultTimeout);
+		}
 	}
 
 	/**
@@ -99,7 +120,12 @@ public class OAuth extends OAuthBase {
 	 */
 	@Override
 	public String getSSOSession(String aUsername, String aPassword, long aTimeout) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Requesting SSO session for user: '" + aUsername
+					+ "', timeout: " + aTimeout + "ms...");
+		}
 		String lPostBody;
+		String lJSONString;
 		try {
 			lPostBody = null;
 			String lCredentials = Base64.encodeBase64String((aUsername + ":" + aPassword).getBytes("UTF-8"));
@@ -107,17 +133,22 @@ public class OAuth extends OAuthBase {
 			lHeaders.put("Authorization", "Basic " + lCredentials);
 			lHeaders.put("Cache-Control", "no-cache");
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-			String lJSONString = HTTPSupport.call2(mOAuthHost + mOAuthGetSessionURL, "GET",
+			lJSONString = HTTPSupport.request(mOAuthHost + mOAuthGetSessionURL, "GET",
 					lHeaders, lPostBody, aTimeout);
 
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mSessionId = (String) lJSON.get("smsession");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("SSO session obtained, response: '" + lJSONString.replace("\n", "\\n").replace("\r", "\\r") + "'");
+			}
 			return lJSONString;
 		} catch (IOException lEx) {
 			mReturnCode = -1;
 			mReturnMsg = lEx.getClass().getSimpleName() + " authenticating directly against OAuth host.";
-			return "{\"code\":-1, \"msg\":\""
-					+ lEx.getClass().getSimpleName() + "\"}";
+			lJSONString = "{\"code\":-1, \"msg\":\""
+					+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage() + "\"}";
+			mLog.error("SSO session could not be obtained, response: '" + lJSONString.replace("\n", "\\n").replace("\r", "\\r") + "'");
+			return lJSONString;
 		}
 	}
 
@@ -138,7 +169,7 @@ public class OAuth extends OAuthBase {
 					+ "&password=" + URLEncoder.encode(aPassword, "UTF-8");
 			Map lHeaders = new HashMap<String, String>();
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-			String lJSONString = HTTPSupport.call2(mOAuthHost, "POST",
+			String lJSONString = HTTPSupport.request(mOAuthHost, "POST",
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mAccessToken = (String) lJSON.get("access_token");
@@ -160,7 +191,12 @@ public class OAuth extends OAuthBase {
 	 */
 	@Override
 	public String authSession(String aSessionId, long aTimeout) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Authenticating session '" + aSessionId + "'"
+					+ "', timeout: " + aTimeout + "ms...");
+		}
 		String lPostBody;
+		String lJSONString;
 		try {
 			URLCodec lCodec = new URLCodec();
 			lPostBody
@@ -171,17 +207,22 @@ public class OAuth extends OAuthBase {
 			String lAuthStr = Base64.encodeBase64String(
 					(getOAuthAppId() + ":" + getOAuthAppSecret()).getBytes("UTF-8"));
 			lHeaders.put("Authorization", "Basic " + lAuthStr);
-			String lJSONString = HTTPSupport.call2(mOAuthHost + OAUTH_AUTHSESSION_URL, "POST",
+			lJSONString = HTTPSupport.request(mOAuthHost + OAUTH_AUTHSESSION_URL, "POST",
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mAccessToken = (String) lJSON.get("access_token");
 			mRefreshToken = (String) lJSON.get("refresh_token");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Session authenticated, response: '" + lJSONString.replace("\n", "\\n").replace("\r", "\\r") + "'");
+			}
 			return lJSONString;
 		} catch (IOException lEx) {
 			mReturnCode = -1;
-			mReturnMsg = lEx.getClass().getSimpleName() + " authenticating directly against OAuth host.";
-			return "{\"code\":-1, \"msg\":\""
-					+ lEx.getClass().getSimpleName() + "\"}";
+			mReturnMsg = lEx.getClass().getSimpleName() + " authenticating session against OAuth host.";
+			lJSONString = "{\"code\":-1, \"msg\":\""
+					+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage() + "\"}";
+			mLog.error("Session could not be authenticated, response: '" + lJSONString.replace("\n", "\\n").replace("\r", "\\r") + "'");
+			return lJSONString;
 		}
 	}
 
@@ -195,9 +236,6 @@ public class OAuth extends OAuthBase {
 		return authDirect(aUsername, aPassword, mDefaultTimeout);
 	}
 
-	
-	
-	
 	/**
 	 *
 	 * @param aAppId
@@ -208,6 +246,13 @@ public class OAuth extends OAuthBase {
 	 */
 	public String getUser(String aAppId, String aAppSecret, String aAccessToken,
 			long aTimeout) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Requesting user for access-token: '" + aAccessToken
+					+ "', app-id: '" + aAppId
+					+ "', app-secret: '******'"
+					+ ", timeout: " + aTimeout + "ms..."
+			);
+		}
 		if (null == aAppSecret) {
 			return "{\"code\":-1, \"msg\":\"No client secret passed\"}";
 		}
@@ -228,31 +273,54 @@ public class OAuth extends OAuthBase {
 			Map lHeaders = new HashMap<String, String>();
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
-			lJSONString = HTTPSupport.call2(mOAuthHost + OAUTH_GETUSER_URL, "POST",
+			lJSONString = HTTPSupport.request(mOAuthHost + OAUTH_GETUSER_URL, "POST",
 					lHeaders, lPostBody, aTimeout);
+			// to simulate a null or empty response or an invalid (e.g. non-JSON) response
+			// lJSONString = lJSONString.replaceAll("\"aschulze\"", "null");
+			// lJSONString = lJSONString.replaceAll("\"aschulze\"", "\"\"");
+			// lJSONString = "<xml>" + lJSONString + "</xml>";
+			// lJSONString = "<xml>" + lJSONString + "</xml>";
+			// lJSONString = "{\"error\":\"invalid_request\", \"error_description\":\"Validation error\"}";
+			// lJSONString = "{\"any other nonsense\":\"non sense\", \"bla bla\":\"radi radi radi\"}";
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			if (null != lJSON) {
 				String lError = (String) lJSON.get("error");
 				if (null != lError) {
 					mReturnCode = -1;
-					mReturnMsg = lError + " on validating access token: "
-							+ (String) lJSON.get("error_description");
+					String lErrDescr = (String) lJSON.get("error_description");
+					mReturnMsg = lError + " on validating access token: '"
+							+ (null != lErrDescr ? lErrDescr : "[No error description from OAuth]") + "'.";
+					mLog.error("Username could not be obtained, response: '" + mReturnMsg.replace("\n", "\\n").replace("\r", "\\r") + "'.");
 					return "{\"code\":-1, \"msg\":\""
 							+ mReturnMsg + "\"}";
 				} else {
 					mUsername = (String) lJSON.get("login_name");
 					mFullname = (String) lJSON.get("full_user_name");
 					mEmail = (String) lJSON.get("email");
+					if (null == mUsername || mUsername.isEmpty()) {
+						mReturnCode = -1;
+						mReturnMsg
+								= "OAuth did not deliver a username in field 'login_name' ("
+								+ (null == mUsername ? "null" : "empty") + "), response: '" + lJSONString + "'.";
+						mLog.error(mReturnMsg);
+						return "{\"code\":-1, \"msg\":\""
+								+ mReturnMsg + "\"}";
+					}
 				}
+			}
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("User obtained, response: '" + lJSONString.replace("\n", "\\n").replace("\r", "\\r") + "'");
 			}
 			return lJSONString;
 		} catch (IOException lEx) {
 			mReturnCode = -1;
-			mReturnMsg = lEx.getClass().getSimpleName() + " validating acceess token to obtain user name from OAuth host.";
-			return "{\"code\":-1, \"msg\":\""
+			mReturnMsg = lEx.getClass().getSimpleName() + " validating access token to obtain user name from OAuth host: " + lEx.getMessage();
+			lJSONString = "{\"code\":-1, \"msg\":\""
 					+ lEx.getClass().getSimpleName()
-					+ "\", \"serverMsg\":\""
+					+ "\", \"response\":\""
 					+ (lJSONString != null ? lJSONString.replace("\"", "\\\"") : "[null]") + "\"}";
+			mLog.error("User could not be obtained, response '" + lJSONString.replace("\n", "\\n").replace("\r", "\\r") + "'.");
+			return lJSONString;
 		}
 	}
 
@@ -299,25 +367,44 @@ public class OAuth extends OAuthBase {
 	 * @return
 	 */
 	public String refreshAccessToken(String aRefreshToken, long aTimeout) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Refreshing access-token with refresh token: '"
+					+ aRefreshToken
+					+ "', app-id: '" + getOAuthAppId()
+					+ "', app-secret: '******'"
+					+ "', timeout: " + aTimeout + "ms..."
+			);
+		}
 		String lPostBody;
+		String lJSONString;
 		try {
 			lPostBody
 					= "client_id=ro_client"
-					+ "&grant_type=" + "refresh_token"
-					+ "&refresh_token=" + aRefreshToken;
+					+ "&grant_type=refresh_token"
+					+ "&refresh_token=" + URLEncoder.encode(aRefreshToken, "UTF-8");
 			Map lHeaders = new HashMap<String, String>();
 			lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+			String lAuthStr = Base64.encodeBase64String(
+					(getOAuthAppId() + ":" + getOAuthAppSecret()).getBytes("UTF-8"));
+			lHeaders.put("Authorization", "Basic " + lAuthStr);
 
-			String lJSONString = HTTPSupport.call2(mOAuthHost, "POST",
+			lJSONString = HTTPSupport.request(mOAuthHost + OAUTH_REFRESHTOKEN_URL, "POST",
 					lHeaders, lPostBody, aTimeout);
 			Map<String, Object> lJSON = parseJSON(lJSONString);
 			mAccessToken = (String) lJSON.get("access_token");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Access token refreshed, response: '"
+						+ lJSONString.replace("\n", "\\n").replace("\r", "\\r") + "'");
+			}
 			return lJSONString;
 		} catch (IOException lEx) {
 			mReturnCode = -1;
 			mReturnMsg = lEx.getClass().getSimpleName() + " refreshing acceess token from OAuth host.";
-			return "{\"code\":-1, \"msg\":\""
-					+ lEx.getClass().getSimpleName() + "\"}";
+			lJSONString = "{\"code\":-1, \"msg\":\""
+					+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage() + "\"}";
+			mLog.error("Token could not be refreshed, response: '"
+					+ lJSONString.replace("\n", "\\n").replace("\r", "\\r") + "'");
+			return lJSONString;
 		}
 	}
 
@@ -402,7 +489,7 @@ public class OAuth extends OAuthBase {
 	public String testCall(String aURL) {
 		Map lHeaders = new HashMap<String, String>();
 		lHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-		String lRes = HTTPSupport.call2(aURL, "GET", lHeaders, null, 5000);
+		String lRes = HTTPSupport.request(aURL, "GET", lHeaders, null, 5000);
 		return lRes;
 	}
 

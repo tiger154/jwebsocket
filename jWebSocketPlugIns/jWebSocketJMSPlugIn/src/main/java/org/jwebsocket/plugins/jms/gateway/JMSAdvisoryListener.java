@@ -31,8 +31,10 @@ import org.apache.activemq.command.ProducerInfo;
 import org.apache.activemq.command.RemoveInfo;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
+import org.jwebsocket.plugins.jms.JMSPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
@@ -43,6 +45,8 @@ import org.jwebsocket.token.TokenFactory;
 public class JMSAdvisoryListener implements MessageListener {
 
 	private static final Logger mLog = Logging.getLogger();
+	private static JMSPlugIn mJMSPlugIn = null;
+	private static boolean mBroadcastEvents = false;
 	private JMSEngine mEngine = null;
 	private JMSSender mJMSSender = null;
 	private final Map<String, String> mEndPoints = new FastMap<String, String>();
@@ -52,9 +56,14 @@ public class JMSAdvisoryListener implements MessageListener {
 	 * @param aEngine
 	 * @param aJMSSender
 	 */
-	public JMSAdvisoryListener(JMSEngine aEngine, JMSSender aJMSSender) {
+	public JMSAdvisoryListener(JMSPlugIn aJMSPlugIn, JMSEngine aEngine, JMSSender aJMSSender, boolean aBroadcastEvents) {
 		mEngine = aEngine;
 		mJMSSender = aJMSSender;
+		if (null == mJMSPlugIn) {
+			mJMSPlugIn = aJMSPlugIn;
+		}
+		mBroadcastEvents = aBroadcastEvents;
+
 	}
 
 	/**
@@ -63,6 +72,14 @@ public class JMSAdvisoryListener implements MessageListener {
 	 */
 	@Override
 	public void onMessage(Message aMessage) {
+
+		boolean lBroadcast = false;
+		final Token lBroadcastToken;
+		if (mBroadcastEvents) {
+			lBroadcastToken = TokenFactory.createToken(mJMSPlugIn.getNamespace(), "event");
+		} else {
+			lBroadcastToken = null;
+		}
 
 		if (aMessage instanceof ActiveMQMessage) {
 			try {
@@ -117,6 +134,11 @@ public class JMSAdvisoryListener implements MessageListener {
 									"org.jwebsocket.jms.gateway",
 									"welcome");
 							lConnector.sendPacket(JSONProcessor.tokenToPacket(lToken));
+							if (mBroadcastEvents) {
+								lBroadcastToken.setString("endPointId", lEndPointId);
+								lBroadcastToken.setString("name", "endPointConnected");
+								lBroadcast = true;
+							}
 						}
 					}
 				} else if (lDataStructure instanceof RemoveInfo) {
@@ -143,6 +165,11 @@ public class JMSAdvisoryListener implements MessageListener {
 										+ ", connection-id: '"
 										+ lConnectionId + "'.");
 							}
+							if (mBroadcastEvents) {
+								lBroadcastToken.setString("endPointId", lEndPointId);
+								lBroadcastToken.setString("name", "endPointDisconnected");
+								lBroadcast = true;
+							}
 						} else {
 							mLog.error("Connector '" + lConnectionId
 									+ "' could not be removed from JMSEngine!");
@@ -157,13 +184,20 @@ public class JMSAdvisoryListener implements MessageListener {
 					ConnectionInfo lConn = (ConnectionInfo) lMessage.getDataStructure();
 					if (mLog.isInfoEnabled()) {
 						mLog.info("JMS Connection Event:" + lConn.toString());
-					} 
+					}
 				} else {
 					mLog.warn("Unknown advisory message: " + aMessage);
 				}
 			} catch (Exception lEx) {
 				mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage() + ", for " + aMessage);
 			}
+		}
+		if (mBroadcastEvents && lBroadcast) {
+			mJMSPlugIn.broadcastToken(null, lBroadcastToken,
+					new BroadcastOptions(
+							false, // lIsSenderIncluded,
+							false // lIsResponseRequested)
+					));
 		}
 
 	}

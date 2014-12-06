@@ -18,11 +18,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.packetProcessors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

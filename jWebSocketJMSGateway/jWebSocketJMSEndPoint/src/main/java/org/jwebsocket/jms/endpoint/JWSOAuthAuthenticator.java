@@ -148,18 +148,19 @@ public class JWSOAuthAuthenticator implements IJWSAuthenticator {
 		}
 		mOAuth.getUser(lAccessToken, mDefautTimeout);
 		int lCode = mOAuth.getReturnCode();
-		if(0 != lCode) {
-			throw new JMSEndpointException("OAuth returned error code " 
+		if (0 != lCode) {
+			throw new JMSEndpointException("OAuth returned error code "
 					+ lCode + ": " + mOAuth.getReturnMsg());
 		}
 		String lUsername = mOAuth.getUsername();
 		if (null == lUsername) {
-			throw new JMSEndpointException("No username available for access token '" 
+			throw new JMSEndpointException(
+					"OAuth did not deliver a username for access token '"
 					+ lAccessToken + "'.");
 		}
 		return lUsername;
 	}
-	
+
 	/**
 	 *
 	 * @return the current access token of the OAuth object
