@@ -112,7 +112,7 @@ public class InternalClient {
 	}
 
 	/**
-	 * Returns TRUE if the client is connected, FALSE otherwise.
+	 * Return TRUE if the client is connected, FALSE otherwise.
 	 *
 	 * @return
 	 */
@@ -121,7 +121,7 @@ public class InternalClient {
 	}
 
 	/**
-	 * Gets the client connector identifier.
+	 * Get the client connector identifier.
 	 *
 	 * @return
 	 */
@@ -130,7 +130,7 @@ public class InternalClient {
 	}
 
 	/**
-	 * Gets the client username if logon.
+	 * Get the client username if logon.
 	 *
 	 * @return
 	 */
@@ -139,7 +139,7 @@ public class InternalClient {
 	}
 
 	/**
-	 * Gets the client connector instance.
+	 * Get the client connector instance.
 	 *
 	 * @return
 	 */
@@ -155,14 +155,14 @@ public class InternalClient {
 	}
 
 	/**
-	 * Opens the client connection.
+	 * Open the client connection.
 	 */
 	public void open() {
 		mConnector.startConnector();
 	}
 
 	/**
-	 * Sends a packet to the server.
+	 * Send a packet to the server.
 	 *
 	 * @param aPacket
 	 */
@@ -176,7 +176,7 @@ public class InternalClient {
 	}
 
 	/**
-	 * Sends a token to the server.
+	 * Send a token to the server.
 	 *
 	 * @param aToken
 	 */
@@ -185,7 +185,7 @@ public class InternalClient {
 	}
 
 	/**
-	 * Sends a token to the server allowing to pass response listener callbacks.
+	 * Send a token to the server allowing to pass response listener callbacks.
 	 *
 	 * @param aToken
 	 * @param aResponseListener
@@ -217,7 +217,7 @@ public class InternalClient {
 	}
 
 	/**
-	 * Adds a listener to the server client connection instance.
+	 * Add a listener to the server client connection instance.
 	 *
 	 * @param aListener
 	 * @return
@@ -229,7 +229,7 @@ public class InternalClient {
 	}
 
 	/**
-	 * Removes a server client listener.
+	 * Remove a server client listener.
 	 *
 	 * @param aListener
 	 */
@@ -238,7 +238,7 @@ public class InternalClient {
 	}
 
 	/**
-	 * Closes the client connection.
+	 * Close the client connection.
 	 */
 	public void close() {
 		mConnector.stopConnector(CloseReason.CLIENT);
