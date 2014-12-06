@@ -11,6 +11,8 @@
 				<value>permission java.io.FilePermission "${JWEBSOCKET_HOME}/conf/spring-beans.dtd", "read"</value>
 				<value>permission java.io.FilePermission "${JWEBSOCKET_HOME}/conf/ScriptingPlugIn/extensions/-", "read"</value>
 				<value>permission java.util.PropertyPermission "org.apache.activemq.UseDedicatedTaskRunner", "read"</value>
+				
+				<value>permission java.security.AllPermission</value>
 			</list>
 		</property>
 		<property name="appsSecurityPermissions">

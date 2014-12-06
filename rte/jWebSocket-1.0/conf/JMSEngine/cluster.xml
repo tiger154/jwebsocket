@@ -22,14 +22,15 @@
 		</property>
 	</bean>
 
-	<!-- the MongoDB server connection instance -->
+	<!-- the MongoDB server connection instance 
 	<bean id="mongodbConnection" class="com.mongodb.MongoClient" destroy-method="close">
 		<constructor-arg value="localhost"/>
 	</bean>
+	-->
 
 	<!-- the MongoDB database instance to store the load balancer data -->
-	<bean id="jws_lb_db" class="org.jwebsocket.storage.mongodb.MongoDBUtils" factory-method="getDB">
-		<constructor-arg ref="mongodbConnection"/>
+	<bean id="loadBalancerDatabase" class="org.jwebsocket.storage.mongodb.MongoDBUtils" factory-method="getDB">
+		<constructor-arg ref="mongodbConnection0"/>
 		<constructor-arg ref="destination"/>
 		<!-- database user/password for authentication if required
 		<constructor-arg value="user"/>
@@ -40,7 +41,7 @@
 	<!-- the cluster 'connectorsManager' instance for client connections management -->
 	<bean id="connectorsManager" class="org.jwebsocket.jms.mongodb.MongoDBConnectorsManager">
 		<property name="collection">
-			<bean factory-bean="jws_lb_db" factory-method="getCollection">
+			<bean factory-bean="loadBalancerDatabase" factory-method="getCollection">
 				<constructor-arg value="connectors"/>
 			</bean>
 		</property>
@@ -49,29 +50,30 @@
 	<!-- the cluster 'nodesManager' instance for server nodes management -->
 	<bean id="nodesManager" class="org.jwebsocket.jms.mongodb.MongoDBNodesManager">
 		<property name="collection">
-			<bean factory-bean="jws_lb_db" factory-method="getCollection">
+			<bean factory-bean="loadBalancerDatabase" factory-method="getCollection">
 				<constructor-arg value="nodes"/>
 			</bean>
 		</property>
 		<property name="nodeDescription" ref="nodeDescription"></property>
 		<!-- the cluster 'synchronizer' instance for nodes processes synchronization -->
-		<property name="synchronizer">
-			<bean class="org.jwebsocket.jms.mongodb.MongoDBClusterSynchronizer" init-method="initialize">
-				<property name="collection">
-					<bean factory-bean="jws_lb_db" factory-method="getCollection">
-						<constructor-arg value="synchronizer"/>
-					</bean>
-				</property>
-			</bean>
-		</property>
+		<property name="synchronizer" ref="clusterSynchronizer" />
 		<!-- utility temporary storage to access consumers information -->
 		<property name="consumerAdviceTempStorage">
 			<bean class="org.jwebsocket.jms.mongodb.MongoDBConsumerAdviceTempStorage" init-method="initialize">
 				<property name="collection">
-					<bean factory-bean="jws_lb_db" factory-method="getCollection">
+					<bean factory-bean="loadBalancerDatabase" factory-method="getCollection">
 						<constructor-arg value="consumerinfo_temp_storage" />
 					</bean>
 				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- the cluster 'synchronizer' instance for nodes processes synchronization -->
+	<bean id="clusterSynchronizer" class="org.jwebsocket.jms.mongodb.MongoDBClusterSynchronizer" init-method="initialize">
+		<property name="collection">
+			<bean factory-bean="loadBalancerDatabase" factory-method="getCollection">
+				<constructor-arg value="synchronizer"/>
 			</bean>
 		</property>
 	</bean>

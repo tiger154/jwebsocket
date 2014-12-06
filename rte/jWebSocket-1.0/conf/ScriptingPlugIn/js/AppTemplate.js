@@ -249,20 +249,21 @@ var App = (function() {
 			}
 		},
 		invokeObject: function(aObjectId, aMethod, aArgs) {
+			var lArgsJS = App.toJS(aArgs);
 			var lObject = App.getPublished(aObjectId);
 			if ('function' === typeof (lObject[aMethod])) {
-				return lObject[aMethod].apply(lObject, App.toJS(aArgs));
+				return lObject[aMethod].apply(lObject, lArgsJS);
 			} else if ('object' === typeof (lObject[aMethod])
 					&& ('function' === typeof (lObject[aMethod]['handler'])
 							|| 'object' === typeof (lObject[aMethod]['ebBridge']))) {
 				var lDef = lObject[aMethod];
 				// checking method authenticated metadata
 				if (lDef.authenticated) {
-					App.requireAuthenticated(aArgs[aArgs.length - 2]);
+					App.requireAuthenticated(lArgsJS[lArgsJS.length - 2]);
 				}
 				// checking method authority metadata
 				if (lDef.authority) {
-					App.requireAuthority(aArgs[aArgs.length - 2], lDef.authority);
+					App.requireAuthority(lArgsJS[lArgsJS.length - 2], lDef.authority);
 				}
 
 				// checking method arguments metadata
@@ -271,7 +272,7 @@ var App = (function() {
 						var lArgName = lDef.args[lIndex];
 						App.assertTrue(undefined !== lObject.args[lArgName],
 								'Argument \'' + lArgName + '\' definition is missing!');
-						App.assertValue(lObject.args[lArgName], aArgs[lIndex],
+						App.assertValue(lObject.args[lArgName], lArgsJS[lIndex],
 								'Invalid \'' + lArgName + '\' argument value, constraint violation: ');
 					}
 				}
@@ -282,10 +283,10 @@ var App = (function() {
 
 				// calling custom method annotation processors
 				// passing connector instance as last argument for developers convenience 
-				App.notifyEvent('controller.method.annotation.evaluation', [aMethod, lDef, aArgs, aArgs[aArgs.length - 2]]);
+				App.notifyEvent('controller.method.annotation.evaluation', [aMethod, lDef, lArgsJS, lArgsJS[lArgsJS.length - 2]]);
 
 				if ('function' === typeof (lObject[aMethod]['handler'])) {
-					return App.toJava(lObject[aMethod].handler.apply(lObject, App.toJS(aArgs)));
+					return App.toJava(lObject[aMethod].handler.apply(lObject, lArgsJS));
 				} else {
 					// supporting EventBus bridge
 					var lBridge = lObject[aMethod]['ebBridge'];
@@ -297,7 +298,7 @@ var App = (function() {
 						type: aMethod
 					};
 					for (var lIndex in lDef.args) {
-						lMessage[lDef.args[lIndex]] = aArgs[lIndex];
+						lMessage[lDef.args[lIndex]] = lArgsJS[lIndex];
 					}
 
 					// sending message through the EventBus
@@ -306,12 +307,13 @@ var App = (function() {
 
 						return;
 					} else if ('send' === lBridge.action) {
-						var lResponseHandler = aArgs[aArgs.length - 1];
+						var lResponseHandler = lArgsJS[lArgsJS.length - 1];
 						EventBus.send(lMessage, {
 							OnSuccess: function(aResponse) {
 								// removing response header 
 								delete aResponse.code;
 								delete aResponse.message_uuid;
+								delete aResponse.jms_replyto;
 								delete aResponse.reqType;
 								delete aResponse.type;
 								delete aResponse.ns;
@@ -440,6 +442,10 @@ var App = (function() {
 				return true === aObject;
 			} else if (aObject instanceof Packages.java.lang.String) {
 				return "" + aObject;
+//			} else if (aObject instanceof Packages.java.lang.Integer) {
+//				return aObject * 1;
+//			} else if (aObject instanceof Packages.java.lang.Double) {
+//				return aObject * 1;
 			}
 
 			return aObject;
@@ -479,6 +485,10 @@ var App = (function() {
 					aObject.constructor
 					&& aObject.constructor.toString().indexOf('function Array()') === 0) {
 				lRes = 'array';
+			} else if (aObject instanceof Packages.java.lang.Double){
+				return 'double';
+			} else if (aObject instanceof Packages.java.lang.Integer){
+				return 'integer';
 			}
 
 			return lRes;
@@ -517,14 +527,14 @@ var App = (function() {
 							lMessage.reply = function(aResponse, aListener) {
 								var lResponse = lEventBus.createResponse(aToken);
 								lResponse.getMap().putAll(App.toMap(aResponse));
-								
-								lEventBus.send(lResponse,  lToHandler(aListener));
+
+								lEventBus.send(lResponse, lToHandler(aListener));
 							};
 							lMessage.fail = function(aResponse, aListener) {
 								var lResponse = lEventBus.createErrorResponse(aToken);
 								lResponse.getMap().putAll(App.toMap(aResponse));
-								
-								lEventBus.send(lResponse,  lToHandler(aListener));
+
+								lEventBus.send(lResponse, lToHandler(aListener));
 							};
 							if (aListener.OnMessage) {
 								aListener.OnMessage(lMessage);
@@ -533,7 +543,7 @@ var App = (function() {
 								if (aListener.OnResponse) {
 									aListener.OnResponse(lMessage);
 								}
-								if (0 === aToken.getCode()) {
+								if (aToken.getCode() > -1) {
 									if (aListener.OnSuccess) {
 										aListener.OnSuccess(lMessage);
 									}
