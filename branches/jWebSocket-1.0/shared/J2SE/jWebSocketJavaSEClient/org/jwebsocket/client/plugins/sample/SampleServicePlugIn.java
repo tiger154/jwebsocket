@@ -32,60 +32,61 @@ import org.jwebsocket.token.Token;
  */
 public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 
-        /**
-         *
-         * @param aClient
-         */
-        public SampleServicePlugIn(WebSocketTokenClient aClient, String aServiceNS) {
-                super(aClient, aServiceNS);
-        }
+	/**
+	 *
+	 * @param aClient
+	 * @param aServiceNS
+	 */
+	public SampleServicePlugIn(WebSocketTokenClient aClient, String aServiceNS) {
+		super(aClient, aServiceNS);
+	}
 
-        @Override
-        public void processToken(WebSocketClientEvent aEvent, Token aToken) {
+	@Override
+	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
                 // get the type of the token
-                // the type can be associated with a "command"
-                String lType = aToken.getType();
+		// the type can be associated with a "command"
+		String lType = aToken.getType();
 
                 // get the namespace of the token
-                // each plug-in should have its own unique namespace
-                String lNS = aToken.getNS();
+		// each plug-in should have its own unique namespace
+		String lNS = aToken.getNS();
 
-                // check if token has a type and a matching namespace
-                if (lType != null && lNS != null) {
+		// check if token has a type and a matching namespace
+		if (lType != null && lNS != null) {
 
                         //&& lNS.equals(getNS())) {
-                        // here you can interpret incoming tokens from the server
-                        // according to the name space of the plug-in
-                        if (lNS.equals(getNS()) && lType.equals("test")) {
-                                test(aToken);
-                        }
-                        if (lNS.equals("org.jwebsocket.plugins.loadbalancer") && lType.equals("shutdown")) {
-                                shutdown();
-                        }
-                }
-        }
+			// here you can interpret incoming tokens from the server
+			// according to the name space of the plug-in
+			if (lNS.equals(getNS()) && lType.equals("test")) {
+				test(aToken);
+			}
+			if (lNS.equals("org.jwebsocket.plugins.loadbalancer") && lType.equals("shutdown")) {
+				shutdown();
+			}
+		}
+	}
 
-        /**
-         *
-         * @param aToken
-         */
-        private void test(Token aToken) {
-                try {
-                        Token lResponse = createResponse(aToken);
-                        getTokenClient().sendToken(lResponse);
-                } catch (WebSocketException ex) {
-                        Logger.getLogger(SampleServicePlugIn.class.getName()).log(Level.SEVERE, null, ex);
-                }
-        }
+	/**
+	 *
+	 * @param aToken
+	 */
+	private void test(Token aToken) {
+		try {
+			Token lResponse = createResponse(aToken);
+			getTokenClient().sendToken(lResponse);
+		} catch (WebSocketException ex) {
+			Logger.getLogger(SampleServicePlugIn.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 
-        /**
-         *
-         */
-        private void shutdown() {
-                try {
-                        getTokenClient().close();
-                } catch (WebSocketException ex) {
-                        Logger.getLogger(BaseServiceTokenPlugIn.class.getName()).log(Level.SEVERE, null, ex);
-                }
-        }
+	/**
+	 *
+	 */
+	private void shutdown() {
+		try {
+			getTokenClient().close();
+		} catch (WebSocketException ex) {
+			Logger.getLogger(BaseServiceTokenPlugIn.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 }
