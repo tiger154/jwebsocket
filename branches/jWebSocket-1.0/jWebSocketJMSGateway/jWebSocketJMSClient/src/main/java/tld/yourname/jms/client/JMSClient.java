@@ -105,7 +105,7 @@ public class JMSClient {
 
 		lArgs.put("accessToken", lOAuthAuthenticator.getAccessToken());
 
-		lJWSEndPoint.getSender().sendPayload(
+		lJWSEndPoint.sendPayload(
 				lTargetEndPointId, // target
 				"org.jwebsocket.jms.demo", // ns
 				"testOAuth", // type
@@ -189,7 +189,8 @@ public class JMSClient {
 		if (null == lConfig) {
 			try {
 				// try to load properties files from JWEBSOCKET_HOME/conf/JMSPlugIn
-				String lPath = Tools.expandEnvVarsAndProps("${JWEBSOCKET_HOME}conf/JMSPlugIn/JMSClientPrivate.properties");
+				String lPath = Tools.expandEnvVarsAndProps("/private/JMSClient.properties");
+				// String lPath = Tools.expandEnvVarsAndProps("${JWEBSOCKET_HOME}conf/JMSPlugIn/JMSClient.properties");
 				mLog.debug("Tring to read properties from: " + lPath);
 				lConfig = new PropertiesConfiguration(lPath);
 			} catch (ConfigurationException ex) {
@@ -450,60 +451,6 @@ public class JMSClient {
 									}
 
 								}, 10000);
-
-						if (true) {
-							return;
-						}
-
-						// lSender.ping("server-aschulze-dt");
-						// lSender.getIdentification("*");
-						lJWSEndPoint.sendPayload(
-								"org.jwebsocket.jms.gateway", // target id
-								"org.jwebsocket.plugins.jmsdemo", // ns
-								"echo", // type
-								lArgs, "any additional payload if required");
-						/*
-						 Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.jmsdemo", "echo");
-						 lToken.setString("echo", "This is the echo message");
-						 lSender.sendToken("org.jwebsocket.jms.gateway", lToken);
-						 */
-						if (true) {
-							return;
-						}
-
-						// lSender.sendPayload("wcslv01.dev.nvdia.com", "com.ptc.windchill",
-						//	"getNewPartRequest", lArgs, "{}"); // getLibraryPart, getManufacturerPart "wcslv01.dev.nvidia.com"
-						mLog.info("Sending getLibraryPart");
-						lJWSEndPoint.sendPayload("hqdvptas134", "com.ptc.windchill",
-								"getLibraryPart", lArgs, "{}");
-						/*
-						 lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
-						 "demo1", lArgs, "{}");
-						 */
-						/*
-						 lArgs.put("accessToken", lOAuth.getAccessToken());
-						 lSender.sendPayload("server-aschulze-dt", "org.jwebsocket.svcep.demo",
-						 "sso1", lArgs, "{}");
-						 */
-						/*
-						 lSender.sendPayload("hqdvptas138", "com.ptc.windchill",
-						 "createBOM", lArgs, "{}");
-						 */
-						if (true) {
-							return;
-						}
-
-						// now to try to get some data from the service...
-						lArgs = new FastMap<String, Object>();
-						lArgs.put("username", "anyUsername");
-						lArgs.put("password", "anyPassword");
-						lArgs.put("action", "CREATE");
-						// send the payload to the target (here the JMS demo service)
-						// lSender.forwardPayload("aschulze-dt", "org.jwebsocket.jms.demo",
-						//		"forwardPayload", "4711", lArgs, null);
-						// send the payload to the target (here the JMS demo service)
-						lJWSEndPoint.sendPayload("HQDVPTAS110", "com.ptc.windchill",
-								"getLibraryPart", lArgs, "{}");
 					}
 				});
 
@@ -515,8 +462,8 @@ public class JMSClient {
 						mLog.info("Response from '" + aSourceId
 								+ "' to 'echo' received: "
 								+ (JMSLogging.isFullTextLogging()
-								? aToken.toString()
-								: aToken.getLogString())
+										? aToken.toString()
+										: aToken.getLogString())
 						);
 					}
 				});

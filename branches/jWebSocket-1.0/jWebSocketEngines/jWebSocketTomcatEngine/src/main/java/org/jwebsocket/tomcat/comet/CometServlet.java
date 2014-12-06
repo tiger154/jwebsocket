@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tomcat.comet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -32,7 +33,6 @@ import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometEvent.EventType;
 import org.apache.catalina.comet.CometProcessor;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.engines.ServletUtils;
 import org.jwebsocket.factory.JWebSocketFactory;

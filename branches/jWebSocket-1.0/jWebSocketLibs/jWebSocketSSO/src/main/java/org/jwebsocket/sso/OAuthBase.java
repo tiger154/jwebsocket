@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
  */
 public class OAuthBase implements IOAuth {
 
-	static final Logger mLog = Logger.getLogger(OAuthBase.class);
 	int mReturnCode = 0;
 	String mReturnMsg = "Ok";
 
@@ -48,6 +47,7 @@ public class OAuthBase implements IOAuth {
 	String SSO_SESSION_COOKIE_NAME = "SMSESSION";
 	String OAUTH_AUTHSESSION_URL = "/auth/oauth/v2/token";
 	String OAUTH_GETUSER_URL = "/use-token";
+	String OAUTH_REFRESHTOKEN_URL = "/auth/oauth/v2/token";
 	String mOAuthAppId = null; // global (static) application id (not instance app_id)!
 	String mOAuthAppSecret = null; // global (static) application secret (not instance app_secret)!
 

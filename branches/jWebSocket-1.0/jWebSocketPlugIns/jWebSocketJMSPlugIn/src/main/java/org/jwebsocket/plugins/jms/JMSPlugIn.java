@@ -6,7 +6,7 @@
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
-//	You may obtain a copy of the License at
+//	You may obtain a copy of the License att
 //
 //	http://www.apache.org/licenses/LICENSE-2.0
 //
@@ -34,7 +34,6 @@ import javax.jms.Topic;
 import javolution.util.FastList;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.transport.TransportListener;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -211,7 +210,7 @@ public class JMSPlugIn extends TokenPlugIn {
 			Topic lAdvisoryTopic = mSession.createTopic(mAdvisoryTopicId);
 			mAdvisoryConsumer = mSession.createConsumer(lAdvisoryTopic);
 			JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
-					mJMSEngine, mSender);
+					this, mJMSEngine, mSender, mSettings.getBroadcastAdvisoryEvents());
 			mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
 
 			/*

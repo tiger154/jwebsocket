@@ -63,7 +63,8 @@ public class JMSTransportListener implements TransportListener {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Transport Command: " + aObject.toString());
 		}
-		Token lToken = TokenFactory.createToken(mJMSPlugIn.getNamespace(), "event");
+		boolean lBroadcast = true;
+		final Token lToken = TokenFactory.createToken(mJMSPlugIn.getNamespace(), "event");
 		lToken.setString("name", aObject.getClass().getSimpleName());
 		if (aObject instanceof WireFormatInfo) {
 			WireFormatInfo lWireFormatInfo = (WireFormatInfo) aObject;
@@ -85,12 +86,23 @@ public class JMSTransportListener implements TransportListener {
 			MessageDispatch lMessageDispatch = (MessageDispatch) aObject;
 			lToken.setString("qualifiedName", lMessageDispatch.getDestination().getQualifiedName());
 			mIsConnected = true;
+			lBroadcast = false;
 		}
-		mJMSPlugIn.broadcastToken(null, lToken,
-				new BroadcastOptions(
-						false, // lIsSenderIncluded, 
-						false // lIsResponseRequested)
-				));
+		// CAUTION! THE FOLLOWING CODE LEADS TP A BLOCKING BEHAVIOR IN THE BROADCAST
+		// DO WE NEED THIS MESSAGES BEING BROADCASTED?
+		if (lBroadcast) {
+			new Thread() {
+
+				@Override
+				public void run() {
+					mJMSPlugIn.broadcastToken(null, lToken,
+							new BroadcastOptions(
+									false, // lIsSenderIncluded,
+									false // lIsResponseRequested)
+							));
+				}
+			}.start();
+		}
 	}
 
 	/**

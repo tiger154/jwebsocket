@@ -36,12 +36,15 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author aschulze
  */
 public class HTTPSupport {
+
+	static final Logger mLog = Logger.getLogger(HTTPSupport.class);
 
 	/**
 	 *
@@ -52,7 +55,15 @@ public class HTTPSupport {
 	 * @param aTimeout
 	 * @return
 	 */
-	public static String call2(String aURL, String aMethod, Map<String, String> aHeaders, String aPostBody, long aTimeout) {
+	public static String request(String aURL, String aMethod, Map<String, String> aHeaders, String aPostBody, long aTimeout) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Requesting (" + aMethod + ") '" + aURL
+					+ "', timeout: " + aTimeout + "ms, Headers: "
+					+ aHeaders + ", Body: "
+					+ (null != aPostBody
+							? "'" + aPostBody.replace("\n", "\\n").replace("\r", "\\r") + "'"
+							: "[null]"));
+		}
 		String lResponse = "{\"code\": -1, \"msg\": \"undefined\"";
 		try {
 			KeyStore lTrustStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -101,14 +112,19 @@ public class HTTPSupport {
 				}
 
 			};
+			long lStartedAt = System.currentTimeMillis();
 			lResponse = lHTTPClient.execute(lRequest, lResponseHandler);
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Response (" + (System.currentTimeMillis() - lStartedAt) + "ms): '" + lResponse.replace("\n", "\\n").replace("\r", "\\r") + "'");
+			}
+			return lResponse;
 		} catch (Exception lEx) {
-			// System.out.println("HTTP request " + lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
-			lResponse = "{\"code\": -1, \"msg\": \""
-					+ lEx.getClass().getSimpleName() 
+			String lMsg = "{\"code\": -1, \"msg\": \""
+					+ lEx.getClass().getSimpleName()
 					+ " at http request: " + lEx.getMessage() + "\"}";
-		} finally {
+			mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage() + ", returning: " + lMsg);
+			lResponse = lMsg;
+			return lResponse;
 		}
-		return lResponse;
 	}
 }

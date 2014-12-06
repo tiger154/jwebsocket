@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.scripting;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -44,7 +45,6 @@ import javolution.util.FastMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;

@@ -105,7 +105,8 @@ public class JMSServer {
 		if (null == lConfig) {
 			try {
 				// try to load properties files from JWEBSOCKET_HOME/conf/JMSPlugIn
-				String lPath = Tools.expandEnvVarsAndProps("${JWEBSOCKET_HOME}conf/JMSPlugIn/JMSServerPrivate.properties");
+				String lPath = Tools.expandEnvVarsAndProps("/private/JMSServer.properties");
+				// String lPath = Tools.expandEnvVarsAndProps("${JWEBSOCKET_HOME}conf/JMSPlugIn/JMSServer.properties");
 				mLog.debug("Tring to read properties from: " + lPath);
 				lConfig = new PropertiesConfiguration(lPath);
 			} catch (ConfigurationException ex) {
@@ -365,7 +366,7 @@ public class JMSServer {
 						int lCode = 0;
 						String lMessage = "Ok";
 						try {
-							lUsername = lOAuthAuthenticator.authenticate(aToken);
+							lUsername = lOAuthAuthenticator.authToken(aToken);
 							if (null == lUsername) {
 								lCode = -1;
 								lMessage = "User could not be authenticated!";
@@ -375,7 +376,7 @@ public class JMSServer {
 						} catch (JMSEndpointException ex) {
 							lCode = -1;
 							lMessage = ex.getClass().getSimpleName()
-							+ " on authentication!";
+							+ " on authentication: " + ex.getMessage();
 						}
 
 						lJWSEndPoint.respondPayload(
@@ -400,7 +401,7 @@ public class JMSServer {
 						int lCode = 0;
 						String lMessage = "Ok";
 						try {
-							lUsername = lLDAPAuthenticator.authenticate(aToken);
+							lUsername = lLDAPAuthenticator.authToken(aToken);
 							if (null == lUsername) {
 								lCode = -1;
 								lMessage = "User could not be authenticated!";
@@ -410,7 +411,7 @@ public class JMSServer {
 						} catch (JMSEndpointException ex) {
 							lCode = -1;
 							lMessage = ex.getClass().getSimpleName()
-							+ " on authentication!";
+							+ " on authentication: " + ex.getMessage();
 						}
 
 						lJWSEndPoint.respondPayload(
@@ -437,7 +438,7 @@ public class JMSServer {
 						String lMessage = "Ok";
 						try {
 							checkADUsername(aToken);
-							lUsername = lAuthenticator.authenticate(aToken);
+							lUsername = lAuthenticator.authToken(aToken);
 							if (null == lUsername) {
 								lCode = -1;
 								lMessage = "User could not be authenticated!";

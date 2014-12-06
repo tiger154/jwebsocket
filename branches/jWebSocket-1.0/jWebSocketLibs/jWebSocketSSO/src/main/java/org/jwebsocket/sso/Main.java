@@ -67,7 +67,7 @@ public class Main {
 		boolean lConfigLoaded;
 		try {
 			// loading properties files
-			lConfig = new PropertiesConfiguration("private.properties");
+			lConfig = new PropertiesConfiguration("/private/SSO.properties");
 		} catch (ConfigurationException ex) {
 		}
 
@@ -106,9 +106,9 @@ public class Main {
 //			return;
 //		}
 		int lMaxTotalProcesses = 1;
-		int lMaxUserRequests = 100;
-		int lLoopDelay = 0;
-		int lRequestDelay = 1000;
+		int lMaxUserRequests = 2;
+		int lLoopDelay = 1;
+		int lRequestDelay = 1;
 		Map<String, Object> lJSON;
 		for (int lCount = 0; lCount < lMaxTotalProcesses; lCount++) {
 			mLog.info("================== " + (lCount + 1) + "/" + lMaxTotalProcesses + " ==================");
@@ -130,11 +130,11 @@ public class Main {
 				mLog.error(ex.getMessage());
 				break;
 			}
+			// mLog.info("JSON Direct Authentication: " + lOAuth.authDirect(lOAuthUsername, lOAuthPassword));
 			String lAccessToken = lOAuth.getAccessToken();
-			/*		
-			 mLog.info("JSON Direct Authentication: " + lOAuth.authDirect(lOAuthUsername, lOAuthPassword));
-			 */
+			mLog.info("JSON Obtaining Bearer Token: " + lAccessToken);
 			for (int lGetUserIdx = 0; lGetUserIdx < lMaxUserRequests; lGetUserIdx++) {
+				// intentionally cause a failure at last loop iteration
 				if (lMaxUserRequests == lGetUserIdx + 1) {
 					lAccessToken += "xx";
 				}
@@ -143,13 +143,25 @@ public class Main {
 					mLog.info((lGetUserIdx + 1) + " of " + lMaxUserRequests
 							+ ": JSON User from Access Token: "
 							+ (null == lUsername ? "[null]"
-							: lUsername.replace("\r", "\\r").replace("\n", "\\n")));
+									: lUsername.replace("\r", "\\r").replace("\n", "\\n")));
 					try {
 						lJSON = lOAuth.parseJSON(lUsername);
 					} catch (IOException ex) {
-						mLog.error(ex.getMessage());
+						mLog.error("Parsing JSON: " + ex.getMessage());
 						break;
 					}
+					
+					/*
+					try {
+						String lRes = lOAuth.refreshAccessToken(lOAuthTimeout);
+						mLog.info("JSON Refresh Access Token: "
+								+ (null == lRes ? "[null]"
+										: lRes.replace("\r", "\\r").replace("\n", "\\n")));
+					} catch (Exception ex) {
+						mLog.error("Refreshing Access Token: " + ex.getMessage());
+						break;
+					}
+					*/
 					try {
 						Thread.currentThread().sleep(lRequestDelay);
 					} catch (InterruptedException lEx) {
