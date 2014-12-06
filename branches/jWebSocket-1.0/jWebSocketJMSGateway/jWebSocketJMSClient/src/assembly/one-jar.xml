@@ -21,8 +21,13 @@
 				<include>org.jwebsocket:jWebSocketSSO</include>
 				<include>org.jwebsocket:jWebSocketLDAP</include>
 				<include>javolution:javolution</include>
+				<include>com.fasterxml.jackson.core:jackson-annotations</include>
+				<include>com.fasterxml.jackson.core:jackson-core</include>
+				<include>com.fasterxml.jackson.core:jackson-databind</include>
+				<!--
 				<include>org.codehaus.jackson:jackson-core-asl</include>
 				<include>org.codehaus.jackson:jackson-mapper-asl</include>
+				-->
 				<include>org.netbeans.external:json-2</include>
 				<include>commons-lang:commons-lang</include>
 				<include>commons-logging:commons-logging</include>

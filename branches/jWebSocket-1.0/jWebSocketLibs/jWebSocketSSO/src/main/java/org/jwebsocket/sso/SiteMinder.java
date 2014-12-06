@@ -49,11 +49,10 @@ public class SiteMinder {
 			lHeaders.put("Cache-Control", "no-cache");
 			lHeaders.put("Connection", "keep-alive");
 			// lHeaders.put("Host", "<host>");
-			// lHeaders.put("Host", "alsius.nvidia.com" );
 			lHeaders.put("Host", "aschulze-dt" );
 			lHeaders.put("Pragma", "no-cache");
 			lHeaders.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.3 Safari/537.36");
-			String lResult = HTTPSupport.call2(mSMHost, "GET",
+			String lResult = HTTPSupport.request(mSMHost, "GET",
 					lHeaders, lPostBody, aTimeout);
 			return lResult;
 		} catch (Exception lEx) {

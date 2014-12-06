@@ -19,7 +19,6 @@
 		<property name="brokerURL">
 			<!-- <value>tcp://amq_broker_server:61616</value> -->
 			<!-- <value>failover:(tcp://localhost:61616)?initialReconnectDelay=100&amp;maxReconnectDelay=5000&amp;timeout=3000&amp;useExponentialBackOff=false</value> -->
-
 			<value>vm://jWebSocketAMQ</value>
 		</property>
 		<!--		

@@ -17,7 +17,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC3 (build 40908)",NS_BASE:"org.jwebsocket",
+if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC3 (build 41121)",NS_BASE:"org.jwebsocket",
 NS_SYSTEM:"org.jwebsocket.plugins.system",MSG_WS_NOT_SUPPORTED:
 "Unfortunately your browser does neither natively support WebSockets\n"+"nor you have the Adobe Flash-PlugIn 10+ installed.\n"+
 "Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer, "+
@@ -137,9 +137,9 @@ var hexcase=0;var b64pad="";function hex_md5(s){return rstr2hex(rstr_md5(str2rst
 ;if(!('lastIndexOf'in Array.prototype)){Array.prototype.lastIndexOf=function(iS,ef){if(ef===undefined){ef=this.length-1;}if(ef<0){
 ef+=this.length;}if(ef>this.length-1){ef=this.length-1;}for(ef++;ef-- >0;){if(ef in this&&this[ef]===iS){return ef;}}return-1;};}
 String.prototype.getBytes=function(){var hs=[];for(var cI=0;cI<this.length;++cI){hs.push(this.charCodeAt(cI));}return hs;};
-jws.tools={lw:function(kS,kF,jG){kF=kF||'';jG=jG||512;var jY=atob(kS);var kx=[];for(var ja=0;ja<jY.length;ja+=jG){var lf=jY.slice(
-ja,ja+jG);var jZ=new Array(lf.length);for(var cI=0;cI<lf.length;cI++){jZ[cI]=lf.charCodeAt(cI);}var kf=new kc(jZ);kx.push(kf);}
-var kG=new Blob(kx,{type:kF});return kG;},str2bytes:function(gL){var hs=[];for(var cI=0;cI<gL.length;cI++){hs.push(gL.charCodeAt(cI)
+jws.tools={jJ:function(lf,jZ,kz){jZ=jZ||'';kz=kz||512;var kT=atob(lf);var kY=[];for(var ja=0;ja<kT.length;ja+=kz){var ln=kT.slice(
+ja,ja+kz);var kQ=new Array(ln.length);for(var cI=0;cI<ln.length;cI++){kQ[cI]=ln.charCodeAt(cI);}var ls=new kI(kQ);kY.push(ls);}
+var ll=new Blob(kY,{type:jZ});return ll;},str2bytes:function(gL){var hs=[];for(var cI=0;cI<gL.length;cI++){hs.push(gL.charCodeAt(cI)
 );}return hs;},bytes2str:function(gM){var gR="";for(var cI=0;cI<gM.length;cI++){gR+=String.fromCharCode(gM[cI]);}return gR;},
 getUniqueInteger:function(){if(undefined===this.gg||2147483647===this.gg){this.gg=1;}return this.gg++;},zerofill:function(ay,am){
 var bj=ay.toFixed(0);if(bj.length>am){bj=bj.substring(bj.length-am);}else{while(bj.length<am){bj="0"+bj;}}return bj;},parseQuery:
@@ -358,31 +358,32 @@ function(aP,aB,ax){var bj=this.checkLoggedIn();var aE=false;var aD=true;if(ax){i
 ax.responseRequested){aD=ax.responseRequested;}}if(0===bj.code){this.sendToken({ns:jws.NS_SYSTEM,type:"broadcast",sourceId:this.ai,
 sender:this.af,pool:aP,data:aB,senderIncluded:aE,responseRequested:aD},ax);}return bj;},broadcastToSharedSession:function(aR,eK,ax){
 var bj=this.checkConnected();if(0===bj.code){aR.ns=jws.NS_SYSTEM;aR.type="broadcastToSharedSession";aR.senderIncluded=eK||false;
-this.sendToken(aR,ax);}return bj;},echo:function(aw){var bj=this.checkWriteable();if(0===bj.code){this.sendToken({ns:jws.NS_SYSTEM,
-type:"echo",data:aw});}return bj;},open:function(dr,ax){var bj=this.createDefaultResult();try{if(ax&&ax.OnToken&&"function"===
-typeof ax.OnToken){this.eF=ax.OnToken;}if(ax&&ax.OnWelcome&&"function"===typeof ax.OnWelcome){this.cC=ax.OnWelcome;}if(ax&&
-ax.OnGoodBye&&"function"===typeof ax.OnGoodBye){this.fw=ax.OnGoodBye;}if(ax&&ax.OnLogon&&"function"===typeof ax.OnLogon){this.gZ=
-ax.OnLogon;}if(ax&&ax.OnLogoff&&"function"===typeof ax.OnLogoff){this.hH=ax.OnLogoff;}arguments.callee.inherited.call(this,dr,ax);}
-catch(ex){bj.code= -1;bj.localeKey="jws.jsc.ex";bj.args=[ex.message];bj.msg="Exception on open: "+ex.message;}return bj;},connect:
-function(dr,ax){return this.open(dr,ax);},close:function(ax){var aj=0;var cD=false;var cZ=false;var cV=false;if(this.ac){
-this.ac.isExplicitClose=true;}if(ax){if(ax.timeout){aj=ax.timeout;}if(ax.noGoodBye){cD=true;}if(ax.noLogoutBroadcast){cZ=true;}if(
-ax.noDisconnectBroadcast){cV=true;}}var bj=this.checkConnected();try{if(0===bj.code){if(aj>0){var cg={ns:jws.NS_SYSTEM,type:"close",
-timeout:aj};if(cD){cg.noGoodBye=true;}if(cZ){cg.noLogoutBroadcast=true;}if(cV){cg.noDisconnectBroadcast=true;}this.sendToken(cg);}
-arguments.callee.inherited.call(this,ax);}else{bj.code= -1;bj.localeKey="jws.jsc.res.notConnected";bj.msg="Not connected.";}}catch(
-ex){bj.code= -1;bj.localeKey="jws.jsc.ex";bj.args=[ex.message];bj.msg="Exception on close: "+ex.message;}return bj;},disconnect:
-function(ax){return this.close(ax);},setConfiguration:function(fC,fT){var bj=this.checkConnected();if(0===bj.code){for(var dR in fT)
-{var dM=fT[dR];if("object"===typeof(dM)){this.setConfiguration(fC+"."+dR,dM);}else{this.sessionPut(fC+"."+dR,dM,false,{});}}}
-return bj;}});jws.SystemClientPlugIn={NS:jws.NS_SYSTEM,ALL_CLIENTS:0,AUTHENTICATED:1,NON_AUTHENTICATED:2,PW_PLAIN:null,
-PW_ENCODE_MD5:1,PW_MD5_ENCODED:2,processToken:function(aR){if(jws.NS_SYSTEM===aR.ns){if("login"===aR.reqType){if(0===aR.code){if(
-this.gK){this.gK(aR);}}else{if(this.gq){this.gq(aR);}}}else if("logon"===aR.reqType){if(0===aR.code){if(this.fV){this.fV(aR);}}else{
-if(this.gr){this.gr(aR);}}}else if("logout"===aR.reqType){if(0===aR.code){if(this.fY){this.fY(aR);}}else{if(this.hi){this.hi(aR);}}}
-else if("logoff"===aR.reqType){if(0===aR.code){if(this.gk){this.gk(aR);}}else{if(this.gu){this.gu(aR);}}}}},login:function(an,aq,ax)
-{var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.SystemClientPlugIn.NS,type:"login",username:an,password:aq};
-this.sendToken(cg,ax);}return bj;},logon:function(dr,an,aq,ax){var bj=this.createDefaultResult();if(!ax){ax={};}if(this.isOpened()){
-this.login(an,aq,ax);}else{var hj=ax.OnWelcome;var dJ=this;ax.OnWelcome=function(cz){if(hj){hj.call(dJ,cz);}dJ.login(an,aq,ax);};
-this.open(dr,ax);}return bj;},logout:function(ax){var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.SystemClientPlugIn.NS,
-type:"logout"};this.sendToken(cg,ax);}return bj;},systemLogon:function(an,aq,ax){return this.login(an,aq,ax);},systemLogoff:
-function(ax){return this.logout(ax);},systemGetAuthorities:function(ax){var bj=this.checkConnected();if(0===bj.code){var cg={ns:
+this.sendToken(aR,ax);}return bj;},echo:function(aw,ax){var bj=this.checkWriteable();if(!ax){ax={};}if(0===bj.code){var cg={ns:
+jws.NS_SYSTEM,type:"echo",data:aw};if(ax.delay){cg.delay=ax.delay;}if(ax.jO){cg.jO=ax.jO;}this.sendToken(cg,ax);}return bj;},open:
+function(dr,ax){var bj=this.createDefaultResult();try{if(ax&&ax.OnToken&&"function"===typeof ax.OnToken){this.eF=ax.OnToken;}if(ax&&
+ax.OnWelcome&&"function"===typeof ax.OnWelcome){this.cC=ax.OnWelcome;}if(ax&&ax.OnGoodBye&&"function"===typeof ax.OnGoodBye){
+this.fw=ax.OnGoodBye;}if(ax&&ax.OnLogon&&"function"===typeof ax.OnLogon){this.gZ=ax.OnLogon;}if(ax&&ax.OnLogoff&&"function"===
+typeof ax.OnLogoff){this.hH=ax.OnLogoff;}arguments.callee.inherited.call(this,dr,ax);}catch(ex){bj.code= -1;bj.localeKey=
+"jws.jsc.ex";bj.args=[ex.message];bj.msg="Exception on open: "+ex.message;}return bj;},connect:function(dr,ax){return this.open(dr,
+ax);},close:function(ax){var aj=0;var cD=false;var cZ=false;var cV=false;if(this.ac){this.ac.isExplicitClose=true;}if(ax){if(
+ax.timeout){aj=ax.timeout;}if(ax.noGoodBye){cD=true;}if(ax.noLogoutBroadcast){cZ=true;}if(ax.noDisconnectBroadcast){cV=true;}}
+var bj=this.checkConnected();try{if(0===bj.code){if(aj>0){var cg={ns:jws.NS_SYSTEM,type:"close",timeout:aj};if(cD){cg.noGoodBye=
+true;}if(cZ){cg.noLogoutBroadcast=true;}if(cV){cg.noDisconnectBroadcast=true;}this.sendToken(cg);}arguments.callee.inherited.call(
+this,ax);}else{bj.code= -1;bj.localeKey="jws.jsc.res.notConnected";bj.msg="Not connected.";}}catch(ex){bj.code= -1;bj.localeKey=
+"jws.jsc.ex";bj.args=[ex.message];bj.msg="Exception on close: "+ex.message;}return bj;},disconnect:function(ax){return this.close(
+ax);},setConfiguration:function(fC,fT){var bj=this.checkConnected();if(0===bj.code){for(var dR in fT){var dM=fT[dR];if("object"===
+typeof(dM)){this.setConfiguration(fC+"."+dR,dM);}else{this.sessionPut(fC+"."+dR,dM,false,{});}}}return bj;}});
+jws.SystemClientPlugIn={NS:jws.NS_SYSTEM,ALL_CLIENTS:0,AUTHENTICATED:1,NON_AUTHENTICATED:2,PW_PLAIN:null,PW_ENCODE_MD5:1,
+PW_MD5_ENCODED:2,processToken:function(aR){if(jws.NS_SYSTEM===aR.ns){if("login"===aR.reqType){if(0===aR.code){if(this.gK){this.gK(
+aR);}}else{if(this.gq){this.gq(aR);}}}else if("logon"===aR.reqType){if(0===aR.code){if(this.fV){this.fV(aR);}}else{if(this.gr){
+this.gr(aR);}}}else if("logout"===aR.reqType){if(0===aR.code){if(this.fY){this.fY(aR);}}else{if(this.hi){this.hi(aR);}}}else if(
+"logoff"===aR.reqType){if(0===aR.code){if(this.gk){this.gk(aR);}}else{if(this.gu){this.gu(aR);}}}}},login:function(an,aq,ax){var bj=
+this.checkConnected();if(0===bj.code){var cg={ns:jws.SystemClientPlugIn.NS,type:"login",username:an,password:aq};this.sendToken(cg,
+ax);}return bj;},logon:function(dr,an,aq,ax){var bj=this.createDefaultResult();if(!ax){ax={};}if(this.isOpened()){this.login(an,aq,
+ax);}else{var hj=ax.OnWelcome;var dJ=this;ax.OnWelcome=function(cz){if(hj){hj.call(dJ,cz);}dJ.login(an,aq,ax);};this.open(dr,ax);}
+return bj;},logout:function(ax){var bj=this.checkConnected();if(0===bj.code){var cg={ns:jws.SystemClientPlugIn.NS,type:"logout"};
+this.sendToken(cg,ax);}return bj;},systemLogon:function(an,aq,ax){return this.login(an,aq,ax);},systemLogoff:function(ax){
+return this.logout(ax);},systemGetAuthorities:function(ax){var bj=this.checkConnected();if(0===bj.code){var cg={ns:
 jws.SystemClientPlugIn.NS,type:"getAuthorities"};this.sendToken(cg,ax);}return bj;},isLoggedIn:function(){return(this.isOpened()&&
 this.af);},broadcastToken:function(aR,ax){aR.ns=jws.SystemClientPlugIn.NS;aR.type="broadcast";aR.sourceId=this.ai;aR.sender=this.af;
 return this.sendToken(aR,ax);},getUsername:function(){return(this.isLoggedIn()?this.af:null);},getClients:function(ax){var aF=

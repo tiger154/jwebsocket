@@ -177,6 +177,9 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 			if (lIdx > 0) {
 				lUsername = lUsername.substring(0, lIdx);
 			}
+			if (null == lUsername) {
+				throw new JMSEndpointException("LDAP server did not deliver a username.");
+			}
 			return lUsername;
 		} catch (NamingException lEx) {
 			// "sometimes" spaces are returned as 0x00 characters,
@@ -187,7 +190,7 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 
 	@Override
 	public boolean acceptsToken(Token aToken) {
-		return (null != aToken.getString("username") 
+		return (null != aToken.getString("username")
 				&& null != aToken.getString("password"));
 	}
 
