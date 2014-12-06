@@ -19,9 +19,13 @@
 package org.jwebsocket.session;
 
 import java.util.Iterator;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.IStorageProvider;
+import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.system.SystemPlugIn;
@@ -61,23 +65,34 @@ public class CleanExpiredSessionsTask extends JWSTimerTask {
 			if (lExpirationTime < System.currentTimeMillis()) {
 				try {
 					// extra check to avoid issues on servers cluster (DO NOT CHANGE)
-					if (null != mSessionIdsTrash.remove(lKey)) { 
+					if (null != mSessionIdsTrash.remove(lKey)) {
 						IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(lKey);
 
 						if (null != lStorage) {
 							final WebSocketSession lSession = new WebSocketSession(lKey);
 							lSession.setStorage(lStorage);
 
-							if (mLog.isDebugEnabled()) {
-								mLog.debug("Expired '" + lKey + "' session data cleaned!");
-							}
-
 							Tools.getThreadPool().submit(new Runnable() {
 								@Override
 								public void run() {
+									// support for non realtime clients connection (REST clients)
+									Map<String, WebSocketConnector> lConnectors = JWebSocketFactory
+											.getTokenServer().getSharedSessionConnectors(lKey);
+									if (!lConnectors.isEmpty()) {
+										for (WebSocketConnector lConnector : lConnectors.values()) {
+											lConnector.stopConnector(CloseReason.TIMEOUT);
+										}
+									}
+
+									// notifying session stopped
 									SystemPlugIn.stopSession(lSession);
+
 									try {
+										// removing the session data
 										mStorageProvider.removeStorage(lKey);
+										if (mLog.isDebugEnabled()) {
+											mLog.debug("Expired session '" + lKey + "' data successfully cleaned!");
+										}
 									} catch (Exception lEx) {
 										mLog.error(lEx.toString() + " removing expired session storage");
 									}
