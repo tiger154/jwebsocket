@@ -37,8 +37,6 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -46,6 +44,8 @@ import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.engines.ServletUtils;
+import org.jwebsocket.http.HTTPConnector;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -562,42 +562,48 @@ public class FileSystemPlugIn extends TokenPlugIn {
 						+ "' does not exist in the given alias!");
 				return;
 			}
-			lBA = FileUtils.readFileToByteArray(lFile);
 
-			// populating the response data field according to the file type
-			String lFileType = new MimetypesFileTypeMap().getContentType(lFile);
-			boolean lIsBinary = false;
-			try {
-				lIsBinary = Tools.isBinaryFile(lFile);
-			} catch (IOException aEx) {
-				lIsBinary = lFileType.contains("text") || lFileType.contains("json")
-						|| lFileType.contains("javascript");
-			}
-			if (!lIsBinary) {
-				lData = new String(lBA);
-				lResponse.setString("data", lData);
+			if (aConnector instanceof HTTPConnector) {
+				// supporting HTTP download
+				ServletUtils.sendFile(((HTTPConnector) aConnector).getHttpResponse(), lFile);
+				((HTTPConnector) aConnector).setHttpResponse(null);
+				if (mLog.isDebugEnabled()){
+					mLog.debug("File '"+ lFilename + "' sent in the HTTP response!");
+				}
 			} else {
-				lResponse.getMap().put("data", lBA);
-				lResponse.setBoolean("isBinary", Boolean.TRUE);
+
+				lBA = FileUtils.readFileToByteArray(lFile);
+
+				// populating the response data field according to the file type
+				String lFileType = new MimetypesFileTypeMap().getContentType(lFile);
+				boolean lIsBinary;
+				try {
+					lIsBinary = Tools.isBinaryFile(lFile);
+				} catch (IOException aEx) {
+					lIsBinary = lFileType.contains("text") || lFileType.contains("json")
+							|| lFileType.contains("javascript");
+				}
+				if (!lIsBinary) {
+					lData = new String(lBA);
+					lResponse.setString("data", lData);
+				} else {
+					lResponse.getMap().put("data", lBA);
+					lResponse.setBoolean("isBinary", Boolean.TRUE);
+				}
+				// setting the file MIME type
+				lResponse.setString("mime", lFileType);
+
+				// send response to requester
+				lResponse.setMap("enc", new MapAppender().append("data", lEncoding).getMap());
+				lResponse.setString("filename", lFilename);
+				lServer.sendToken(aConnector, lResponse);
 			}
-			// setting the file MIME type
-			lResponse.setString("mime", lFileType);
-		} catch (IOException lEx) {
-			lResponse.setInteger("code", -1);
-			lMsg = lEx.getClass().getSimpleName() + " on load: " + lEx.getMessage();
-			lResponse.setString("msg", lMsg);
-			mLog.error(lMsg);
 		} catch (Exception lEx) {
 			lResponse.setInteger("code", -1);
 			lMsg = lEx.getClass().getSimpleName() + " on load: " + lEx.getMessage();
 			lResponse.setString("msg", lMsg);
-			mLog.error(lMsg);
+			lServer.sendToken(aConnector, lResponse);
 		}
-
-		// send response to requester
-		lResponse.setMap("enc", new MapAppender().append("data", lEncoding).getMap());
-		lResponse.setString("filename", lFilename);
-		lServer.sendToken(aConnector, lResponse);
 	}
 
 	/**
@@ -785,23 +791,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 * @return
 	 */
 	protected boolean isPathInFS(File aFile, String aBasePath) {
-		try {
-			String lCanonicalPath = FilenameUtils
-					.separatorsToSystem(aFile.getCanonicalPath()) + File.separator;
-			String lBasePath = FilenameUtils.separatorsToSystem(aBasePath);
-			if (SystemUtils.IS_OS_WINDOWS) {
-				if (!StringUtils.startsWithIgnoreCase(lCanonicalPath, lBasePath)) {
-					return false;
-				}
-			} else {
-				if (!lCanonicalPath.startsWith(lBasePath)) {
-					return false;
-				}
-			}
-		} catch (IOException lEx) {
-			return false;
-		}
-		return true;
+		return Tools.isParentPath(aFile, aBasePath);
 	}
 
 	@Override
