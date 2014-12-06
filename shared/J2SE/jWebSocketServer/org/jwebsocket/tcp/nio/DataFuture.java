@@ -33,12 +33,12 @@ import org.jwebsocket.logging.Logging;
  */
 public class DataFuture implements IOFuture {
 
-	private static Logger mLog = Logging.getLogger();
-	private List<IOFutureListener> mListeners;
+	private static final Logger mLog = Logging.getLogger();
+	private final List<IOFutureListener> mListeners;
 	private boolean mDone;
 	private boolean mSuccess;
 	private Throwable mCause;
-	private WebSocketConnector mConnector;
+	private final WebSocketConnector mConnector;
 	private ByteBuffer mData;
 
 	/**
