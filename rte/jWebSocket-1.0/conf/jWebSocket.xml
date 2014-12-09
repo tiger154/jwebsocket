@@ -1150,6 +1150,48 @@
 			<id>auditReports</id>
 			<description>Allows to jwebsocket admin users to generate user's SMS report</description>
 		</right>
+		<!-- jWebSocket BPMN rights-->
+		<right>
+			<ns>org.jwebsocket.plugins.bpmn</ns>
+			<id>load_file</id>
+			<description>Allows to load a BPMN file</description>
+		</right>
+
+		<right>
+			<ns>org.jwebsocket.plugins.bpmn</ns>
+			<id>get_avaliable_processes</id>
+			<description>Allows to read the loaded processes</description>
+		</right>
+
+		<right>
+			<ns>org.jwebsocket.plugins.bpmn</ns>
+			<id>execute_process</id>
+			<description>Allows to start a process instance</description>
+		</right>
+
+		<right>
+			<ns>org.jwebsocket.plugins.bpmn</ns>
+			<id>suspend_process</id>
+			<description>Allows to suspend a process instance</description>
+		</right>
+
+		<right>
+			<ns>org.jwebsocket.plugins.bpmn</ns>
+			<id>get_execution_processes</id>
+			<description>Allows to read the execution of processes</description>
+		</right>
+
+		<right>
+			<ns>org.jwebsocket.plugins.bpmn</ns>
+			<id>get_tasks_by_processinstance</id>
+			<description>Allows to read the tasks of a process instance</description>
+		</right>
+
+		<right>
+			<ns>org.jwebsocket.plugins.bpmn</ns>
+			<id>complete_task</id>
+			<description>Complete a tasks</description>
+		</right>
 		<!-- Reporting plug-in rights-->
 		<right>
 			<ns>org.jwebsocket.plugins.reporting</ns>
@@ -1286,6 +1328,15 @@
 				<right>org.jwebsocket.plugins.sms.sendSMS</right>
 				<right>org.jwebsocket.plugins.sms.generateReport</right>
 				<right>org.jwebsocket.plugins.sms.auditReports</right>
+
+				<!-- BPMN rights-->
+				<right>org.jwebsocket.plugins.bpmn.load_file</right>
+				<right>org.jwebsocket.plugins.bpmn.get_avaliable_processes</right>
+				<right>org.jwebsocket.plugins.bpmn.execute_process</right>
+				<right>org.jwebsocket.plugins.bpmn.suspend_process</right>
+				<right>org.jwebsocket.plugins.bpmn.get_execution_processes</right>
+				<right>org.jwebsocket.plugins.bpmn.get_tasks_by_processinstance</right>
+				<right>org.jwebsocket.plugins.bpmn.complete_task</right>
 			</rights>
 		</role>
 		<role>
