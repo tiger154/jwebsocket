@@ -231,18 +231,18 @@ public class JMSEndPointSender {
 			if (mLog.isDebugEnabled()) {
 				StringBuilder lPropStr = new StringBuilder();
 				Enumeration lPropNames = lMsg.getPropertyNames();
-				while(lPropNames.hasMoreElements()) {
-					String lPropName = (String)lPropNames.nextElement();
+				while (lPropNames.hasMoreElements()) {
+					String lPropName = (String) lPropNames.nextElement();
 					Object lValue = lMsg.getObjectProperty(lPropName);
 					lPropStr.append(lPropName).append("=").append(lValue);
-					if( lPropNames.hasMoreElements()) {
+					if (lPropNames.hasMoreElements()) {
 						lPropStr.append(", ");
 					}
-				}	
+				}
 				mLog.debug("Sending text: "
 						+ (JMSLogging.isFullTextLogging()
-						? aText
-						: "[content suppressed, length: " + aText.length() + " bytes]")
+								? aText
+								: "[content suppressed, length: " + aText.length() + " bytes]")
 						+ ", props: " + lPropStr
 						+ "...");
 			}
@@ -252,8 +252,7 @@ public class JMSEndPointSender {
 			// processing callbacks
 			if (null != aResponseListener) {
 				Assert.notNull(aCorrelationID, "The 'correlationID' argument cannot be null!");
-				Assert.isTrue(aTimeout > 0, "Invalid 'timeout' arguemnt. Expecting 'timeout' > 0");
-
+				Assert.isTrue(aTimeout > 0, "Invalid 'timeout' argument. Expecting 'timeout' > 0");
 				// setting the expiration time
 				lMsg.setJMSExpiration(aTimeout);
 

@@ -195,8 +195,8 @@ public class JMSAdvisoryListener implements MessageListener {
 		if (mBroadcastEvents && lBroadcast) {
 			mJMSPlugIn.broadcastToken(null, lBroadcastToken,
 					new BroadcastOptions(
-							false, // lIsSenderIncluded,
-							false // lIsResponseRequested)
+							false, // lIsSenderIncluded
+							false // lIsResponseRequested
 					));
 		}
 
