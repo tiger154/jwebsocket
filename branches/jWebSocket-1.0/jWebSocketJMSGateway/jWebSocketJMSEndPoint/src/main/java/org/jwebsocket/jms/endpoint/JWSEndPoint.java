@@ -25,6 +25,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
+import org.apache.log4j.Logger;
 import org.jwebsocket.token.Token;
 
 /**
@@ -33,6 +34,7 @@ import org.jwebsocket.token.Token;
  */
 public class JWSEndPoint extends JMSEndPoint {
 
+	private static final Logger mLog = Logger.getLogger(JWSEndPoint.class);
 	// private constructor, public API only allows contructors 
 	// with arguments, see below.
 	private JWSEndPointMessageListener mListener;
@@ -159,6 +161,9 @@ public class JWSEndPoint extends JMSEndPoint {
 	 */
 	public void addRequestListener(String aNS, String aType,
 			IJWSMessageListener aListener) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Adding request listener for " + aNS + "#" + aType + "...");
+		}
 		mListener.addRequestListener(aNS, aType, aListener);
 	}
 
@@ -173,6 +178,9 @@ public class JWSEndPoint extends JMSEndPoint {
 	 * <tt>null</tt>.
 	 */
 	public IJWSMessageListener removeRequestListener(String aNS, String aType) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Removing request listener for " + aNS + "#" + aType + "...");
+		}
 		return mListener.removeRequestListener(aNS, aType);
 	}
 
@@ -206,6 +214,9 @@ public class JWSEndPoint extends JMSEndPoint {
 	 */
 	public void addResponseListener(String aNS, String aReqType,
 			IJWSMessageListener aListener) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Adding response listener for " + aNS + "#" + aReqType + "...");
+		}
 		mListener.addResponseListener(aNS, aReqType, aListener);
 	}
 
@@ -221,6 +232,9 @@ public class JWSEndPoint extends JMSEndPoint {
 	 * <tt>null</tt>.
 	 */
 	public IJWSMessageListener removeResponseListener(String aNS, String aReqType) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Removing response listener for " + aNS + "#" + aReqType + "...");
+		}
 		return mListener.removeResponseListener(aNS, aReqType);
 	}
 

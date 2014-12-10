@@ -63,8 +63,8 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Received bytes from '" + lSourceId + "': "
 						+ (JMSLogging.isFullTextLogging()
-						? lText
-						: "[content suppressed, length: " + lText.length() + " bytes]]"));
+								? lText
+								: "[content suppressed, length: " + lText.length() + " bytes]]"));
 			}
 			processText(aMessage, lText);
 		} catch (JMSException lEx) {
@@ -81,8 +81,8 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Received text from '" + lSourceId + "': "
 						+ (JMSLogging.isFullTextLogging()
-						? lText
-						: "[content suppressed, length: " + lText.length() + " bytes]]"));
+								? lText
+								: "[content suppressed, length: " + lText.length() + " bytes]]"));
 			}
 			processText(aMessage, lText);
 		} catch (JMSException lEx) {
@@ -97,12 +97,12 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Processing text from '" + lSourceId + "': "
 						+ (JMSLogging.isFullTextLogging()
-						? aText
-						: "[content suppressed, length: " + aText.length() + " bytes]"));
+								? aText
+								: "[content suppressed, length: " + aText.length() + " bytes]"));
 			}
 			String lPayload = aText;
 			Token lToken = JSONProcessor.JSONStringToToken(lPayload);
-
+			
 			// fields for requests
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();
