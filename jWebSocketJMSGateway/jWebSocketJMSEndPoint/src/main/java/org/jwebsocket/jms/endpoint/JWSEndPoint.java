@@ -26,7 +26,11 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -393,4 +397,16 @@ public class JWSEndPoint extends JMSEndPoint {
 				aCode, aMessage, aArgs);
 	}
 
+	public void sendCpuUsageToLoadBalancer(String aTargetId, double aCpuUsage) {
+		try {
+			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "updateCpuUsage");
+			lToken.setDouble("usage", Tools.getCpuUsage());
+
+			WebSocketPacket lPacket = JSONProcessor.tokenToPacket(lToken);
+
+			getSender().sendText(aTargetId, lPacket.getString());
+		} catch (Exception lEx) {
+			mLog.error("Sending CPU usage info to load balancer: " + lEx.getLocalizedMessage());
+		}
+	}
 }
