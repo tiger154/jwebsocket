@@ -28,17 +28,11 @@ import javax.jms.Session;
 import org.apache.activemq.command.ActiveMQBytesMessage;
 import org.apache.activemq.command.ActiveMQMessage;
 import org.apache.activemq.command.ActiveMQTextMessage;
-import org.apache.activemq.command.ConsumerId;
 import org.apache.activemq.command.ConsumerInfo;
-import org.apache.activemq.command.DataStructure;
 import org.apache.activemq.command.ProducerInfo;
 import org.apache.activemq.command.RemoveInfo;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.packetProcessors.JSONProcessor;
-import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 
 /**
  *
@@ -77,7 +71,9 @@ public class JMSLogger implements MessageListener {
 	 */
 	@Override
 	public void onMessage(Message aMsg) {
-		String lMsg = "[message could not be interpreted]", lSourceId = "[sourceId unknown]", lTargetId = "[targetId unknown]";
+		String lMsg = "[message could not be interpreted]", 
+				lSourceId = "[sourceId unknown]", 
+				lTargetId = "[targetId unknown]";
 		try {
 			if (aMsg instanceof ActiveMQTextMessage) {
 				ActiveMQTextMessage lTextMsg = (ActiveMQTextMessage) aMsg;
