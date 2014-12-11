@@ -10,7 +10,6 @@
 	<version>1.0</version>
 	<groupId>org.jwebsocket</groupId>
 	<artifactId>jWebSocketStockTickerPlugIn</artifactId>
-	<version>1.0</version>
 	<name>jWebSocketStockTickerPlugIn</name>
 	<url>http://maven.apache.org</url>
   
