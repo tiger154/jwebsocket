@@ -22,7 +22,7 @@ goto READY_TO_GO
 	exit
 
 :READY_TO_GO
-	set LIBS_FOLDER=..\..\..\..\rte\jWebSocket-%JWEBSOCKET_VER%%JWS_DEPLOY_VER%\libs
+	set LIBS_FOLDER=%CD%\..\..\..\rte\jWebSocket-%JWEBSOCKET_VER%%JWS_DEPLOY_VER%\libs
 	set repo=..\..\..\repo\
 	rem Save current directory and change to target directory
 	pushd %repo%
@@ -31,13 +31,13 @@ goto READY_TO_GO
 	rem Restore original directory
 	popd
 	
-	set base=..\..\..\branches\jWebSocket-%JWEBSOCKET_VER%\%1
+	set base=%CD%\..\..\..\branches\jWebSocket-%JWEBSOCKET_VER%\%1
 	rem Save current directory and change to target directory
-	pushd %base%
+	rem pushd %base%
 	rem Save value of CD variable (current directory)
-	set base=%CD%\
+	rem set base=%CD%\
 	rem Restore original directory
-	popd
+	rem popd
 	
 	echo PROJECT BASE FOLDER:
 	echo %base%
