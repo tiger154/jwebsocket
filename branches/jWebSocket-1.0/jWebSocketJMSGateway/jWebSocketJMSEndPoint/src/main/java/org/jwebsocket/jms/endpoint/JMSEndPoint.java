@@ -48,7 +48,7 @@ public class JMSEndPoint {
 	 * Constant to establish durable connections (vs. temporary connections)
 	 */
 	public static boolean DURABLE = true;
-	static final Logger mLog = Logger.getLogger(JMSEndPoint.class);
+	private static final Logger mLog = Logger.getLogger(JMSEndPoint.class);
 	// the JMS connection factory
 	private ActiveMQConnectionFactory mConnectionFactory;
 	// the JMS connection instance/object
@@ -118,7 +118,7 @@ public class JMSEndPoint {
 	}
 
 	protected void init(Connection aConnection, Session aSession,
-			Topic aGatewayTopic, 
+			Topic aGatewayTopic,
 			MessageProducer aProducer, MessageConsumer aConsumer,
 			int aThreadPoolSize, boolean aDurable) throws JMSException {
 		// take over the connection
@@ -290,6 +290,16 @@ public class JMSEndPoint {
 	 */
 	public boolean isShutdown() {
 		return mShutDown;
+	}
+
+	/**
+	 * Returns if the JMS Endpoint connection is already open.
+	 *
+	 * @return <tt>true</tt> if the JMS Endpoint connection is open, otherwise
+	 * <tt>false></tt>.
+	 */
+	public boolean isOpen() {
+		return !isShutdown();
 	}
 
 	/**
