@@ -44,6 +44,7 @@ import org.jwebsocket.jms.endpoint.JWSEndPoint;
 import org.jwebsocket.jms.endpoint.JWSLDAPAuthenticator;
 import org.jwebsocket.jms.endpoint.JWSOAuthAuthenticator;
 import org.jwebsocket.jms.endpoint.JWSResponseTokenListener;
+import org.jwebsocket.jms.endpoint.JWSLoadBalancerCpuUpdater;
 
 /**
  * JMS Gateway Demo Client
@@ -55,6 +56,7 @@ public class JMSClient {
 	static final Logger mLog = Logger.getLogger(JMSClient.class);
 
 	private static JWSEndPoint lJWSEndPoint;
+	private static JWSLoadBalancerCpuUpdater lCpuUpdater;
 
 	private static String lTargetEndPointId = null;
 
@@ -189,7 +191,7 @@ public class JMSClient {
 		if (null == lConfig) {
 			try {
 				// try to load properties files from JWEBSOCKET_HOME/conf/JMSPlugIn
-				String lPath = Tools.expandEnvVarsAndProps("/private/JMSClient.properties");
+				String lPath = Tools.expandEnvVarsAndProps("${JWEBSOCKET_HOME}conf/JMSPlugIn/JMSClient.properties");
 				// String lPath = Tools.expandEnvVarsAndProps("${JWEBSOCKET_HOME}conf/JMSPlugIn/JMSClient.properties");
 				mLog.debug("Tring to read properties from: " + lPath);
 				lConfig = new PropertiesConfiguration(lPath);
@@ -303,6 +305,12 @@ public class JMSClient {
 					5, // thread pool size, messages being processed concurrently
 					JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
 			);
+
+			// in case you will require the server LoadBalancer features
+			// set the CPU updater for the instance
+			lCpuUpdater = new JWSLoadBalancerCpuUpdater(lJWSEndPoint, lTargetEndPointId);
+			lCpuUpdater.autoStart();
+			
 		} catch (JMSException lEx) {
 			mLog.fatal("JMSEndpoint could not be instantiated: " + lEx.getMessage());
 			System.exit(0);
@@ -462,8 +470,8 @@ public class JMSClient {
 						mLog.info("Response from '" + aSourceId
 								+ "' to 'echo' received: "
 								+ (JMSLogging.isFullTextLogging()
-										? aToken.toString()
-										: aToken.getLogString())
+								? aToken.toString()
+								: aToken.getLogString())
 						);
 					}
 				});
