@@ -52,7 +52,7 @@ goto READY_TO_GO
 	echo ----------------------------------------------------
 	cd %base%
 	echo Setting the version of all jWebSocket subprojects to %JWEBSOCKET_VER%%JWS_DEPLOY_VER%
-	call mvn versions:set -DnewVersion=%JWEBSOCKET_VER%%JWS_DEPLOY_VER%
+	call mvn versions:set -DnewVersion=%JWEBSOCKET_VER%%JWS_DEPLOY_VER% -DprocessParent=false
 	rem call mvn -N versions:update-child-modules
 	rem call mvn --batch-mode release:update-versions -DdevelopmentVersion=%JWEBSOCKET_VER%%JWS_DEPLOY_VER%
 
