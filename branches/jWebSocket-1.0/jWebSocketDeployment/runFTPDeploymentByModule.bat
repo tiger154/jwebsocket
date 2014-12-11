@@ -342,7 +342,7 @@ echo -------------------------------------------------------------------------
 echo               STARTING DEPLOYMENT PROCESS
 echo -------------------------------------------------------------------------
 
-for /L %%i in (7,1,%LENGTH%) do (
+for /L %%i in (1,1,%LENGTH%) do (
 	if not exist "%CD%\deployment_logs\!MODULES[%%i]!" (
 		mkdir %CD%\deployment_logs\!MODULES[%%i]!
 	)
