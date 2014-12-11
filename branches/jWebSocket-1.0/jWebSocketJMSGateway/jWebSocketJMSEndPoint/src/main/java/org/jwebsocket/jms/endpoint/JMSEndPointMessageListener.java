@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class JMSEndPointMessageListener implements IJMSMessageListener {
 
-	static final Logger mLog = Logger.getLogger(JMSEndPointMessageListener.class);
+	private static final Logger mLog = Logger.getLogger(JMSEndPointMessageListener.class);
 	static long utid = 0;
 	private JMSEndPointSender mSender;
 	private final JMSEndPoint mJMSEndPoint;
