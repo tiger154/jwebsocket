@@ -22,6 +22,7 @@ goto READY_TO_GO
 	exit
 
 :READY_TO_GO
+	set SCRIPT_DIR=%CD%\
 	set LIBS_FOLDER=%CD%\..\..\..\rte\jWebSocket-%JWEBSOCKET_VER%%JWS_DEPLOY_VER%\libs
 	set repo=..\..\..\repo\
 	rem Save current directory and change to target directory
@@ -62,6 +63,13 @@ goto READY_TO_GO
 	echo ----------------------------------------------------
 	rem set /p option=Are you sure you want to compile jWebSocket-%JWEBSOCKET_VER%%JWS_DEPLOY_VER% and sub projects (y/n)?
 	rem if "%option%"=="n" goto PROCEED_DEPLOY
+
+	copy pom.xml pomSave.xml
+	echo ------------------------------------------------------------------------
+	echo REMOVING THE PARENT TAGS FROM THE POM.XML
+	echo %SCRIPT_DIR%
+	echo ------------------------------------------------------------------------
+	type pomSave.xml|(%SCRIPT_DIR%repl "\s*<parent(\s[^>]*)?>([\s\S](?!</parent>))*[\s\S]</parent>" "" m) >pom.xml
 	call mvn clean install
 
 :PROCEED_DEPLOY
@@ -74,7 +82,11 @@ goto READY_TO_GO
 	echo DEPLOYING JWEBSOCKET LIBRARIES TO %REPO_URL%
 	rem call mvn deploy -DaltDeploymentRepository=%REPO_ID%::default::%REPO_URL%
 	call mvn deploy:deploy-file -DgroupId=org.jwebsocket -DartifactId=%3 -Dversion=%JWEBSOCKET_VER%%JWS_DEPLOY_VER% -Dpackaging=jar -Dfile=%LIBS_FOLDER%\%%3-%JWEBSOCKET_VER%%JWS_DEPLOY_VER%.jar -DpomFile=%CD%\pom.xml -DrepositoryId=%REPO_ID% -Durl=%REPO_URL%
-
+	echo ------------------------------------------------------------------------
+	echo RESTORING CHANGED POMS
+	echo ------------------------------------------------------------------------
+	copy pomSave.xml pom.xml
+	del pomSave.xml
 :END
 rem call mvn versions:revert
 cd %orig%
