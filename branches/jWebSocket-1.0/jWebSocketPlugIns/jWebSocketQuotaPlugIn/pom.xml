@@ -87,13 +87,13 @@
         <dependency>
             <groupId>org.jwebsocket</groupId>
             <artifactId>jWebSocketServer</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.jwebsocket</groupId>
             <artifactId>jWebSocketItemStoragePlugIn</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
     </dependencies>
