@@ -202,7 +202,7 @@
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketDynamicSQL</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 
