@@ -87,5 +87,11 @@
 
 	<!--  define repositories -->
 	<repositories>
+		<!--  Note: this repository is used only for deployment -->
+		<repository>
+			<id>jWebSocket-Repo</id>
+			<name>jWebSocket Maven Repository</name>
+			<url>http://mvn.jwebsocket.org/</url>
+		</repository>
 	</repositories>
 </project>
