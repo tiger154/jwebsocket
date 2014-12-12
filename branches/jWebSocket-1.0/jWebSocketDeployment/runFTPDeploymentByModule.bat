@@ -44,8 +44,19 @@ goto CONTINUE
 	goto END
 
 :PROCEED_DEPLOYMENT
-
 setlocal EnableDelayedExpansion
+
+echo -------------------------------------------------------------
+echo	RUNNING A FIRST COMPILATION, SO OUR PROJECT DEPENDENCIES 
+echo    ARE FULLY DOWNLOADED, PLEASE CHECK THE FILE %SCRIPT_DIR%\deployment_logs\full_compilation.log
+echo    TO VIEW THE COMPILATION RESULTS.
+echo -------------------------------------------------------------
+echo PLEASE WAIT...
+
+set SCRIPT_DIR=%CD%\
+cd %SCRIPT_DIR%\..\
+call mvn clean install >%SCRIPT_DIR%\deployment_logs\full_compilation.log
+cd %SCRIPT_DIR%
 
 set MODULES[1]=jWebSocketLibs\jWebSocketActiveMQPlugIn
 set ARTIFACT_ID[1]=jWebSocketActiveMQPlugIn
@@ -126,10 +137,11 @@ set JWS_DEPLOY_VER[19]=%DEPLOYMENT_VERSION%
 rem --------------------------------------------------------------------
 rem    JWEBSOCKET PLUGINS MAY ALSO BE INCLUDED IN THE DEPLOYMENT
 rem --------------------------------------------------------------------
-rem jWebSocketSamples
-set MODULES[20]=jWebSocketSamples
-set ARTIFACT_ID[20]=jWebSocketSamples
+rem jWebSocketPlugIns\jWebSocketTwitterPlugIn
+set MODULES[20]=jWebSocketPlugIns\jWebSocketTwitterPlugIn
+set ARTIFACT_ID[20]=jWebSocketTwitterPlugIn
 set JWS_DEPLOY_VER[20]=%DEPLOYMENT_VERSION%
+
 
 rem jWebSocketPlugIns\jWebSocketChatPlugIn
 set MODULES[21]=jWebSocketPlugIns\jWebSocketChatPlugIn
@@ -171,9 +183,9 @@ set MODULES[28]=jWebSocketPlugIns\jWebSocketJMXPlugIn
 set ARTIFACT_ID[28]=jWebSocketJMXPlugIn
 set JWS_DEPLOY_VER[28]=%DEPLOYMENT_VERSION%
 
-rem jWebSocketPlugIns\jWebSocketSMSPlugIn
-set MODULES[29]=jWebSocketPlugIns\jWebSocketSMSPlugIn
-set ARTIFACT_ID[29]=jWebSocketSMSPlugIn
+rem jWebSocketPlugIns\jWebSocketItemStorage
+set MODULES[29]=jWebSocketPlugIns\jWebSocketItemStorage
+set ARTIFACT_ID[29]=jWebSocketItemStoragePlugIn
 set JWS_DEPLOY_VER[29]=%DEPLOYMENT_VERSION%
 
 rem jWebSocketPlugIns\jWebSocketMailPlugIn
@@ -216,9 +228,9 @@ set MODULES[37]=jWebSocketPlugIns\jWebSocketStreamingPlugIn
 set ARTIFACT_ID[37]=jWebSocketStreamingPlugIn
 set JWS_DEPLOY_VER[37]=%DEPLOYMENT_VERSION%
 
-rem jWebSocketPlugIns\jWebSocketTwitterPlugIn
-set MODULES[38]=jWebSocketPlugIns\jWebSocketTwitterPlugIn
-set ARTIFACT_ID[38]=jWebSocketTwitterPlugIn
+rem jWebSocketSamples
+set MODULES[38]=jWebSocketSamples
+set ARTIFACT_ID[38]=jWebSocketSamples
 set JWS_DEPLOY_VER[38]=%DEPLOYMENT_VERSION%
 
 rem jWebSocketPlugIns\jWebSocketXMPPPlugIn
@@ -306,9 +318,9 @@ set MODULES[55]=jWebSocketPlugIns\JWebSocketPingPongGame
 set ARTIFACT_ID[55]=JWebSocketPingPongGame
 set JWS_DEPLOY_VER[55]=%DEPLOYMENT_VERSION%
 
-rem jWebSocketPlugIns\jWebSocketItemStorage
-set MODULES[56]=jWebSocketPlugIns\jWebSocketItemStorage
-set ARTIFACT_ID[56]=jWebSocketItemStorage
+rem jWebSocketPlugIns\jWebSocketSMSPlugIn
+set MODULES[56]=jWebSocketPlugIns\jWebSocketSMSPlugIn
+set ARTIFACT_ID[56]=jWebSocketSMSPlugIn
 set JWS_DEPLOY_VER[56]=%DEPLOYMENT_VERSION%
 
 rem jWebSocketPlugIns\jWebSocketScriptingPlugIn
@@ -328,7 +340,7 @@ set JWS_DEPLOY_VER[59]=%DEPLOYMENT_VERSION%
 
 rem jWebSocketPlugIns\jWebSocketJCRPlugIn
 set MODULES[60]=jWebSocketPlugIns\jWebSocketJCRPlugIn
-set ARTIFACT_ID[600]=jWebSocketJCRPlugIn
+set ARTIFACT_ID[60]=jWebSocketJCRPlugIn
 set JWS_DEPLOY_VER[60]=%DEPLOYMENT_VERSION%
 
 rem jWebSocketPlugIns\jWebSocketTTSPlugIn
@@ -356,6 +368,7 @@ for /L %%i in (1,1,%LENGTH%) do (
 	echo REVERTING VERSION TO THE ORIGINAL %JWEBSOCKET_VER%
 	pushd ..\!MODULES[%%i]!
 	call mvn versions:set -DnewVersion=%JWEBSOCKET_VER% > %CD%\deployment_logs\!MODULES[%%i]!\version_reverted.log
+	del pom.xml.versionsBackup
 	popd
 	echo VERSION REVERTED!
 	echo DEPLOYMENT PROCESS FINISHED FOR !MODULES[%%i]!
