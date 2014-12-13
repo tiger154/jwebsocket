@@ -222,61 +222,69 @@ public class JMSClient {
 		// set up OAuth Authenticator
 		boolean lUseOAuth = lConfig.getBoolean("UseOAuth", false);
 
-		String lOAuthHost = lConfig.getString("OAuthHost");
-		String lOAuthAppId = lConfig.getString("OAuthAppId");
-		String lOAuthAppSecret = lConfig.getString("OAuthAppSecret");
-		String lOAuthUsername = lConfig.getString("OAuthUsername");
-		String lOAuthPassword = lConfig.getString("OAuthPassword");
-		long lOAuthTimeout = lConfig.getLong("OAuthTimeout", 5000);
-
-		lUseOAuth = lUseOAuth
-				&& null != lOAuthHost
-				&& null != lOAuthAppId
-				&& null != lOAuthAppSecret
-				&& null != lOAuthUsername
-				&& null != lOAuthPassword;
-
 		if (lUseOAuth) {
-			lOAuthAuthenticator.init(
-					lOAuthHost,
-					lOAuthAppId,
-					lOAuthAppSecret,
-					lOAuthUsername,
-					lOAuthPassword,
-					lOAuthTimeout
-			);
-			try {
-				lOAuthAuthenticator.authDirect(lOAuthUsername, lOAuthPassword);
-			} catch (JMSEndpointException lEx) {
-				mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: "
-						+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
-			}
-			lAuthenticator.addAuthenticator(lAuthenticator);
-		}
+			String lOAuthHost = lConfig.getString("OAuthHost");
+			String lOAuthAppId = lConfig.getString("OAuthAppId");
+			String lOAuthAppSecret = lConfig.getString("OAuthAppSecret");
+			String lOAuthUsername = lConfig.getString("OAuthUsername");
+			String lOAuthPassword = lConfig.getString("OAuthPassword");
+			long lOAuthTimeout = lConfig.getLong("OAuthTimeout", 5000);
 
+			lUseOAuth = lUseOAuth
+					&& null != lOAuthHost
+					&& null != lOAuthAppId
+					&& null != lOAuthAppSecret
+					&& null != lOAuthUsername
+					&& null != lOAuthPassword;
+
+			if (lUseOAuth) {
+				lOAuthAuthenticator.init(
+						lOAuthHost,
+						lOAuthAppId,
+						lOAuthAppSecret,
+						lOAuthUsername,
+						lOAuthPassword,
+						lOAuthTimeout
+				);
+				try {
+					lOAuthAuthenticator.authDirect(lOAuthUsername, lOAuthPassword);
+				} catch (JMSEndpointException lEx) {
+					mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: "
+							+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+				}
+				lAuthenticator.addAuthenticator(lAuthenticator);
+			} else {
+				mLog.error("Missing OAuth required configuration parameters!");
+			}
+		}
+		
 		// set up LDAP Authenticator
 		boolean lUseLDAP = lConfig.getBoolean("UseLDAP", false);
 
-		String lLDAPURL = lConfig.getString("LDAPURL");
-		String lBaseDNGroups = lConfig.getString("BaseDNGroups");
-		String lBaseDNUsers = lConfig.getString("BaseDNUsers");
-		String lBindUsername = lConfig.getString("BindUsername");
-		String lBindPassword = lConfig.getString("BindPassword");
-
 		if (lUseLDAP) {
-			lLDAPAuthenticator.init(
-					lLDAPURL,
-					lBaseDNGroups,
-					lBaseDNUsers
-			);
-			// to authenticatie the client, if required
-			try {
-				lLDAPAuthenticator.bind(lBindUsername, lBindPassword);
-			} catch (JMSEndpointException lEx) {
-				mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: "
-						+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+			String lLDAPURL = lConfig.getString("LDAPURL");
+			String lBaseDNGroups = lConfig.getString("BaseDNGroups");
+			String lBaseDNUsers = lConfig.getString("BaseDNUsers");
+			String lBindUsername = lConfig.getString("BindUsername");
+			String lBindPassword = lConfig.getString("BindPassword");
+
+			if (lUseLDAP) {
+				lLDAPAuthenticator.init(
+						lLDAPURL,
+						lBaseDNGroups,
+						lBaseDNUsers
+				);
+				// to authenticatie the client, if required
+				try {
+					lLDAPAuthenticator.bind(lBindUsername, lBindPassword);
+				} catch (JMSEndpointException lEx) {
+					mLog.error("User '" + lBindUsername + "' could not be authenticated at client: "
+							+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+				}
+				lAuthenticator.addAuthenticator(lLDAPAuthenticator);
+			} else {
+				mLog.error("Missing LDAP required configuration parameters!");
 			}
-			lAuthenticator.addAuthenticator(lLDAPAuthenticator);
 		}
 
 		// TODO: Validate config data here!
@@ -310,7 +318,7 @@ public class JMSClient {
 			// set the CPU updater for the instance
 			lCpuUpdater = new JWSLoadBalancerCpuUpdater(lJWSEndPoint, lTargetEndPointId);
 			lCpuUpdater.autoStart();
-			
+
 		} catch (JMSException lEx) {
 			mLog.fatal("JMSEndpoint could not be instantiated: " + lEx.getMessage());
 			System.exit(0);
@@ -415,9 +423,7 @@ public class JMSClient {
 
 						// runProgressTest();
 						runOAuthTest();
-						if (true) {
-							return;
-						}
+						
 						Map<String, Object> lArgs = new FastMap<String, Object>();
 
 						// echo on login
@@ -470,8 +476,8 @@ public class JMSClient {
 						mLog.info("Response from '" + aSourceId
 								+ "' to 'echo' received: "
 								+ (JMSLogging.isFullTextLogging()
-								? aToken.toString()
-								: aToken.getLogString())
+										? aToken.toString()
+										: aToken.getLogString())
 						);
 					}
 				});
@@ -486,32 +492,6 @@ public class JMSClient {
 							if (mLog.isInfoEnabled()) {
 								mLog.info("Username was detected by server: '" + aToken.getString("username") + "'");
 							}
-						}
-					}
-				});
-
-		// on welcome message from jWebSocket, authenticate against jWebSocket
-		// lListener.addResponseListener("org.jwebsocket.jms.demo", "forwardPayload",
-		// 		new JWSMessageListener(lSender) {
-		lJWSEndPoint.addResponseListener("com.ptc.windchill", "getLibraryPart",
-				new JWSMessageListener(lJWSEndPoint) {
-					@Override
-					public void processToken(String aSourceId, Token aToken) {
-						mLog.info("Received 'forwardPayload'.");
-						if (true) {
-							return;
-						}
-						// String lBase64Encoded = lToken.getString("fileAsBase64");
-						String lPayload = aToken.getString("payload");
-						// specify the target file
-						File lFile = new File("getLibraryPart.json");
-						try {
-							// take the zipped version of the file... 
-							byte[] lBA = lPayload.getBytes("UTF-8");
-							// and save it to the hard disk
-							FileUtils.writeByteArrayToFile(lFile, lBA);
-						} catch (IOException lEx) {
-							mLog.error("File " + lFile.getAbsolutePath() + " could not be saved!");
 						}
 					}
 				});
@@ -584,7 +564,7 @@ public class JMSClient {
 		// this is a console app demo
 		// so wait in a thread loop until the client get shut down
 		try {
-			while (!lJWSEndPoint.isShutdown()) {
+			while (lJWSEndPoint.isOpen()) {
 				Thread.sleep(1000);
 			}
 		} catch (InterruptedException lEx) {
@@ -598,20 +578,7 @@ public class JMSClient {
 			// shut the client properly down
 			lJWSEndPoint.shutdown();
 		}
-//		try {
-//			// Tools.stopUtilityTimer();
-//			Tools.getThreadPool().shutdown();
-//			Tools.getThreadPool().awaitTermination(10, TimeUnit.SECONDS);
-//			/*
-//			int lSeconds = 5;
-//			while (!lJWSEndPoint.isShutdown() && lSeconds > 0) {
-//				Thread.sleep(1000);
-//				lSeconds--;
-//			}
-//			*/
-//		} catch (InterruptedException lEx) {
-//			mLog.error(lEx.getMessage());
-//		}
+
 		// and show final status message in the console
 		mLog.info("JMS Client Endpoint properly shutdown.");
 	}
