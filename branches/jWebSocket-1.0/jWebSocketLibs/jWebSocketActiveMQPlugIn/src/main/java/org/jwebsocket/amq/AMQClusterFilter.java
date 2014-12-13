@@ -55,7 +55,7 @@ public class AMQClusterFilter extends BrokerFilter {
 	/**
 	 *
 	 */
-	public Map<String, DBCollection> mCachedCollections;
+	private Map<String, DBCollection> mCachedCollections;
 
 	/**
 	 *
