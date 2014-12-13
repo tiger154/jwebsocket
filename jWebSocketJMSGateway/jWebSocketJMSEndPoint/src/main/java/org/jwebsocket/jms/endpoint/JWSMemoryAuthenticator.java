@@ -21,6 +21,7 @@ package org.jwebsocket.jms.endpoint;
 import java.util.Map;
 import javolution.util.FastMap;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.Tools;
 
 /**
  * Memory authenticator for testing purposes (not recommended for production
@@ -31,6 +32,9 @@ import org.jwebsocket.token.Token;
 public class JWSMemoryAuthenticator implements IJWSAuthenticator {
 
 	private Map<String, String> mCredentials = new FastMap<String, String>();
+
+	public JWSMemoryAuthenticator() {
+	}
 
 	public JWSMemoryAuthenticator(Map<String, String> aCredentials) {
 		mCredentials.putAll(mCredentials);
@@ -55,7 +59,8 @@ public class JWSMemoryAuthenticator implements IJWSAuthenticator {
 		String lPassword = aToken.getString("password");
 
 		if (null != lUsername && null != lPassword
-				&& mCredentials.containsKey(lUsername) && mCredentials.get(lUsername).equals(lPassword)) {
+				&& mCredentials.containsKey(lUsername)
+				&& mCredentials.get(lUsername).equals(Tools.getMD5(lPassword))) {
 			return lUsername;
 		}
 
