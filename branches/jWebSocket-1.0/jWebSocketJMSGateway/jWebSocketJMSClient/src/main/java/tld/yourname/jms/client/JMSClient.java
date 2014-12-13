@@ -45,6 +45,7 @@ import org.jwebsocket.jms.endpoint.JWSLDAPAuthenticator;
 import org.jwebsocket.jms.endpoint.JWSOAuthAuthenticator;
 import org.jwebsocket.jms.endpoint.JWSResponseTokenListener;
 import org.jwebsocket.jms.endpoint.JWSLoadBalancerCpuUpdater;
+import org.jwebsocket.jms.endpoint.JWSMemoryAuthenticator;
 
 /**
  * JMS Gateway Demo Client
@@ -60,9 +61,10 @@ public class JMSClient {
 
 	private static String lTargetEndPointId = null;
 
-	private static final JWSAutoSelectAuthenticator lAuthenticator = new JWSAutoSelectAuthenticator();
+	private static final JWSAutoSelectAuthenticator lAuthenticatorManager = new JWSAutoSelectAuthenticator();
 	private static final JWSOAuthAuthenticator lOAuthAuthenticator = new JWSOAuthAuthenticator();
 	private static final JWSLDAPAuthenticator lLDAPAuthenticator = new JWSLDAPAuthenticator();
+	private static final JWSMemoryAuthenticator lMemoryAuthenticator = new JWSMemoryAuthenticator();
 
 	private static void runProgressTest() {
 		Map<String, Object> lArgs = new FastMap<String, Object>();
@@ -252,12 +254,12 @@ public class JMSClient {
 					mLog.error("User '" + lOAuthUsername + "' could not be authenticated at client: "
 							+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 				}
-				lAuthenticator.addAuthenticator(lAuthenticator);
+				lAuthenticatorManager.addAuthenticator(lAuthenticatorManager);
 			} else {
 				mLog.error("Missing OAuth required configuration parameters!");
 			}
 		}
-		
+
 		// set up LDAP Authenticator
 		boolean lUseLDAP = lConfig.getBoolean("UseLDAP", false);
 
@@ -281,10 +283,19 @@ public class JMSClient {
 					mLog.error("User '" + lBindUsername + "' could not be authenticated at client: "
 							+ lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 				}
-				lAuthenticator.addAuthenticator(lLDAPAuthenticator);
+				lAuthenticatorManager.addAuthenticator(lLDAPAuthenticator);
 			} else {
 				mLog.error("Missing LDAP required configuration parameters!");
 			}
+		}
+
+		// setup memory authenticator
+		boolean lUseMemory = true;
+		if (lUseMemory) {
+			// statically adding user credentials (password require to be MD5 value)
+			lMemoryAuthenticator.addCredentials("root", "63a9f0ea7bb98050796b649e85481845"); //root:root
+			// registering the authenticator
+			lAuthenticatorManager.addAuthenticator(lLDAPAuthenticator);
 		}
 
 		// TODO: Validate config data here!
@@ -423,7 +434,7 @@ public class JMSClient {
 
 						// runProgressTest();
 						runOAuthTest();
-						
+
 						Map<String, Object> lArgs = new FastMap<String, Object>();
 
 						// echo on login
