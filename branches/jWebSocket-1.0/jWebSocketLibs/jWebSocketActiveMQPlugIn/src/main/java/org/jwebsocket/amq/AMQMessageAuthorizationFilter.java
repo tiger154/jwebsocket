@@ -45,7 +45,7 @@ public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy
 	public AMQMessageAuthorizationFilter() {
 		mLog.info("Instantiating jWebSocket AMQMessageAuthorizationFilter...");
 	}
-	
+
 	/**
 	 *
 	 * @return
@@ -63,37 +63,36 @@ public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy
 	}
 
 	/**
-	 * 
-	 * @param aSecureMessageHubTopic 
+	 *
+	 * @param aSecureMessageHubTopic
 	 */
 	public void setSecureMessageHubTopic(boolean aSecureMessageHubTopic) {
 		this.mSecureMessageHubTopic = aSecureMessageHubTopic;
 	}
 
 	/**
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public boolean isSecureMessageHubTopic() {
 		return mSecureMessageHubTopic;
 	}
 
 	/**
-	 * 
-	 * @param aSecureNodesTopic 
+	 *
+	 * @param aSecureNodesTopic
 	 */
 	public void setSecureNodesTopic(boolean aSecureNodesTopic) {
 		this.mSecureNodesTopic = aSecureNodesTopic;
 	}
 
 	/**
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public boolean isSecureNodesTopic() {
 		return mSecureNodesTopic;
 	}
-	
 
 	/**
 	 *
@@ -110,7 +109,6 @@ public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy
 				if (aContext.isNetworkConnection()) {
 					return true;
 				}
-
 				// restricting message consumption in the cluster main topic
 				if (lSecureDest.matches(lMessageDest)) {
 					if (aContext.getConnectionId().getValue().equals((String) aMessage.getProperty("connectionId"))) {
@@ -120,7 +118,10 @@ public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy
 						return true;
 					} else if (Boolean.TRUE.equals(aMessage.getProperty("isBroadcast"))) {
 						// allow multiple subscribers to process broadcasted messages
-						return true;
+						if (aMessage.getDestination().getPhysicalName().equals(aMessage.getUserID())) {
+							// allow only server nodes to broadcast messages (security protection)
+							return true;
+						}
 					} else if (aMessage.getDestination().getPhysicalName().equals(aContext.getUserName())) {
 						// allow if the username matches the message destination 
 						// guarantees message consumption across server nodes
