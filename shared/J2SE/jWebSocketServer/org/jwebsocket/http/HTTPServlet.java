@@ -109,7 +109,7 @@ public class HTTPServlet extends HttpServlet {
 			lConnectionId = aSessionId;
 		}
 
-		return Tools.getMD5(lConnectionId);
+		return Tools.getMD5(lConnectionId + aReq.getRemoteAddr());
 	}
 
 	void updateSessionTimeout(String aSessionId) {
