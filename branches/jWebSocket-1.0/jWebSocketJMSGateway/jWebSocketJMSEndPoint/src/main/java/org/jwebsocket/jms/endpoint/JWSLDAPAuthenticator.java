@@ -119,14 +119,14 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 		if (null != mADTools) {
 			mLog.debug("Binding to LDAP...");
 			if (null != mADTools.login(aUsername, aPassword)) {
-				mLog.info(aUsername + " successfully bound to LDAP server.");
+				mLog.info(aUsername + " successfully bound to LDAP server!");
 				return true;
 			} else {
-				mLog.error(aUsername + " could not be bound to LDAP server.");
+				mLog.error(aUsername + " could not be bound to LDAP server!");
 				return false;
 			}
 		} else {
-			throw new JMSEndpointException("LDAP library not (yet) initialized.");
+			throw new JMSEndpointException("LDAP library not (yet) initialized!");
 		}
 	}
 
@@ -164,28 +164,18 @@ public class JWSLDAPAuthenticator implements IJWSAuthenticator {
 	public String authToken(Token aToken) throws JMSEndpointException {
 		String lUsername = aToken.getString("username");
 		if (null == lUsername) {
-			throw new JMSEndpointException("No user name for LDAP authentication.");
+			throw new JMSEndpointException("No user name for LDAP authentication!");
 		}
 		String lPassword = aToken.getString("password");
 		if (null == lPassword) {
-			throw new JMSEndpointException("No password passed for LDAP authentication.");
+			throw new JMSEndpointException("No password passed for LDAP authentication!");
 		}
-		try {
-			mADTools.getDirContext(lUsername, lPassword);
-			// cut potential trailing @domain, return pure username
-			int lIdx = lUsername.indexOf("@");
-			if (lIdx > 0) {
-				lUsername = lUsername.substring(0, lIdx);
-			}
-			if (null == lUsername) {
-				throw new JMSEndpointException("LDAP server did not deliver a username.");
-			}
-			return lUsername;
-		} catch (NamingException lEx) {
-			// "sometimes" spaces are returned as 0x00 characters,
-			//  replace these to avoid subsequent JSON parse errors!
-			throw new JMSEndpointException(lEx.getMessage().replace((char) 0, (char) 32));
+		
+		lUsername = authenticate(aToken);
+		if (null != lUsername) {
+			throw new JMSEndpointException("LDAP authentication process failed!");
 		}
+		return lUsername;
 	}
 
 	@Override
