@@ -70,6 +70,85 @@ public class ActionPlugIn extends TokenPlugIn {
 	public void beforeExecuteAction(String aActionName, WebSocketConnector aConnector, Token aToken) {
 	}
 
+	public class AssertionException extends RuntimeException {
+
+		private int mCode;
+		private String mMessage;
+
+		public AssertionException(int mCode, String mMessage) {
+			super(mMessage);
+		}
+
+		public int getCode() {
+			return mCode;
+		}
+	}
+
+	/**
+	 * Throws an AssertionException if the given expression argument is FALSE.
+	 *
+	 * @param aExpression
+	 * @param aCode The jWebSocket compliant response code. Example: -1
+	 * @param aMessage The exception message
+	 */
+	protected void assertTrue(Boolean aExpression, int aCode, String aMessage) {
+		if (!aExpression) {
+			throw new AssertionException(aCode, aMessage);
+		}
+	}
+
+	/**
+	 * Throws an AssertionException if the given object value argument is NULL.
+	 *
+	 * @param aValue
+	 * @param aCode The jWebSocket compliant response code. Example: -1
+	 * @param aMessage
+	 */
+	protected void assertNotNull(Object aValue, int aCode, String aMessage) {
+		if (null == aValue) {
+			throw new AssertionException(aCode, aMessage);
+		}
+	}
+
+	/**
+	 * Throws an AssertionException if the given object value argument is NULL.
+	 *
+	 * @param aValue
+	 * @param aMessage
+	 */
+	protected void assertNotNull(Object aValue, String aMessage) {
+		assertNotNull(aValue, -1, aMessage);
+	}
+
+	/**
+	 * Throws an AssertionException if the given expression argument is FALSE.
+	 *
+	 * @param aExpression
+	 * @param aMessage
+	 */
+	protected void assertTrue(Boolean aExpression, String aMessage) {
+		assertTrue(aExpression, -1, aMessage);
+	}
+
+	/**
+	 * Throws an AssertionException
+	 *
+	 * @param aCode
+	 * @param aMessage
+	 */
+	protected void fail(Integer aCode, String aMessage) {
+		assertTrue(false, aCode, aMessage);
+	}
+
+	/**
+	 * Throws an AssertionException
+	 *
+	 * @param aMessage
+	 */
+	protected void fail(String aMessage) {
+		fail(-1, aMessage);
+	}
+
 	/**
 	 * Plug-in action's executor
 	 *
@@ -110,29 +189,38 @@ public class ActionPlugIn extends TokenPlugIn {
 			lMethod.invoke(this, aConnector, aToken);
 		} catch (Exception lEx) {
 			String lExMsg, lExClass;
-			boolean lError = false;
-			if (null != lEx.getCause()) {
-				// supporting nested exceptions produced inside the method invocation
-				lExMsg = lEx.getCause().getMessage();
-				lExClass = lEx.getCause().getClass().getName();
-			} else {
-				// normal exception
-				lExMsg = lEx.getMessage();
+			Integer lExCode = -1;
+
+			if (lEx instanceof AssertionException) {
+				lExCode = ((AssertionException) lEx).getCode();
 				lExClass = lEx.getClass().getName();
-				lError = true;
+				lExMsg = lEx.getLocalizedMessage();
+			} else {
+				boolean lError = false;
+				if (null != lEx.getCause()) {
+					// supporting nested exceptions produced inside the method invocation
+					lExMsg = lEx.getCause().getMessage();
+					lExClass = lEx.getCause().getClass().getName();
+				} else {
+					// normal exception
+					lExMsg = lEx.getMessage();
+					lExClass = lEx.getClass().getName();
+					lError = true;
+				}
+
+				if (lError) {
+					// let the global exception handler to process this exception
+					throw new RuntimeException(lEx);
+				} else if (mLog.isDebugEnabled()) {
+					// nested expections are debugged only
+					mLog.debug("Exception (" + lExClass + ":" + lExMsg + ") produced calling '"
+							+ aMethodName + "' action on " + lEx.getCause().getStackTrace()[1].getClassName() + ":"
+							+ lEx.getCause().getStackTrace()[1].getLineNumber()
+							+ " class...");
+				}
 			}
 
-			if (lError) {
-				// let the global exception handler to process this exception
-				throw new RuntimeException(lEx);
-			} else if (mLog.isDebugEnabled()) {
-				// nested expections are debugged only
-				mLog.debug("Exception (" + lExClass + ":" + lExMsg + ") produced calling '"
-						+ aMethodName + "' action on " + lEx.getCause().getStackTrace()[1].getClassName() + ":"
-						+ lEx.getCause().getStackTrace()[1].getLineNumber()
-						+ " class...");
-			}
-			Token lResponse = getServer().createErrorToken(aToken, -1, lExMsg);
+			Token lResponse = getServer().createErrorToken(aToken, lExCode, lExMsg);
 			lResponse.setString("exception", lExClass);
 			sendToken(aConnector, lResponse);
 		}
