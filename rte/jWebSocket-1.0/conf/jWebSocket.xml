@@ -2464,7 +2464,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<setting key="loadbalancer_plugin">jws.lb</setting>
+				<setting key="loadbalancer_plugin_id">jws.lb</setting>
 			</settings>
 		</filter>
 
