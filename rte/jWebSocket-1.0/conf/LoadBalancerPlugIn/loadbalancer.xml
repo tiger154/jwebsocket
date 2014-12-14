@@ -4,21 +4,24 @@
 	
 	<!-- Service Cluster 1 definition -->
 	<bean id="service1cluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
-		<property name="password" value="admin"/>
+		<!-- plan password value: 'admin' -->
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
 		<property name="alias" value="service1"/>
 		<property name="namespace" value="org.jwebsocket.plugins.sample1"/>
 	</bean>
 	
 	<!-- Service Cluster 2 definition -->
 	<bean id="service2cluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
-		<property name="password" value="admin"/>
+		<!-- plan password value: 'admin' -->
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
 		<property name="alias" value="service2"/>
 		<property name="namespace" value="org.jwebsocket.plugins.sample2"/>
 	</bean>
 	
 	<!-- Service Cluster 3 definition -->
 	<bean id="service3cluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
-		<property name="password" value="admin"/>
+		<!-- plan password value: 'admin' -->
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
 		<property name="alias" value="service3"/>
 		<property name="namespace" value="org.jwebsocket.plugins.sample3"/>
 	</bean>
@@ -27,6 +30,45 @@
 	<bean id="org.jwebsocket.plugins.loadbalancer.settings" class="org.jwebsocket.plugins.loadbalancer.Settings">
 		<property name="clusterManager">
 			<bean class="org.jwebsocket.plugins.loadbalancer.memory.MemoryClusterManager">
+				<!-- 
+				As we know, in the load balancer the client applications will functions as services. 
+				Until now these services only can to be Web client (JavaScript) or Java client (java). 
+				As consequence of this, it have implemented 3 types of algorithms differently for load 
+				balancing considering the type of service (Web or Java) .The algorithm "1" to behave as 
+				a simple round robin. This algorithm will work with both types of services. For example:
+
+										Algorithm Round Robin ( value = 1 )
+
+				Requests   R1   R2   R3   R1   R2   R3
+						  _____________________________
+				Services | Web|Java| Web|Java|Web |Java|
+						 |____|____|____|____|____|____|
+
+
+				The algorithm "2" was implemented only for java services; if all services are java clients
+				this is the perfect choice, because this algorithm uses the “sigar” library to get the cpu usage
+				in each online service. In this way we can achieve load balance more accurately. For example:
+
+									   Algorithm Least CPU Usage ( value = 2 )
+
+				Requests    R2   R6   R3        R4        R5   R1   R7
+						   ______________________________________________________  
+				Services  |Java|Java|Java|Web |Java|Web |Java|Java|Java|Web |Web | 
+				CPU Usage |24%_|90%_|32%_|____|45%_|____|60%_|15%_|100%|____|____|	
+
+
+				The algorithm "3" is a mixture of the previous algorithms, this algorithm is appropriate when
+				services were created using both types of clients (Web and Java). When the service selected 
+				is (Web) it executes the round robin algorithm and when the service selected is (Java) 
+				it execute the least cpu usage algorithm. For example:
+
+									  Algorithm Optimum Balance ( value = 3 )
+
+				Requests    R1   R8   R3   R4   R5   R6   R7   R2   R1   R2   R3
+						   ______________________________________________________  
+				Services  |Web |Java|Java|Web |Java|Web |Java|Java|Web |Web |Web | 
+				CPU Usage |____|90%_|32%_|____|45%_|____|60%_|15%_|____|____|____|					  
+				-->
 				<property name="balancerAlgorithm" value="3" />
 				<property name="clustersList">
 					<list>
@@ -41,48 +83,8 @@
 		<!-- load balancer message delivery timeout -->
 		<property name="messageTimeout" value="3000" />
 		
-		<!-- Delay time for stop the connector when the client can't stop it. -->
+		<!-- delay time for stop the connector when the client can't stop it. -->
 		<property name="connectorStopDelay" value="10000" />
-		
-		<!-- As we know, in the load balancer the client applications will functions as services. 
-		Until now these services only can to be Web client (JavaScript) or Java client (java). 
-		As consequence of this, it have implemented 3 types of algorithms differently for load 
-		balancing considering the type of service (Web or Java) .The algorithm "1" to behave as 
-		a simple round robin. This algorithm will work with both types of services. For example:
-		
-								Algorithm Round Robin ( value = 1 )
-		
-		Requests   R1   R2   R3   R1   R2   R3
-				  _____________________________
-		Services | Web|Java| Web|Java|Web |Java|
-				 |____|____|____|____|____|____|
-		
-		
-		The algorithm "2" was implemented only for java services; if all services are java clients
-		this is the perfect choice, because this algorithm uses the “sigar” library to get the cpu usage
-		in each online service. In this way we can achieve load balance more accurately. For example:
-		
-							   Algorithm Least CPU Usage ( value = 2 )
-			
-		Requests    R2   R6   R3        R4        R5   R1   R7
-				   ______________________________________________________  
-		Services  |Java|Java|Java|Web |Java|Web |Java|Java|Java|Web |Web | 
-		CPU Usage |24%_|90%_|32%_|____|45%_|____|60%_|15%_|100%|____|____|	
-		
-		
-		The algorithm "3" is a mixture of the previous algorithms, this algorithm is appropriate when
-		services were created using both types of clients (Web and Java). When the service selected 
-		is (Web) it executes the round robin algorithm and when the service selected is (Java) 
-		it execute the least cpu usage algorithm. For example:
-			
-							  Algorithm Optimum Balance ( value = 3 )
-							  
-		Requests    R1   R8   R3   R4   R5   R6   R7   R2   R1   R2   R3
-				   ______________________________________________________  
-		Services  |Web |Java|Java|Web |Java|Web |Java|Java|Web |Web |Web | 
-		CPU Usage |____|90%_|32%_|____|45%_|____|60%_|15%_|____|____|____|					  
-								                                       
-		-->
 	</bean>
 	
 </beans>
