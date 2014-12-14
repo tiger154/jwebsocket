@@ -52,8 +52,8 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	public LoadBalancerFilter(FilterConfiguration aConfiguration) {
 		super(aConfiguration);
-		mLoadBalancerPlugInId = getFilterConfiguration().getSettings().get("loadbalancer_plugin");
-		Assert.notNull(mLoadBalancerPlugInId, "Missing LoadBalancerFilter 'loadbalancer_plugin' "
+		mLoadBalancerPlugInId = getFilterConfiguration().getSettings().get("loadbalancer_plugin_id");
+		Assert.notNull(mLoadBalancerPlugInId, "Missing LoadBalancerFilter 'loadbalancer_plugin_id' "
 				+ "setting!");
 	}
 
