@@ -215,7 +215,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		// checking password.
 		if (null != lCluster.getPassword()) {
-			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
+			Assert.isTrue(lCluster.getPassword().equals(Tools.getMD5(lPassword)), "Password is invalid!");
 		}
 
 		Token lResponse = createResponse(aToken);
@@ -252,7 +252,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		// checking password
 		if (null != lCluster.getPassword()) {
-			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
+			Assert.isTrue(lCluster.getPassword().equals(Tools.getMD5(lPassword)), "Password is invalid!");
 		}
 
 		IClusterEndPoint lClusterEndPoint = lCluster.getEndPoint(lEndPointId);
@@ -302,7 +302,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		// checking password
 		if (null != lCluster.getPassword()) {
-			Assert.isTrue(lCluster.getPassword().equals(lPassword), "The given password is invalid!");
+			Assert.isTrue(lCluster.getPassword().equals(Tools.getMD5(lPassword)), "The given password is invalid!");
 		}
 
 		final IClusterEndPoint lClusterEndPoint = lCluster.getEndPoint(lEndPointId);
