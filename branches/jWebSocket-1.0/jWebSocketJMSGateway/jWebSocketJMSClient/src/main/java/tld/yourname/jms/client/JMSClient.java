@@ -376,56 +376,6 @@ public class JMSClient {
 		});
 
 		// process response of the JMS Gateway login...
-//		lListener.addResponseListener("org.jwebsocket.plugins.system", "login",
-//				new JWSMessageListener(lSender) {
-//			@Override
-//			public void processToken(String aSourceId, Token aToken) {
-//				int lCode = aToken.getInteger("code", -1);
-//				if (0 == lCode) {
-//					if (mLog.isInfoEnabled()) {
-//						mLog.info("Authentication against jWebSocket JMS Gateway successful.");
-//					}
-//				} else {
-//					mLog.error("Authentication against jWebSocket JMS Gateway failed!");
-//				}
-//
-//				Map lArgs = new FastMap<String, Object>();
-//				/*
-//				 lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
-//				 "demo1", lArgs, "{}");
-//				 */
-//				/*
-//				lArgs.put("accessToken", lOAuth.getAccessToken());
-//				lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
-//						"sso1", lArgs, "{}");
-//				*/
-//				// Token lToken = TokenFactory.createToken("com.ptc.windchill", "createBOM");
-//				// lToken.setString("username", "rsouza");
-//				// lToken.setString("password", "...");
-//				// lToken.setString("payload", "{}");
-//				// sendToken("hqdvptas134", lToken);
-//				
-//				lSender.sendPayload("hqdvptas134", "com.ptc.windchill",
-//					"createBOM", lArgs, "{}");
-//				
-//				if (true) {
-//					return;
-//				}
-//
-//				// now to try to get some data from the service...
-//				lArgs = new FastMap<String, Object>();
-//				lArgs.put("username", "anyUsername");
-//				lArgs.put("password", "anyPassword");
-//				lArgs.put("action", "CREATE");
-//				// send the payload to the target (here the JMS demo service)
-//				// lSender.forwardPayload("aschulze-dt", "org.jwebsocket.jms.demo",
-//				//		"forwardPayload", "4711", lArgs, null);
-//				// send the payload to the target (here the JMS demo service)
-//				lSender.sendPayload("HQDVPTAS110", "com.ptc.windchill",
-//						"getLibraryPart", lArgs, "{}");
-//			}
-//		});
-		// process response of the JMS Gateway login...
 		lJWSEndPoint.addResponseListener("org.jwebsocket.plugins.system", "login",
 				new JWSMessageListener(lJWSEndPoint) {
 					@Override
