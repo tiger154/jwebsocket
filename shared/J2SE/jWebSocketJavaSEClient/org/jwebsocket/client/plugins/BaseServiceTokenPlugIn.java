@@ -29,8 +29,9 @@ import org.jwebsocket.util.Tools;
 /**
  *
  * @author Rolando Betancourt Toucet
+ * @author Rolando Santamaria Maso
  */
-public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
+public abstract class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 
 	private Timer mTimer;
 
