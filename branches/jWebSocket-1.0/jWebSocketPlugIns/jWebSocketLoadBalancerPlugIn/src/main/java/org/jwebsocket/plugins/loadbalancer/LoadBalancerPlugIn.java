@@ -349,7 +349,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 * @param aConnector
 	 * @param aToken
 	 */
-	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
+	@Role(name = NS_LOADBALANCER + ".changeBalancerAlgorithm")
 	public void changeAlgorithmAction(WebSocketConnector aConnector, Token aToken) {
 		Integer lAlgorithm = aToken.getInteger("algorithm");
 
