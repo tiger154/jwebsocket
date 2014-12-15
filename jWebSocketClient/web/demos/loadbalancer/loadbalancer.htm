@@ -128,9 +128,7 @@
 				log("Running choose balance algorithm...");
 				if( lWSC.isConnected() ) {
 					var lChosenAlgorithm =  parseInt( document.getElementById("stxChoAlg").value );
-					lWSC.lbChangeAlgorithm({
-						algorithm: lChosenAlgorithm
-					});
+					lWSC.lbChangeAlgorithm(lChosenAlgorithm, {});
 				} else {
 					log( "Not connected." );
 				}
