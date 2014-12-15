@@ -314,7 +314,7 @@ public class LoadBalancerDialog extends javax.swing.JFrame implements WebSocketR
                                 String lClusterAlias = cbClusterAlias.getSelectedItem().toString();
                                 String lServiceNamespace = mNamespaceLoaded.get(mServicesLoaded.indexOf(lClusterAlias));
 
-                                mLBPlugIn.sampleService(lPassword, lClusterAlias, lServiceNamespace, this);
+                                mLBPlugIn.sampleService(lClusterAlias, lPassword, lServiceNamespace, this);
                         } catch (WebSocketException lEx) {
                                 Log(lEx.getClass().getSimpleName() + ":  " + lEx.getMessage());
                         }
