@@ -164,6 +164,16 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		}
 	}
 
+	@Override
+	public void processLogoff(WebSocketConnector aConnector) {
+		int lRemoved = mClusterManager.removeConnectorEndPoints(aConnector.getId());
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug(lRemoved + " services where removed due to client '" + aConnector.getId()
+					+ "' logoff!");
+		}
+	}
+
 	/**
 	 * Sends a list (of maps) with the in-formation about all clusters (e.g. per
 	 * cluster: cluster-alias, number of end-points, list of endpoints in this
