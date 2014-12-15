@@ -64,18 +64,16 @@ jws.LoadBalancerPlugIn = {
 	
 	//:m:*:lbChangeAlgorithm
 	//:d:en:Changes the type of algorithm used by the load balancer.
+	//:a:en::aAlgorithm:Integer:The balancer algorithm to be set.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	lbChangeAlgorithm: function(aOptions) {
+	lbChangeAlgorithm: function(aAlgorithm, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
-			aOptions = jws.getOptions(aOptions, {
-				algorithm: null
-			});
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
 				type: "changeAlgorithm",
-				algorithm: aOptions.algorithm
+				algorithm: aAlgorithm
 			};
 			this.sendToken(lToken, aOptions);
 		}
