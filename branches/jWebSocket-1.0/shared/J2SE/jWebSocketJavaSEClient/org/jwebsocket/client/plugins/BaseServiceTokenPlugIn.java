@@ -41,17 +41,16 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 	 */
 	public BaseServiceTokenPlugIn(WebSocketTokenClient aClient, String aNS) {
 		super(aClient, aNS);
+		if (aClient.isConnected()) {
+			updateCpuUsage();
+		}
 	}
 
 	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
 		super.processOpened(aEvent);
-
-		try {
-			updateCpuUsage();
-		} catch (Exception lEx) {
-			throw new RuntimeException(lEx);
-		}
+		
+		updateCpuUsage();
 	}
 
 	/**
@@ -112,10 +111,7 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 	/**
 	 *
 	 */
-	private void updateCpuUsage() throws Exception {
-		//testing first if SIGAR is installed 
-		Tools.getCpuUsage();
-
+	private void updateCpuUsage() {
 		getTimer().schedule(new JWSTimerTask() {
 
 			@Override
