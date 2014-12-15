@@ -230,16 +230,13 @@ jws.tests.LoadBalancer = {
 		it(lSpec, function() {
 
 			// perform the change algorithm  on the server
-			jws.Tests.getAdminTestConn().lbChangeAlgorithm({
-				algorithm: 1,
+			jws.Tests.getAdminTestConn().lbChangeAlgorithm(1, {
 				OnResponse: function(aResponse) {
 					if (aResponse.code > -1) {
-						this.lbChangeAlgorithm({
-							algorithm: 2,
+						this.lbChangeAlgorithm(2, {
 							OnResponse: function(aResponse) {
 								if (aResponse.code > -1) {
-									this.lbChangeAlgorithm({
-										algorithm: 3,
+									this.lbChangeAlgorithm(3, {
 										OnResponse: function(aResponse) {
 											lResponse = aResponse;
 										}
@@ -275,8 +272,7 @@ jws.tests.LoadBalancer = {
 		it(lSpec, function() {
 
 			// perform the change algorithm  on the server
-			jws.Tests.getAdminTestConn().lbChangeAlgorithm({
-				algorithm: 4,
+			jws.Tests.getAdminTestConn().lbChangeAlgorithm(4, {
 				OnResponse: function(aResponse) {
 					lResponse = aResponse;
 				}
