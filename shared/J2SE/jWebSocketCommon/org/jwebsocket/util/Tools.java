@@ -67,6 +67,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.Sigar;
+import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -1330,5 +1332,47 @@ public class Tools {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Creates a LoadBalancer plug-in compliant response token from incoming
+	 * token.
+	 *
+	 * @param aInToken The incoming token
+	 * @return 
+	 */
+	public static Token createLoadBalancerResponse(Token aInToken) {
+		Token aResponse = TokenFactory.createToken();
+
+		Integer lTokenId = null;
+		String lType = null;
+		String lNS = null;
+		String lSourceConnector = null;
+		if (aInToken != null) {
+			lTokenId = aInToken.getInteger("utid", -1);
+			lType = aInToken.getString("type");
+			lNS = "org.jwebsocket.plugins.loadbalancer";
+			lSourceConnector = aInToken.getString("sourceId");
+		}
+		aResponse.setType("response");
+
+		// if code and msg are already part of outgoing token do not overwrite!
+		aResponse.setInteger("code", aResponse.getInteger("code", 0));
+		aResponse.setString("msg", aResponse.getString("msg", "ok"));
+
+		if (lTokenId != null) {
+			aResponse.setInteger("utid", lTokenId);
+		}
+		if (lNS != null) {
+			aResponse.setString("ns", lNS);
+		}
+		if (lType != null) {
+			aResponse.setString("reqType", lType);
+		}
+		if (lSourceConnector != null) {
+			aResponse.setString("sourceId", lSourceConnector);
+		}
+
+		return aResponse;
 	}
 }
