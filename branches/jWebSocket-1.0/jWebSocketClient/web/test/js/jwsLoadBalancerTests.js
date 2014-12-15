@@ -71,8 +71,8 @@ jws.tests.LoadBalancer = {
 
 						// perform the create sample service on the server
 						// with invalid credential and valid arguments
-						lConn = jws.Tests.getAdminTestConn().lbSampleService("wrongUser", {
-							clusterAlias: lClusterInfoValues[0].clusterAlias,
+						lConn = jws.Tests.getAdminTestConn().lbSampleService(
+								lClusterInfoValues[0].clusterAlias, "wrongUser", {
 							nameSpace: lClusterInfoValues[0].clusterNS,
 							OnResponse: function(aResponse) {
 								lResponse = aResponse;
@@ -113,8 +113,7 @@ jws.tests.LoadBalancer = {
 
 			// perform the create sample service on the server
 			// with valid credential and invalid arguments
-			lConn = jws.Tests.getAdminTestConn().lbSampleService("admin", {
-				clusterAlias: 'wrongClusterAlias',
+			lConn = jws.Tests.getAdminTestConn().lbSampleService('wrongClusterAlias', 'admin', {
 				nameSpace: 'wrongClusterNS',
 				OnResponse: function(aResponse) {
 					lResponse = aResponse;
@@ -147,8 +146,7 @@ jws.tests.LoadBalancer = {
 
 			// perform the create sample service on the server
 			// with invalid credential and invalid arguments
-			lConn = jws.Tests.getAdminTestConn().lbSampleService("wrongUser", {
-				clusterAlias: 'wrongClusterAlias',
+			lConn = jws.Tests.getAdminTestConn().lbSampleService('wrongClusterAlias', 'wrongUser', {
 				nameSpace: 'wrongClusterNS',
 				OnResponse: function(aResponse) {
 					lResponse = aResponse;
@@ -189,8 +187,8 @@ jws.tests.LoadBalancer = {
 
 						// perform the create sample service on the server
 						// with valid credential and valid arguments	
-						lConn = jws.Tests.getAdminTestConn().lbSampleService("admin", {
-							clusterAlias: lClusterInfoValues[lTarget].clusterAlias,
+						lConn = jws.Tests.getAdminTestConn().lbSampleService(
+								lClusterInfoValues[lTarget].clusterAlias, "admin", {
 							nameSpace: lClusterInfoValues[lTarget].clusterNS,
 							OnResponse: function(aResponse) {
 								lResponse = aResponse;
@@ -379,8 +377,8 @@ jws.tests.LoadBalancer = {
 
 					// perform the create sample service on the server
 					// with valid credential and valid arguments
-					jws.Tests.getAdminTestConn().lbSampleService("admin", {
-						clusterAlias: lClusterInfoValues[0].clusterAlias,
+					jws.Tests.getAdminTestConn().lbSampleService(
+							lClusterInfoValues[0].clusterAlias, "admin", {
 						nameSpace: lClusterInfoValues[0].clusterNS,
 						OnSuccess: function(aResponse) {
 							jws.tests.LoadBalancer.mEndPointId = aResponse.endPointId;
@@ -525,8 +523,8 @@ jws.tests.LoadBalancer = {
 
 					// perform the create sample service on the server
 					// with valid credential and valid arguments
-					jws.tests.LoadBalancer.mDeregisterConn = jws.Tests.getAdminTestConn().lbSampleService("admin", {
-						clusterAlias: lClusterInfoValues[0].clusterAlias,
+					jws.tests.LoadBalancer.mDeregisterConn = jws.Tests.getAdminTestConn().lbSampleService(
+							lClusterInfoValues[0].clusterAlias, 'admin', {
 						nameSpace: lClusterInfoValues[0].clusterNS,
 						OnSuccess: function(aResponse) {
 							jws.tests.LoadBalancer.mEndPointId = aResponse.endPointId;
