@@ -159,13 +159,13 @@ public class LoadBalancerPlugIn extends BaseClientTokenPlugIn {
 	/**
 	 * Create a new sample service endpoint.
 	 *
-	 * @param aPassword
 	 * @param aClusterAlias
+	 * @param aPassword
 	 * @param aEndpointNS
 	 * @param aListener
 	 * @throws WebSocketException
 	 */
-	public void sampleService(String aPassword, String aClusterAlias, String aEndpointNS,
+	public void sampleService(String aClusterAlias, String aPassword, String aEndpointNS,
 			WebSocketResponseTokenListener aListener) throws WebSocketException {
 		JWebSocketTokenClient lClient = new JWebSocketTokenClient();
 		lClient.open(getTokenClient().getURI().toString());
