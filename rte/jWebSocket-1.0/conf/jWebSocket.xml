@@ -1105,6 +1105,11 @@
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>changeBalancerAlgorithm</id>
+			<description>Allows to change the clusters balancer algorihtm</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
 			<id>deregisterServiceEndPoint</id>
 			<description>Allows to deregister a service endpoints</description>
 		</right>
@@ -1309,6 +1314,7 @@
 				
 				<!-- Load balancer rights -->
 				<right>org.jwebsocket.plugins.loadbalancer.clustersInfo</right>
+				<right>org.jwebsocket.plugins.loadbalancer.changeBalancerAlgorithm</right>
 				<right>org.jwebsocket.plugins.loadbalancer.registerServiceEndPoint</right>
 				<right>org.jwebsocket.plugins.loadbalancer.deregisterServiceEndPoint</right>
 				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndPoint</right>
