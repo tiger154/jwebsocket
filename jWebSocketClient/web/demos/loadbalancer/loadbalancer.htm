@@ -79,10 +79,8 @@
 						if(lNamespace == -1){
 							log("INFO - Select the cluster alias!.")
 						}else{
-							lWSC.lbSampleService( lPassword, {
-								clusterAlias: lClusterAlias,
+							lWSC.lbSampleService( lClusterAlias, lPassword, {
 								nameSpace: getServicesNamespace()
-						
 							});
 						}
 					}
