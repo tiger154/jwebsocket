@@ -295,7 +295,7 @@ public class JMSClient {
 			// statically adding user credentials (password require to be MD5 value)
 			lMemoryAuthenticator.addCredentials("root", "63a9f0ea7bb98050796b649e85481845"); //root:root
 			// registering the authenticator
-			lAuthenticatorManager.addAuthenticator(lLDAPAuthenticator);
+			lAuthenticatorManager.addAuthenticator(lMemoryAuthenticator);
 		}
 
 		// TODO: Validate config data here!
