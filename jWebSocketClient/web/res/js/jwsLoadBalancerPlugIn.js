@@ -82,22 +82,17 @@ jws.LoadBalancerPlugIn = {
 	
 	//:m:*:lbRegisterServiceEndPoint
 	//:d:en:Registers a new service endpoint in specific cluster.
+	//:a:en::aClusterAlias:String:The cluster alias value.
 	//:a:en::aPassword:String:Password to verify privileges.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	lbRegisterServiceEndPoint: function(aPassword, aOptions) {
+	lbRegisterServiceEndPoint: function(aClusterAlias, aPassword, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
-			aOptions = jws.getOptions(aOptions, {
-				clusterAlias: null
-			});
-			if (aPassword == undefined) {
-				aPassword = null;
-			}
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
 				type: "registerServiceEndPoint",
-				clusterAlias: aOptions.clusterAlias,
+				clusterAlias: aClusterAlias,
 				password: aPassword
 			};
 			this.sendToken(lToken, aOptions);
@@ -181,13 +176,14 @@ jws.LoadBalancerPlugIn = {
 	
 	//:m:*:lbSampleService
 	//:d:en:Create a new sample service endpoint.
-	//:a:en::aPassword:String:Password to verify privileges.
+	//:a:en::aClusterAlias:String:The cluster alias value.
+	//:a:en::aPassword:String:The cluster password.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:a:en::aOptions.connectionURL:String:Optional argument to override the default service connection URL.
 	//:a:en::aOptions.connectionUsername:String:Optional argument that indicates the server connection username. Default: root
 	//:a:en::aOptions.connectionPassword:String:Optional argument that indicates the server connection password. Default: root
 	//:r:*:::jWebSocketJSONClient:The sample service endpoint instance
-	lbSampleService: function(aPassword, aOptions) {
+	lbSampleService: function(aClusterAlias, aPassword, aOptions) {
 		var lServiceEndPoint = new jws.jWebSocketJSONClient();
 		var lURL = aOptions.connectionURL ||
 		"ws://localhost:8787/jWebSocket/jWebSocket?sessionCookieName=sSessionId" + new Date().getTime();
@@ -198,7 +194,7 @@ jws.LoadBalancerPlugIn = {
 					lServiceEndPoint.login(aOptions.connectionUsername || "root", aOptions.connectionPassword || "root"); 
 				}
 					
-				lServiceEndPoint.lbRegisterServiceEndPoint(aPassword, aOptions);
+				lServiceEndPoint.lbRegisterServiceEndPoint(aClusterAlias, aPassword, aOptions);
 				lServiceEndPoint.addPlugIn({
 					processToken: function(aToken) {
 						if (aToken.ns == aOptions.nameSpace) {
