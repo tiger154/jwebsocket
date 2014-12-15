@@ -101,12 +101,12 @@ public class LoadBalancerPlugIn extends BaseClientTokenPlugIn {
 	/**
 	 * Registers a new service endpoint in specific cluster.
 	 *
-	 * @param aPassword
 	 * @param aClusterAlias
+	 * @param aPassword
 	 * @param aListener
 	 * @throws WebSocketException
 	 */
-	public void registerServiceEndPoint(String aPassword, String aClusterAlias,
+	public void registerServiceEndPoint(String aClusterAlias, String aPassword,
 			WebSocketResponseTokenListener aListener) throws WebSocketException {
 		Token lRequest = TokenFactory.createToken(getNS(), "registerServiceEndPoint");
 
@@ -174,6 +174,6 @@ public class LoadBalancerPlugIn extends BaseClientTokenPlugIn {
 		SampleServicePlugIn lServiceEndpoint = new SampleServicePlugIn(lClient, aEndpointNS);
 		LoadBalancerPlugIn lServiceEndpointPlugIn = new LoadBalancerPlugIn(lServiceEndpoint.getTokenClient());
 
-		lServiceEndpointPlugIn.registerServiceEndPoint(aPassword, aClusterAlias, aListener);
+		lServiceEndpointPlugIn.registerServiceEndPoint(aClusterAlias, aPassword, aListener);
 	}
 }
