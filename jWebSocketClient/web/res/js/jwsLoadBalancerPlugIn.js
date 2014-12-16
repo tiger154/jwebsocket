@@ -124,26 +124,19 @@ jws.LoadBalancerPlugIn = {
 	
 	//:m:*:lbShutdownEndPoint
 	//:d:en:Should send a message to the referenced endpoint to gracefully shutdown.
-	//:a:en::aPassword:String:Password to verify privileges.
+	//:a:en::aClusterAlias:String:The cluster alias that contains the service to be shutdown.
+	//:a:en::aPassword:String:The cluster password.
+	//:a:en::aEndPointId:String:The endpoint to be shutdown.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	lbShutdownEndPoint: function(aPassword, aOptions) {
+	lbShutdownEndPoint: function(aClusterAlias, aPassword, aEndPointId, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
-			aOptions = jws.getOptions(aOptions, {
-				clusterAlias: null
-			});
-			aOptions = jws.getOptions(aOptions, {
-				endPointId: null
-			});
-			if (aPassword == undefined) {
-				aPassword = null;
-			}
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
 				type: "shutdownServiceEndPoint",
-				endPointId: aOptions.endPointId,
-				clusterAlias: aOptions.clusterAlias,
+				endPointId: aEndPointId,
+				clusterAlias: aClusterAlias,
 				password: aPassword
 			};
 			this.sendToken(lToken, aOptions);
@@ -177,29 +170,29 @@ jws.LoadBalancerPlugIn = {
 	//:a:en::aOptions.connectionPassword:String:Optional argument that indicates the server connection password. Default: root
 	//:r:*:::jWebSocketJSONClient:The sample service endpoint instance
 	lbSampleService: function(aClusterAlias, aPassword, aOptions) {
-		var lServiceEndPoint = new jws.jWebSocketJSONClient();
+		var lWSC = new jws.jWebSocketJSONClient();
 		var lURL = aOptions.connectionURL ||
 		"ws://localhost:8787/jWebSocket/jWebSocket?sessionCookieName=sSessionId" + new Date().getTime();
 		
-		lServiceEndPoint.open(lURL, {
+		lWSC.open(lURL, {
 			OnWelcome: function() {
-				if(lServiceEndPoint.isLoggedIn() != "root"){
-					lServiceEndPoint.login(aOptions.connectionUsername || "root", aOptions.connectionPassword || "root"); 
+				if(lWSC.isLoggedIn() != "root"){
+					lWSC.login(aOptions.connectionUsername || "root", aOptions.connectionPassword || "root"); 
 				}
 					
-				lServiceEndPoint.lbRegisterServiceEndPoint(aClusterAlias, aPassword, aOptions);
-				lServiceEndPoint.addPlugIn({
+				lWSC.lbRegisterServiceEndPoint(aClusterAlias, aPassword, aOptions);
+				lWSC.addPlugIn({
 					processToken: function(aToken) {
 						if (aToken.ns == aOptions.nameSpace) {
 							if ('test' == aToken.type) {
-								var lResponse = lServiceEndPoint.lbCreateResponse(aToken);
-								lServiceEndPoint.sendToken(lResponse);
+								var lResponse = lWSC.lbCreateResponse(aToken);
+								lWSC.sendToken(lResponse);
 							}
 						}
 
 						if (aToken.ns == jws.LoadBalancerPlugIn.NS) {
 							if ('shutdown' == aToken.type) {
-								lServiceEndPoint.close();
+								lWSC.close();
 							}
 						}
 					}
@@ -209,14 +202,14 @@ jws.LoadBalancerPlugIn = {
 			OnMessage: function(aMessage) {
 				if ('function' == typeof log){
 					log('Message "' + aMessage.data + '" received on endpoint: ' 
-						+ (lServiceEndPoint.getId() == null 
+						+ (lWSC.getId() == null 
 							? aMessage.data.split('"')[11] 
-							: lServiceEndPoint.getId()));
+							: lWSC.getId()));
 				}
 			}
 		});
 		
-		return lServiceEndPoint;
+		return lWSC;
 	}
 };
 

@@ -109,10 +109,7 @@
 					var lEndPointId = document.getElementById("stxfEpId").value;
 					var lClusterAlias = document.getElementById("stxService").value;
 					var lPassword = document.getElementById("stxPass").value;
-					lWSC.lbShutdownEndPoint( lPassword, {
-						clusterAlias: lClusterAlias,
-						endPointId: lEndPointId
-					});
+					lWSC.lbShutdownEndPoint(lClusterAlias, lPassword, lEndPointId);
 				} else {
 					log( "Not connected." );
 				}
