@@ -191,7 +191,7 @@ jws.LoadBalancerPlugIn = {
 						}
 
 						if (aToken.ns == jws.LoadBalancerPlugIn.NS) {
-							if ('shutdown' == aToken.type) {
+							if ('event' == aToken.type && 'shutdownServiceEndPoint' == aToken.name) {
 								lWSC.close();
 							}
 						}
