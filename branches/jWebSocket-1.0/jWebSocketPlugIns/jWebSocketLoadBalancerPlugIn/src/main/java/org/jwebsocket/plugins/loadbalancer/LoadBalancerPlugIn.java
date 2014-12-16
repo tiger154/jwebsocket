@@ -330,9 +330,11 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		lClusterEndPoint.setStatus(EndPointStatus.SHUTTING_DOWN);
 
 		// sending service shutdown event to endpoint connector
-		Token lShutdown = TokenFactory.createToken(NS_LOADBALANCER, "shutdown");
-		lShutdown.setString("endPointId", lClusterEndPoint.getServiceId());
-		sendToken(getConnector(lClusterEndPoint.getConnectorId()), lShutdown);
+		Token lEvent = TokenFactory.createToken(NS_LOADBALANCER, "event");
+		lEvent.setString("name", "shutdownServiceEndPoint");
+		lEvent.setString("endPointId", lClusterEndPoint.getServiceId());
+		lEvent.setString("user", aConnector.getUsername());
+		sendToken(getConnector(lClusterEndPoint.getConnectorId()), lEvent);
 		
 		// removing the endpoint
 		lClusterEndPoint.setStatus(EndPointStatus.OFFLINE);
