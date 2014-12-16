@@ -386,13 +386,14 @@ jws.tests.LoadBalancer = {
 
 							// perform the shutdown feature an specific service endpoint
 							// with invalid credential and valid arguments
-							jws.Tests.getAdminTestConn().lbShutdownEndPoint("wrongUser", {
-								endPointId: jws.tests.LoadBalancer.mEndPointId,
-								clusterAlias: jws.tests.LoadBalancer.mClusterAlias,
-								OnResponse: function (aResponse) {
-									lResponse = aResponse;
-								}
-							});
+							jws.Tests.getAdminTestConn().lbShutdownEndPoint(
+									jws.tests.LoadBalancer.mClusterAlias,
+									"wrongPassword",
+									jws.tests.LoadBalancer.mEndPointId, {
+										OnResponse: function (aResponse) {
+											lResponse = aResponse;
+										}
+									});
 						}
 					});
 				}
@@ -422,9 +423,7 @@ jws.tests.LoadBalancer = {
 
 			// perform the shutdown feature an specific service endpoint
 			// with valid credential and invalid arguments
-			jws.Tests.getAdminTestConn().lbShutdownEndPoint("admin", {
-				endPointId: 'wrongEndPointId',
-				clusterAlias: 'wrongClusterAlias',
+			jws.Tests.getAdminTestConn().lbShutdownEndPoint("wrongClusterAlias", "admin", "wrongEndPointId", {
 				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 				}
@@ -454,13 +453,12 @@ jws.tests.LoadBalancer = {
 
 			// perform the shutdown feature an specific service endpoint
 			// with invalid credential and invalid arguments
-			jws.Tests.getAdminTestConn().lbShutdownEndPoint("wrongUser", {
-				endPointId: 'wrongEndPointId',
-				clusterAlias: 'wrongClusterAlias',
-				OnResponse: function (aResponse) {
-					lResponse = aResponse;
-				}
-			});
+			jws.Tests.getAdminTestConn().lbShutdownEndPoint(
+					"wrongClusterAlias", "wrongPassword", "wrongEndPointId", {
+						OnResponse: function (aResponse) {
+							lResponse = aResponse;
+						}
+					});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
@@ -486,13 +484,14 @@ jws.tests.LoadBalancer = {
 
 			// perform the shutdown feature an specific service endpoint
 			// with valid credential and invalid arguments
-			jws.Tests.getAdminTestConn().lbShutdownEndPoint("admin", {
-				endPointId: jws.tests.LoadBalancer.mEndPointId,
-				clusterAlias: jws.tests.LoadBalancer.mClusterAlias,
-				OnResponse: function (aResponse) {
-					lResponse = aResponse;
-				}
-			});
+			jws.Tests.getAdminTestConn().lbShutdownEndPoint(
+					jws.tests.LoadBalancer.mClusterAlias,
+					"admin",
+					jws.tests.LoadBalancer.mEndPointId, {
+						OnResponse: function (aResponse) {
+							lResponse = aResponse;
+						}
+					});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
