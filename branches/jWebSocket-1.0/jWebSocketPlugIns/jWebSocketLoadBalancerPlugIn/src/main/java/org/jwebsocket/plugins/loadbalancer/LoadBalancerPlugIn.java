@@ -33,7 +33,6 @@ import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
@@ -237,11 +236,11 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * De-registers an connected service endpoint. In case the endpoint is part
+	 * De-registers a connected service endpoint. In case the endpoint is part
 	 * of the load balancer configuration the internal entry in the table of
 	 * end-points gets tagged as "de-registered". In case the endpoint was a
 	 * dynamically added one the item in the internal table shall be
-	 * removed.This method can be also used by an administration too to restart
+	 * removed.This method can be also used by an administration too, to restart
 	 * a certain endpoint after an update.
 	 *
 	 * @param aConnector
@@ -330,27 +329,14 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		// change endpoint status
 		lClusterEndPoint.setStatus(EndPointStatus.SHUTTING_DOWN);
 
+		// sending service shutdown event to endpoint connector
 		Token lShutdown = TokenFactory.createToken(NS_LOADBALANCER, "shutdown");
-		lShutdown.setString("connectorId", lClusterEndPoint.getConnectorId());
-
-		// sending shutdown to endpoint connector.
+		lShutdown.setString("endPointId", lClusterEndPoint.getServiceId());
 		sendToken(getConnector(lClusterEndPoint.getConnectorId()), lShutdown);
-
-		// if the endpoint does not was stopped, then the connector Stopped is execute it with 10 seconds of delay.
-		Tools.getTimer().schedule(new JWSTimerTask() {
-
-			@Override
-			public void runTask() {
-				try {
-					WebSocketConnector lConnector = getConnector(lClusterEndPoint.getConnectorId());
-					if (null != lConnector) {
-						lConnector.stopConnector(CloseReason.TIMEOUT);
-					}
-				} catch (Exception lEx) {
-					mLog.error(lEx + " while the load balancer stopped the endpoint!");
-				}
-			}
-		}, mConnectorStopDelay);
+		
+		// removing the endpoint
+		lClusterEndPoint.setStatus(EndPointStatus.OFFLINE);
+		lCluster.removeEndPoint(lClusterEndPoint);
 	}
 
 	/**
