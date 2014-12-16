@@ -119,13 +119,13 @@ public class LoadBalancerPlugIn extends BaseClientTokenPlugIn {
 	/**
 	 * De-registers a connected service endpoint.
 	 *
-	 * @param aPassword
 	 * @param aClusterAlias
+	 * @param aPassword
 	 * @param aEndpoinId
 	 * @param aListener
 	 * @throws WebSocketException
 	 */
-	public void deregisterServiceEndPoint(String aPassword, String aClusterAlias, String aEndpoinId,
+	public void deregisterServiceEndPoint(String aClusterAlias, String aPassword, String aEndpoinId,
 			WebSocketResponseTokenListener aListener) throws WebSocketException {
 		Token lRequest = TokenFactory.createToken(getNS(), "deregisterServiceEndPoint");
 
@@ -139,13 +139,13 @@ public class LoadBalancerPlugIn extends BaseClientTokenPlugIn {
 	/**
 	 * Should send a message to the referenced endpoint to gracefully shutdown.
 	 *
-	 * @param aPassword
 	 * @param aClusterAlias
+	 * @param aPassword
 	 * @param aEndpoinId
 	 * @param aListener
 	 * @throws WebSocketException
 	 */
-	public void shutdownEndPoint(String aPassword, String aClusterAlias, String aEndpoinId,
+	public void shutdownEndPoint(String aClusterAlias, String aPassword, String aEndpoinId,
 			WebSocketResponseTokenListener aListener) throws WebSocketException {
 		Token lRequest = TokenFactory.createToken(getNS(), "shutdownServiceEndPoint");
 
@@ -159,9 +159,9 @@ public class LoadBalancerPlugIn extends BaseClientTokenPlugIn {
 	/**
 	 * Create a new sample service endpoint.
 	 *
-	 * @param aClusterAlias
-	 * @param aPassword
-	 * @param aEndpointNS
+	 * @param aClusterAlias The target service cluster to register the service.
+	 * @param aPassword The service cluster password.
+	 * @param aEndpointNS The service cluster name-space.
 	 * @param aListener
 	 * @throws WebSocketException
 	 */
