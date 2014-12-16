@@ -26,8 +26,6 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
@@ -397,16 +395,30 @@ public class JWSEndPoint extends JMSEndPoint {
 				aCode, aMessage, aArgs);
 	}
 
+	/**
+	 * Send the CPU usage statistic to the load balancer plug-in on the server.
+	 *
+	 * @param aTargetId
+	 * @param aCpuUsage
+	 */
 	public void sendCpuUsageToLoadBalancer(String aTargetId, double aCpuUsage) {
 		try {
 			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "updateCpuUsage");
 			lToken.setDouble("usage", Tools.getCpuUsage());
 
-			WebSocketPacket lPacket = JSONProcessor.tokenToPacket(lToken);
-
-			getSender().sendText(aTargetId, lPacket.getString());
+			getSender().sendToken(aTargetId, lToken);
 		} catch (Exception lEx) {
 			mLog.error("Sending CPU usage info to load balancer: " + lEx.getLocalizedMessage());
 		}
+	}
+
+	/**
+	 * Sends a JSON token as text message to the given target endpoint.
+	 *
+	 * @param aTargetId
+	 * @param aToken
+	 */
+	public void sendToken(String aTargetId, Token aToken) {
+		getSender().sendToken(aTargetId, aToken);
 	}
 }
