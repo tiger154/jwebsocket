@@ -421,4 +421,27 @@ public class JWSEndPoint extends JMSEndPoint {
 	public void sendToken(String aTargetId, Token aToken) {
 		getSender().sendToken(aTargetId, aToken);
 	}
+	
+	/**
+	 * Sends a JSON token as text message to the given target endpoint.
+	 *
+	 * @param aTargetId
+	 * @param aToken
+	 * @param aResponseListener
+	 */
+	public void sendToken(String aTargetId, Token aToken, JWSResponseTokenListener aResponseListener) {
+		getSender().sendToken(aTargetId, aToken, aResponseListener);
+	}
+	
+	/**
+	 * Sends a JSON token as text message to the given target endpoint.
+	 *
+	 * @param aTargetId
+	 * @param aToken
+	 * @param aResponseListener
+	 * @param aTimeout
+	 */
+	public void sendToken(String aTargetId, Token aToken, JWSResponseTokenListener aResponseListener, long aTimeout) {
+		getSender().sendToken(aTargetId, aToken, aResponseListener, aTimeout);
+	}
 }
