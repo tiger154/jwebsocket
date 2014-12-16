@@ -27,22 +27,22 @@ jws.tests.LoadBalancer = {
 	mClusterAlias: "",
 	mDeregisterConn: null,
 	// this spec tests the clusters information feature	
-	testClustersInfo: function() {
+	testClustersInfo: function () {
 		var lSpec = "getting clusters information";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the clusters information feature on the server
 			jws.Tests.getAdminTestConn().lbClustersInfo({
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 				}
 			});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return (null !== lResponse);
 					},
 					lSpec,
@@ -50,21 +50,21 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result 
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(0);
 			});
 		});
 	},
 	// this spec tests the register endpoints feature
-	testRegisterServiceEndPoint1: function() {
+	testRegisterServiceEndPoint1: function () {
 		var lSpec = "Register service endpoint( invalid password, valid clusterAlias, valid clusterNS )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the clusters information feature on the server
 			jws.Tests.getAdminTestConn().lbClustersInfo({
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					var lClusterInfoValues = aResponse.data;
 					if (lClusterInfoValues.length > 0) {
 						var lConn = null;
@@ -74,7 +74,7 @@ jws.tests.LoadBalancer = {
 						lConn = jws.Tests.getAdminTestConn().lbSampleService(
 								lClusterInfoValues[0].clusterAlias, "wrongUser", {
 							nameSpace: lClusterInfoValues[0].clusterNS,
-							OnResponse: function(aResponse) {
+							OnResponse: function (aResponse) {
 								lResponse = aResponse;
 								lConn.close();
 							}
@@ -90,7 +90,7 @@ jws.tests.LoadBalancer = {
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return (null !== lResponse);
 					},
 					lSpec,
@@ -98,24 +98,24 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the register endpoints feature
-	testRegisterServiceEndPoint2: function() {
+	testRegisterServiceEndPoint2: function () {
 		var lSpec = "Register service endpoint( valid password, invalid clusterAlias, invalid clusterNS )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 			var lConn = null;
 
 			// perform the create sample service on the server
 			// with valid credential and invalid arguments
 			lConn = jws.Tests.getAdminTestConn().lbSampleService('wrongClusterAlias', 'admin', {
 				nameSpace: 'wrongClusterNS',
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 					lConn.close();
 				}
@@ -123,7 +123,7 @@ jws.tests.LoadBalancer = {
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return (null !== lResponse);
 					},
 					lSpec,
@@ -131,24 +131,24 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the register endpoints feature
-	testRegisterServiceEndPoint3: function() {
+	testRegisterServiceEndPoint3: function () {
 		var lSpec = "Register service endpoint( invalid password, invalid clusterAlias, invalid clusterNS )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 			var lConn = null;
 
 			// perform the create sample service on the server
 			// with invalid credential and invalid arguments
 			lConn = jws.Tests.getAdminTestConn().lbSampleService('wrongClusterAlias', 'wrongUser', {
 				nameSpace: 'wrongClusterNS',
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 					lConn.close();
 				}
@@ -156,7 +156,7 @@ jws.tests.LoadBalancer = {
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return (null !== lResponse);
 					},
 					lSpec,
@@ -164,21 +164,21 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the register endpoints feature
-	testRegisterServiceEndPoint4: function() {
+	testRegisterServiceEndPoint4: function () {
 		var lSpec = "Register service endpoint( valid password, valid clusterAlias, valid clusterNS )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the clusters information feature on the server
 			jws.Tests.getAdminTestConn().lbClustersInfo({
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					var lClusterInfoValues = aResponse.data;
 
 					if (lClusterInfoValues.length > 0) {
@@ -190,7 +190,7 @@ jws.tests.LoadBalancer = {
 						lConn = jws.Tests.getAdminTestConn().lbSampleService(
 								lClusterInfoValues[lTarget].clusterAlias, "admin", {
 							nameSpace: lClusterInfoValues[lTarget].clusterNS,
-							OnResponse: function(aResponse) {
+							OnResponse: function (aResponse) {
 								lResponse = aResponse;
 								lConn.close();
 							}
@@ -206,7 +206,7 @@ jws.tests.LoadBalancer = {
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return (null !== lResponse);
 					},
 					lSpec,
@@ -214,28 +214,28 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(0);
 				expect(lResponse.msg).toEqual('ok');
 			});
 		});
 	},
 	// this spec tests the change algorithm feature
-	testChangeAlgorithm1: function() {
+	testChangeAlgorithm1: function () {
 		var lSpec = "Change Algorithm ( valid argument )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the change algorithm  on the server
 			jws.Tests.getAdminTestConn().lbChangeAlgorithm(1, {
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					if (aResponse.code > -1) {
 						this.lbChangeAlgorithm(2, {
-							OnResponse: function(aResponse) {
+							OnResponse: function (aResponse) {
 								if (aResponse.code > -1) {
 									this.lbChangeAlgorithm(3, {
-										OnResponse: function(aResponse) {
+										OnResponse: function (aResponse) {
 											lResponse = aResponse;
 										}
 									});
@@ -248,7 +248,7 @@ jws.tests.LoadBalancer = {
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -256,29 +256,29 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(0);
 				expect(lResponse.msg).toEqual('ok');
 			});
 		});
 	},
 	// this spec tests the change algorithm feature
-	testChangeAlgorithm2: function() {
+	testChangeAlgorithm2: function () {
 		var lSpec = "Change Algorithm ( invalid argument )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the change algorithm  on the server
 			jws.Tests.getAdminTestConn().lbChangeAlgorithm(4, {
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 				}
 			});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -286,28 +286,28 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the sticky routes feature
-	testStickyRoutes: function( ) {
+	testStickyRoutes: function ( ) {
 		var lSpec = "Sticky routes ()";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the sticky routes feature on the server
 			jws.Tests.getAdminTestConn().lbStickyRoutes({
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 				}
 			});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return (null !== lResponse);
 					},
 					lSpec,
@@ -315,29 +315,29 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(0);
 			});
 		});
 	},
 	// this spec tests the test services feature
-	testServices: function( ) {
+	testServices: function ( ) {
 		var lSpec = "Testing services()";
-		it(lSpec, function() {
+		it(lSpec, function () {
 			var lResponses = [];
 			var lClusters = [];
 
 			// perform the clusters information feature on the server
 			jws.Tests.getAdminTestConn().lbClustersInfo({
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					lClusters = aResponse.data;
-					
+
 					for (var lPos = 0; lPos < lClusters.length; lPos++) {
 						jws.Tests.getAdminTestConn().sendToken({
 							ns: lClusters[lPos].clusterNS,
 							type: 'test'
 						}, {
-							OnResponse: function(aResponse) {
+							OnResponse: function (aResponse) {
 								lResponses.push(aResponse);
 							}
 						});
@@ -347,7 +347,7 @@ jws.tests.LoadBalancer = {
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return (lResponses.length === lClusters.length);
 					},
 					lSpec,
@@ -355,7 +355,7 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				for (var lPos = 0; lPos < lResponses.length; lPos++) {
 					expect(lResponses[lPos].type).toEqual('response');
 					expect(lResponses[lPos].reqType).toEqual('test');
@@ -364,15 +364,15 @@ jws.tests.LoadBalancer = {
 		});
 	},
 	// this spec tests the shutdown service endpoint feature
-	testShutdownEndPoint1: function() {
+	testShutdownEndPoint1: function () {
 		var lSpec = "Shutdown service ( invalid password, valid endPointId, valid service )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the clusters information feature on the server
 			jws.Tests.getAdminTestConn().lbClustersInfo({
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					var lClusterInfoValues = aResponse.data;
 
 					// perform the create sample service on the server
@@ -380,7 +380,7 @@ jws.tests.LoadBalancer = {
 					jws.Tests.getAdminTestConn().lbSampleService(
 							lClusterInfoValues[0].clusterAlias, "admin", {
 						nameSpace: lClusterInfoValues[0].clusterNS,
-						OnSuccess: function(aResponse) {
+						OnSuccess: function (aResponse) {
 							jws.tests.LoadBalancer.mEndPointId = aResponse.endPointId;
 							jws.tests.LoadBalancer.mClusterAlias = lClusterInfoValues[0].clusterAlias;
 
@@ -389,7 +389,7 @@ jws.tests.LoadBalancer = {
 							jws.Tests.getAdminTestConn().lbShutdownEndPoint("wrongUser", {
 								endPointId: jws.tests.LoadBalancer.mEndPointId,
 								clusterAlias: jws.tests.LoadBalancer.mClusterAlias,
-								OnResponse: function(aResponse) {
+								OnResponse: function (aResponse) {
 									lResponse = aResponse;
 								}
 							});
@@ -400,7 +400,7 @@ jws.tests.LoadBalancer = {
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -408,31 +408,31 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the shutdown service endpoint feature
-	testShutdownEndPoint2: function() {
+	testShutdownEndPoint2: function () {
 		var lSpec = "Shutdown service ( valid password, invalid endPointId, invalid service )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the shutdown feature an specific service endpoint
 			// with valid credential and invalid arguments
 			jws.Tests.getAdminTestConn().lbShutdownEndPoint("admin", {
 				endPointId: 'wrongEndPointId',
 				clusterAlias: 'wrongClusterAlias',
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 				}
 			});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -440,31 +440,31 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the shutdown service endpoint feature
-	testShutdownEndPoint3: function() {
+	testShutdownEndPoint3: function () {
 		var lSpec = "Shutdown service ( invalid password, invalid endPointId, invalid service )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the shutdown feature an specific service endpoint
 			// with invalid credential and invalid arguments
 			jws.Tests.getAdminTestConn().lbShutdownEndPoint("wrongUser", {
 				endPointId: 'wrongEndPointId',
 				clusterAlias: 'wrongClusterAlias',
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 				}
 			});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -472,31 +472,31 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the shutdown service endpoint feature
-	testShutdownEndPoint4: function() {
+	testShutdownEndPoint4: function () {
 		var lSpec = "Shutdown service ( valid password, valid endPointId, valid service )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the shutdown feature an specific service endpoint
 			// with valid credential and invalid arguments
 			jws.Tests.getAdminTestConn().lbShutdownEndPoint("admin", {
 				endPointId: jws.tests.LoadBalancer.mEndPointId,
 				clusterAlias: jws.tests.LoadBalancer.mClusterAlias,
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 				}
 			});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -504,21 +504,21 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(0);
 			});
 		});
 	},
 	// this spec tests the deregister service endpoint feature
-	testDeregisterServiceEndPoint1: function() {
+	testDeregisterServiceEndPoint1: function () {
 		var lSpec = "Deregister service ( invalid password, valid endPointId, valid service )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the clusters information feature on the server
 			jws.Tests.getAdminTestConn().lbClustersInfo({
-				OnResponse: function(aResponse) {
+				OnResponse: function (aResponse) {
 					var lClusterInfoValues = aResponse.data;
 
 					// perform the create sample service on the server
@@ -526,19 +526,20 @@ jws.tests.LoadBalancer = {
 					jws.tests.LoadBalancer.mDeregisterConn = jws.Tests.getAdminTestConn().lbSampleService(
 							lClusterInfoValues[0].clusterAlias, 'admin', {
 						nameSpace: lClusterInfoValues[0].clusterNS,
-						OnSuccess: function(aResponse) {
+						OnSuccess: function (aResponse) {
 							jws.tests.LoadBalancer.mEndPointId = aResponse.endPointId;
 							jws.tests.LoadBalancer.mClusterAlias = lClusterInfoValues[0].clusterAlias;
 
 							// perform the deregister feature an specific service endpoint
 							// with invalid credential and valid arguments
-							jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint("wrongUser", {
-								endPointId: jws.tests.LoadBalancer.mEndPointId,
-								clusterAlias: jws.tests.LoadBalancer.mClusterAlias,
-								OnResponse: function(aResponse) {
-									lResponse = aResponse;
-								}
-							});
+							jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint(
+									jws.tests.LoadBalancer.mClusterAlias,
+									"wrongPassword",
+									jws.tests.LoadBalancer.mEndPointId, {
+										OnResponse: function (aResponse) {
+											lResponse = aResponse;
+										}
+									});
 						}
 					});
 				}
@@ -546,7 +547,7 @@ jws.tests.LoadBalancer = {
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -554,31 +555,30 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the deregister service endpoint feature
-	testDeregisterServiceEndPoint2: function() {
+	testDeregisterServiceEndPoint2: function () {
 		var lSpec = "Deregister service ( valid password, invalid endPointId, invalid service )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the shutdown feature an specific service endpoint
 			// with valid credential and invalid arguments
-			jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint("admin", {
-				endPointId: 'wrongEndPointId',
-				clusterAlias: 'wrongClusterAlias',
-				OnResponse: function(aResponse) {
-					lResponse = aResponse;
-				}
-			});
+			jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint(
+					"wrongClusterAlias", "admin", "wrongEndPointId", {
+						OnResponse: function (aResponse) {
+							lResponse = aResponse;
+						}
+					});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -586,31 +586,30 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the deregister service endpoint feature
-	testDeregisterServiceEndPoint3: function() {
+	testDeregisterServiceEndPoint3: function () {
 		var lSpec = "Deregister service ( invalid password, invalid endPointId, invalid service )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the deregister feature an specific service endpoint
 			// with invalid credential and invalid arguments
-			jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint("wrongUser", {
-				endPointId: 'wrongEndPointId',
-				clusterAlias: 'wrongClusterAlias',
-				OnResponse: function(aResponse) {
-					lResponse = aResponse;
-				}
-			});
+			jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint(
+					"wrongClusterAlias", "wrongPassword", "wrongEndPointId", {
+						OnResponse: function (aResponse) {
+							lResponse = aResponse;
+						}
+					});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -618,32 +617,33 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(-1);
 			});
 		});
 	},
 	// this spec tests the deregister service endpoint feature
-	testDeregisterServiceEndPoint4: function() {
+	testDeregisterServiceEndPoint4: function () {
 		var lSpec = "Deregister service ( valid password, valid endPointId, valid service )";
 		var lResponse = null;
 
-		it(lSpec, function() {
+		it(lSpec, function () {
 
 			// perform the deregister feature an specific service endpoint
 			// with valid credential and invalid arguments
-			jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint("admin", {
-				endPointId: jws.tests.LoadBalancer.mEndPointId,
-				clusterAlias: jws.tests.LoadBalancer.mClusterAlias,
-				OnResponse: function(aResponse) {
-					lResponse = aResponse;
-					jws.tests.LoadBalancer.mDeregisterConn.close();
-				}
-			});
+			jws.Tests.getAdminTestConn().lbDeregisterServiceEndPoint(
+					jws.tests.LoadBalancer.mClusterAlias,
+					"admin",
+					jws.tests.LoadBalancer.mEndPointId, {
+						OnResponse: function (aResponse) {
+							lResponse = aResponse;
+							jws.tests.LoadBalancer.mDeregisterConn.close();
+						}
+					});
 
 			// wait for result, consider reasonable timeout
 			waitsFor(
-					function() {
+					function () {
 						return(null !== lResponse);
 					},
 					lSpec,
@@ -651,12 +651,12 @@ jws.tests.LoadBalancer = {
 					);
 
 			// check the result
-			runs(function() {
+			runs(function () {
 				expect(lResponse.code).toEqual(0);
 			});
 		});
 	},
-	runSpecs: function() {
+	runSpecs: function () {
 
 		//run alls tests
 		this.testClustersInfo();

@@ -102,26 +102,19 @@ jws.LoadBalancerPlugIn = {
 	
 	//:m:*:lbDeregisterServiceEndPoint
 	//:d:en:De-registers a connected service endpoint.
-	//:a:en::aPassword:String:Password to verify privileges.
+	//:a:en::aClusterAlias:String:The cluster alias that contains the service to be deregistered.
+	//:a:en::aPassword:String:The cluster password.
+	//:a:en::aEndPointId:String:The endpoint to be deregistered.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	lbDeregisterServiceEndPoint: function(aPassword, aOptions) {
+	lbDeregisterServiceEndPoint: function(aClusterAlias, aPassword, aEndPointId, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
-			aOptions = jws.getOptions(aOptions, {
-				clusterAlias: null
-			});
-			aOptions = jws.getOptions(aOptions, {
-				endPointId: null
-			});
-			if (aPassword == undefined) {
-				aPassword = null;
-			}
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
 				type: "deregisterServiceEndPoint",
-				endPointId: aOptions.endPointId,
-				clusterAlias: aOptions.clusterAlias,
+				endPointId: aEndPointId,
+				clusterAlias: aClusterAlias,
 				password: aPassword
 			};
 			this.sendToken(lToken, aOptions);

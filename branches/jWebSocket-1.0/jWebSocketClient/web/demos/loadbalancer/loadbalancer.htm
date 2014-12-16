@@ -96,10 +96,7 @@
 					var lEndPointId = document.getElementById("stxfEpId").value;
 					var lClusterAlias = document.getElementById("stxService").value;
 					var lPassword = document.getElementById("stxPass").value;
-					lWSC.lbDeregisterServiceEndPoint( lPassword, {
-							endPointId: lEndPointId,
-							clusterAlias: lClusterAlias
-						});
+					lWSC.lbDeregisterServiceEndPoint(lClusterAlias, lPassword, lEndPointId);
 				} else {
 					log( "Not connected." );
 				}
