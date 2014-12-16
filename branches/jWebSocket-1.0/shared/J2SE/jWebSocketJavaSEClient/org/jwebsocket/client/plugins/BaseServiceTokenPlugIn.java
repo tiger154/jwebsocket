@@ -59,46 +59,8 @@ public abstract class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 	 * @param aInToken
 	 * @return
 	 */
-	public Token createResponse(Token aInToken) {
-		Token lResToken = TokenFactory.createToken();
-		setResponseFields(aInToken, lResToken);
-		return lResToken;
-	}
-
-	/**
-	 *
-	 * @param aInToken
-	 * @param aOutToken
-	 */
-	private void setResponseFields(Token aInToken, Token aOutToken) {
-		Integer lTokenId = null;
-		String lType = null;
-		String lNS = null;
-		String lSourceConnector = null;
-		if (aInToken != null) {
-			lTokenId = aInToken.getInteger("utid", -1);
-			lType = aInToken.getString("type");
-			lNS = "org.jwebsocket.plugins.loadbalancer";
-			lSourceConnector = aInToken.getString("sourceId");
-		}
-		aOutToken.setType("response");
-
-		// if code and msg are already part of outgoing token do not overwrite!
-		aOutToken.setInteger("code", aOutToken.getInteger("code", 0));
-		aOutToken.setString("msg", aOutToken.getString("msg", "ok"));
-
-		if (lTokenId != null) {
-			aOutToken.setInteger("utid", lTokenId);
-		}
-		if (lNS != null) {
-			aOutToken.setString("ns", lNS);
-		}
-		if (lType != null) {
-			aOutToken.setString("reqType", lType);
-		}
-		if (lSourceConnector != null) {
-			aOutToken.setString("sourceId", lSourceConnector);
-		}
+	public static Token createResponse(Token aInToken) {
+		return Tools.createLoadBalancerResponse(aInToken);
 	}
 
 	/**
