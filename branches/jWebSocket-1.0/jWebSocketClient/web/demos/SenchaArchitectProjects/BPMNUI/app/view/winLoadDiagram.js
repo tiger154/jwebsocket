@@ -54,6 +54,7 @@ Ext.define('BPMNEditor.view.winLoadDiagram', {
                     items: [
                         {
                             xtype: 'button',
+							action: 'uploadDiagram',
                             text: 'OK'
                         }
                     ]
