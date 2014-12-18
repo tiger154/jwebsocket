@@ -18,11 +18,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer.memory;
 
-import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 import java.util.UUID;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.plugins.loadbalancer.EndPointStatus;
-import org.jwebsocket.token.Token;
+import org.jwebsocket.plugins.loadbalancer.api.BaseClusterEndPoint;
 
 /**
  * Specifies one single endpoint of a certain cluster.
@@ -31,7 +30,7 @@ import org.jwebsocket.token.Token;
  * @author Rolando Betancourt Toucet
  * @author Rolando Santamaria Maso
  */
-public class MemoryClusterEndPoint implements IClusterEndPoint {
+public class MemoryClusterEndPoint extends BaseClusterEndPoint {
 
 	/**
 	 * Cluster endpoint status, default value 'ONLINE'.
@@ -88,7 +87,7 @@ public class MemoryClusterEndPoint implements IClusterEndPoint {
 	}
 
 	@Override
-	public String getServiceId() {
+	public String getEndPointId() {
 		return mServiceId;
 	}
 
@@ -103,11 +102,6 @@ public class MemoryClusterEndPoint implements IClusterEndPoint {
 	}
 
 	@Override
-	public void setRequests(int aRequests) {
-		this.mRequests = aRequests;
-	}
-
-	@Override
 	public double getCpuUsage() {
 		return mCpuUsage;
 	}
@@ -115,19 +109,5 @@ public class MemoryClusterEndPoint implements IClusterEndPoint {
 	@Override
 	public void setCpuUsage(double aCpuUsage) {
 		this.mCpuUsage = aCpuUsage;
-	}
-
-	@Override
-	public void writeToToken(Token aToken) {
-		aToken.setString("id", getServiceId());
-		aToken.setString("status", getStatus().name());
-		aToken.setLong("requests", getRequests());
-		if (getCpuUsage() != -1) {
-			aToken.setDouble("cpu", getCpuUsage());
-		}
-	}
-
-	@Override
-	public void readFromToken(Token aToken) {
 	}
 }
