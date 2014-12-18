@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer.mongodb;
 
-import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.plugins.loadbalancer.EndPointStatus;
+import static org.jwebsocket.plugins.loadbalancer.api.Attributes.*;
 import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 
@@ -41,19 +41,19 @@ import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 public class MongoDBCluster implements ICluster {
 
 	private DBCollection mClusters, mEndPoints;
-	private DBObject mThis;
+	private DBObject mDocument;
 
 	public MongoDBCluster(DBObject aCluster, DBCollection aClusters, DBCollection aEndPoints) {
 		mClusters = aClusters;
 		mEndPoints = aEndPoints;
-		mThis = aCluster;
+		mDocument = aCluster;
 	}
 
 	@Override
 	public boolean isEndPointAvailable() {
 		return mEndPoints.count(new BasicDBObject()
-				.append("clusterAlias", getAlias())
-				.append("status", EndPointStatus.ONLINE.name())) > 0;
+				.append(CLUSTER_ALIAS, getAlias())
+				.append(STATUS, EndPointStatus.ONLINE.name())) > 0;
 	}
 
 	MongoDBClusterEndPoint toEndPoint(DBObject aRecord) {
@@ -67,13 +67,15 @@ public class MongoDBCluster implements ICluster {
 	@Override
 	public IClusterEndPoint getEndPoint(String aEndPointId) {
 		return toEndPoint(mEndPoints.findOne(new BasicDBObject()
-				.append("serviceId", aEndPointId)
-				.append("status", EndPointStatus.ONLINE.name())));
+				.append(ENDPOINT_ID, aEndPointId)
+				.append(STATUS, EndPointStatus.ONLINE.name())));
 	}
 
 	@Override
 	public Iterator<IClusterEndPoint> getEndPoints() {
-		final DBCursor lCursor = mEndPoints.find().sort(new BasicDBObject().append("_id", 1));
+		final DBCursor lCursor = mEndPoints.find(new BasicDBObject()
+				.append(CLUSTER_ALIAS, getAlias()))
+				.sort(new BasicDBObject().append("_id", 1));
 		return new Iterator<IClusterEndPoint>() {
 
 			@Override
@@ -111,43 +113,48 @@ public class MongoDBCluster implements ICluster {
 	@Override
 	public Map<String, Object> getInfo() {
 		Map<String, Object> lInfoCluster = new HashMap<String, Object>();
-		lInfoCluster.put("clusterAlias", getAlias());
-		lInfoCluster.put("clusterNS", getNamespace());
-		lInfoCluster.put("endPointsCount", new Long(mEndPoints.count()).intValue());
-		lInfoCluster.put("endPoints", getEndPointsList());
-		lInfoCluster.put("requests", getTotalEndPointsRequests());
+		lInfoCluster.put(CLUSTER_ALIAS, getAlias());
+		lInfoCluster.put(CLUSTER_NS, getNamespace());
+		lInfoCluster.put(ENDPOINTS_COUNT, new Long(mEndPoints
+				.count(new BasicDBObject().append(CLUSTER_ALIAS, getAlias()))).intValue());
+		lInfoCluster.put(ENDPOINTS, getEndPointsList());
+		lInfoCluster.put(REQUESTS, getTotalEndPointsRequests());
 
 		return lInfoCluster;
 	}
 
 	@Override
 	public String getNamespace() {
-		return (String) mThis.get("ns");
+		return (String) mDocument.get(CLUSTER_NS);
 	}
 
 	@Override
 	public String getPassword() {
-		return (String) mThis.get("password");
+		return (String) mDocument.get(CLUSTER_PASSWORD);
 	}
 
 	@Override
 	public IClusterEndPoint getOptimumEndPoint() {
-		AggregationOutput lResult = mEndPoints.aggregate(new BasicDBObject()
-				.append("$match", new BasicDBObject()
-						.append("status", EndPointStatus.ONLINE.name())
-						.append("$ne", new BasicDBObject().append("runtimePlatform", "javascript")))
-				.append("$group", new BasicDBObject()
-						.append("serviceId", "$serviceId")
-						.append("cpu", new BasicDBObject().append("$min", "$cpu"))), new BasicDBObject());
+		DBCursor lCursor = mEndPoints.find(new BasicDBObject()
+				.append(CLUSTER_ALIAS, getAlias())
+				.append(STATUS, EndPointStatus.ONLINE.name())
+				.append(RUNTIME_PLATFORM, new BasicDBObject()
+						.append("$ne", JAVASCRIPT_RUNTIME_PLATFORM)));
 
-		if (lResult.results().iterator().hasNext()) {
-			MongoDBClusterEndPoint lEndPoint = (MongoDBClusterEndPoint) getEndPoint((String) lResult
-					.results().iterator().next().get("serviceId"));
-			lEndPoint.incrementUses();
-			return lEndPoint;
+		double lMinCPU = Double.MAX_VALUE;
+		DBObject lTemp;
+		DBObject lCandidate = null;
+
+		while (lCursor.hasNext()) {
+			lTemp = lCursor.next();
+			double lEndPointCPU = (Double) lTemp.get(CPU);
+			if (lEndPointCPU < lMinCPU) {
+				lMinCPU = lEndPointCPU;
+				lCandidate = lTemp;
+			}
 		}
 
-		return null;
+		return toEndPoint(lCandidate);
 	}
 
 	@Override
@@ -162,100 +169,110 @@ public class MongoDBCluster implements ICluster {
 
 	@Override
 	public IClusterEndPoint getRoundRobinEndPoint() {
-		AggregationOutput lResult = mEndPoints.aggregate(new BasicDBObject()
-				.append("$match", new BasicDBObject()
-						.append("status", EndPointStatus.ONLINE.name()))
-				.append("$group", new BasicDBObject()
-						.append("serviceId", "$serviceId")
-						.append("uses", new BasicDBObject().append("$min", "$uses"))), new BasicDBObject());
+		DBCursor lCursor = mEndPoints.find(new BasicDBObject()
+				.append(CLUSTER_ALIAS, getAlias())
+				.append(STATUS, EndPointStatus.ONLINE.name()));
 
-		Iterator<DBObject> lIt = lResult.results().iterator();
-		if (lIt.hasNext()) {
-			MongoDBClusterEndPoint lEndPoint = (MongoDBClusterEndPoint) getEndPoint((String) lIt.next().get("serviceId"));
-			lEndPoint.incrementUses();
-			return lEndPoint;
+		Long lMinUses = Long.MAX_VALUE;
+		DBObject lTemp;
+		DBObject lCandidate = null;
+
+		while (lCursor.hasNext()) {
+			lTemp = lCursor.next();
+			Long lEndPointUses = (Long) lTemp.get(ENDPOINT_USES);
+			if (lEndPointUses < lMinUses) {
+				lMinUses = lEndPointUses;
+				lCandidate = lTemp;
+			}
 		}
 
+		if (null != lCandidate) {
+			MongoDBClusterEndPoint lEndPoint = toEndPoint(lCandidate);
+			lEndPoint.incrementUses();
+
+			return lEndPoint;
+		}
 		return null;
 	}
 
 	@Override
-	public void getStickyRoutes(List<Map<String, String>> aStickyRoutes) {
+	public void getStickyRoutes(List<Map<String, String>> aBuffer) {
 		Map<String, String> lInfoCluster;
 		DBCursor lCursor = mEndPoints.find(new BasicDBObject()
-				.append("status", EndPointStatus.ONLINE.name())
-				.append("clusterAlias", getAlias()));
+				.append(STATUS, EndPointStatus.ONLINE.name())
+				.append(CLUSTER_ALIAS, getAlias()));
 
 		while (lCursor.hasNext()) {
 			lInfoCluster = new HashMap<String, String>();
-			lInfoCluster.put("clusterAlias", getAlias());
-			lInfoCluster.put("endPointId", (String) lCursor.next().get("serviceId"));
+			lInfoCluster.put(CLUSTER_ALIAS, getAlias());
+			lInfoCluster.put(ENDPOINT_ID, (String) lCursor.next().get(ENDPOINT_ID));
 
-			aStickyRoutes.add(lInfoCluster);
+			aBuffer.add(lInfoCluster);
 		}
 	}
 
 	@Override
 	public void updateCpuUsage(String aConnectorId, double aCpuUsage) {
-		mEndPoints.update(new BasicDBObject().append("cpu", aCpuUsage),
-				new BasicDBObject().append("connectorId", aConnectorId));
+		mEndPoints.updateMulti(new BasicDBObject().append(CONNECTOR_ID, aConnectorId),
+				new BasicDBObject().append(CPU, aCpuUsage));
 	}
 
 	@Override
 	public IClusterEndPoint registerEndPoint(WebSocketConnector aConnector) {
 		String lServiceId = UUID.randomUUID().toString();
 		mEndPoints.save(new BasicDBObject()
-				.append("serviceId", lServiceId)
-				.append("clusterAlias", getAlias())
-				.append("requests", new Integer(0))
-				.append("status", EndPointStatus.ONLINE.name())
-				.append("cpu", new Double(-1.0))
-				.append("runtimePlatform", aConnector.getVar("jwsType"))
-				.append("uses", new Long(0))
-				.append("connectorId", aConnector.getId()));
+				.append(ENDPOINT_ID, lServiceId)
+				.append(CLUSTER_ALIAS, getAlias())
+				.append(REQUESTS, new Long(0))
+				.append(STATUS, EndPointStatus.ONLINE.name())
+				.append(CPU, new Double(-1.0))
+				.append(RUNTIME_PLATFORM, aConnector.getVar("jwsType"))
+				.append(ENDPOINT_USES, new Long(0))
+				.append(CONNECTOR_ID, aConnector.getId()));
 
 		return getEndPoint(lServiceId);
 	}
 
 	@Override
 	public void removeEndPoint(IClusterEndPoint aClusterEndPoint) {
-		mEndPoints.remove(new BasicDBObject().append("serviceId", aClusterEndPoint.getServiceId()));
+		mEndPoints.remove(new BasicDBObject().append(ENDPOINT_ID, aClusterEndPoint.getEndPointId()));
 	}
 
 	@Override
 	public int removeConnectorEndPoints(String aConnectorId) {
-		return mEndPoints.remove(new BasicDBObject().append("connectorId", aConnectorId)).getN();
+		return mEndPoints.remove(new BasicDBObject().append(CONNECTOR_ID, aConnectorId)).getN();
 	}
 
 	@Override
 	public void setNamespace(String aNamespace) {
-		mThis.put("ns", aNamespace);
-		mClusters.save(mThis);
+		mDocument.put(CLUSTER_NS, aNamespace);
+		mClusters.save(mDocument);
 	}
 
 	@Override
 	public void setPassword(String aPassword) {
-		mThis.put("password", aPassword);
-		mClusters.save(mThis);
+		mDocument.put(CLUSTER_PASSWORD, aPassword);
+		mClusters.save(mDocument);
 	}
 
 	@Override
 	public void setAlias(String aAlias) {
-		mThis.put("alias", aAlias);
-		mClusters.save(mThis);
+		mDocument.put(CLUSTER_ALIAS, aAlias);
+		mClusters.save(mDocument);
 	}
 
 	@Override
 	public String getAlias() {
-		return (String) mThis.get("alias");
+		return (String) mDocument.get(CLUSTER_ALIAS);
 	}
 
 	private Object getTotalEndPointsRequests() {
-		AggregationOutput lResult = mEndPoints.aggregate(new BasicDBObject()
-				.append("$group", new BasicDBObject()
-						.append("requests", new BasicDBObject().append("$sum", "$requests"))), new BasicDBObject());
+		long lTotal = 0;
+		Iterator<IClusterEndPoint> lIt = getEndPoints();
+		while (lIt.hasNext()) {
+			lTotal += lIt.next().getRequests();
+		}
 
-		return lResult.results().iterator().next().get("requests");
+		return lTotal;
 	}
-
 }

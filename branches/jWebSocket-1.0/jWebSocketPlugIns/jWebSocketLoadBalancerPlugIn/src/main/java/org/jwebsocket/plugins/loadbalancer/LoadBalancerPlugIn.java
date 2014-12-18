@@ -74,10 +74,6 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 * Load balancer message delivery timeout.
 	 */
 	protected long mMessageDeliveryTimeout;
-	/**
-	 * Delay time for stop the connector when the client can't stop it.
-	 */
-	private long mConnectorStopDelay;
 
 	/**
 	 *
@@ -102,7 +98,6 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 				if (null != mSettings) {
 					mClusterManager = mSettings.getClusterManager();
 					mMessageDeliveryTimeout = mSettings.getMessageTimeout();
-					mConnectorStopDelay = mSettings.getConnectorStopDelay();
 
 					if (mLog.isInfoEnabled()) {
 						mLog.info("Load balancer plug-in successfully instantiated.");
@@ -230,7 +225,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		Token lResponse = createResponse(aToken);
 		IClusterEndPoint lEndPoint = lCluster.registerEndPoint(aConnector);
 		Assert.notNull(lEndPoint, "The new endpoint can't be created");
-		lResponse.setString("endPointId", lEndPoint.getServiceId());
+		lResponse.setString("endPointId", lEndPoint.getEndPointId());
 
 		sendToken(aConnector, lResponse);
 	}
@@ -332,10 +327,10 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		// sending service shutdown event to endpoint connector
 		Token lEvent = TokenFactory.createToken(NS_LOADBALANCER, "event");
 		lEvent.setString("name", "shutdownServiceEndPoint");
-		lEvent.setString("endPointId", lClusterEndPoint.getServiceId());
+		lEvent.setString("endPointId", lClusterEndPoint.getEndPointId());
 		lEvent.setString("user", aConnector.getUsername());
 		sendToken(getConnector(lClusterEndPoint.getConnectorId()), lEvent);
-		
+
 		// removing the endpoint
 		lClusterEndPoint.setStatus(EndPointStatus.OFFLINE);
 		lCluster.removeEndPoint(lClusterEndPoint);

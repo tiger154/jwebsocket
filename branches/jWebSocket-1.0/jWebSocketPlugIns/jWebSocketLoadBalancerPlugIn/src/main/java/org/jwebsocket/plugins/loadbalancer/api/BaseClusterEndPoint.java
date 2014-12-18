@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Settings for Load Balancer Plug-in (Community Edition, CE)
+//	jWebSocket Load Balancer BaseClusterEndPoint (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
@@ -16,47 +16,28 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.plugins.loadbalancer;
+package org.jwebsocket.plugins.loadbalancer.api;
 
-import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
+import org.jwebsocket.token.Token;
 
 /**
- * Load balancer settings.
  *
- * @author Alexander Schulze
  * @author Rolando Santamaria Maso
- * @author Rolando Betancourt Toucet
  */
-public class Settings {
+public abstract class BaseClusterEndPoint implements IClusterEndPoint {
 
-	/**
-	 * The clusters manager.
-	 */
-	private IClusterManager mClusters;
-	/**
-	 * Default message delivery timeout, default value 5000 milliseconds.
-	 */
-	private long mMessageTimeout = 5000;
-
-	public IClusterManager getClusterManager() {
-		return mClusters;
+	@Override
+	public void writeToToken(Token aToken) {
+		aToken.setString(Attributes.GENERIC_ID_FIELD, getEndPointId());
+		aToken.setString(Attributes.STATUS, getStatus().name());
+		aToken.setLong(Attributes.REQUESTS, getRequests());
+		if (getCpuUsage() != -1) {
+			aToken.setDouble(Attributes.CPU, getCpuUsage());
+		}
 	}
 
-	public void setClusterManager(IClusterManager aCM) {
-		mClusters = aCM;
-	}
-
-	/**
-	 * @return the message timeout.
-	 */
-	public long getMessageTimeout() {
-		return mMessageTimeout;
-	}
-
-	/**
-	 * @param aMessageTimeout the message timeout to set.
-	 */
-	public void setMessageTimeout(long aMessageTimeout) {
-		this.mMessageTimeout = aMessageTimeout;
+	@Override
+	public void readFromToken(Token aToken) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

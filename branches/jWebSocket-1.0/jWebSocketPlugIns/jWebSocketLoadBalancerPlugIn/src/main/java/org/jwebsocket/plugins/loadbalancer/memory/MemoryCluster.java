@@ -27,6 +27,7 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.plugins.loadbalancer.EndPointStatus;
+import org.jwebsocket.plugins.loadbalancer.api.Attributes;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 
 /**
@@ -128,11 +129,11 @@ public class MemoryCluster implements ICluster {
 	@Override
 	public Map<String, Object> getInfo() {
 		Map<String, Object> lInfoCluster = new HashMap<String, Object>();
-		lInfoCluster.put("clusterAlias", getAlias());
-		lInfoCluster.put("clusterNS", getNamespace());
-		lInfoCluster.put("endPointsCount", mEndPoints.size());
-		lInfoCluster.put("endPoints", mEndPoints);
-		lInfoCluster.put("requests", getTotalEndPointsRequests());
+		lInfoCluster.put(Attributes.CLUSTER_ALIAS, getAlias());
+		lInfoCluster.put(Attributes.CLUSTER_NS, getNamespace());
+		lInfoCluster.put(Attributes.ENDPOINTS_COUNT, mEndPoints.size());
+		lInfoCluster.put(Attributes.ENDPOINTS, mEndPoints);
+		lInfoCluster.put(Attributes.REQUESTS, getTotalEndPointsRequests());
 
 		return lInfoCluster;
 	}
@@ -143,8 +144,8 @@ public class MemoryCluster implements ICluster {
 		List<String> lIDs = getStickyIds();
 		for (int lPos = 0; lPos < lIDs.size(); lPos++) {
 			lInfoCluster = new FastMap<String, String>();
-			lInfoCluster.put("clusterAlias", getAlias());
-			lInfoCluster.put("endPointId", lIDs.get(lPos));
+			lInfoCluster.put(Attributes.CLUSTER_ALIAS, getAlias());
+			lInfoCluster.put(Attributes.ENDPOINT_ID, lIDs.get(lPos));
 
 			aStickyRoutes.add(lInfoCluster);
 		}
@@ -172,7 +173,8 @@ public class MemoryCluster implements ICluster {
 				double lTempCpuUsage = lClusterEndPoint.getCpuUsage();
 
 				// discard all java script clients because they can't update the CPU usage.
-				if (!lClusterEndPoint.getClientRuntimePlatform().equals("javascript") && lTempCpuUsage < lLeastCpuUsage) {
+				if (!lClusterEndPoint.getClientRuntimePlatform().equals(Attributes.JAVASCRIPT_RUNTIME_PLATFORM)
+						&& lTempCpuUsage < lLeastCpuUsage) {
 					lLeastCpuUsage = lTempCpuUsage;
 					lEndPointPos = lPos;
 				}
@@ -191,7 +193,7 @@ public class MemoryCluster implements ICluster {
 		} else {
 			// if 'MemoryClusterEndPoint' is javascript client executes round robin algorithm,
 			// but executes least CPU usage algorithm (with CPU usage).
-			if (lRuntimePlatform.equals("javascript")) {
+			if (lRuntimePlatform.equals(Attributes.JAVASCRIPT_RUNTIME_PLATFORM)) {
 				return lTempClusterEndPoint;
 			} else {
 				return getOptimumEndPoint();
@@ -215,7 +217,7 @@ public class MemoryCluster implements ICluster {
 	public IClusterEndPoint getEndPoint(String aEndPointId) {
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
 			IClusterEndPoint lClusterEndPoint = mEndPoints.get(lPos);
-			if (lClusterEndPoint.getServiceId().equals(aEndPointId)) {
+			if (lClusterEndPoint.getEndPointId().equals(aEndPointId)) {
 				return lClusterEndPoint;
 			}
 		}
@@ -240,7 +242,7 @@ public class MemoryCluster implements ICluster {
 		List<String> lIDs = new FastList<String>();
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
 			if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
-				lIDs.add(mEndPoints.get(lPos).getServiceId());
+				lIDs.add(mEndPoints.get(lPos).getEndPointId());
 			}
 		}
 

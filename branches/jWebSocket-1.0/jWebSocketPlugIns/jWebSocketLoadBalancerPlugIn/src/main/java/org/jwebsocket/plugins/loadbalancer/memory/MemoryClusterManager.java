@@ -33,7 +33,7 @@ import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
 public class MemoryClusterManager implements IClusterManager {
 
 	private List<ICluster> mClusters = new FastList<ICluster>();
-	private int mLbAlgorithm = 1;
+	private int mLbAlgorithm = 3;
 
 	@Override
 	public Iterator<ICluster> getClusters() {
