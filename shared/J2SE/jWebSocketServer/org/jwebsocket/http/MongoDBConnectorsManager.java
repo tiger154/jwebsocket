@@ -97,9 +97,9 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 		mSessionManager = lPlugIn.getSessionManager();
 		Assert.notNull(mSessionManager, "The system plug-in 'sessionManager' is not properly configured!");
 
-		mConnectors.ensureIndex(new BasicDBObject().append(Attributes.CONNECTION_ID, 1),
+		mConnectors.createIndex(new BasicDBObject().append(Attributes.CONNECTION_ID, 1),
 				new BasicDBObject().append("unique", true));
-		mConnectors.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1));
+		mConnectors.createIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1));
 	}
 
 	@Override
