@@ -18,98 +18,93 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer.mongodb;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.jwebsocket.plugins.loadbalancer.EndPointStatus;
-import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
-import org.jwebsocket.token.Token;
+import static org.jwebsocket.plugins.loadbalancer.api.Attributes.*;
+import org.jwebsocket.plugins.loadbalancer.api.BaseClusterEndPoint;
 
 /**
  *
  * @author kyberneees
  */
-public class MongoDBClusterEndPoint implements IClusterEndPoint {
+public class MongoDBClusterEndPoint extends BaseClusterEndPoint {
 
 	private DBCollection mEndPoints;
-	private DBObject mThis;
+	private DBObject mDocument;
 
 	public MongoDBClusterEndPoint(DBObject aThis, DBCollection aEndPoints) {
 		this.mEndPoints = aEndPoints;
-		this.mThis = aThis;
+		this.mDocument = aThis;
+	}
+
+	void sync() {
+		mEndPoints.save(mDocument);
 	}
 
 	@Override
 	public String getConnectorId() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return (String) mDocument.get(CONNECTOR_ID);
 	}
 
 	@Override
 	public double getCpuUsage() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return (Double) mDocument.get(CPU);
 	}
 
 	@Override
 	public long getRequests() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return (Long) mDocument.get(REQUESTS);
 	}
 
 	@Override
-	public String getServiceId() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String getEndPointId() {
+		return (String) mDocument.get(ENDPOINT_ID);
 	}
 
 	@Override
 	public EndPointStatus getStatus() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return EndPointStatus.valueOf((String) mDocument.get(STATUS));
 	}
 
 	@Override
 	public void increaseRequests() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		mEndPoints.update(mDocument, new BasicDBObject()
+				.append("$inc",
+						new BasicDBObject()
+						.append(REQUESTS, 1)));
 	}
 
 	@Override
 	public void setCpuUsage(double aCpuUsage) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void setRequests(int aRequests) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		mDocument.put(CPU, aCpuUsage);
+		sync();
 	}
 
 	@Override
 	public void setStatus(EndPointStatus aStatus) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		mDocument.put(STATUS, aStatus.name());
+		sync();
 	}
 
 	@Override
 	public String getClientRuntimePlatform() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return (String) mDocument.get(RUNTIME_PLATFORM);
 	}
 
 	@Override
 	public void setClientRuntimePlatform(String aPlatform) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void writeToToken(Token aToken) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void readFromToken(Token aToken) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		mDocument.put(RUNTIME_PLATFORM, aPlatform);
+		sync();
 	}
 
 	public Long getUses() {
-		return (Long) mThis.get("uses");
+		return (Long) mDocument.get(ENDPOINT_USES);
 	}
 
 	public void incrementUses() {
-		mThis.put("uses", getUses() + 1);
-		mEndPoints.save(mThis);
+		mDocument.put(ENDPOINT_USES, getUses() + 1);
+		sync();
 	}
-
 }

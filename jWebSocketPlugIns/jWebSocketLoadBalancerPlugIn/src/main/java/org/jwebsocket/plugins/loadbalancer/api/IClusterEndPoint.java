@@ -47,7 +47,7 @@ public interface IClusterEndPoint extends ITokenizable {
 	 *
 	 * @return the cluster endpoint id.
 	 */
-	String getServiceId();
+	String getEndPointId();
 
 	/**
 	 * @return the cluster endpoint status.
@@ -63,12 +63,6 @@ public interface IClusterEndPoint extends ITokenizable {
 	 * @param aCpuUsage the CPU usage to set.
 	 */
 	void setCpuUsage(double aCpuUsage);
-
-	/**
-	 *
-	 * @param aRequests the requests to set.
-	 */
-	void setRequests(int aRequests);
 
 	/**
 	 * @param aStatus the status to set.
