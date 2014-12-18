@@ -21,6 +21,12 @@ Ext.define('BPMNEditor.controller.BPMNController', {
 		btnNew: 'pCanvas btnNew',
 		uploadField: 'winloaddiagram filefield'
 	},
+	routes: {
+//		"main/index": 'showViewIndex',
+//		"help/aboutus": 'showViewAboutUs',
+		"security/showLogin": "showLogin",
+		"security/logout": "doLogout"
+	},
 	control: {
 		"btnnew": {
 			click: 'onMybuttonClick'
@@ -38,7 +44,6 @@ Ext.define('BPMNEditor.controller.BPMNController', {
 	onButtonClick: function(button, e, eOpts) {
 		Ext.create('BPMNEditor.view.winLoadDiagram').show();
 	},
-	
 	startUpload: function(aButton, aEvent, aOptions) {
 		var lFileInputEl = this.getUploadField().fileInputEl, lIdx,
 				lFiles = lFileInputEl && lFileInputEl.dom ? lFileInputEl.dom.files : [];
@@ -52,6 +57,25 @@ Ext.define('BPMNEditor.controller.BPMNController', {
 			Ext.Msg.alert('Upload in progress', JSON.stringify(lFiles));
 		} else {
 			this.getUploadField().markInvalid("Please you must select something!");
+		}
+	},
+	doLogout: function() {
+		if (Ext.jwsClient.isConnected()) {
+			Ext.jwsClient.getConnection().systemLogoff({
+				OnSuccess: function() {
+					BPMNEditor.app.setLoggedOff();
+				}
+			});
+		}
+	},
+	showLogin: function() {
+		if (!this.getCanvasTabPanel().getComponent('loginWindow')) {
+			this.getCanvasTabPanel().add({
+				closable: true,
+				itemId: 'loginWindow',
+				xtype: 'loginForm'
+			});
+			this.getCanvasTabPanel().setActiveTab('loginWindow');
 		}
 	}
 });
