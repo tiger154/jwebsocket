@@ -42,7 +42,8 @@ Ext.define('Ext.jws.form.Panel', {
 	tokentype: undefined,
 	submit: function(aOptions) {
 		var lThis = this,
-				lForm = lThis.element.dom || {},
+				lElem = lThis.element || lThis.el || {},
+				lForm = lElem.dom || {},
 				lFormValues;
 
 		aOptions = Ext.apply({
