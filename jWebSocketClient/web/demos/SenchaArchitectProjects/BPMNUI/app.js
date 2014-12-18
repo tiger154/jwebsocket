@@ -44,6 +44,13 @@ Ext.application({
 			Ext.jwsClient.on({
 				open: function() {
 					BPMNEditor.app.setConnected();
+					Ext.jwsClient.getConnection().initUploaderPlugIn({
+						// we just need to pass the id of the button that will upload the files
+						browseButtonId: '',
+						chunkSize: parseInt(10240, 10),
+						defaultAlias: "publicDir",
+						defaultScope: "public"
+					});
 				},
 				close: function() {
 					BPMNEditor.app.setDisconnected();
@@ -147,7 +154,9 @@ Ext.application({
 		}
 		if (lConnStatus) {
 			lConnStatus.setText("disconnected");
-			lConnStatus.addCls("status offline");
+			lConnStatus.addCls("offline");
+			lConnStatus.removeCls("online");
+			lConnStatus.removeCls("authenticated");
 		}
 		if (lClientId) {
 			lClientId.setText("Client id: -");

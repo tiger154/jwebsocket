@@ -146,7 +146,7 @@ jws.FileUploaderPlugIn = {
 	},
 	onFileSelected: function(aEvt) {
 		this.fireUploaderEvent(this.TT_FILE_SELECTED, aEvt.target.files);
-		for(var lIdx = 0; lIdx< aEvt.target.files.length; lIdx++){
+		for (var lIdx = 0; lIdx < aEvt.target.files.length; lIdx++) {
 			this.queue.push(new jws.UploadItem(aEvt.target.files[lIdx]));
 		}
 		//TODO: check if the files are folders, upload nested folders
@@ -217,6 +217,7 @@ jws.FileUploaderPlugIn = {
 				lBytesRead = aUploadItem.getUploadedBytes();
 			}
 
+			this.fireUploaderEvent(this.TT_UPLOAD_STARTED, aUploadItem);
 
 			var lSave = function(aEvt) {
 				if (lMe.isConnected()) {
@@ -230,8 +231,8 @@ jws.FileUploaderPlugIn = {
 						lMe.fileSaveByChunks(lFile.name, lChunkContent, lIsLast, {
 							encoding: "base64",
 							encode: false,
-							scope: lMe.defaultScope,
-							alias: lMe.defaultAlias,
+							scope: lMe.defaultScope || "public",
+							alias: lMe.defaultAlias || "publicDir",
 							OnSuccess: function(aEvent) {
 								aUploadItem.setUploadedBytes(lBytesSent);
 								lMe.fireUploaderEvent(lMe.TT_UPLOAD_PROGRESS, {
@@ -243,6 +244,11 @@ jws.FileUploaderPlugIn = {
 								if (!lIsLast) {
 									var lBlob = lFile.slice(lBytesSent, lBytesSent + lChunkSize);
 									lReader.readAsDataURL(lBlob);
+								} else {
+									aUploadItem.setProgress(100);
+									aUploadItem.setUploadedBytes(aUploadItem.getFile().size);
+									aUploadItem.setStatus(this.STATUS_UPLOADED);
+									this.fireUploaderEvent(this.TT_FILE_UPLOADED, aUploadItem);
 								}
 							},
 							OnFailure: function(aEvent) {
@@ -447,7 +453,7 @@ jws.FileUploaderPlugIn = {
 			});
 			return;
 		}
-		if(!aAlias){
+		if (!aAlias) {
 			this.fireUploaderEvent(this.TT_ERROR, {
 				type: this.TT_INFO,
 				msg: "Please provide an alias, this field is required"

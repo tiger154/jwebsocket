@@ -41,43 +41,43 @@ Ext.define('BPMNEditor.view.vpDiagram', {
 					text: 'disconnected',
 					baseCls: 'status offline',
 					handler: function() {
-						var lAnimationOptions = {
-							out: true,
-							duration: 500,
-							autoClear: false
-						};
-						Ext.Anim.run(this.parent, 'fade', Ext.apply(lAnimationOptions, {
-							after: function() {
-								var lText = this.getComponent("client_id").getText();
-								var lClass = this.getComponent("connection_status").getCls();
-								this.parent.getTabBar().add({
-									xtype: 'button',
-									iconCls: lClass + " minimized",
-									ui: 'plain',
-									baseCls: 'x-tab-normal x-tab ' +
-											'x-iconalign-center x-tab-icon ' +
-											'x-layout-box-item x-stretched ' +
-											'minimized',
-									html: '<span class="x-button-label">' +
-											lText.split("@").join("<br/>") + '</span>',
-									handler: function() {
-										Ext.Anim.run(this, 'fade', Ext.apply(lAnimationOptions, {
-											after: function() {
-												Ext.Anim.run(Ext.getCmp("loginBar"),
-														'fade', {
-															out: false,
-															duration: 500,
-															autoclear: false
-														});
-												this.destroy();
-											},
-											scope: this
-										}));
-									}
-								});
-							},
-							scope: this.parent
-						}));
+//						var lAnimationOptions = {
+//							out: true,
+//							duration: 500,
+//							autoClear: false
+//						};
+//						Ext.Anim.run(this.parent, 'fade', Ext.apply(lAnimationOptions, {
+//							callback: function() {
+//								var lText = this.getComponent("client_id").getText();
+//								var lClass = this.getComponent("connection_status").getCls();
+//								this.parent.getTabBar().add({
+//									xtype: 'button',
+//									iconCls: lClass + " minimized",
+//									ui: 'plain',
+//									baseCls: 'x-tab-normal x-tab ' +
+//											'x-iconalign-center x-tab-icon ' +
+//											'x-layout-box-item x-stretched ' +
+//											'minimized',
+//									html: '<span class="x-button-label">' +
+//											lText.split("@").join("<br/>") + '</span>',
+//									handler: function() {
+//										Ext.Anim.run(this, 'fade', Ext.apply(lAnimationOptions, {
+//											after: function() {
+//												Ext.Anim.run(Ext.getCmp("loginBar"),
+//														'fade', {
+//															out: false,
+//															duration: 500,
+//															autoclear: false
+//														});
+//												this.destroy();
+//											},
+//											scope: this
+//										}));
+//									}
+//								});
+//							},
+//							scope: this.parent
+//						}));
 					}
 				}, {
 					text: "|",
