@@ -15,25 +15,145 @@
 
 // @require @packageOverrides
 Ext.Loader.setConfig({
-
+	enabled: true,
+	disableCaching: true,
+	paths: {
+		'Ext.jws': '../../../lib/ExtJS/jWebSocketSenchaPlugIn/'
+	}
 });
 
-
 Ext.application({
-    views: [
-        'vpDiagram',
-        'winLoadDiagram',
-        'btnNew',
-        'tpCanvas',
-        'btnOpen'
-    ],
-    controllers: [
-        'BPMNController'
-    ],
-    name: 'BPMNEditor',
+	requires: [
+		'Ext.jws.Client'
+	],
+	views: [
+		'vpDiagram',
+		'winLoadDiagram',
+		'btnNew',
+		'tpCanvas',
+		'btnOpen',
+		'Login'
+	],
+	controllers: [
+		'BPMNController'
+	],
+	name: 'BPMNEditor',
+	launch: function() {
+		Ext.create('BPMNEditor.view.vpDiagram');
+		if (typeof Ext.jwsClient !== "undefined") {
+			Ext.jwsClient.on({
+				open: function() {
+					BPMNEditor.app.setConnected();
+				},
+				close: function() {
+					BPMNEditor.app.setDisconnected();
+				},
+				logon: function(aToken) {
+					BPMNEditor.app.setAuthenticated(aToken);
+				},
+				welcome: function(aToken) {
+					if (aToken.username !== "anonymous") {
+						BPMNEditor.app.setAuthenticated(aToken);
+					} else if (Ext.jwsClient.getConnection()) {
+						Ext.jwsClient.getConnection().systemLogon(jws.DEMO_ROOT_LOGINNAME, jws.DEMO_ROOT_PASSWORD);
+					}
+					lDrawController.onWelcome.call(lDrawController, aToken);
+				},
+				message: function(aToken) {
+					lDrawController.processToken.call(lDrawController, aToken);
+				},
+				logoff: function() {
+					BPMNEditor.app.setLoggedOff();
+				}
+			});
 
-    launch: function() {
-        Ext.create('BPMNEditor.view.vpDiagram');
-    }
+			Ext.jwsClient.open();
+		}
+	},
+	setAuthenticated: function(aToken) {
+		var lConnStatus = Ext.getCmp("connection_status"),
+				lClientId = Ext.getCmp("client_id"),
+				lLogoutBtn = Ext.getCmp("logout_button"),
+				lLoginBtnSeparator = Ext.getCmp("login_btn_separator");
+		if (aToken.sourceId) {
+			lClientId.setText(aToken.username + "@" + aToken.sourceId);
+		}
+		if (aToken.username !== "anonymous") {
+			lLogoutBtn.setText("logout");
+			lConnStatus.setText("authenticated");
+			lConnStatus.addCls("authenticated");
+			lConnStatus.removeCls("offline");
+			lConnStatus.removeCls("online");
+			var lSplit = lClientId.getText().split("@");
+			lClientId.setText(aToken.username + "@" + (lSplit.length > 1 ? lSplit[1] : aToken.sourceId));
+			lLogoutBtn.show();
+			if (lLoginBtnSeparator) {
+				lLoginBtnSeparator.show();
+			}
+		} else {
+			this.setLoggedOff();
+		}
+	},
+	setLoggedOff: function() {
+		var lConnStatus = Ext.getCmp("connection_status"),
+				lClientId = Ext.getCmp("client_id"),
+				lLogoutBtn = Ext.getCmp("logout_button");
+		if (lConnStatus) {
+			lConnStatus.setText("connected");
+			lConnStatus.removeCls("offline");
+			lConnStatus.removeCls("authenticated");
+			lConnStatus.addCls("online");
+		}
+		if (lLogoutBtn) {
+			lLogoutBtn.setText("login");
+		}
+		if (lClientId) {
+			lClientId.setText("anonymous@" + lClientId.getText().split("@")[1]);
+		}
+	},
+	setConnected: function() {
+		var lConnStatus = Ext.getCmp("connection_status"),
+				lClientId = Ext.getCmp("client_id"),
+				lLogoutBtn = Ext.getCmp("logout_button"),
+				lLoginBtnSeparator = Ext.getCmp("login_btn_separator");
+		if (lConnStatus) {
+			lConnStatus.setText("connected");
+			lConnStatus.addCls("online");
+			lConnStatus.removeCls("offline");
+			lConnStatus.removeCls("authenticated");
+		}
+		if (lLoginBtnSeparator) {
+			lLoginBtnSeparator.show();
+		}
+		if (lLogoutBtn) {
+			lLogoutBtn.setText("login");
+			lLogoutBtn.show();
+		}
+		if (lClientId) {
+			lClientId.setText("Client id: -");
+		}
+	},
+	setDisconnected: function() {
+		var lConnStatus = Ext.getCmp("connection_status"),
+				lClientId = Ext.getCmp("client_id"),
+				lLogoutBtn = Ext.getCmp("logout_button"),
+				lLoginBtnSeparator = Ext.getCmp("login_btn_separator");
+		if (lLogoutBtn) {
+			lLogoutBtn.setText("login");
+			lLogoutBtn.hide();
+		}
+		if (lLoginBtnSeparator) {
+			lLoginBtnSeparator.hide();
+		}
+		if (lConnStatus) {
+			lConnStatus.setText("disconnected");
+			lConnStatus.addCls("status offline");
+		}
+		if (lClientId) {
+			lClientId.setText("Client id: -");
+		}
 
+		Ext.Msg.alert("Not connected", "You are disconnected from jWebSocket server, " +
+				"please try reloading the current page or restarting your server");
+	}
 });

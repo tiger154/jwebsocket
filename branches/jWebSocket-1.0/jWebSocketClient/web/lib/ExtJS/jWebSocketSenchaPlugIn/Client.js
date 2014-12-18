@@ -164,7 +164,15 @@ Ext.define('Ext.jws.Client', {
 	//:a:en::::none
 	//:r:*::fTokenClient:jWebSocketTokenClient:The jWebSocketTokenClient class instance.
 	getConnection: function() {
-		return this.fTokenClient;
+		return this.fTokenClient || {};
+	},
+	//:m:*:isConnected
+	//:d:en:Checks if the connection with jWebSocket Server is available or not
+	//:a:en::::none
+	//:r:*::lIsConnected:Boolean:True if the connection is active.
+	isConnected: function() {
+		return typeof this.getConnection().isConnected === "function" &&
+				this.getConnection().isConnected();
 	},
 	//:m:*:send
 	//:d:en:Sends data to the jWebSocket server
@@ -198,29 +206,47 @@ Ext.define('Ext.jws.Client', {
 				// callbacks that are executed when the new message comes as a 
 				// response to a previous message
 				if (aToken.code < 0) {
-					if ('function' == typeof aCallbacks['failure']) {
-						if (aScope == undefined) {
+					if ('function' === typeof aCallbacks.failure) {
+						if (typeof aScope === "undefined") {
 							return aCallbacks.failure(aToken);
 						}
 						aCallbacks.failure.call(lScope, aToken);
 					}
+					if ('function' === typeof aCallbacks.OnFailure) {
+						if (typeof aScope === "undefined") {
+							return aCallbacks.OnFailure(aToken);
+						}
+						aCallbacks.OnFailure.call(lScope, aToken);
+					}
 				} else {
-					if ('function' == typeof aCallbacks['success']) {
-						if (aScope == undefined) {
+					if ('function' === typeof aCallbacks.success) {
+						if (typeof aScope === "undefined") {
 							return aCallbacks.success(aToken);
 						}
 						aCallbacks.success.call(lScope, aToken);
+					}
+					if ('function' === typeof aCallbacks.OnSuccess) {
+						if (typeof aScope === "undefined") {
+							return aCallbacks.OnSuccess(aToken);
+						}
+						aCallbacks.OnSuccess.call(lScope, aToken);
 					}
 				}
 			},
 			// Fired when the server doesn't reach the server while sending the 
 			// message in the defined timeout
 			OnTimeOut: function(aToken) {
-				if ('function' == typeof aCallbacks['timeout']) {
-					if (aScope == undefined) {
+				if ('function' === typeof aCallbacks.timeout) {
+					if (typeof aScope === "undefined") {
 						return aCallbacks.timeout(aToken);
 					}
 					aCallbacks.timeout.call(lScope, aToken);
+				}
+				if ('function' === typeof aCallbacks.OnTimeout) {
+					if (typeof aScope === "undefined") {
+						return aCallbacks.OnTimeout(aToken);
+					}
+					aCallbacks.OnTimeout.call(lScope, aToken);
 				}
 			}
 		});
