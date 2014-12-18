@@ -47,22 +47,73 @@ Ext.define('BPMNEditor.controller.BPMNController', {
 	startUpload: function(aButton, aEvent, aOptions) {
 		var lFileInputEl = this.getUploadField().fileInputEl, lIdx,
 				lFiles = lFileInputEl && lFileInputEl.dom ? lFileInputEl.dom.files : [];
+		Ext.jwsClient.getConnection().addUploaderListeners({
+			OnUploadStarted: this.onUploadStarted,
+			OnUploadComplete: this.onUploadComplete,
+			OnUploadProgress: this.onUploadProgress,
+			OnFileSaved: this.onFileUploaded,
+			OnUploadError: this.onFileUploadError,
+			OnError: this.onUploadError,
+			OnFileDeleted: this.onFileDeleted
+		});
 		if (lFiles.length > 0) {
 			aButton.up('window').close();
 			// Iterate through the file list
 			for (lIdx = 0; lIdx < lFiles.length; lIdx++) {
 				console.log(lFiles[lIdx]);
+				Ext.jwsClient.getConnection().uploadFileInChunks(new jws.UploadItem(lFiles[lIdx]));
 				// Now we need to bring up the uploader to upload file by file using the FileAPI from HTML5
 			}
-			Ext.Msg.alert('Upload in progress', JSON.stringify(lFiles));
 		} else {
 			this.getUploadField().markInvalid("Please you must select something!");
 		}
+	},
+	updateProgress: function(aProgress) {
+		console.log(aProgress);
+		if (aProgress >= 100) {
+			Ext.MessageBox.hide();
+		} else {
+			var lIdx = aProgress / 11;
+			Ext.MessageBox.updateProgress(lIdx, Math.round(100 * lIdx) + '% completed');
+		}
+	},
+	onUploadStarted: function(aEvent, aData) {
+		Ext.MessageBox.show({
+			title: 'Please wait',
+			msg: 'Uploading file...',
+			progressText: '0%',
+			width: 300,
+			progress: true,
+			closable: false
+		});
+	},
+	onUploadComplete: function(aEvent, aData) {
+		var lThis = BPMNEditor.app.getController("BPMNController");
+		lThis.updateProgress(aData.progress);
+	},
+	onUploadProgress: function(aEvent, aData) {
+		var lThis = BPMNEditor.app.getController("BPMNController");
+		lThis.updateProgress(aData.progress);
+	},
+	onFileUploaded: function(aEvent, aData) {
+		var lThis = BPMNEditor.app.getController("BPMNController");
+		lThis.updateProgress(aData.progress);
+	},
+	onFileUploadError: function(aEvent, aError) {
+		Ext.MessageBox.hide();
+		console.log(aError);
+	},
+	onUploadError: function(aEvent, aError) {
+		Ext.MessageBox.hide();
+		console.log(aError);
 	},
 	doLogout: function() {
 		if (Ext.jwsClient.isConnected()) {
 			Ext.jwsClient.getConnection().systemLogoff({
 				OnSuccess: function() {
+					BPMNEditor.app.setLoggedOff();
+				},
+				OnFailure: function(){
 					BPMNEditor.app.setLoggedOff();
 				}
 			});

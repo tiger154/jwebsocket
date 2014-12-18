@@ -347,7 +347,7 @@ public class Tools {
 			String lBasePath = FilenameUtils.separatorsToSystem(aBasePath);
 			if (SystemUtils.IS_OS_WINDOWS) {
 				if (lCanonicalPath.toLowerCase().startsWith(lBasePath.toLowerCase())) {
-					return false;
+					return true;
 				}
 			} else {
 				if (!lCanonicalPath.startsWith(lBasePath)) {
