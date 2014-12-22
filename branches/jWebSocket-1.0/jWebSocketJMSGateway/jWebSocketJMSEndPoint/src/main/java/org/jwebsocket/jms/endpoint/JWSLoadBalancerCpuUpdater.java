@@ -78,7 +78,13 @@ public class JWSLoadBalancerCpuUpdater {
 				try {
 					if (mEP.isOpen() && mIsServiceEndPoint) {
 						mEP.sendCpuUsageToLoadBalancer(mTargetId, Tools.getCpuUsage());
-						lTimer.schedule(this, mTimeInterval);
+						lTimer.schedule(new JWSTimerTask() {
+
+							@Override
+							protected void runTask() {
+								start();
+							}
+						}, mTimeInterval);
 					}
 				} catch (Exception lEx) {
 
@@ -90,8 +96,8 @@ public class JWSLoadBalancerCpuUpdater {
 	}
 
 	/**
-	 * Automatically start the CPU statistics sending to the Load Balancer once
-	 * the endpoint is successfully registered as a service endpoint.
+	 * Automatically start the CPU statistics sending to the Load Balancer once the endpoint is
+	 * successfully registered as a service endpoint.
 	 */
 	public void autoStart() {
 		mEP.addResponseListener("org.jwebsocket.plugins.loadbalancer",
