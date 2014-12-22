@@ -55,17 +55,17 @@ public class JMSConnector extends BaseConnector {
 
 		WebSocketSession lSession = getSession();
 		lSession.setSessionId(UUID.randomUUID().toString());
-		
+
 		RequestHeader lHeader = new RequestHeader();
 		lHeader.put(RequestHeader.WS_PROTOCOL, "org.jwebsocket.json");
 		Map<String, String> lCookiesMap = new FastMap<String, String>().shared();
 		lCookiesMap.put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, lSession.getSessionId());
 		lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
 		setHeader(lHeader);
-		
+
 		mRemoteHost = aRemoteHost;
 		mTargetId = aTargetId;
-		
+
 		// specify the gateway per connector, 
 		// we might have multiple jWebSocket instances connected to a queue
 		setVar("$gatewayId", mJMSSender.getEndPointId());
@@ -76,6 +76,11 @@ public class JMSConnector extends BaseConnector {
 		return mTargetId;
 	}
 
+	@Override
+	public boolean supportsTransactions() {
+		return false;
+	}
+
 //	@Override
 //	public InetAddress getRemoteHost() {
 //		try {
@@ -84,12 +89,11 @@ public class JMSConnector extends BaseConnector {
 //			return null;
 //		}
 //	}
-	
 	@Override
 	public void sendPacket(final WebSocketPacket aDataPacket) {
-		try{
+		try {
 			mJMSSender.sendText(mTargetId, aDataPacket.getUTF8());
-		} catch(JMSException lEx) {
+		} catch (JMSException lEx) {
 			// TODO: Process exception
 		}
 	}
