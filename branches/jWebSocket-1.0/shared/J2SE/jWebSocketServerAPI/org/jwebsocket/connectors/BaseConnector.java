@@ -42,9 +42,9 @@ import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
 /**
- * Provides the basic implementation of the jWebSocket connectors. The
- * {@literal BaseConnector} is supposed to be used as ancestor for the connector
- * implementations like e.g. the {@literal TCPConnector} or the {@literal TomcatConnector
+ * Provides the basic implementation of the jWebSocket connectors. The {@literal BaseConnector} is
+ * supposed to be used as ancestor for the connector implementations like e.g. the
+ * {@literal TCPConnector} or the {@literal TomcatConnector
  * }.
  *
  * @author Alexander Schulze
@@ -86,8 +86,7 @@ public class BaseConnector implements WebSocketConnector {
 	 */
 	private WebSocketEngine mEngine = null;
 	/**
-	 * Backup of the original request header and it's fields. TODO: maybe
-	 * obsolete for the future
+	 * Backup of the original request header and it's fields. TODO: maybe obsolete for the future
 	 */
 	private RequestHeader mHeader = null;
 	/**
@@ -141,8 +140,8 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	/**
-	 * Returns the current status for the connector. Please refer to the
-	 * WebSocketConnectorStatus enumeration.
+	 * Returns the current status for the connector. Please refer to the WebSocketConnectorStatus
+	 * enumeration.
 	 *
 	 * @return
 	 */
@@ -152,8 +151,8 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	/**
-	 * Sets the current status for the connector. Please refer to the
-	 * WebSocketConnectorStatus enumeration.
+	 * Sets the current status for the connector. Please refer to the WebSocketConnectorStatus
+	 * enumeration.
 	 *
 	 * @param aStatus
 	 */
@@ -292,6 +291,8 @@ public class BaseConnector implements WebSocketConnector {
 	@Override
 	public void sendPacketInTransaction(final WebSocketPacket aDataPacket,
 			final Integer aFragmentSize, final IPacketDeliveryListener aListener) {
+
+		Assert.isTrue(supportsTransactions(), "The target client does not support transactions!");
 
 		// if the connector is internal, deliver the packet directly
 		if (isInternal()) {
@@ -677,5 +678,10 @@ public class BaseConnector implements WebSocketConnector {
 	protected void checkBeforeSend(WebSocketPacket aPacket) throws Exception {
 		Assert.isTrue(getMaxFrameSize() >= aPacket.size(),
 				"The packet size exceeds the connector supported 'max frame size' value!");
+	}
+
+	@Override
+	public boolean supportsTransactions() {
+		return true;
 	}
 }
