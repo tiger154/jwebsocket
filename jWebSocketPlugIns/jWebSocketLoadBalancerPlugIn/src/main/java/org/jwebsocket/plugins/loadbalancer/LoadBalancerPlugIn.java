@@ -38,8 +38,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 /**
- * Provides all functionalities to load balancer for create, remove and manage
- * services endpoints.
+ * Provides all functionalities to load balancer for create, remove and manage services endpoints.
  *
  * @author Alexander Schulze
  * @author Rolando Betancourt Toucet
@@ -169,9 +168,9 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Sends a list (of maps) with the in-formation about all clusters (e.g. per
-	 * cluster: cluster-alias, number of end-points, list of endpoints in this
-	 * cluster, status per endpoint etc.)
+	 * Sends a list (of maps) with the in-formation about all clusters (e.g. per cluster:
+	 * cluster-alias, number of end-points, list of endpoints in this cluster, status per endpoint
+	 * etc.)
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -185,8 +184,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Sends a list of all sticky routes managed by the load balancer,
-	 * consisting of cluster-alias, client endpoint-id, service endpoint-id.
+	 * Sends a list of all sticky routes managed by the load balancer, consisting of cluster-alias,
+	 * client endpoint-id, service endpoint-id.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -200,11 +199,10 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Registers a new service endpoint which is not yet specified in the load
-	 * balancer configuration file.In case an endpoint id is passed which
-	 * already exists in the load balancer configuration the request is
-	 * rejected. In case a valid new endpoint is to be registered the internal
-	 * table gets appended accordingly.
+	 * Registers a new service endpoint which is not yet specified in the load balancer
+	 * configuration file.In case an endpoint id is passed which already exists in the load balancer
+	 * configuration the request is rejected. In case a valid new endpoint is to be registered the
+	 * internal table gets appended accordingly.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -231,12 +229,11 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * De-registers a connected service endpoint. In case the endpoint is part
-	 * of the load balancer configuration the internal entry in the table of
-	 * end-points gets tagged as "de-registered". In case the endpoint was a
-	 * dynamically added one the item in the internal table shall be
-	 * removed.This method can be also used by an administration too, to restart
-	 * a certain endpoint after an update.
+	 * De-registers a connected service endpoint. In case the endpoint is part of the load balancer
+	 * configuration the internal entry in the table of end-points gets tagged as "de-registered".
+	 * In case the endpoint was a dynamically added one the item in the internal table shall be
+	 * removed.This method can be also used by an administration too, to restart a certain endpoint
+	 * after an update.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -281,11 +278,10 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Should send a message to the referenced endpoint to gracefully shutdown.
-	 * A graceful shutdown should include a clean de-registering from the load
-	 * balancer plug-in. Since it can be not guaranteed that the target endpoint
-	 * processes the shutdown request properly, this method shall come with a
-	 * timeout, such as when this is exceeded the endpoint is automatically
+	 * Should send a message to the referenced endpoint to gracefully shutdown. A graceful shutdown
+	 * should include a clean de-registering from the load balancer plug-in. Since it can be not
+	 * guaranteed that the target endpoint processes the shutdown request properly, this method
+	 * shall come with a timeout, such as when this is exceeded the endpoint is automatically
 	 * registered to be shut down manually by the administrator.
 	 *
 	 * @param aConnector
@@ -374,8 +370,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Sends client requests to the appropriate service. If occurs any error or
-	 * timeout, repeats the operation.
+	 * Sends client requests to the appropriate service. If occurs any error or timeout, repeats the
+	 * operation.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -389,41 +385,46 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		if (null != lEndPoint) {
 			final WebSocketConnector lConnector = getConnector(lEndPoint.getConnectorId());
 
-			sendTokenInTransaction(lConnector, aToken, new IPacketDeliveryListener() {
+			if (lConnector.supportsTransactions()) {
+				sendTokenInTransaction(lConnector, aToken, new IPacketDeliveryListener() {
 
-				@Override
-				public long getTimeout() {
-					return mMessageDeliveryTimeout;
-				}
-
-				@Override
-				public void OnTimeout() {
-					// deregister target connector services because a possible 
-					// connection bottleneck or node shutdown.
-					int lDeregistered = mClusterManager.removeConnectorEndPoints(aConnector.getId());
-
-					if (mLog.isDebugEnabled()) {
-						mLog.debug("Remote client not received a message on required '"
-								+ mMessageDeliveryTimeout + "'time! " + lDeregistered
-								+ " client services were deregistered!");
+					@Override
+					public long getTimeout() {
+						return mMessageDeliveryTimeout;
 					}
 
-					// call again.
-					sendToService(aConnector, aToken);
-				}
+					@Override
+					public void OnTimeout() {
+						// deregister target connector services because a possible 
+						// connection bottleneck or node shutdown.
+						int lDeregistered = mClusterManager.removeConnectorEndPoints(aConnector.getId());
 
-				@Override
-				public void OnSuccess() {
-					lEndPoint.increaseRequests();
-				}
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("Remote client not received a message on required '"
+									+ mMessageDeliveryTimeout + "'time! " + lDeregistered
+									+ " client services were deregistered!");
+						}
 
-				@Override
-				public void OnFailure(Exception lEx) {
-					Token lToken = createResponse(aToken);
-					lToken.setCode(-1);
-					lToken.setString("msg", lEx.getMessage());
-				}
-			});
+						// call again
+						sendToService(aConnector, aToken);
+					}
+
+					@Override
+					public void OnSuccess() {
+						lEndPoint.increaseRequests();
+					}
+
+					@Override
+					public void OnFailure(Exception lEx) {
+						Token lToken = createResponse(aToken);
+						lToken.setCode(-1);
+						lToken.setString("msg", lEx.getMessage());
+					}
+				});
+			} else {
+				sendToken(lConnector, aToken);
+				lEndPoint.increaseRequests();
+			}
 		} else {
 			sendErrorToken(aConnector, aToken, -1, "No service available on cluster to process the resquest!");
 		}
