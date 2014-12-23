@@ -275,4 +275,15 @@ public class MongoDBCluster implements ICluster {
 
 		return lTotal;
 	}
+
+	@Override
+	public void setGrantedEndPoints(String aGrantedEndPoints) {
+		mDocument.put(GRANTED_ENDPOINTS, aGrantedEndPoints);
+		mClusters.save(mDocument);
+	}
+
+	@Override
+	public String getGrantedEndPoints() {
+		return (String) mDocument.get(GRANTED_ENDPOINTS);
+	}
 }

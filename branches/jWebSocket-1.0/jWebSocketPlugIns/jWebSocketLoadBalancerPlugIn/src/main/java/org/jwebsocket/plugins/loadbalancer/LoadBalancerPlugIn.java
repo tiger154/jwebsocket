@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
+import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.PluginConfiguration;
@@ -145,6 +146,29 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	@Override
 	public String getNamespace() {
 		return NS_LOADBALANCER;
+	}
+
+	@Override
+	public void connectorStarted(WebSocketConnector aConnector) {
+		Iterator<ICluster> lClusters = mClusterManager.getClusters();
+		while (lClusters.hasNext()) {
+			ICluster lC = lClusters.next();
+			String lGrantedEndPoints = lC.getGrantedEndPoints();
+			if (null != lGrantedEndPoints) {
+				String[] lEndPoints = lGrantedEndPoints.split(",");
+				for (String lGrantedId : lEndPoints) {
+					// automatically registering service endpoint
+					if (aConnector.getId().equals(lGrantedId)) {
+						lC.registerEndPoint(aConnector);
+					}
+
+					if (mLog.isDebugEnabled()) {
+						mLog.info("Granted EndPoint('" + lGrantedId + "') has been automatically "
+								+ "registered as service on cluster: " + lC.getAlias());
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -439,6 +463,9 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
 	public void responseAction(WebSocketConnector aConnector, Token aToken) {
 		String lSourceId = aToken.getString("sourceId");
+		if (mSettings.isIncludeWorkerServiceId()) {
+			aToken.setString("workerServiceId", aConnector.getId());
+		}
 
 		sendToken(getConnector(lSourceId), aToken);
 	}
@@ -462,5 +489,9 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 */
 	public boolean isNamespaceSupported(String aNS) {
 		return mClusterManager.isNamespaceSupported(aNS);
+	}
+
+	boolean isAliasSupported(String aAliasName) {
+		return mClusterManager.getClusterByAlias(aAliasName) != null;
 	}
 }

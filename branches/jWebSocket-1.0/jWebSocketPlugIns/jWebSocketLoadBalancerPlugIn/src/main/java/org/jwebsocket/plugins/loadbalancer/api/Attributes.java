@@ -40,4 +40,5 @@ public class Attributes {
 	public static final String CPU = "cpu";
 	public static final String CONNECTOR_ID = "connectorId";
 	public static final String BALANCER_ALGORITHM = "bAlgorithm";
+	public static final String GRANTED_ENDPOINTS = "grantedEndPoints";
 }

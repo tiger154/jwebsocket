@@ -30,8 +30,8 @@ import org.jwebsocket.api.WebSocketConnector;
 public interface ICluster {
 
 	/**
-	 * @return <code>true</code> if any cluster endpoint have status online;
-	 * <code>false</code> otherwise.
+	 * @return <code>true</code> if any cluster endpoint have status online; <code>false</code>
+	 * otherwise.
 	 */
 	boolean isEndPointAvailable();
 
@@ -39,8 +39,8 @@ public interface ICluster {
 	 * Verify if endpoints list contains a cluster endpoint with a specific id.
 	 *
 	 * @param aEndPointId endpoint id.
-	 * @return if the endpoints list contains the specified cluster endpoint
-	 * returns it, but returns <code>null</code>
+	 * @return if the endpoints list contains the specified cluster endpoint returns it, but returns
+	 * <code>null</code>
 	 */
 	IClusterEndPoint getEndPoint(String aEndPointId);
 
@@ -69,8 +69,7 @@ public interface ICluster {
 	IClusterEndPoint getOptimumEndPoint();
 
 	/**
-	 * Gets a balanced cluster endpoint using both algorithms (round robin &
-	 * least CPU usage).
+	 * Gets a balanced cluster endpoint using both algorithms (round robin & least CPU usage).
 	 *
 	 * @return optimum cluster endpoint.
 	 */
@@ -84,14 +83,13 @@ public interface ICluster {
 	/**
 	 * Gets a balanced cluster endpoint using the round robin algorithm.
 	 *
-	 * @return optimum cluster endpoint or <code>null</code> if endpoints list
-	 * is empty.
+	 * @return optimum cluster endpoint or <code>null</code> if endpoints list is empty.
 	 */
 	IClusterEndPoint getRoundRobinEndPoint();
 
 	/**
-	 * Gets all sticky routes in this cluster. A sticky routes is a cluster
-	 * endpoint with status online.
+	 * Gets all sticky routes in this cluster. A sticky routes is a cluster endpoint with status
+	 * online.
 	 *
 	 * @param aStickyRoutes sticky routes list.
 	 */
@@ -151,4 +149,20 @@ public interface ICluster {
 	 * @return
 	 */
 	String getAlias();
+
+	/**
+	 * Get the comma separated list of granted endpoints identifier. Example:
+	 * 'chatAppEndPoint1,chatAppEndPoint2,mailAppEndPoint1'
+	 *
+	 * @return
+	 */
+	String getGrantedEndPoints();
+
+	/**
+	 * Set the comma separated list of granted endpoints identifier. Example:
+	 * 'chatAppEndPoint1,chatAppEndPoint2,mailAppEndPoint1'
+	 *
+	 * @param aGrantedEndPoints
+	 */
+	void setGrantedEndPoints(String aGrantedEndPoints);
 }
