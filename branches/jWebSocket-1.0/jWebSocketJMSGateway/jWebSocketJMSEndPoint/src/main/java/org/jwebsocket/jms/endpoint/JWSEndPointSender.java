@@ -316,6 +316,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		lResponse.setInteger("code", aCode);
 		lResponse.setString("msg", aMsg);
 		lResponse.setString("payload", aPayload);
+		lResponse.setString("endPointId", getEndPointId());
 
 		String lSourceId = aRequest.getString("sourceId");
 		if (null != lSourceId) {
@@ -413,6 +414,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		lResponse.setDouble("percent", aPercent);
 		lResponse.setString("msg", aMessage);
 		lResponse.setInteger("code", aCode);
+		lResponse.setString("endPointId", getEndPointId());
 
 		String lSourceId = aRequest.getString("sourceId");
 		if (null != lSourceId) {
