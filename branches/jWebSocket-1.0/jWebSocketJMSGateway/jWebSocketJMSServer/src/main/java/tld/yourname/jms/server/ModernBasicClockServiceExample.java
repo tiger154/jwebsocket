@@ -30,7 +30,7 @@ import org.jwebsocket.token.Token;
  *
  * @author Rolando Santamaria Maso
  */
-public class BasicClockServiceExample {
+public class ModernBasicClockServiceExample {
 
 	public static void main(String[] args) {
 		/**
