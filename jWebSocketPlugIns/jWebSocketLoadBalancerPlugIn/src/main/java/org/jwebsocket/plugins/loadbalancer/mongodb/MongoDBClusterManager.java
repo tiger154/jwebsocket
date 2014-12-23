@@ -184,7 +184,7 @@ public class MongoDBClusterManager implements IClusterManager, IInitializable {
 
 		// setting initial configuration values
 		if (mConfig.count() == 0) {
-			mConfig.save(new BasicDBObject().append(BALANCER_ALGORITHM, 3));
+			mConfig.save(new BasicDBObject().append(BALANCER_ALGORITHM, getBalancerAlgorithm()));
 		}
 
 		// setting initial clusters (if not already registered)
@@ -193,6 +193,7 @@ public class MongoDBClusterManager implements IClusterManager, IInitializable {
 				mClusters.save(new BasicDBObject()
 						.append(CLUSTER_NS, lC.getNamespace())
 						.append(CLUSTER_PASSWORD, lC.getPassword())
+						.append(GRANTED_ENDPOINTS, lC.getGrantedEndPoints())
 						.append(CLUSTER_ALIAS, lC.getAlias()));
 			}
 		}

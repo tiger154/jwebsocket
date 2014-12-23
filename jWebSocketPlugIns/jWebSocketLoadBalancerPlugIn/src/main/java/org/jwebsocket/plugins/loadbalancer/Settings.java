@@ -37,6 +37,16 @@ public class Settings {
 	 * Default message delivery timeout, default value 5000 milliseconds.
 	 */
 	private long mMessageTimeout = 5000;
+	
+	private boolean mIncludeWorkerServiceId =false;
+
+	public boolean isIncludeWorkerServiceId() {
+		return mIncludeWorkerServiceId;
+	}
+
+	public void setIncludeWorkerServiceId(boolean aIncludeWorkerServiceId) {
+		mIncludeWorkerServiceId = aIncludeWorkerServiceId;
+	}
 
 	public IClusterManager getClusterManager() {
 		return mClusters;
