@@ -214,7 +214,7 @@ public class JMSClient {
 		String lGatewayId = lConfig.getString("GatewayId", "org.jwebsocket.jms.gateway");
 		String lEndPointId = lConfig.getString("EndPointId", UUID.randomUUID().toString());
 
-		lTargetEndPointId = lConfig.getString("TargetEndPointId");
+		lTargetEndPointId = lGatewayId;
 
 		// get authentication information against jWebSocket
 		final String lJWSUsername = lConfig.getString("JWSUsername");
@@ -327,9 +327,8 @@ public class JMSClient {
 
 			// in case you will require the server LoadBalancer features
 			// set the CPU updater for the instance
-			lCpuUpdater = new JWSLoadBalancerCpuUpdater(lJWSEndPoint, lTargetEndPointId);
-			lCpuUpdater.autoStart();
-
+			// lCpuUpdater = new JWSLoadBalancerCpuUpdater(lJWSEndPoint, lTargetEndPointId);
+			// lCpuUpdater.autoStart();
 		} catch (JMSException lEx) {
 			mLog.fatal("JMSEndpoint could not be instantiated: " + lEx.getMessage());
 			System.exit(0);
@@ -382,8 +381,8 @@ public class JMSClient {
 					public void processToken(String aSourceId, Token aToken) {
 						mLog.info("Login successful, initiating client communication process...");
 
-						// runProgressTest();
-						runOAuthTest();
+						runProgressTest();
+						//runOAuthTest();
 
 						Map<String, Object> lArgs = new FastMap<String, Object>();
 
@@ -399,7 +398,7 @@ public class JMSClient {
 
 						lArgs.put("echo", "This is the echo message");
 						lJWSEndPoint.sendPayload(
-								"jWebSocketJMSService",
+								lTargetEndPointId,
 								// "org.jwebsocket.jms.gateway", // target id
 								"org.jwebsocket.plugins.jmsdemo", // ns
 								"echo", // type
