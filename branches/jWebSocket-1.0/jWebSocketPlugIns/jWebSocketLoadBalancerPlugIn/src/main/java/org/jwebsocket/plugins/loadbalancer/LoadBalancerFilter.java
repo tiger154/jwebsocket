@@ -24,12 +24,12 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 import org.springframework.util.Assert;
 
 /**
- * Load balancer filter captures the packets and forwards them to the load
- * balancer plug-in.
+ * Load balancer filter captures the packets and forwards them to the load balancer plug-in.
  *
  * @author Rolando Betancourt Toucet
  * @author Rolando Santamaria Maso
@@ -66,6 +66,17 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+		String lTargetId = aToken.getString("targetId");
+		String lAction = aToken.getString("action");
+		if ("forward.json".equals(lAction) && null != lTargetId) {
+			if (mLoadBalancerPlugIn.isAliasSupported(lTargetId)) {
+				String lJson = aToken.getString("data");
+				if (null != lJson) {
+					aToken = JSONProcessor.JSONStringToToken(lJson);
+				}
+			}
+		}
+		
 		if (mLoadBalancerPlugIn.isNamespaceSupported(aToken.getNS())) {
 			// redirect token
 			if (null != aToken.getInteger("utid", null)) {

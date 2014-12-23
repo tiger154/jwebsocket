@@ -56,7 +56,22 @@ public class MemoryCluster implements ICluster {
 	 */
 	private int mEndPointPosition = -1;
 
+	/**
+	 * Cluster alias.
+	 */
 	private String mAlias;
+
+	private String mGrantedEndPoints;
+
+	@Override
+	public String getGrantedEndPoints() {
+		return mGrantedEndPoints;
+	}
+
+	@Override
+	public void setGrantedEndPoints(String aGrantedEndPoints) {
+		mGrantedEndPoints = aGrantedEndPoints;
+	}
 
 	@Override
 	public String getAlias() {
