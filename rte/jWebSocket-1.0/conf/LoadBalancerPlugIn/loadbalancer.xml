@@ -26,6 +26,24 @@
 		<property name="namespace" value="org.jwebsocket.plugins.sample3"/>
 	</bean>
 	
+	<!-- Service Cluster 4 definition -->
+	<bean id="clockCluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
+		<!-- plan password value: 'admin' -->
+		<property name="password" value="2c809aa1c4f9f7bae1ee3f33433d90dc"/>
+		<property name="alias" value="clock"/>
+		<property name="namespace" value="somecompany.service.clock"/>
+		<property name="grantedEndPoints" value="SomeCompany.Service.Node1,SomeCompany.Service.Node2"/>
+	</bean>
+	
+	<!-- Service Cluster 4 definition -->
+	<bean id="jmsDemo" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
+		<!-- plan password value: 'admin' -->
+		<property name="password" value="2c809aa1c4f9f7bae1ee3f33433d90dc"/>
+		<property name="alias" value="demo"/>
+		<property name="namespace" value="org.jwebsocket.jms.demo"/>
+		<property name="grantedEndPoints" value="SomeCompany.Service.Node1,SomeCompany.Service.Node2"/>
+	</bean>
+	
 	<!-- the memory cluster manager -->
 	<bean id="memoryClusterManager" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryClusterManager">
 		<!-- 
@@ -73,6 +91,8 @@
 				<ref bean="service1cluster" />
 				<ref bean="service2cluster" />
 				<ref bean="service3cluster" />
+				<ref bean="clockCluster" />
+				<ref bean="jmsDemo" />
 			</list>
 		</property>
 	</bean>
@@ -149,13 +169,15 @@
 		Services  |Web |Java|Java|Web |Java|Web |Java|Java|Web |Web |Web | 
 		CPU Usage |____|90%_|32%_|____|45%_|____|60%_|15%_|____|____|____|					  
 		-->
-		<property name="balancerAlgorithm" value="3" />
+		<property name="balancerAlgorithm" value="1" />
 		<!-- the initial clusters list (only added if not already registered) -->
 		<property name="startupClusters">
 			<list>
 				<ref bean="service1cluster" />
 				<ref bean="service2cluster" />
 				<ref bean="service3cluster" />
+				<ref bean="clockCluster" />
+				<ref bean="jmsDemo" />
 			</list>
 		</property>
 	</bean>
@@ -168,6 +190,8 @@
 		
 		<!-- load balancer message delivery timeout -->
 		<property name="messageTimeout" value="3000" />
+		<!-- if TRUE, the selected worker service id is included as part of the response -->
+		<property name="includeWorkerServiceId" value="true" />
 	</bean>
 	
 </beans>
