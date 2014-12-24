@@ -29,7 +29,7 @@
 	<!-- Service Cluster 4 definition -->
 	<bean id="clockCluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
 		<!-- plan password value: 'admin' -->
-		<property name="password" value="2c809aa1c4f9f7bae1ee3f33433d90dc"/>
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
 		<property name="alias" value="clock"/>
 		<property name="namespace" value="somecompany.service.clock"/>
 		<property name="grantedEndPoints" value="SomeCompany.Service.Node1,SomeCompany.Service.Node2"/>
@@ -38,7 +38,7 @@
 	<!-- Service Cluster 4 definition -->
 	<bean id="jmsDemo" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
 		<!-- plan password value: 'admin' -->
-		<property name="password" value="2c809aa1c4f9f7bae1ee3f33433d90dc"/>
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
 		<property name="alias" value="demo"/>
 		<property name="namespace" value="org.jwebsocket.jms.demo"/>
 		<property name="grantedEndPoints" value="SomeCompany.Service.Node1,SomeCompany.Service.Node2"/>
