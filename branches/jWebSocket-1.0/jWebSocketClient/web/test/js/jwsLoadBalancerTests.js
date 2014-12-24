@@ -216,7 +216,6 @@ jws.tests.LoadBalancer = {
 			// check the result
 			runs(function () {
 				expect(lResponse.code).toEqual(0);
-				expect(lResponse.msg).toEqual('ok');
 			});
 		});
 	},
@@ -258,7 +257,6 @@ jws.tests.LoadBalancer = {
 			// check the result
 			runs(function () {
 				expect(lResponse.code).toEqual(0);
-				expect(lResponse.msg).toEqual('ok');
 			});
 		});
 	},
