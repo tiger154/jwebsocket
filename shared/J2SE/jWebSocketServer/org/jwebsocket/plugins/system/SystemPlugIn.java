@@ -69,8 +69,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Implements the jWebSocket system core features like login, logout, send,
- * broadcast etc...
+ * Implements the jWebSocket system core features like login, logout, send, broadcast etc...
  *
  * @author Alexander Schulze
  * @author kybernees
@@ -419,8 +418,10 @@ public class SystemPlugIn extends TokenPlugIn {
 			lSession.setCreatedAt();
 			startSession(aConnector, aConnector.getSession());
 
-			// notifying event through the MessageHub
-			notifySessionStarted(aConnector);
+			if (BROADCAST_OPEN) {
+				// notifying event through the MessageHub
+				notifySessionStarted(aConnector);
+			}
 		}
 
 		// if new connector is active broadcast this event to then network
@@ -467,6 +468,13 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	@Override
+	public void sessionStopped(WebSocketSession aSession) {
+		if (BROADCAST_CLOSE) {
+			notifySessionStopped(aSession);
+		}
+	}
+
 	/**
 	 *
 	 *
@@ -495,10 +503,10 @@ public class SystemPlugIn extends TokenPlugIn {
 
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
-		}
 
-		// notifying event through the MessageHub
-		notifyConnectorStarted(aConnector);
+			// notifying event through the MessageHub
+			notifyConnectorStarted(aConnector);
+		}
 	}
 
 	/**
@@ -530,10 +538,11 @@ public class SystemPlugIn extends TokenPlugIn {
 
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
+
+			// notifying event through the MessageHub
+			notifyConnectorStopped(aConnector);
 		}
 
-		// notifying event through the MessageHub
-		notifyConnectorStopped(aConnector);
 	}
 
 	private void sendWelcome(WebSocketConnector aConnector) {
@@ -625,10 +634,10 @@ public class SystemPlugIn extends TokenPlugIn {
 			}
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
-		}
 
-		// notifying event through the MessageHub
-		notifyLogon(aConnector);
+			// notifying event through the MessageHub
+			notifyLogon(aConnector);
+		}
 	}
 
 	/**
@@ -667,10 +676,10 @@ public class SystemPlugIn extends TokenPlugIn {
 			}
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
-		}
 
-		// notifying event through the MessageHub
-		notifyLogoff(aConnector);
+			// notifying event through the MessageHub
+			notifyLogoff(aConnector);
+		}
 	}
 
 	/**
@@ -953,9 +962,9 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * simply waits for a certain amount of time and does not perform any _
-	 * operation. This feature is used for debugging and simulation purposes _
-	 * only and is not related to any business logic.
+	 * simply waits for a certain amount of time and does not perform any _ operation. This feature
+	 * is used for debugging and simulation purposes _ only and is not related to any business
+	 * logic.
 	 *
 	 * @param aToken
 	 */
@@ -1051,8 +1060,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * allocates a "non-interruptable" communication channel between two
-	 * clients.
+	 * allocates a "non-interruptable" communication channel between two clients.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -1067,8 +1075,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * deallocates a "non-interruptable" communication channel between two
-	 * clients.
+	 * deallocates a "non-interruptable" communication channel between two clients.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -1083,8 +1090,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Logon a user given the username and password by using the Spring Security
-	 * module
+	 * Logon a user given the username and password by using the Spring Security module
 	 *
 	 * @param aConnector
 	 * @param aToken The token with the username and password
@@ -1168,7 +1174,7 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// sending the response to requester
 		sendToken(aConnector, lResponse);
-		
+
 		// sending response to clients that share the requester session
 		getServer().broadcastToSharedSession(aConnector.getId(),
 				aConnector.getSession().getSessionId(),
@@ -1203,7 +1209,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 		// sending the response to requester
 		sendToken(aConnector, lResponse);
-		
+
 		// broadcasting response to all sharing session connectors
 		getServer().broadcastToSharedSession(aConnector.getId(),
 				aConnector.getSession().getSessionId(),
