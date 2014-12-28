@@ -32,6 +32,7 @@ import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.Tools;
 
 /**
  * JMS Gateway Message listener
@@ -41,8 +42,8 @@ import org.jwebsocket.token.Token;
 public class JMSListener implements MessageListener {
 
 	private static final Logger mLog = Logging.getLogger();
-	private JMSSender mJMSSender = null;
-	private JMSEngine mEngine = null;
+	final private JMSSender mJMSSender;
+	final private JMSEngine mEngine;
 
 	/**
 	 *
@@ -68,131 +69,137 @@ public class JMSListener implements MessageListener {
 	 */
 	@Override
 	@SuppressWarnings({"BroadCatchBlock", "TooBroadCatch", "UseSpecificCatch"})
-	public void onMessage(Message aMsg) {
-		String lJSON = null;
-		String lSourceId = null;
+	public void onMessage(final Message aMsg) {
+		Tools.getThreadPool().submit(new Runnable() {
 
-		try {
-			if (aMsg instanceof ActiveMQTextMessage) {
-				ActiveMQTextMessage lTextMsg = (ActiveMQTextMessage) aMsg;
-				lJSON = lTextMsg.getText();
-				lSourceId = (String) lTextMsg.getProperty("sourceId");
-			} else if (aMsg instanceof ActiveMQBytesMessage) {
-				ActiveMQBytesMessage lBytesMsg = (ActiveMQBytesMessage) aMsg;
-				lJSON = new String(lBytesMsg.getContent().getData(), "UTF-8");
-				lSourceId = (String) lBytesMsg.getProperty("sourceId");
-			}
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx,
-					"getting " + aMsg.getClass().getSimpleName() + " message"));
-		}
-		// TODO: and what happens if none of the above types?
+			@Override
+			public void run() {
+				String lJSON = null;
+				String lSourceId = null;
 
-		try {
-			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("JMS Gateway incoming message: '" + Logging.getTokenStr(lToken) + "'");
-			}
-			String lNS = lToken.getNS();
-			String lType = lToken.getType();
-			if ("org.jwebsocket.jms.gateway".equals(lNS)) {
-				String lHostname, lCanonicalHostName, lIPAddress;
 				try {
-					lIPAddress = InetAddress.getLocalHost().getHostAddress();
-				} catch (UnknownHostException ex) {
-					lIPAddress = null;
+					if (aMsg instanceof ActiveMQTextMessage) {
+						ActiveMQTextMessage lTextMsg = (ActiveMQTextMessage) aMsg;
+						lJSON = lTextMsg.getText();
+						lSourceId = (String) lTextMsg.getProperty("sourceId");
+					} else if (aMsg instanceof ActiveMQBytesMessage) {
+						ActiveMQBytesMessage lBytesMsg = (ActiveMQBytesMessage) aMsg;
+						lJSON = new String(lBytesMsg.getContent().getData(), "UTF-8");
+						lSourceId = (String) lBytesMsg.getProperty("sourceId");
+					}
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx,
+							"getting " + aMsg.getClass().getSimpleName() + " message"));
 				}
+				// TODO: and what happens if none of the above types?
+
 				try {
-					lHostname = InetAddress.getLocalHost().getHostName();
-				} catch (UnknownHostException ex) {
-					lHostname = null;
-				}
-				try {
-					lCanonicalHostName = InetAddress.getLocalHost().getCanonicalHostName();
-				} catch (UnknownHostException ex) {
-					lCanonicalHostName = null;
-				}
-				if ("ping".equals(lType)) {
-					String lGatewayId = lToken.getString("gatewayId");
-					if (mLog.isInfoEnabled()) {
-						mLog.info("Responding to ping from '" + lSourceId + "'"
-								+ " " + (null != lGatewayId ? "via '" + lGatewayId + "'" : "directly")
-								+ "...");
-					}
-					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
-							+ ",\"type\":\"response\",\"reqType\":\"ping\""
-							+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + lToken.getInteger("utid")
-							+ ",\"sourceId\":\"" + mJMSSender.getEndPointId() + "\""
-							+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
-							+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
-							+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
-							+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
-							+ "}";
-					if (null != lGatewayId) {
-						mJMSSender.sendText(lGatewayId,
-								"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
-								+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
-								+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
-								+ "\"data\":\"" + lData.replace("\"", "\\\"") + "\"}");
-					} else {
-						mJMSSender.sendText(lToken.getString("sourceId"), lData);
-					}
-				} else if ("identify".equals(lType)) {
-					String lGatewayId = lToken.getString("gatewayId");
-					if (mLog.isInfoEnabled()) {
-						mLog.info("Responding to identify from '" + lSourceId + "'"
-								+ " " + (null != lGatewayId ? "via '" + lGatewayId + "'" : "directly")
-								+ "...");
-					}
-					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
-							+ ",\"type\":\"response\",\"reqType\":\"identify\""
-							+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + lToken.getInteger("utid")
-							+ ",\"sourceId\":\"" + mJMSSender.getEndPointId() + "\""
-							+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
-							+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
-							+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
-							+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
-							+ "}";
-					if (null != lGatewayId) {
-						mJMSSender.sendText(lGatewayId,
-								"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
-								+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
-								+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
-								+ "\"data\":\"" + lData.replace("\"", "\\\"") + "\"}");
-					} else {
-						mJMSSender.sendText(lToken.getString("sourceId"), lData);
-					}
-				}
-			} else {
-				// here the incoming packets from the JMS bridge are processed
-				WebSocketConnector lConnector = null;
-				if (null != lSourceId) {
+					Token lToken = JSONProcessor.JSONStringToToken(lJSON);
 					if (mLog.isDebugEnabled()) {
-						mLog.debug("Processing JMS packet from '"
-								+ lSourceId
-								+ "' [content suppressed, length="
-								+ (null != lJSON ? lJSON.length() : "0")
-								+ " bytes]...");
-						// don't log JSON text packet here, it could contain sensitive data!
+						mLog.debug("JMS Gateway incoming message: '" + Logging.getTokenStr(lToken) + "'");
 					}
-					Map<String, WebSocketConnector> lConnectors = mEngine.getConnectors();
-					if (null != lConnectors) {
-						lConnector = lConnectors.get(lSourceId);
-						if (null == lConnector) {
-							mLog.warn("No connector with Endpoint Id '" + lSourceId + "'.");
+					String lNS = lToken.getNS();
+					String lType = lToken.getType();
+					if ("org.jwebsocket.jms.gateway".equals(lNS)) {
+						String lHostname, lCanonicalHostName, lIPAddress;
+						try {
+							lIPAddress = InetAddress.getLocalHost().getHostAddress();
+						} catch (UnknownHostException ex) {
+							lIPAddress = null;
+						}
+						try {
+							lHostname = InetAddress.getLocalHost().getHostName();
+						} catch (UnknownHostException ex) {
+							lHostname = null;
+						}
+						try {
+							lCanonicalHostName = InetAddress.getLocalHost().getCanonicalHostName();
+						} catch (UnknownHostException ex) {
+							lCanonicalHostName = null;
+						}
+						if ("ping".equals(lType)) {
+							String lGatewayId = lToken.getString("gatewayId");
+							if (mLog.isInfoEnabled()) {
+								mLog.info("Responding to ping from '" + lSourceId + "'"
+										+ " " + (null != lGatewayId ? "via '" + lGatewayId + "'" : "directly")
+										+ "...");
+							}
+							String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+									+ ",\"type\":\"response\",\"reqType\":\"ping\""
+									+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + lToken.getInteger("utid")
+									+ ",\"sourceId\":\"" + mJMSSender.getEndPointId() + "\""
+									+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+									+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
+									+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+									+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
+									+ "}";
+							if (null != lGatewayId) {
+								mJMSSender.sendText(lGatewayId,
+										"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
+										+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
+										+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
+										+ "\"data\":\"" + lData.replace("\"", "\\\"") + "\"}");
+							} else {
+								mJMSSender.sendText(lToken.getString("sourceId"), lData);
+							}
+						} else if ("identify".equals(lType)) {
+							String lGatewayId = lToken.getString("gatewayId");
+							if (mLog.isInfoEnabled()) {
+								mLog.info("Responding to identify from '" + lSourceId + "'"
+										+ " " + (null != lGatewayId ? "via '" + lGatewayId + "'" : "directly")
+										+ "...");
+							}
+							String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+									+ ",\"type\":\"response\",\"reqType\":\"identify\""
+									+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + lToken.getInteger("utid")
+									+ ",\"sourceId\":\"" + mJMSSender.getEndPointId() + "\""
+									+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+									+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
+									+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+									+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
+									+ "}";
+							if (null != lGatewayId) {
+								mJMSSender.sendText(lGatewayId,
+										"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
+										+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
+										+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
+										+ "\"data\":\"" + lData.replace("\"", "\\\"") + "\"}");
+							} else {
+								mJMSSender.sendText(lToken.getString("sourceId"), lData);
+							}
+						}
+					} else {
+						// here the incoming packets from the JMS bridge are processed
+						WebSocketConnector lConnector = null;
+						if (null != lSourceId) {
+							if (mLog.isDebugEnabled()) {
+								mLog.debug("Processing JMS packet from '"
+										+ lSourceId
+										+ "' [content suppressed, length="
+										+ (null != lJSON ? lJSON.length() : "0")
+										+ " bytes]...");
+								// don't log JSON text packet here, it could contain sensitive data!
+							}
+							Map<String, WebSocketConnector> lConnectors = mEngine.getConnectors();
+							if (null != lConnectors) {
+								lConnector = lConnectors.get(lSourceId);
+								if (null == lConnector) {
+									mLog.warn("No connector with Endpoint Id '" + lSourceId + "'.");
+								}
+							}
+						} else {
+							mLog.warn("Processing JMS packet with out source-id.");
+						}
+						if (null != lConnector) {
+							WebSocketPacket lPacket = new RawPacket(lJSON);
+							lConnector.processPacket(lPacket);
 						}
 					}
-				} else {
-					mLog.warn("Processing JMS packet with out source-id.");
-				}
-				if (null != lConnector) {
-					WebSocketPacket lPacket = new RawPacket(lJSON);
-					lConnector.processPacket(lPacket);
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "getting JMS text message"));
 				}
 			}
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "getting JMS text message"));
-		}
+		});
 	}
 
 	/**
