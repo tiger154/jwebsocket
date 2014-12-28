@@ -75,11 +75,9 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	 * sendToken("some id", aToken, new JWSResponseTokenListener(){
 	 *
 	 * @param aTimeout
-	 * @Override public void onSuccess(Token aReponse) {
-	 * super.onSuccess(aReponse); }
+	 * @Override public void onSuccess(Token aReponse) { super.onSuccess(aReponse); }
 	 *
-	 * @Override public void onFailure(Token aReponse) {
-	 * super.onFailure(aReponse); }
+	 * @Override public void onFailure(Token aReponse) { super.onFailure(aReponse); }
 	 *
 	 * @Override public void onTimeout() { super.onTimeout(); } }, 5000);
 	 *
@@ -92,12 +90,13 @@ public class JWSEndPointSender extends JMSEndPointSender {
 			JWSResponseTokenListener aResponseListener, long aTimeout) {
 		int lUTID = aToken.getInteger("utid", mUTID.getAndIncrement());
 		aToken.setInteger("utid", lUTID);
+		aToken.setString("sourceId", getEndPointId());
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Sending token to '" + aTargetId + "': "
 					+ (JMSLogging.isFullTextLogging()
-					? aToken.toString()
-					: aToken.getLogString()));
+							? aToken.toString()
+							: aToken.getLogString()));
 		}
 		// on the JMS Gateway we per defintion/specification only exchange JSON tokens
 		sendText(aTargetId, String.valueOf(lUTID),
