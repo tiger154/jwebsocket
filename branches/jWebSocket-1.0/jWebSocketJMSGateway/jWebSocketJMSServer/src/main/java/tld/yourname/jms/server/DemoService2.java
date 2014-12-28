@@ -367,8 +367,11 @@ public class DemoService2 {
 			// shut the client properly down
 			lEndpoint.shutdown();
 		}
-		// and show final status message in the console
+		// release jWebSocket resources
+		Tools.stopUtilityTimer();
+		Tools.stopUtilityThreadPool();
 
+		// and show final status message in the console
 		mLog.info("JMS Server Endpoint properly shutdown.");
 	}
 }
