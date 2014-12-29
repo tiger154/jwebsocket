@@ -52,7 +52,7 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 
 	@Override
 	public void initialize() throws Exception {
-		mCollection.ensureIndex(new BasicDBObject().append("ns", 1).append("k", 1),
+		mCollection.createIndex(new BasicDBObject().append("ns", 1).append("k", 1),
 				new BasicDBObject().append("unique", true));
 	}
 
