@@ -61,7 +61,7 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 		Assert.notNull(mDatabase, "The 'database', argument cannot be null!");
 
 		mCollection = mDatabase.getCollection(mName);
-		mCollection.ensureIndex(new BasicDBObject().append("k", 1),
+		mCollection.createIndex(new BasicDBObject().append("k", 1),
 				new BasicDBObject().append("unique", true));
 	}
 

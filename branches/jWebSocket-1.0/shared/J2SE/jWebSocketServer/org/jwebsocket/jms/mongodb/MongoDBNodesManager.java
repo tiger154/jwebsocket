@@ -175,14 +175,14 @@ public class MongoDBNodesManager implements INodesManager {
 	@Override
 	public void initialize() throws Exception {
 		// creating index for CPU and REQUESTS fields for sorting
-		mNodes.ensureIndex(new BasicDBObject().append(Attributes.CPU, 1).append(Attributes.REQUESTS, 1));
+		mNodes.createIndex(new BasicDBObject().append(Attributes.CPU, 1).append(Attributes.REQUESTS, 1));
 
 		// setting 'CONSUMER_ID' as primary key
-		mNodes.ensureIndex(new BasicDBObject().append(Attributes.CONSUMER_ID, 1),
+		mNodes.createIndex(new BasicDBObject().append(Attributes.CONSUMER_ID, 1),
 				new BasicDBObject().append("unique", true));
 
 		// setting NODE id as primary key
-		mNodes.ensureIndex(new BasicDBObject().append(Attributes.NODE_ID, 1),
+		mNodes.createIndex(new BasicDBObject().append(Attributes.NODE_ID, 1),
 				new BasicDBObject().append("unique", true));
 	}
 

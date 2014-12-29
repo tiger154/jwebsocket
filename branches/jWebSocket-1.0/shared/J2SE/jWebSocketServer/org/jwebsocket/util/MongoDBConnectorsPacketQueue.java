@@ -63,7 +63,7 @@ public class MongoDBConnectorsPacketQueue implements IConnectorsPacketQueue {
 
 	@Override
 	public void initialize() throws Exception {
-		mPackets.ensureIndex(new BasicDBObject().append("c", 1));
+		mPackets.createIndex(new BasicDBObject().append("c", 1));
 	}
 
 	@Override
