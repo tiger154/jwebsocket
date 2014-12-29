@@ -61,7 +61,7 @@ public class MongoDBClusterSynchronizer implements IClusterSynchronizer {
 
 	@Override
 	public void initialize() throws Exception {
-		mCollection.ensureIndex(new BasicDBObject().append(Attributes.MESSAGE_ID, 1),
+		mCollection.createIndex(new BasicDBObject().append(Attributes.MESSAGE_ID, 1),
 				new BasicDBObject().append("unique", true));
 		if (!mCollection.isCapped()) {
 			// converting collection to capped (limiting collection size)

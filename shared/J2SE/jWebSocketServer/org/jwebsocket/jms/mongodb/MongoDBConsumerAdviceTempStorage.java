@@ -78,7 +78,7 @@ public class MongoDBConsumerAdviceTempStorage implements IConsumerAdviceTempStor
 	public void initialize() throws Exception {
 		Assert.notNull(mCollection, "The 'collection' argument cannot be null!");
 
-		mCollection.ensureIndex(new BasicDBObject()
+		mCollection.createIndex(new BasicDBObject()
 				.append(Attributes.CORRELATION_ID, 1)
 				.append(Attributes.CONSUMER_ID, 1),
 				new BasicDBObject().append("unique", true));
