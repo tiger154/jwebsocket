@@ -13,24 +13,24 @@
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
 
-jWebSocketAndroidDemo-0.11.zip
+jWebSocketAndroidDemo-1.0.zip
 	jWebSocketAndroidClientDemo
 	This archive contains the ready-to-run and signed 
-	jWebSocketAndroidDemo_0.11.apk package for Android.
+	jWebSocketAndroidDemo_1.0.apk package for Android.
 
-jWebSocketAppServer-0.11.zip
+jWebSocketAppServer-1.0.zip
 	Extensible Web Application with embedded jWebSocket server (w/o web site)
 	Ready-to-Deploy jWebSocket single .war bundle for Servlet Containers and J2EE
 	Application Servers. Please refer to the Web Application Server section in our
 	Quick-Guide to learn how to deploy the web applications in Tomcat.
 
-jWebSocketAppSrvDemo-0.11.zip
+jWebSocketAppSrvDemo-1.0.zip
 	Extensible Web Application with embedded jWebSocket server (with demo web site)
 	Ready-to-Deploy jWebSocket single .war bundle for Servlet Containers and J2EE
 	Application Servers. Please refer to the Web Application Server section in our
 	Quick-Guide to learn how to deploy the web applications in Tomcat.
 
-jWebSocketClient-0.11.zip
+jWebSocketClient-1.0.zip
 	Archive (.zip) with all required .js files and demos to run the jWebSocket 
 	client including minified production versions. Simply unpack the archive to a 
 	folder of your choice and open the index.html in your favorite browser.
@@ -39,7 +39,7 @@ jWebSocketClient-0.11.zip
 	To use the FlashBridge you need to install the FlashPlayer plug-in and run 
 	the demos on a web server like Apache or a servlet container like Tomcat.
 
-jWebSocketFullSources-0.11.zip
+jWebSocketFullSources-1.0.zip
 	Archive (.zip) with the full source code of the jWebSocket Server and the 
 	Java and Android clients. This lets you to know the jWebSocket internals and 
 	create your own jWebSocket extensions like plug-ins and filters or your own 
@@ -49,7 +49,7 @@ jWebSocketFullSources-0.11.zip
 	NetBeans (v6.7+), Eclipse (v3.5+) and IntelliJ (v9.0+). Please consider 
 	installing Apache Maven 2.2 first before you import the projects into an IDE. 
 
-jWebSocketServer-0.11.zip
+jWebSocketServer-1.0.zip
 	Archive (.zip) with all required .jar files and libraries to run the jWebSocket
 	Server including an example configuration file. Simply unpack the archive to a 
 	folder of your choice and use the batches in the /bin folder. 
@@ -58,32 +58,32 @@ jWebSocketServer-0.11.zip
 	jWebSocket root folder and please open firewall port 8787 for WebSocket
 	communication and port 843 for the automatic FlashBridge fallback.
 
-jWebSocketServer32-0.11.zip
+jWebSocketServer32-1.0.zip
 	Team Development Server - For Windows 32bit
 	MS Windows 32bit and 64bit Desktop Application.
 	Please refer to the Windows Executables section in our Quick-Guide to learn how 
 	to set up the jWebSocket Windows Executables.
 
-jWebSocketServer64-0.11.zip
+jWebSocketServer64-1.0.zip
 	Team Development Server - For Windows 64bit
 	MS Windows 32bit and 64bit Desktop Application.
 	Please refer to the Windows Executables section in our Quick-Guide to learn how 
 	to set up the jWebSocket Windows Executables.
 
-jWebSocketServer-Bundle-0.11.zip
+jWebSocketServer-Bundle-1.0.zip
 	Shared jWebSocket Server Bundle
 	This shared server bundle contains the default jWebSocket Server functionality 
 	including all required libraries in a single .jar file. The .war files for web 
 	applications access this bundle either in Tomcat's libs folder or the classpath 
 	and hence are much smaller than the previous jWebSocket version
 
-jWebSocketService32-0.11.zip
+jWebSocketService32-1.0.zip
 	Dedicated Production Server - For Windows 32bit
 	MS Windows 32bit Service Application.
 	Please refer to the Windows Services section in our Quick-Guide to learn how 
 	to set up the jWebSocket Windows Services.
 
-jWebSocketService64-0.11.zip
+jWebSocketService64-1.0.zip
 	Dedicated Production Server - For Windows 64bit
 	MS Windows 64bit Service Application.
 	Please refer to the Windows Services section in our Quick-Guide to learn how 
