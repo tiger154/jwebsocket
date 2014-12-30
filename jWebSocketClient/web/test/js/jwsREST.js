@@ -22,6 +22,7 @@ jws.tests.REST = {
 	description: "jWebSocket REST support for remote interaction with the jWebSocket server infrastructure",
 	category: "REST",
 	connectionId: new Date().getTime(),
+    checked: false,
 	getURL: function() {
 		return "http://localhost:8787/jWebSocket/http?connectionId=" + jws.tests.REST.connectionId;
 	},
