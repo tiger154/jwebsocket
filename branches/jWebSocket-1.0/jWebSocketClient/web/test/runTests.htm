@@ -203,7 +203,8 @@
 				selectTests(lState.selectedTests);
 			}
 			lCombo.bind('change', function(aSelect) {
-				renderTests(lTests.getTestsByCategory($(aSelect.target).val()), $("#tests"));
+                var lCategory = $(aSelect.target).val();
+				renderTests(lTests.getTestsByCategory(lCategory), $("#tests"), lCategory);
 			});
 			function runBenchmarkTests() {
 				lCombo.val('Server Benchmarks');
