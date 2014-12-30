@@ -139,15 +139,18 @@ function initTestsIndex() {
 	};
 }
 
-function renderTests(aTests, aDiv) {
+function renderTests(aTests, aDiv, aCategory) {
 	var lHtml = "";
 	for (var lIndex in aTests) {
-		var lT = aTests[lIndex];
+		var lT = aTests[lIndex],
+                lChecked = lT.checked === false?"":" checked ";
+        if(lT.id === "REST" && aCategory === "REST"){
+            lChecked = " checked ";
+        }
 		lHtml += "<span title='" + lT.description + "'><label><input id='"
 				+ lT.id + "'"
-				+ ((lT.enabled) ? " checked='checked' " : " disabled")
+				+ ((lT.enabled) ? lChecked : " disabled")
 				+ " type='checkbox'> " + lT.title + "</label></span></br>";
 	}
-
 	aDiv.html(lHtml);
 }
