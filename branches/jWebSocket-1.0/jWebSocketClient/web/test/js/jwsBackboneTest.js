@@ -24,40 +24,71 @@ jws.tests.Backbone = {
     UseradminEE_NS: jws.NS_BASE + ".plugins.useradmin",
     QuotaPlugin_NS: jws.NS_BASE + ".plugins.quota",
     conn: new jws.jWebSocketJSONClient(),
-    refObject: {},
-    getConn: function() {
+    getConn: function () {
         return this.conn;
     },
-    testCreateUser: function(aUser, aRefObject) {
+    testCreateUser: function (aUser) {
 
         var lSpec = "test create User:" + aUser.username;
-        it(lSpec, function() {
+        it(lSpec, function () {
 
             var lResponse = null;
             var lToken = aUser;
             lToken.ns = jws.tests.Backbone.UseradminEE_NS;
             lToken.type = "addUser";
             jws.tests.Backbone.getConn().sendToken(lToken, {
-                OnResponse: function(aToken) {
+                OnResponse: function (aToken) {
                     lResponse = aToken;
                     aUser.id = aToken.id;
                 }
             });
 
             waits(2000);
-            waitsFor(function() {
+            waitsFor(function () {
                 return(null !== lResponse);
             }, lSpec, 3000);
-            runs(function() {
+            runs(function () {
                 expect(lResponse.code).toEqual(0);
             });
         });
     },
-    testAssignmentQuotaToNewUser: function(aIdentifier, aInstance, aInstanceType, aNamespace,
-            aActions, aExpectedCode, aRefObject) {
+    testCreateQuota: function (aIdentifier, aValue, aInstance, aInstanceType,
+            aActions, aNamespace, aExpectedCode) {
+
+        var lSpec = this.QuotaPlugin_NS + ": create quota (admin)";
+        it(lSpec, function () {
+            var lResponse = null;
+
+            jws.Tests.getAdminTestConn().createQuota(
+                    aIdentifier, aNamespace,
+                    aInstance, aInstanceType, aActions, aValue, {
+                        OnResponse: function (aToken) {
+                            lResponse = aToken;
+                        }
+                    }
+            );
+
+            // wait for result, consider reasonable timeout
+            waitsFor(
+                    function () {
+                        // check response
+                        return(null != lResponse);
+                    },
+                    lSpec,
+                    1500
+                    );
+
+            // check the result 
+            runs(function () {
+                expect(aExpectedCode).toEqual(lResponse.code);
+            });
+        });
+    },
+    testAssignmentQuotaToNewUser: function (aIdentifier, aInstance, aInstanceType, aNamespace,
+            aActions, aExpectedCode) {
 
         var lSpec = "test quota Assignment by the backbone to the user: " + aInstance;
-        it(lSpec, function() {
+        it(lSpec, function () {
             var lResponse = null;
 
             var lToken = {
@@ -71,9 +102,9 @@ jws.tests.Backbone = {
             };
 
             jws.tests.Backbone.getConn().sendToken(lToken, {
-                OnResponse: function(aToken) {
+                OnResponse: function (aToken) {
                     lResponse = aToken;
-                    
+
                     var lUnToken = {
                         ns: jws.tests.Backbone.QuotaPlugin_NS,
                         type: "unregisterQuota",
@@ -87,7 +118,7 @@ jws.tests.Backbone = {
 
             // wait for result, consider reasonable timeout
             waitsFor(
-                    function() {
+                    function () {
                         // check response
                         return(null != lResponse);
                     },
@@ -95,37 +126,37 @@ jws.tests.Backbone = {
                     );
 
             // check the result 
-            runs(function() {
+            runs(function () {
                 expect(aExpectedCode).toEqual(lResponse.code);
                 expect(aActions).toEqual(lResponse.actions);
                 expect(aInstance).toEqual(lResponse.instance);
             });
         });
     },
-    testRemoveUser: function(aUser, aExpectedCode) {
+    testRemoveUser: function (aUser, aExpectedCode) {
         var lSpec = "removeUser =" + aUser.username;
-        it(lSpec, function() {
+        it(lSpec, function () {
 
             var lResponse = null;
             var lToken = {id: aUser.id};
             lToken.ns = jws.tests.Backbone.UseradminEE_NS;
             lToken.type = "removeUser";
             jws.tests.Backbone.getConn().sendToken(lToken, {
-                OnResponse: function(aToken) {
+                OnResponse: function (aToken) {
                     lResponse = aToken;
                 }
             });
-            waitsFor(function() {
+            waitsFor(function () {
                 return(null !== lResponse);
             }, lSpec, 3000);
-            runs(function() {
+            runs(function () {
                 expect(lResponse.code).toEqual(aExpectedCode);
             });
         });
     },
-    testLogon: function(aUsername, aPassword) {
+    testLogon: function (aUsername, aPassword) {
         var lSpec = "Opening connection and logon with the user: " + aUsername + ".";
-        it(lSpec, function() {
+        it(lSpec, function () {
 
             // we need to "control" the server to broadcast to all connections here
             if (null === jws.tests.Backbone.getConn()) {
@@ -135,59 +166,59 @@ jws.tests.Backbone = {
             // open a separate control connection
             if (jws.tests.Backbone.getConn().isOpened()) {
                 jws.tests.Backbone.getConn().login(aUsername, aPassword, {
-                    OnResponse: function(aToken) {
+                    OnResponse: function (aToken) {
                         lResponse = aToken;
                     }
                 });
             } else {
                 jws.tests.Backbone.getConn().open(jws.getDefaultServerURL()
                         + ";sessionCookieName=myBackboneSession", {
-                    OnWelcome: function(aToken) {
-                        jws.tests.Backbone.getConn().login(aUsername, aPassword, {
-                            OnResponse: function(aToken) {
-                                lResponse = aToken;
+                            OnWelcome: function (aToken) {
+                                jws.tests.Backbone.getConn().login(aUsername, aPassword, {
+                                    OnResponse: function (aToken) {
+                                        lResponse = aToken;
+                                    }
+                                });
                             }
                         });
-                    }
-                });
             }
 
             waitsFor(
-                    function() {
+                    function () {
                         return(lResponse.code !== undefined);
                     },
                     lSpec,
                     3000
                     );
-            runs(function() {
+            runs(function () {
                 expect(lResponse.username).toEqual(aUsername);
             });
         });
     },
-    testLogoff: function() {
+    testLogoff: function () {
         var lSpec = "Logging off test user";
-        it(lSpec, function() {
-			var lResponse = null;
-			jws.tests.Backbone.getConn().logout({
-				OnResponse: function(aResponse){
-					lResponse = aResponse;
-				}
-			});
+        it(lSpec, function () {
+            var lResponse = null;
+            jws.tests.Backbone.getConn().logout({
+                OnResponse: function (aResponse) {
+                    lResponse = aResponse;
+                }
+            });
 
 
             waitsFor(
-                    function() {
+                    function () {
                         return(lResponse != null);
                     },
                     lSpec,
                     3000
                     );
-            runs(function() {
+            runs(function () {
                 expect(lResponse.code).toEqual(0);
             });
         });
     },
-    runSpecs: function() {
+    runSpecs: function () {
 
         var lUser = {
             firstname: "Firstname",
@@ -204,13 +235,16 @@ jws.tests.Backbone = {
 
         this.testLogon("alexander", "A.schulze0");
 
-        this.testCreateUser(lUser, this.refObject);
+        this.testCreateUser(lUser);
+
+        this.testCreateQuota("CountDown", 5, lUser.username,
+                "User", "sendSMS", "org.jwebsocket.plugins.sms", 0);
 
         this.testAssignmentQuotaToNewUser("CountDown", lUser.username,
                 "User", "org.jwebsocket.plugins.sms",
-                "sendSMS", 0, this.refObject);
+                "sendSMS", 0);
 
         this.testRemoveUser(lUser, 0);
-		this.testLogoff();
+        this.testLogoff();
     }
 };
