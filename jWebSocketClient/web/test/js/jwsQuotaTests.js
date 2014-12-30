@@ -31,7 +31,7 @@ jws.tests.Quota = {
     QUOTA_ACTIONS: "*",
     QUOTA_INSTANCE_REG: "guest",
     refObject: {},
-    // this spec tests the 'get report templates' feature 
+    // this spec tests the 'get report templates' feature
     testCreateQuota: function(aIdentifier, aValue, aInstance, aInstanceType,
             aActions, aExpectedCode, aRefObject) {
 
@@ -42,7 +42,8 @@ jws.tests.Quota = {
 
             jws.Tests.getAdminTestConn().createQuota(
                     aIdentifier, lMe.NS_QUOTA_TEST,
-                    aInstance, aInstanceType, aActions, 5, {
+                    aInstance, aInstanceType, aActions, aValue, {
+                uuid: aRefObject.uuid,
                 OnResponse: function(aToken) {
                     lResponse = aToken;
                     aRefObject.uuid = aToken.uuid;
@@ -396,8 +397,7 @@ jws.tests.Quota = {
                 this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, 0, this.refObject);
 
         this.testCreateQuota(this.QUOTA_IDENTIFIER, 5, this.QUOTA_INSTANCE,
-         this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, -1,{} );
-
+         this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, -1, this.refObject);
 
         this.testGetQuota(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE,
                 this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, 0, this.refObject);

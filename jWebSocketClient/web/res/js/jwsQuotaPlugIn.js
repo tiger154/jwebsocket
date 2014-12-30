@@ -137,21 +137,24 @@ jws.QuotaPlugIn = {
     //:a:en::aValues:Int:The value for this quota<tt>Example: 10</tt>.
     //:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
     //:r:*:::void:none       
-    createQuota: function(aIdentifier, aNamespace, aInstance, aInstanceType,
+    createQuota: function (aIdentifier, aNamespace, aInstance, aInstanceType,
             aActions, aValue, aOptions) {
-        var lRes = this.checkConnected();
-
+        var lRes = this.checkConnected(),
+                lToken = {
+                    ns: jws.QuotaPlugIn.NS,
+                    type: jws.QuotaPlugIn.TT_CREATE_QUOTA,
+                    namespace: aNamespace,
+                    instance: aInstance,
+                    instance_type: aInstanceType,
+                    identifier: aIdentifier,
+                    actions: aActions,
+                    value: aValue
+                };
+        if (aOptions && aOptions.uuid) {
+            lToken.uuid = aOptions.uuid;
+        }
         if (0 === lRes.code) {
-            this.sendToken({
-                ns: jws.QuotaPlugIn.NS,
-                type: jws.QuotaPlugIn.TT_CREATE_QUOTA,
-                namespace: aNamespace,
-                instance: aInstance,
-                instance_type: aInstanceType,
-                identifier: aIdentifier,
-                actions: aActions,
-                value: aValue
-            }, aOptions);
+            this.sendToken(lToken, aOptions);
         }
         return lRes;
     },
