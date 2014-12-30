@@ -19,7 +19,6 @@
 
 function runFullTestSuite(aArgs) {
 	/*
-	 debugger;
 	 jasmine.VERBOSE = true;
 	 */
 	var lIntv = jasmine.DEFAULT_UPDATE_INTERVAL;
