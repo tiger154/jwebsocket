@@ -239,8 +239,8 @@
 		<constructor-arg index="2" value="topic://jwebsocket_messagehub"/>
 	</bean>
 	
-	<!-- JMS based EventBus for internal/external Token messaging -->
-	<bean id="jmsEventBus" class="org.jwebsocket.eventbus.JMSEventBus" 
+	<!-- Setting the server EventBus for internal/external Token messaging -->
+	<bean id="eventBus" class="org.jwebsocket.eventbus.JMSEventBus" 
 		  init-method="initialize" destroy-method="shutdown">
 		<constructor-arg index="0" ref="jmsConnection0"/>
 		<constructor-arg index="1" value="event_bus"/>
