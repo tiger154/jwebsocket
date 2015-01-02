@@ -31,6 +31,7 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -71,6 +72,9 @@ public class JMSEndPoint {
 	private String mSelector = null;
 	// reference to the gateway topic
 	private Topic mGatewayTopic = null;
+	// indicates if the JWS shared ThreadPool and Timer should be released on endpoint shutdown
+	private boolean mReleaseJWSResources = true;
+
 	/**
 	 *
 	 * @param aBrokerURI
@@ -117,6 +121,20 @@ public class JMSEndPoint {
 
 	}
 
+	public void setReleaseJWSResources(boolean aRelease) {
+		this.mReleaseJWSResources = aRelease;
+	}
+
+	/**
+	 * Indicates if the JWebSocket shared ThreadPool and Timer resources should be released on
+	 * endpoint shutdown. Default value: TRUE
+	 *
+	 * @return
+	 */
+	public boolean isReleaseJWSResources() {
+		return mReleaseJWSResources;
+	}
+
 	protected void init(Connection aConnection, Session aSession,
 			Topic aGatewayTopic,
 			MessageProducer aProducer, MessageConsumer aConsumer,
@@ -156,26 +174,20 @@ public class JMSEndPoint {
 	}
 
 	/**
-	 * Constructor to create a new JMS endpoint. You need to set the Broker URI,
-	 * the Gateway Topic, the Endpoint ID, the Thread Pool size and specify
-	 * whether to establish a durable or a temporary connection. Usually you
-	 * will establish temporary connections for clients. Durable connections
-	 * usually are used only for server side services. Please be aware that this
-	 * constructor does <b>not</b> check for duplicate endpoint IDs in a
-	 * messaging infrastructure.
+	 * Constructor to create a new JMS endpoint. You need to set the Broker URI, the Gateway Topic,
+	 * the Endpoint ID, the Thread Pool size and specify whether to establish a durable or a
+	 * temporary connection. Usually you will establish temporary connections for clients. Durable
+	 * connections usually are used only for server side services. Please be aware that this
+	 * constructor does <b>not</b> check for duplicate endpoint IDs in a messaging infrastructure.
 	 *
 	 * @param aBrokerURI URI of the Message Broker (e.g.
 	 * <tt>tcp://[host]:61616</tt>)
-	 * @param aGatewayTopic Name of the topic for the JMS gateway on the JMS
-	 * broker
-	 * @param aGatewayId ID of the jWebSocket JMS Gateway to use for jWebSocket
-	 * services
+	 * @param aGatewayTopic Name of the topic for the JMS gateway on the JMS broker
+	 * @param aGatewayId ID of the jWebSocket JMS Gateway to use for jWebSocket services
 	 * @param aEndPointId ID of the endpoint used for this JMS connection
-	 * @param aThreadPoolSize Maximum number of threads used to process requests
-	 * concurrently
-	 * @param aDurable <tt>JMSEndPoint.TEMPORARY</tt> (for clients and servers)
-	 * or <tt>JMSEndPoint.DURABLE</tt> for durable connections (for durable
-	 * services only)
+	 * @param aThreadPoolSize Maximum number of threads used to process requests concurrently
+	 * @param aDurable <tt>JMSEndPoint.TEMPORARY</tt> (for clients and servers) or
+	 * <tt>JMSEndPoint.DURABLE</tt> for durable connections (for durable services only)
 	 */
 	public JMSEndPoint(String aBrokerURI, String aGatewayTopic,
 			String aGatewayId, String aEndPointId, int aThreadPoolSize,
@@ -192,29 +204,24 @@ public class JMSEndPoint {
 	}
 
 	/**
-	 * Static method to create a new JMS endpoint. You need to set the Broker
-	 * URI, the Gateway Topic, the Endpoint ID, the Thread Pool size and specify
-	 * whether to establish a durable or a temporary connection. Usually you
-	 * will establish temporary connections for clients. Durable connections
-	 * usually are used only for server side services. Please be aware that this
-	 * constructor does check for duplicate endpoint IDs in a messaging
-	 * infrastructure. An exception is raised in case another instance with the
-	 * same endpoint ID is already connected to the selected JMS topic.
+	 * Static method to create a new JMS endpoint. You need to set the Broker URI, the Gateway
+	 * Topic, the Endpoint ID, the Thread Pool size and specify whether to establish a durable or a
+	 * temporary connection. Usually you will establish temporary connections for clients. Durable
+	 * connections usually are used only for server side services. Please be aware that this
+	 * constructor does check for duplicate endpoint IDs in a messaging infrastructure. An exception
+	 * is raised in case another instance with the same endpoint ID is already connected to the
+	 * selected JMS topic.
 	 *
 	 * @param aBrokerURI URI of the Message Broker (e.g.
 	 * <tt>tcp://[host]:61616</tt>)
-	 * @param aGatewayTopic Name of the topic for the JMS gateway on the JMS
-	 * broker
-	 * @param aGatewayId ID of the jWebSocket JMS Gateway to use for jWebSocket
-	 * services
+	 * @param aGatewayTopic Name of the topic for the JMS gateway on the JMS broker
+	 * @param aGatewayId ID of the jWebSocket JMS Gateway to use for jWebSocket services
 	 * @param aEndPointId ID of the endpoint used for this JMS connection
-	 * @param aThreadPoolSize Maximum number of threads used to process requests
-	 * concurrently
-	 * @param aDurable <tt>JMSEndPoint.TEMPORARY</tt> (for clients and servers)
-	 * or <tt>JMSEndPoint.DURABLE</tt> for durable connections (for durable
-	 * services only)
-	 * @return A new JMSEndPoint instance (in case of success), otherwise an
-	 * exception will be raised.
+	 * @param aThreadPoolSize Maximum number of threads used to process requests concurrently
+	 * @param aDurable <tt>JMSEndPoint.TEMPORARY</tt> (for clients and servers) or
+	 * <tt>JMSEndPoint.DURABLE</tt> for durable connections (for durable services only)
+	 * @return A new JMSEndPoint instance (in case of success), otherwise an exception will be
+	 * raised.
 	 * @throws JMSException
 	 */
 	public static JMSEndPoint getInstance(String aBrokerURI, String aGatewayTopic,
@@ -245,8 +252,7 @@ public class JMSEndPoint {
 	}
 
 	/**
-	 * Starts the JMS connection to send or broadcast messages and to listen on
-	 * incoming messages.
+	 * Starts the JMS connection to send or broadcast messages and to listen on incoming messages.
 	 */
 	public void start() {
 		try {
@@ -260,10 +266,9 @@ public class JMSEndPoint {
 	}
 
 	/**
-	 * Adds a new listener to the JMS Gateway Client. The listener must
-	 * implement the IJMSMessageListener interface and can listen to unqualified
-	 * messages, to text messages, binary messages, map messages and object
-	 * messages.
+	 * Adds a new listener to the JMS Gateway Client. The listener must implement the
+	 * IJMSMessageListener interface and can listen to unqualified messages, to text messages,
+	 * binary messages, map messages and object messages.
 	 *
 	 * @param aListener
 	 */
@@ -273,8 +278,8 @@ public class JMSEndPoint {
 	}
 
 	/**
-	 * Removes a listener from the JMS Gateway Client. The listener will not be
-	 * destroyed but not be called anymore after this call.
+	 * Removes a listener from the JMS Gateway Client. The listener will not be destroyed but not be
+	 * called anymore after this call.
 	 *
 	 * @param aListener
 	 */
@@ -303,9 +308,8 @@ public class JMSEndPoint {
 	}
 
 	/**
-	 * Shuts down the current instance of the JMS Endpoint. It closes the JMS
-	 * session and the JMS connection and sets the shutDown flag for the
-	 * application.
+	 * Shuts down the current instance of the JMS Endpoint. It closes the JMS session and the JMS
+	 * connection and sets the shutDown flag for the application.
 	 */
 	public void shutdown() {
 		// clean the garbage
@@ -331,39 +335,43 @@ public class JMSEndPoint {
 				// TODO: process exceptions properly
 			}
 		}
+
+		if (mReleaseJWSResources) {
+			Tools.stopUtilityTimer();
+			Tools.stopUtilityThreadPool();
+		}
+		
 		// to end potential console loops
 		mShutDown = true;
 	}
 
 	/**
-	 * @return the EndPoint-Id of this JMS Endpoint. This endpoint id is ensured
-	 * to be unique within one JMS topic.
+	 * @return the EndPoint-Id of this JMS Endpoint. This endpoint id is ensured to be unique within
+	 * one JMS topic.
 	 */
 	public String getEndPointId() {
 		return mEndPointId;
 	}
 
 	/**
-	 * @return the Id of the jWebSocket JMS Gateway Endpoint. This ID is used to
-	 * utilize services from a jWebSocket server connected to the JMS broker.
+	 * @return the Id of the jWebSocket JMS Gateway Endpoint. This ID is used to utilize services
+	 * from a jWebSocket server connected to the JMS broker.
 	 */
 	public String getGatewayId() {
 		return mGatewayId;
 	}
 
 	/**
-	 * @return the JMS Session used for this JMS Endpoint. The session object
-	 * may be used to create new messages, new consumers or even to create new
-	 * queues or topics.
+	 * @return the JMS Session used for this JMS Endpoint. The session object may be used to create
+	 * new messages, new consumers or even to create new queues or topics.
 	 */
 	public Session getSession() {
 		return mSession;
 	}
 
 	/**
-	 * @return the Message Producer of this JMS Endpoint. The produced may be
-	 * used to send messages. Usually an application will not make use of this
-	 * low level method.
+	 * @return the Message Producer of this JMS Endpoint. The produced may be used to send messages.
+	 * Usually an application will not make use of this low level method.
 	 */
 	public MessageProducer getProducer() {
 		return mProducer;
