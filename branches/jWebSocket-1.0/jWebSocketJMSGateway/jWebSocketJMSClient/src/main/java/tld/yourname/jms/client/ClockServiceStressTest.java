@@ -221,16 +221,12 @@ public class ClockServiceStressTest {
 			lJWSEndPoint.shutdown();
 		}
 
-		// release jWebSocket resources
-		Tools.stopUtilityTimer();
-		Tools.stopUtilityThreadPool();
-
 		// and show final status message in the console
 		mLog.info("JMS Client Endpoint properly shutdown.");
 	}
 
 	private static void startStressTest() {
-		final int lIterations = 100;
+		final int lIterations = 10;
 		int lCounter = 0;
 		lStartTime = System.currentTimeMillis();
 		final long lSleepInterval = 100;
@@ -263,6 +259,10 @@ public class ClockServiceStressTest {
 							lEndTime = System.currentTimeMillis();
 
 							System.out.println(lResponseReceived + ", " + (((lEndTime - lStartTime) - lReqSent * lSleepInterval) / 1000));
+							
+							if (lResponseReceived == lIterations){
+								lJWSEndPoint.shutdown();
+							}
 						}
 					}, 1000 * 60);
 
