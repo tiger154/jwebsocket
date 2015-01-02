@@ -361,7 +361,6 @@ public class ItemStorageQuota implements IQuotaStorage {
 
             return flag;
         } catch (Exception ex) {
-            ex.printStackTrace();
             return false;
         }
     }
