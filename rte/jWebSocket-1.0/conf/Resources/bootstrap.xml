@@ -64,23 +64,6 @@
 		</property>
 	</bean>
 	
-	<!--
-	<bean id="itemStorageDataSource"
-		  class="com.j256.ormlite.jdbc.JdbcConnectionSource" init-method="initialize">
-		<property name="url">
-			<bean class="org.jwebsocket.config.JWebSocketConfig"
-				  factory-method="expandEnvAndJWebSocketVars">
-				<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/itemstorage;create=true" />
-			</bean>
-		</property>
-		<property name="username" value="" />
-		<property name="password" value="" />
-		<property name="databaseType">
-			<bean class="com.j256.ormlite.db.DerbyEmbeddedDatabaseType" />
-		</property>
-	</bean>
-	-->
-	
 	<!-- Global connections manager. REQUIRED BEAN -->
 	<bean id="org.jwebsocket.server.connection_manager" class="org.jwebsocket.util.ConnectionManager">
 		<constructor-arg>
