@@ -69,6 +69,6 @@ App.on('appLoaded', function(){
 	});
 });
 
-App.on('beforeAppReload', function(){
+App.on(['beforeAppReload', 'systemStopping'], function(){
 	NotesService.shutdown();
 });
