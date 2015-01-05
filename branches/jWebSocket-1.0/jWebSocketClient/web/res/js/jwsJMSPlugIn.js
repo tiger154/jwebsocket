@@ -76,6 +76,14 @@ jws.JMSPlugIn = {
 					if (this.OnBrokerTransportResumed) {
 						this.OnBrokerTransportResumed(aToken);
 					}
+				} else if ("endPointDisconnected" === aToken.name) {
+					if (this.OnEndPointDisconnected) {
+						this.OnEndPointDisconnected(aToken);
+					}
+				} else if ("endPointConnected" === aToken.name) {
+					if (this.OnEndPointConnected) {
+						this.OnEndPointConnected(aToken);
+					}
 				} else if ("handleJmsText" === aToken.name) {
 					if (this.OnHandleJmsText) {
 						this.OnHandleJmsText(aToken);
@@ -277,7 +285,6 @@ jws.JMSPlugIn = {
 		if (aListeners.OnHandleJmsMapMessage !== undefined) {
 			this.OnHandleJmsMapMessage = aListeners.OnHandleJmsMapMessage;
 		}
-
 		if (aListeners.OnPing !== undefined) {
 			this.OnPing = aListeners.OnPing;
 		}
@@ -292,6 +299,12 @@ jws.JMSPlugIn = {
 		}
 		if (aListeners.OnBrokerTransportException !== undefined) {
 			this.OnBrokerTransportException = aListeners.OnBrokerTransportException;
+		}
+		if (aListeners.OnEndPointConnected !== undefined) {
+			this.OnEndPointConnected = aListeners.OnEndPointConnected;
+		}
+		if (aListeners.OnEndPointDisconnected !== undefined) {
+			this.OnEndPointDisconnected = aListeners.OnEndPointDisconnected;
 		}
 	}
 
