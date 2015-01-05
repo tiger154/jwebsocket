@@ -172,11 +172,13 @@ public class MongoDBClusterManager implements IClusterManager, IInitializable {
 	public void initialize() throws Exception {
 		mClusters.createIndex(new BasicDBObject()
 				.append(CLUSTER_ALIAS, 1)
-				.append(CLUSTER_NS, 1));
+				.append(CLUSTER_NS, 1),
+				new BasicDBObject().append("unique", true));
 
 		mEndPoints.createIndex(new BasicDBObject()
 				.append(CLUSTER_ALIAS, 1)
-				.append(CONNECTOR_ID, 1));
+				.append(CONNECTOR_ID, 1),
+				new BasicDBObject().append("unique", true));
 
 		mConfig.getDB().command(new BasicDBObject()
 				.append("convertToCapped", mConfig.getName())
@@ -184,12 +186,12 @@ public class MongoDBClusterManager implements IClusterManager, IInitializable {
 
 		// setting initial configuration values
 		if (mConfig.count() == 0) {
-			mConfig.save(new BasicDBObject().append(BALANCER_ALGORITHM, getBalancerAlgorithm()));
+			mConfig.save(new BasicDBObject().append(BALANCER_ALGORITHM, 3));
 		}
 
 		// setting initial clusters (if not already registered)
 		for (ICluster lC : mStartupClusters) {
-			if (!isNamespaceSupported(lC.getAlias())) {
+			if (!isNamespaceSupported(lC.getNamespace())) {
 				mClusters.save(new BasicDBObject()
 						.append(CLUSTER_NS, lC.getNamespace())
 						.append(CLUSTER_PASSWORD, lC.getPassword())
