@@ -177,7 +177,7 @@ public class ConnectionManager implements IInitializable {
 	 */
 	public static boolean isValid(Mongo aConnection) {
 		try {
-			aConnection.getConnector().getDBPortPool(aConnection.getAddress()).get().ensureOpen();
+			aConnection.getDatabaseNames();
 		} catch (Exception lEx) {
 			return false;
 		}
