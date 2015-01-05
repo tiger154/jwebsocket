@@ -26,6 +26,7 @@ import javax.jms.Topic;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.jms.api.IConnectorsManager;
+import org.jwebsocket.jms.api.INodesManager;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.util.Tools;
@@ -59,6 +60,44 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 			IConnectorsManager lConnManager = mEngine.getConnectorsManager();
 
 			switch (lType) {
+				case BROKER_EVENT: {
+					MessageType lEventName = MessageType.valueOf(aMessage.getStringProperty(Attributes.NAME));
+					switch (lEventName) {
+						case DISCONNECTION: {
+							INodesManager lNM = mEngine.getNodesManager();
+
+							// client connection unexpectedly closed
+							String lConsumerId = aMessage.getStringProperty(Attributes.CONSUMER_ID);
+							if (!mEngine.getNodesManager().getSynchronizer()
+									.getWorkerTurn(MessageType.DISCONNECTION.name() + lConsumerId)) {
+								break;
+							}
+							// increasing node processed requests
+							lNM.increaseRequests(mEngine.getNodeId());
+
+							String lDestination = aMessage.getStringProperty(Attributes.DESTINATION);
+							if (lDestination.endsWith("_nodes")) {
+								// stop server node
+								String lNodeId = lNM.getNodeId(lConsumerId);
+								if (null != lNodeId) {
+									lNM.setStatus(lNodeId, NodeStatus.DOWN);
+								}
+							} else {
+								// stop client connector
+								String lReplySelector = lConnManager.getReplySelectorByConsumerId(Tools.getMD5(lConsumerId));
+								if (null != lReplySelector && lConnManager.exists(lReplySelector)) {
+									// getting the connector
+									JMSConnector lConnector = lConnManager.getConnectorById(lReplySelector);
+									// stopping the connector
+									lConnector.stopConnector(CloseReason.CLIENT);
+								}
+							}
+
+						}
+						break;
+					}
+					break;
+				}
 				case CONNECTION: {
 					String lReplySelector = aMessage.getStringProperty(Attributes.REPLY_SELECTOR);
 					// storing the connector
@@ -94,6 +133,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					break;
 				}
 				case DISCONNECTION: {
+					// client sent DISCONNECTION command
 					String lConsumerId = aMessage.getStringProperty(Attributes.CONSUMER_ID);
 					String lReplySelector;
 					if (null != lConsumerId) {
@@ -124,7 +164,8 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 
 		// creating message consumer
 		mConsumer = mEngine.getSession().createConsumer(lEngineTopic,
-				Attributes.NODE_ID + " = '" + mEngine.getNodeId() + "'");
+				Attributes.NODE_ID + " = '" + mEngine.getNodeId() + "' OR "
+				+ Attributes.MESSAGE_TYPE + " = 'BROKER_EVENT'");
 
 		// registering listener
 		final MessageListener lListener = this;

@@ -27,11 +27,6 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
-import org.apache.activemq.advisory.AdvisorySupport;
-import org.apache.activemq.command.ActiveMQMessage;
-import org.apache.activemq.command.ConsumerId;
-import org.apache.activemq.command.DataStructure;
-import org.apache.activemq.command.RemoveInfo;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.jms.api.INodesManager;
@@ -40,8 +35,8 @@ import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 
 /**
- * jWebSocket cluster server node load balancer component. Redirect the requests
- * to the less loaded node in the cluster.
+ * jWebSocket cluster server node load balancer component. Redirect the requests to the less loaded
+ * node in the cluster.
  *
  * @author Rolando Santamaria Maso
  */
@@ -51,8 +46,6 @@ public class JMSLoadBalancer implements IInitializable {
 	private final Session mClientsSession, mServerSession;
 	private final INodesManager mNodesManager;
 	private MessageConsumer mClientsMessagesConsumer;
-	private MessageConsumer mClientsConnectionAdvisor;
-	private MessageConsumer mNodesConnectionAdvisor;
 	private MessageProducer mNodesMessagesProducer;
 	private final static Logger mLog = Logging.getLogger();
 	private final String mNodeId;
@@ -213,75 +206,6 @@ public class JMSLoadBalancer implements IInitializable {
 			}
 		});
 
-		mClientsConnectionAdvisor = mServerSession.createConsumer(AdvisorySupport.getConsumerAdvisoryTopic(lClientsTopic));
-		mClientsConnectionAdvisor.setMessageListener(new MessageListener() {
-			@Override
-			public void onMessage(Message aMessage) {
-				try {
-					ActiveMQMessage lMessage = (ActiveMQMessage) aMessage;
-					Object lDataStructure = lMessage.getDataStructure();
-
-					if (lDataStructure instanceof RemoveInfo) {
-						RemoveInfo lCommand = (RemoveInfo) lDataStructure;
-						DataStructure lDS = lCommand.getObjectId();
-
-						if (lDS instanceof ConsumerId) {
-							String lConsumerId = ((ConsumerId) lDS).toString();
-							if (!mNodesManager.getSynchronizer().getWorkerTurn(lConsumerId + MessageType.DISCONNECTION.name())) {
-								// LB not turn to work
-								return;
-							}
-
-							String lNodeId = mNodesManager.getOptimumNode();
-							Message lRequest = mClientsSession.createMessage();
-							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.DISCONNECTION.name());
-							lRequest.setStringProperty(Attributes.CONSUMER_ID, Tools.getMD5(lConsumerId));
-
-							// redirecting message to optimum node
-							lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
-							mNodesMessagesProducer.send(lRequest);
-							// increasing node requests
-							mNodesManager.increaseRequests(lNodeId);
-						}
-					}
-				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx, "processing client connection events"));
-				}
-			}
-		});
-
-		// nodes connection listener
-		mNodesConnectionAdvisor = mServerSession.createConsumer(AdvisorySupport.getConsumerAdvisoryTopic(lNodesTopic));
-		mNodesConnectionAdvisor.setMessageListener(new MessageListener() {
-			@Override
-			public void onMessage(Message aMessage) {
-				try {
-					ActiveMQMessage lMessage = (ActiveMQMessage) aMessage;
-					Object lDataStructure = lMessage.getDataStructure();
-					if (lDataStructure instanceof RemoveInfo) {
-						RemoveInfo lCommand = (RemoveInfo) lDataStructure;
-						DataStructure lDS = lCommand.getObjectId();
-						if (lDS instanceof ConsumerId) {
-							// getting the connection id
-							String lConsumerId = String.valueOf(((ConsumerId) lDS).toString());
-							if (!mNodesManager.getSynchronizer().getWorkerTurn(lConsumerId)) {
-								// LB not turn to work
-								return;
-							}
-
-							// setting the node status to offline
-							String lNodeId = mNodesManager.getNodeId(lConsumerId);
-							if (null != lNodeId) {
-								mNodesManager.setStatus(lNodeId, NodeStatus.DOWN);
-							}
-						}
-					}
-				} catch (Exception ex) {
-					mLog.error(Logging.getSimpleExceptionMessage(ex, "processing node connection event"));
-				}
-			}
-		});
-
 		register();
 	}
 
@@ -294,9 +218,7 @@ public class JMSLoadBalancer implements IInitializable {
 		mNodesManager.setStatus(mNodeId, NodeStatus.DOWN);
 
 		// closing consumers and producers
-		mClientsConnectionAdvisor.close();
 		mClientsMessagesConsumer.close();
-		mNodesConnectionAdvisor.close();
 		mNodesMessagesProducer.close();
 
 		// shutting down nodes manager
