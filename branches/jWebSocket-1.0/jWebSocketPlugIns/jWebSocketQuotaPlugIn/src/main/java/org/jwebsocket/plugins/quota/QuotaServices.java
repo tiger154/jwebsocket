@@ -114,14 +114,10 @@ public class QuotaServices {
 			return lResult;
 
 		} catch (ExceptionQuotaAlreadyExist aExpAlreadyExist) {
-			mLog.error("Error creating the " + lQuotaIdentifier
-					+ " quota, for namespace: " + lNS + ", this quota already exists.");
 			return getErrorToken("Error creating the " + lQuotaIdentifier
 					+ " quota, for namespace: " + lNS + ", this quota already exists.",
 					lResult, aConnector);
 		} catch (Exception aExp) {
-			mLog.error("Error creating the " + lQuotaIdentifier
-					+ " quota, for namespace: " + lNS);
 			return getErrorToken("Error creating the " + lQuotaIdentifier
 					+ " quota, for namespace: " + lNS,
 					lResult, aConnector);
