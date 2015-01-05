@@ -6,11 +6,14 @@ echo -------------------------------------------------------------------------
 
 if "%JWEBSOCKET_HOME%"=="" goto error
 if "%JWEBSOCKET_EE_HOME%"=="" goto error
+if "%CATALINA_HOME%"=="" goto error
 if "%JWEBSOCKET_VER%"=="" goto error
+if "%ANT_HOME%"=="" goto error
+
 goto continue
 
 :error
-echo Environment variable(s) JWEBSOCKET_HOME, JWEBSOCKET_EE_HOME and/or JWEBSOCKET_VER not set!
+echo Environment variable(s) JWEBSOCKET_HOME, JWEBSOCKET_EE_HOME, ANT_HOME, CATALINA_HOME and/or JWEBSOCKET_VER not set!
 pause
 exit
 
@@ -41,11 +44,21 @@ echo -------------------------------------------------------------------------
 cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketActiveMQStockTicker
 call mvn clean install
 
+if not exist "%CATALINA_HOME%\lib\jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar" (
+	copy "%JWEBSOCKET_HOME%\libs\jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar" "%CATALINA_HOME%\lib"
+)
+
+if not exist "%CATALINA_HOME%\lib\jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar" (
+	echo ERROR: jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar is missing from your CATALINA_HOME\lib folder. This may cause compilation errors because of missing dependencies for jWebSocketWebAppDemo.
+    echo You can either run the script 1_cleanAndBuildAll.bat as administrator, or just copy the required file jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar there by yourself.
+)
+
 echo -------------------------------------------------------------------------
 echo Building jWebSocketWebAppDemo...
 echo -------------------------------------------------------------------------
 cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketWebAppDemo
-call ant
+call ant -Dj2ee.server.home="%CATALINA_HOME%" -Dlibs.CopyLibs.classpath=%ANT_HOME%/lib/org-netbeans-modules-java-j2seproject-copylibstask.jar
+
 
 rem restore current dir
 popd
