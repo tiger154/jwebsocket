@@ -29,14 +29,23 @@ import javolution.util.FastMap;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerFilter;
 import org.apache.activemq.broker.ConnectionContext;
+import org.apache.activemq.broker.ProducerBrokerExchange;
 import org.apache.activemq.broker.region.Subscription;
+import org.apache.activemq.command.ActiveMQMapMessage;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.command.ConsumerInfo;
+import org.apache.activemq.command.MessageId;
+import org.apache.activemq.command.ProducerId;
+import org.apache.activemq.command.ProducerInfo;
+import org.apache.activemq.state.ProducerState;
+import org.apache.activemq.util.IdGenerator;
+import org.apache.activemq.util.LongSequenceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Store consumer connection data into a MongoDB database collection to be used
- * by the jWebSocket Cluster Load Balancer component.
+ * Store consumer connection data into a MongoDB database collection to be used by the jWebSocket
+ * Cluster Load Balancer component.
  *
  * @author Rolando Santamaria Maso
  */
@@ -45,7 +54,10 @@ public class AMQClusterFilter extends BrokerFilter {
 	private final List<String> mTargetDestinations;
 	private Mongo mMongo;
 	private final String mUsername, mPassword;
-	private static final Logger mLog = LoggerFactory.getLogger(AMQBasicSecurityPlugIn.class);
+	private static final Logger mLog = LoggerFactory.getLogger(AMQClusterFilter.class);
+	private static final IdGenerator mIdGenerator = new IdGenerator();
+	private final LongSequenceGenerator mMessageIdGenerator = new LongSequenceGenerator();
+	private final ProducerId mProducerId = new ProducerId();
 
 	/**
 	 *
@@ -68,8 +80,10 @@ public class AMQClusterFilter extends BrokerFilter {
 	public AMQClusterFilter(Broker aBroker, List<String> aTargetDestinations, Mongo aMongo,
 			String aUsername, String aPassword) {
 		super(aBroker);
+		mProducerId.setConnectionId(mIdGenerator.generateId());
+
 		mLog.info("Instantiating jWebSocket AMQClusterFilter...");
-		
+
 		mCachedCollections = new FastMap<String, DBCollection>().shared();
 		mTargetDestinations = aTargetDestinations;
 		mUsername = aUsername;
@@ -90,24 +104,24 @@ public class AMQClusterFilter extends BrokerFilter {
 	 */
 	@Override
 	public Subscription addConsumer(ConnectionContext aContext, ConsumerInfo aInfo) throws Exception {
-		String lDest = aInfo.getDestination().getQualifiedName();
+		if (!aContext.isNetworkConnection()) {
+			String lDest = aInfo.getDestination().getQualifiedName();
 
-		String lSelector = aInfo.getSelector();
-		if (null == lSelector) {
-			// do not process
-			return super.addConsumer(aContext, aInfo);
-		}
-		int lAPos = lSelector.indexOf("'");
-		if (-1 == lAPos) {
-			// do not process
-			return super.addConsumer(aContext, aInfo);
-		}
+			String lSelector = aInfo.getSelector();
+			if (null == lSelector) {
+				// do not process
+				return super.addConsumer(aContext, aInfo);
+			}
+			int lAPos = lSelector.indexOf("'");
+			if (-1 == lAPos) {
+				// do not process
+				return super.addConsumer(aContext, aInfo);
+			}
 
-		int lBPos = lSelector.indexOf("'", lAPos + 1);
+			int lBPos = lSelector.indexOf("'", lAPos + 1);
 
-		// the correlation id identifies a consumer
-		String lCorrelationId = lSelector.substring(lAPos + 1, lBPos);
-		if (null != lDest) {
+			// the correlation id identifies a consumer
+			String lCorrelationId = lSelector.substring(lAPos + 1, lBPos);
 			for (String lClusterDest : mTargetDestinations) {
 				if (lClusterDest.matches(lDest)) {
 					String lDatabaseName = aInfo.getDestination().getPhysicalName();
@@ -126,13 +140,15 @@ public class AMQClusterFilter extends BrokerFilter {
 						// caching collection instance
 						mCachedCollections.put(lDatabaseName, lDatabase.getCollection(COLLECTION_NAME));
 					}
+
 					// getting cached collection instance
 					DBCollection lCollection = mCachedCollections.get(lDatabaseName);
 					DBObject lRecord = new BasicDBObject();
 					lRecord.put("correlationId", lCorrelationId);
 					lRecord.put("destination", lDest);
 					lRecord.put("connectionId", aInfo.getConsumerId().getConnectionId());
-					lRecord.put("consumerId", aInfo.getConsumerId().toString());
+					String lConsumerId = aInfo.getConsumerId().toString();
+					lRecord.put("consumerId", lConsumerId);
 					// saving record
 					lCollection.update(new BasicDBObject()
 							.append("correlationId", lCorrelationId),
@@ -140,7 +156,52 @@ public class AMQClusterFilter extends BrokerFilter {
 				}
 			}
 		}
-
 		return super.addConsumer(aContext, aInfo);
 	}
+
+	@Override
+	public void removeConsumer(ConnectionContext aContext, ConsumerInfo aInfo) throws Exception {
+		if (!aContext.isNetworkConnection()) {
+			String lDest = aInfo.getDestination().getPhysicalName();
+
+			for (String lClusterDest : mTargetDestinations) {
+				if (lClusterDest.matches("topic://" + lDest)) {
+					ActiveMQMapMessage lMsg = new ActiveMQMapMessage();
+					if (lDest.endsWith("_nodes")) {
+						lMsg.setDestination(new ActiveMQTopic(lDest));
+					} else {
+						lMsg.setDestination(new ActiveMQTopic(lDest + "_nodes"));
+					}
+
+					lMsg.setJMSTimestamp(System.currentTimeMillis());
+					String lConsumerId = aInfo.getConsumerId().toString();
+					lMsg.setStringProperty("consumerId", lConsumerId);
+					lMsg.setStringProperty("msgType", "BROKER_EVENT");
+					lMsg.setOriginalTransactionId(null);
+					lMsg.setStringProperty("name", "DISCONNECTION");
+					lMsg.setStringProperty("destination", lDest);
+					lMsg.setMessageId(new MessageId(mProducerId, mMessageIdGenerator.getNextSequenceId()));
+					lMsg.setResponseRequired(false);
+					lMsg.setPersistent(false);
+
+					boolean lOriginalFlowControl = aContext.isProducerFlowControl();
+
+					try {
+						ProducerBrokerExchange lPBE = new ProducerBrokerExchange();
+						lPBE.setMutable(true);
+						lPBE.setProducerState(new ProducerState(new ProducerInfo()));
+						lPBE.setConnectionContext(aContext);
+
+						send(lPBE, lMsg);
+					} catch (Exception lEx) {
+					} finally {
+						aContext.setProducerFlowControl(lOriginalFlowControl);
+					}
+				}
+			}
+		}
+
+		super.removeConsumer(aContext, aInfo);
+	}
+
 }
