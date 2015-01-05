@@ -8,11 +8,12 @@
 	</bean>
 	
 	<!-- JMS connection -->
-	<bean id="jmsBroker" class="org.apache.activemq.broker.BrokerService" 
+	<bean id="jmsBroker" class="org.jwebsocket.util.AMQBrokerService" 
 		  init-method="start" destroy-method="stop">
 		<property name="brokerName" value="jWebSocketAMQ" />
 		<property name="persistent" value="false" />
 		<property name="useShutdownHook" value="false" />
+		<property name="tempStorageLimit" value="10485760" />
 	</bean>
 	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" 
 		  depends-on="jmsBroker" >
