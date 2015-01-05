@@ -47,5 +47,9 @@ public enum MessageType {
 	/**
 	 *
 	 */
-	ACK
+	ACK,
+	/**
+	 * 
+	 */
+	BROKER_EVENT
 }
