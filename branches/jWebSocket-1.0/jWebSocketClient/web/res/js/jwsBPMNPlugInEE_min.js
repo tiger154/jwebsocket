@@ -4,8 +4,13 @@
 //	(C) Copyright 2012-2013 Innotrade GmbH, Herzogenrath Germany
 //	Author: Alexander Schulze
 //	---------------------------------------------------------------------------
-jws.BPMNPlugIn={NS:jws.NS_BASE+".plugins.bpmn",aQ:function(au,ai,J,aI){J.aT=ai;J.alias=au;J.ns=jws.BPMNPlugIn.NS;J.type='aQ';
-this.sendToken(J,aI);},ah:function(J,aI){J.ns=jws.BPMNPlugIn.NS;J.type='ah';this.sendToken(J,aI);},bK:function(ap,be,J,aI){J.ns=
-jws.BPMNPlugIn.NS;J.type='bK';J.ad=be;J.key=ap;this.sendToken(J,aI);},ar:function(ap,J,aI){J.ns=jws.BPMNPlugIn.NS;J.type='ar';J.key=
-ap;this.sendToken(J,aI);},bJ:function(ap,J,aI){J.ns=jws.BPMNPlugIn.NS;J.type='bJ';J.key=ap;this.sendToken(J,aI);}};
-jws.oop.addPlugIn(jws.jWebSocketTokenClient,jws.BPMNPlugIn); 
+jws.BPMNPlugIn={NS:jws.NS_BASE+".plugins.bpmn",bm:function(){return{ns:jws.BPMNPlugIn.NS};},aT:function(au,bk,J){var aB=
+this.checkConnected();if(0===aB.code){var G=this.bm();G.bc=bk;G.alias=au;G.type='loadFile';this.sendToken(G,J);}return aB;},ab:
+function(J){var aB=this.checkConnected();if(0===aB.code){var G=this.bm();G.type='getAvailableProcesses';this.sendToken(G,J);}
+return aB;},aK:function(aq,af,J){var aB=this.checkConnected();if(0===aB.code){var G=this.bm();G.type='startProcessInstance';G.ap=af;
+G.key=aq;this.sendToken(G,J);}return aB;},ai:function(aq,J){var aB=this.checkConnected();if(0===aB.code){var G=this.bm();G.type=
+'suspendProcess';G.key=aq;this.sendToken(G,J);}return aB;},an:function(aq,J){var aB=this.checkConnected();if(0===aB.code){var G=
+this.bm();G.type='getExecutionProcesses';G.key=aq;this.sendToken(G,J);}return aB;},am:function(aq,J){var aB=this.checkConnected();
+if(0===aB.code){var G=this.bm();G.type='getTasksByProcessInstance';G.key=aq;this.sendToken(G,J);}return aB;},aP:function(aj,ak,J){
+var aB=this.checkConnected();if(0===aB.code){var G=this.bm();G.type='completeTask';G.bM=aj;G.aa=ak;this.sendToken(G,J);}return aB;}}
+;jws.oop.addPlugIn(jws.jWebSocketTokenClient,jws.BPMNPlugIn); 
