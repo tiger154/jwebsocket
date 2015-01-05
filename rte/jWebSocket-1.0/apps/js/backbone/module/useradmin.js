@@ -110,8 +110,8 @@ App.setModule('useradmin', {
                 // registering quotas for defualt server users
                 this.initQuotaDefaultServerUsers(lResponse.getString('uuid'));
             } else {
-                App.getLogger().error("UserAdmin - Could not create the quota: "
-                        + lResponse.getString('msg'));
+                /*App.getLogger().error("UserAdmin - Could not create the quota: "
+                        + lResponse.getString('msg'));*/
             }
         } else {
             // registering quotas for defualt server users
