@@ -44,7 +44,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @author Osvaldo Aguilar Lauzurique
  */
-public class QuotaPlugin extends ActionPlugIn {
+public class QuotaPlugIn extends ActionPlugIn {
 
     private static final Logger mLog = Logging.getLogger();
     private static ApplicationContext mSpringAppContext;
@@ -103,7 +103,7 @@ public class QuotaPlugin extends ActionPlugIn {
      * 
      * @param aConfiguration
      */
-    public QuotaPlugin(PluginConfiguration aConfiguration) {
+    public QuotaPlugIn(PluginConfiguration aConfiguration) {
         super(aConfiguration);
         setNamespace(NS);
 
