@@ -2024,7 +2024,7 @@
 		
 		<!-- quota plug-in -->
 		<plugin>
-			<name>org.jwebsocket.plugins.quota.QuotaPlugin</name>
+			<name>org.jwebsocket.plugins.quota.QuotaPlugIn</name>
 			<id>jws.quota</id>
 			<ns>org.jwebsocket.plugins.quota</ns>
 			<jar>jWebSocketQuotaPlugIn-1.0.jar</jar>
@@ -2032,7 +2032,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}conf/QuotaPlugin/quota.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/QuotaPlugIn/quota.xml</setting>
 				<setting key="authentication_method">spring</setting>
 			</settings>
 		</plugin>
