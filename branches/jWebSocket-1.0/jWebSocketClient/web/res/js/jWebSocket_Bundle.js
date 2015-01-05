@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC3 (build 41121)
+	//:const:*:VERSION:String:1.0.0 RC3 (build 50105)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC3 (build 41121)",
+	VERSION: "1.0.0 RC3 (build 50105)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -343,12 +343,21 @@ var jws = {
 	},
 	
 	//:m:*:enableCometSupportForWebSockets
-	//:d:en:Sets the XHRWebSocket implementation as default WebSocket class.
-	//:d:en:Uses Comet technique to provide a WebSocket simulation.
+	//:d:en:Set the XHRWebSocket implementation as default WebSocket class.
+	//:d:en:Uses Comet technique to provides a WebSocket connection simulation.
 	//:a:en::::none
 	enableCometSupportForWebSockets: function(){
 		// setting the XHRWebSocket implementation 
 		window.WebSocket = XHRWebSocket;
+	},
+	
+	//:m:*:enableHTTPSupportForWebSockets
+	//:d:en:Set the HTTPWebSocket implementation as default WebSocket class.
+	//:d:en:Uses HTTP to provide a WebSocket connection simulation.
+	//:a:en::::none
+	enableHTTPSupportForWebSockets: function(){
+		// setting the HTTPWebSocket implementation 
+		window.WebSocket = HTTPWebSocket;
 	},
 
 	//:m:*:browserSupportsNativeWebSockets
@@ -4896,18 +4905,11 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 
 
 		self.__createMessageEvent = function(aType, aData) {
-			if (document.createEvent && window.MessageEvent && !window.opera) {
-				var lEvent = document.createEvent("MessageEvent");
-				lEvent.initMessageEvent("message", false, false, aData, null, null, window, null);
-				return lEvent;
-			} else {
-				// IE and Opera, the latter one truncates the data parameter after any 0x00 bytes.
-				return {
-					type: aType,
-					data: aData,
-					bubbles: false,
-					cancelable: false
-				};
+			return {
+				type: aType,
+				data: aData,
+				bubbles: false,
+				cancelable: false
 			}
 		};
 
@@ -4961,7 +4963,7 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 							if (1 == self.readyState) {
 								setTimeout(function() {
 									self.keepConnection();
-								}, 50);
+								}, 200);
 							}
 						}
 					}
