@@ -122,4 +122,9 @@ public class Attributes {
 	 *
 	 */
 	public static final String SENDER_INCLUDED = "senderIncluded";
+	/**
+	 * 
+	 */
+	public static final String NAME = "name";
+	
 }
