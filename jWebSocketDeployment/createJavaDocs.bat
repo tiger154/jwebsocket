@@ -5,17 +5,18 @@ echo jWebSocket JavaDocs and JavaSources Generator
 echo (C) Copyright 2011-2014 Innotrade GmbH
 echo -------------------------------------------------------------------------
 
-rem select specific maven version
-set path=C:\Program Files\NetBeans 8.0 Beta\java\maven\bin;%PATH%
-rem select specific Java version
-set path=C:\Program Files\Java\jdk1.7.0_51\bin;%PATH%
-rem set path=C:\Program Files\Java\jdk1.8.0_20\bin;%PATH%
-
-set M2_HOME=C:\Program Files\NetBeans 8.0 Beta\java\maven
-set M3_HOME=C:\Program Files\NetBeans 8.0 Beta\java\maven
-
+set MAVEN_HOME=C:\Program Files\NetBeans 8.0 Beta\java\maven
 set JAVA_HOME=C:\Program Files\Java\jdk1.7.0_51
 rem set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_20
+
+rem select specific maven version
+set path=%MAVEN_HOME%\bin;%PATH%
+rem select specific Java version
+set path=%JAVA_HOME%\bin;%PATH%
+rem set path=C:\Program Files\Java\jdk1.8.0_20\bin;%PATH%
+
+set M2_HOME=%MAVEN_HOME%
+set M3_HOME=%MAVEN_HOME%
 
 if "%JWEBSOCKET_HOME%"=="" goto error
 if "%JWEBSOCKET_EE_HOME%"=="" goto error
