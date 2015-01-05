@@ -119,31 +119,46 @@ public class JMSAdvisoryListener implements MessageListener {
 										mLog.info("JMS Gateway successfully connected to broker.");
 									}
 								} else {
-									mEndPoints.put(lConnectionId, lEndPointId);
-									WebSocketConnector lConnector = new JMSConnector(mEngine,
-											mJMSSender, lConnectionId, lEndPointId);
-									if (mLog.isDebugEnabled()) {
-										mLog.debug("Adding connector '"
-												+ lEndPointId + "' to JMS engine...");
+									// supporting reconnections
+									boolean lConnectionExists = false;
+									for (Map.Entry<String, String> lRegistration : mEndPoints.entrySet()) {
+										if (lEndPointId.equals(lRegistration.getValue())) {
+											// connection already exists, supporting reconnection
+											mEndPoints.remove(lRegistration.getKey());
+											mEndPoints.put(lConnectionId, lEndPointId);
+											lConnectionExists = true;
+											break;
+										}
 									}
-									mEngine.addConnector(lConnector);
-									lConnector.startConnector();
 
-									if (mLog.isInfoEnabled()) {
-										mLog.info("JMS client connected"
-												+ ", connector '" + lEndPointId
-												+ "' added to JMSEngine"
-												+ ", connection-id: '"
-												+ lConnectionId + "'.");
-									}
-									Token lToken = TokenFactory.createToken(
-											"org.jwebsocket.jms.gateway",
-											"welcome");
-									lConnector.sendPacket(JSONProcessor.tokenToPacket(lToken));
-									if (mBroadcastEvents) {
-										lBroadcastToken.setString("endPointId", lEndPointId);
-										lBroadcastToken.setString("name", "endPointConnected");
-										lBroadcast = true;
+									if (!lConnectionExists) {
+										// registrating new remote client
+										mEndPoints.put(lConnectionId, lEndPointId);
+										WebSocketConnector lConnector = new JMSConnector(mEngine,
+												mJMSSender, lConnectionId, lEndPointId);
+										if (mLog.isDebugEnabled()) {
+											mLog.debug("Adding connector '"
+													+ lEndPointId + "' to JMS engine...");
+										}
+										mEngine.addConnector(lConnector);
+										lConnector.startConnector();
+
+										if (mLog.isInfoEnabled()) {
+											mLog.info("JMS client connected"
+													+ ", connector '" + lEndPointId
+													+ "' added to JMSEngine"
+													+ ", connection-id: '"
+													+ lConnectionId + "'.");
+										}
+										Token lToken = TokenFactory.createToken(
+												"org.jwebsocket.jms.gateway",
+												"welcome");
+										lConnector.sendPacket(JSONProcessor.tokenToPacket(lToken));
+										if (mBroadcastEvents) {
+											lBroadcastToken.setString("endPointId", lEndPointId);
+											lBroadcastToken.setString("name", "endPointConnected");
+											lBroadcast = true;
+										}
 									}
 								}
 							}
