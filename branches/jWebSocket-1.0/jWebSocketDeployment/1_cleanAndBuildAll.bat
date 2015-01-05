@@ -50,7 +50,7 @@ if not exist "%CATALINA_HOME%\lib\jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar" 
 
 if not exist "%CATALINA_HOME%\lib\jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar" (
 	echo ERROR: jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar is missing from your CATALINA_HOME\lib folder. This may cause compilation errors because of missing dependencies for jWebSocketWebAppDemo.
-    echo You can either run the script 1_cleanAndBuildAll.bat as administrator, or just copy the required file jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar there by yourself.
+    echo You can either run the script 1_cleanAndBuildAll.bat once again as administrator, or just copy the required file jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar to CATALINA_HOME\lib by yourself.
 )
 
 echo -------------------------------------------------------------------------
