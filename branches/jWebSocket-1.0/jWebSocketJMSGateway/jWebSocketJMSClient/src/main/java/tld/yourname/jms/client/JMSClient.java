@@ -48,7 +48,7 @@ import org.jwebsocket.jms.endpoint.JWSLoadBalancerCpuUpdater;
 import org.jwebsocket.jms.endpoint.JWSMemoryAuthenticator;
 
 /**
- * JMS Gateway Demo Client
+ * JMS Gateway Demo Client.
  *
  * @author Alexander Schulze
  */

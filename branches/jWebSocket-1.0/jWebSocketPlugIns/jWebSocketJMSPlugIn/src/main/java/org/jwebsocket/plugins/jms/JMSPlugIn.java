@@ -189,9 +189,11 @@ public class JMSPlugIn extends TokenPlugIn {
 			// will fail and cause an exception, such that we cannot
 			// connect to the queue or topic.
 			mConnection.start();
+			
 
 			mSession = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
+			
 
 			mGatewayTopic = mSession.createTopic(mGatewayTopicId);
 			mProducer = mSession.createProducer(mGatewayTopic);
@@ -329,6 +331,12 @@ public class JMSPlugIn extends TokenPlugIn {
 		if (null != mConsumer) {
 			try {
 				mConsumer.close();
+			} catch (JMSException lEx) {
+			}
+		}
+		if (null != mProducer) {
+			try {
+				mProducer.close();
 			} catch (JMSException lEx) {
 			}
 		}

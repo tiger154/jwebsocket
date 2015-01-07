@@ -3,6 +3,15 @@
 <beans>
 	
 	<!-- Service Cluster 1 definition -->
+	<bean id="jmsServerCluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
+		<!-- plan password value: 'admin' -->
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
+		<property name="alias" value="JMSServer"/>
+		<property name="namespace" value="org.jwebsocket.jms.demo"/>
+		<property name="grantedEndPoints" value="JMSServer1,JMSServer2"/>
+	</bean>
+	
+	<!-- Service Cluster 1 definition -->
 	<bean id="service1cluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
 		<!-- plan password value: 'admin' -->
 		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
@@ -32,15 +41,6 @@
 		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
 		<property name="alias" value="clock"/>
 		<property name="namespace" value="somecompany.service.clock"/>
-		<property name="grantedEndPoints" value="SomeCompany.Service.Node1,SomeCompany.Service.Node2"/>
-	</bean>
-	
-	<!-- Service Cluster 4 definition -->
-	<bean id="jmsDemo" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
-		<!-- plan password value: 'admin' -->
-		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
-		<property name="alias" value="demo"/>
-		<property name="namespace" value="org.jwebsocket.jms.demo"/>
 		<property name="grantedEndPoints" value="SomeCompany.Service.Node1,SomeCompany.Service.Node2"/>
 	</bean>
 	
@@ -92,7 +92,7 @@
 				<ref bean="service2cluster" />
 				<ref bean="service3cluster" />
 				<ref bean="clockCluster" />
-				<ref bean="jmsDemo" />
+				<ref bean="jmsServerCluster" />
 			</list>
 		</property>
 	</bean>

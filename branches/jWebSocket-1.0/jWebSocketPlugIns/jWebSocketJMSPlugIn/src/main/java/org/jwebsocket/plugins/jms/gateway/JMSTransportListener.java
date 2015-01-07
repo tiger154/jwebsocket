@@ -88,7 +88,7 @@ public class JMSTransportListener implements TransportListener {
 			mIsConnected = true;
 			lBroadcast = false;
 		}
-		// CAUTION! THE FOLLOWING CODE LEADS TP A BLOCKING BEHAVIOR IN THE BROADCAST
+		// CAUTION! THE FOLLOWING CODE LEADS TO A BLOCKING BEHAVIOR IN THE BROADCAST
 		// DO WE NEED THIS MESSAGES BEING BROADCASTED?
 		if (lBroadcast) {
 			new Thread() {
@@ -162,5 +162,5 @@ public class JMSTransportListener implements TransportListener {
 						false // lIsResponseRequested)
 				));
 	}
-
+	
 }

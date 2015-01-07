@@ -201,11 +201,11 @@ public class JMSAdvisoryListener implements MessageListener {
 							}
 						} else if (lDataStructure instanceof ConnectionInfo) {
 							if (mLog.isDebugEnabled()) {
-								mLog.debug("Received remove info: " + aMessage);
+								mLog.debug("Received connection info: " + aMessage);
 							}
-							ConnectionInfo lConn = (ConnectionInfo) lMessage.getDataStructure();
+							ConnectionInfo lConnection = (ConnectionInfo) lMessage.getDataStructure();
 							if (mLog.isInfoEnabled()) {
-								mLog.info("JMS Connection Event:" + lConn.toString());
+								mLog.info("JMS Connection Event (from IP: " + lConnection.getClientIp() + "):" + lConnection.toString());
 							}
 						} else {
 							mLog.warn("Unknown advisory message: " + aMessage);
