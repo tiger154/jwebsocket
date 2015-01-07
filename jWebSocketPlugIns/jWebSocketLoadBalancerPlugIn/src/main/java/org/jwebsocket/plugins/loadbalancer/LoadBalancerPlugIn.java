@@ -408,6 +408,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 * @param aCluster
 	 */
 	public void sendToService(final WebSocketConnector aConnector, final Token aToken, final ICluster aCluster) {
+		// setting the sourceId property value (useful for JMSEndPoint)
 		aToken.setString("sourceId", aConnector.getId());
 
 		final IClusterEndPoint lEndPoint = mClusterManager.getOptimumServiceEndPoint(aCluster);
