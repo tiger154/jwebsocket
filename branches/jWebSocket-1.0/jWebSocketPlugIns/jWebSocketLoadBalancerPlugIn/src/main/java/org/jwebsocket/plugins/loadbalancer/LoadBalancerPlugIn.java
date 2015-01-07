@@ -160,11 +160,17 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 					// automatically registering service endpoint
 					if (aConnector.getId().equals(lGrantedId)) {
 						lC.registerEndPoint(aConnector);
-					}
 
-					if (mLog.isDebugEnabled()) {
-						mLog.info("Granted EndPoint('" + lGrantedId + "') has been automatically "
-								+ "registered as service on cluster: " + lC.getAlias());
+						Token lEvent = TokenFactory.createToken(NS_LOADBALANCER, "response");
+						lEvent.setString("reqType", "registerServiceEndPoint");
+						lEvent.setInteger("utid", 0);
+						lEvent.setCode(0);
+						sendToken(aConnector, lEvent);
+
+						if (mLog.isDebugEnabled()) {
+							mLog.info("Granted EndPoint('" + lGrantedId + "') has been automatically "
+									+ "registered as service on cluster: " + lC.getAlias());
+						}
 					}
 				}
 			}
@@ -399,13 +405,12 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 *
 	 * @param aConnector
 	 * @param aToken
+	 * @param aCluster
 	 */
-	public void sendToService(final WebSocketConnector aConnector, final Token aToken) {
+	public void sendToService(final WebSocketConnector aConnector, final Token aToken, final ICluster aCluster) {
 		aToken.setString("sourceId", aConnector.getId());
-		String lNS = aToken.getNS();
 
-		final IClusterEndPoint lEndPoint = mClusterManager.getOptimumServiceEndPoint(lNS);
-
+		final IClusterEndPoint lEndPoint = mClusterManager.getOptimumServiceEndPoint(aCluster);
 		if (null != lEndPoint) {
 			final WebSocketConnector lConnector = getConnector(lEndPoint.getConnectorId());
 
@@ -430,7 +435,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 						}
 
 						// call again
-						sendToService(aConnector, aToken);
+						sendToService(aConnector, aToken, aCluster);
 					}
 
 					@Override
@@ -487,8 +492,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 * @param aNS
 	 * @return
 	 */
-	public boolean isNamespaceSupported(String aNS) {
-		return mClusterManager.isNamespaceSupported(aNS);
+	public ICluster getClusterByNamespace(String aNS) {
+		return mClusterManager.getClusterByNamespace(aNS);
 	}
 
 	boolean isAliasSupported(String aAliasName) {
