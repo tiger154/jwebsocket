@@ -18,10 +18,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.gateway;
 
-import java.util.Map;
+import java.util.Iterator;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javolution.util.FastMap;
 import org.apache.activemq.command.ActiveMQMessage;
 import org.apache.activemq.command.ConnectionInfo;
 import org.apache.activemq.command.ConsumerId;
@@ -31,6 +31,7 @@ import org.apache.activemq.command.ProducerInfo;
 import org.apache.activemq.command.RemoveInfo;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.logging.Logging;
@@ -51,7 +52,6 @@ public class JMSAdvisoryListener implements MessageListener {
 	private final boolean mBroadcastEvents;
 	private final JMSEngine mEngine;
 	private final JMSSender mJMSSender;
-	private final Map<String, String> mEndPoints = new FastMap<String, String>();
 
 	/**
 	 *
@@ -103,39 +103,26 @@ public class JMSAdvisoryListener implements MessageListener {
 							}
 							ConsumerInfo lConsumer = (ConsumerInfo) lMessage.getDataStructure();
 							String lConnectionId = lConsumer.getConsumerId().getConnectionId();
-							String lEndPointId = lConsumer.getSelector();
-							if (null == lEndPointId) {
-								lEndPointId = lConnectionId;
-							} else {
-								int lStart = lEndPointId.indexOf("'");
-								int lEnd = lEndPointId.indexOf("'", lStart + 1);
-								lEndPointId = lEndPointId.substring(lStart + 1, lEnd);
-							}
+							String lEndPointId = lConnectionId.split("-", 2)[0];
 
 							// add connector if not event from the gateway itself.
 							if (null != lEndPointId) {
 								if (lEndPointId.equals(mJMSSender.getEndPointId())) {
 									if (mLog.isInfoEnabled()) {
 										mLog.info("JMS Gateway successfully connected to broker.");
+
+										broadcastIdentifyMessage();
 									}
 								} else {
-									// supporting reconnections
-									boolean lConnectionExists = false;
-									for (Map.Entry<String, String> lRegistration : mEndPoints.entrySet()) {
-										if (lEndPointId.equals(lRegistration.getValue())) {
-											// connection already exists, supporting reconnection
-											mEndPoints.remove(lRegistration.getKey());
-											mEndPoints.put(lConnectionId, lEndPointId);
-											lConnectionExists = true;
-											break;
-										}
-									}
-
-									if (!lConnectionExists) {
+									JMSConnector lConnector = (JMSConnector) mEngine.getConnectorById(lEndPointId);
+									if (null != lConnector) {
+										// is a remote client reconnection
+										lConnector.setConnectionId(lConnectionId);
+									} else {
 										// registrating new remote client
-										mEndPoints.put(lConnectionId, lEndPointId);
-										WebSocketConnector lConnector = new JMSConnector(mEngine,
+										lConnector = new JMSConnector(mEngine,
 												mJMSSender, lConnectionId, lEndPointId);
+
 										if (mLog.isDebugEnabled()) {
 											mLog.debug("Adding connector '"
 													+ lEndPointId + "' to JMS engine...");
@@ -171,11 +158,10 @@ public class JMSAdvisoryListener implements MessageListener {
 							DataStructure lDS = lRemove.getObjectId();
 							if (lDS instanceof ConsumerId) {
 								String lConnectionId = ((ConsumerId) lDS).getConnectionId();
-								String lEndPointId = mEndPoints.get(lConnectionId);
+								String lEndPointId = lConnectionId.split("-", 2)[0];
 								WebSocketConnector lConnector = null;
 								if (null != lEndPointId) {
 									lConnector = mEngine.getConnectors().get(lEndPointId);
-									mEndPoints.remove(lConnectionId);
 								}
 								if (null != lConnector) {
 									mEngine.removeConnector(lConnector);
@@ -223,6 +209,20 @@ public class JMSAdvisoryListener implements MessageListener {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Send the "identify" command to all connected clients
+	 */
+	private void broadcastIdentifyMessage() {
+		Token lIdentify = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE + ".jms.gateway", "identify");
+		lIdentify.setString("sourceId", getSender().getEndPointId());
+		
+		try {
+			getSender().sendText("*", JSONProcessor.tokenToPacket(lIdentify).getString());
+		} catch (JMSException lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "sending identify broadcast to all connected endpoints"));
+		}
 	}
 
 	/**

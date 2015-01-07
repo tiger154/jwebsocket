@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.gateway;
 
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.UUID;
 import javax.jms.JMSException;
@@ -33,22 +34,23 @@ import org.jwebsocket.kit.WebSocketSession;
  * JMS Gateway Connector, the WebSocket Connector Pendant
  *
  * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class JMSConnector extends BaseConnector {
 
 	JMSSender mJMSSender = null;
 	private String mTargetId = "-";
-	private String mRemoteHost = "-";
+	private String mConnectionId;
 
 	/**
 	 *
 	 * @param aEngine
 	 * @param aJMSSender
-	 * @param aRemoteHost
+	 * @param aConnectionId
 	 * @param aTargetId
 	 */
 	public JMSConnector(WebSocketEngine aEngine, JMSSender aJMSSender,
-			String aRemoteHost, String aTargetId) {
+			String aConnectionId, String aTargetId) {
 		super(aEngine);
 
 		mJMSSender = aJMSSender;
@@ -63,13 +65,13 @@ public class JMSConnector extends BaseConnector {
 		lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
 		setHeader(lHeader);
 
-		mRemoteHost = aRemoteHost;
+		mConnectionId = aConnectionId;
 		mTargetId = aTargetId;
 
 		// specify the gateway per connector, 
 		// we might have multiple jWebSocket instances connected to a queue
 		setVar("$gatewayId", mJMSSender.getEndPointId());
-		
+
 		// specifying the client type by default
 		setVar("jwsType", "java");
 	}
@@ -84,14 +86,24 @@ public class JMSConnector extends BaseConnector {
 		return false;
 	}
 
-//	@Override
-//	public InetAddress getRemoteHost() {
-//		try {
-//			return InetAddress.getByName(mRemoteHost);
-//		} catch (UnknownHostException lEx) {
-//			return null;
-//		}
-//	}
+	/**
+	 * Set the remote client connection id value.
+	 *
+	 * @param aConnectionId
+	 */
+	public void setConnectionId(String aConnectionId) {
+		mConnectionId = aConnectionId;
+	}
+
+	/**
+	 * Get the remote client connection id value.
+	 *
+	 * @return
+	 */
+	public String getConnectionId() {
+		return mConnectionId;
+	}
+
 	@Override
 	public void sendPacket(final WebSocketPacket aDataPacket) {
 		try {
