@@ -43,6 +43,8 @@ public class JWSEndPoint extends JMSEndPoint {
 
 	private JWSEndPointSender mSender;
 
+	private JWSLoadBalancerCpuUpdater mCpuUpdater;
+
 	/**
 	 *
 	 */
@@ -149,17 +151,16 @@ public class JWSEndPoint extends JMSEndPoint {
 	}
 
 	/**
-	 * Adds a new listener to listen to requests from other endpoints. You can
-	 * only assign one request listener per name space / type combination. If
-	 * you register a listener that already exists, this will overwrite the
-	 * previous one. A request token usually contains a name space, a type, a
-	 * unique token-id an additional arbitrary payload. The entire token is
-	 * passed to the listener to process it according to the application needs.
+	 * Adds a new listener to listen to requests from other endpoints. You can only assign one
+	 * request listener per name space / type combination. If you register a listener that already
+	 * exists, this will overwrite the previous one. A request token usually contains a name space,
+	 * a type, a unique token-id an additional arbitrary payload. The entire token is passed to the
+	 * listener to process it according to the application needs.
 	 *
 	 * @param aNS the name space of the request to listen on
 	 * @param aType the type of the request to listen on
-	 * @param aListener the actual listener instance, must implement the
-	 * IJWSMessageListener interface
+	 * @param aListener the actual listener instance, must implement the IJWSMessageListener
+	 * interface
 	 */
 	public void addRequestListener(String aNS, String aType,
 			IJWSMessageListener aListener) {
@@ -170,9 +171,8 @@ public class JWSEndPoint extends JMSEndPoint {
 	}
 
 	/**
-	 * Removes an existing request listener from the endpoint. After that the
-	 * listener is not invoked anymore, such that the application will not react
-	 * anymore on the specified requests.
+	 * Removes an existing request listener from the endpoint. After that the listener is not
+	 * invoked anymore, such that the application will not react anymore on the specified requests.
 	 *
 	 * @param aNS the name space of the request to listen on
 	 * @param aType the type of the request to listen on
@@ -187,32 +187,29 @@ public class JWSEndPoint extends JMSEndPoint {
 	}
 
 	/**
-	 * Checks if a request listener for a certain name space / type combination
-	 * is already registered for the endpoint.
+	 * Checks if a request listener for a certain name space / type combination is already
+	 * registered for the endpoint.
 	 *
 	 * @param aNS the name space of the request to listen on
 	 * @param aType the type of the request to listen on
-	 * @return <tt>true</tt>if already a listener exists with the given name
-	 * space / type combination, otherwise <tt>false</tt>.
+	 * @return <tt>true</tt>if already a listener exists with the given name space / type
+	 * combination, otherwise <tt>false</tt>.
 	 */
 	public boolean hasRequestListener(String aNS, String aType) {
 		return mListener.hasRequestListener(aNS, aType);
 	}
 
 	/**
-	 * Adds a new listener to listen to responses from other endpoints. You can
-	 * only assign one response listener per name space / type combination. If
-	 * you register a listener that already exists, this will overwrite the
-	 * previous one. A response token usually contains a name space, a reqType,
-	 * a unique token-id, the type "response" and an additional arbitrary
-	 * payload. The entire token is passed to the listener to process it
-	 * according to the application needs.
+	 * Adds a new listener to listen to responses from other endpoints. You can only assign one
+	 * response listener per name space / type combination. If you register a listener that already
+	 * exists, this will overwrite the previous one. A response token usually contains a name space,
+	 * a reqType, a unique token-id, the type "response" and an additional arbitrary payload. The
+	 * entire token is passed to the listener to process it according to the application needs.
 	 *
 	 * @param aNS the name space of the request to listen on
-	 * @param aReqType the type of the response (type of the previous request)
-	 * to listen on
-	 * @param aListener the actual listener instance, must implement the
-	 * IJWSMessageListener interface
+	 * @param aReqType the type of the response (type of the previous request) to listen on
+	 * @param aListener the actual listener instance, must implement the IJWSMessageListener
+	 * interface
 	 */
 	public void addResponseListener(String aNS, String aReqType,
 			IJWSMessageListener aListener) {
@@ -223,13 +220,11 @@ public class JWSEndPoint extends JMSEndPoint {
 	}
 
 	/**
-	 * Removes an existing response listener from the endpoint. After that the
-	 * listener is not invoked anymore, such that the application will not react
-	 * anymore on the specified responses.
+	 * Removes an existing response listener from the endpoint. After that the listener is not
+	 * invoked anymore, such that the application will not react anymore on the specified responses.
 	 *
 	 * @param aNS the name space of the request to listen on
-	 * @param aReqType the type of the response (type of the previous request)
-	 * to listen on
+	 * @param aReqType the type of the response (type of the previous request) to listen on
 	 * @return the reference the listener object if such, otherwise
 	 * <tt>null</tt>.
 	 */
@@ -241,13 +236,13 @@ public class JWSEndPoint extends JMSEndPoint {
 	}
 
 	/**
-	 * Checks if a response listener for a certain name space / type combination
-	 * is already registered for the endpoint.
+	 * Checks if a response listener for a certain name space / type combination is already
+	 * registered for the endpoint.
 	 *
 	 * @param aNS the name space of the request to listen on
 	 * @param aReqType the type of the request to listen on
-	 * @return <tt>true</tt>if already a listener exists with the given name
-	 * space / type combination, otherwise <tt>false</tt>.
+	 * @return <tt>true</tt>if already a listener exists with the given name space / type
+	 * combination, otherwise <tt>false</tt>.
 	 */
 	public boolean hasResponseListener(String aNS, String aReqType) {
 		return mListener.hasResponseListener(aNS, aReqType);
@@ -401,7 +396,7 @@ public class JWSEndPoint extends JMSEndPoint {
 	 * @param aTargetId
 	 * @param aCpuUsage
 	 */
-	public void sendCpuUsageToLoadBalancer(String aTargetId, double aCpuUsage) {
+	protected void sendCpuUsageToLoadBalancer(String aTargetId, double aCpuUsage) {
 		try {
 			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "updateCpuUsage");
 			lToken.setDouble("usage", Tools.getCpuUsage());
@@ -421,7 +416,7 @@ public class JWSEndPoint extends JMSEndPoint {
 	public void sendToken(String aTargetId, Token aToken) {
 		getSender().sendToken(aTargetId, aToken);
 	}
-	
+
 	/**
 	 * Sends a JSON token as text message to the given target endpoint.
 	 *
@@ -432,7 +427,7 @@ public class JWSEndPoint extends JMSEndPoint {
 	public void sendToken(String aTargetId, Token aToken, JWSResponseTokenListener aResponseListener) {
 		getSender().sendToken(aTargetId, aToken, aResponseListener);
 	}
-	
+
 	/**
 	 * Sends a JSON token as text message to the given target endpoint.
 	 *
@@ -443,5 +438,29 @@ public class JWSEndPoint extends JMSEndPoint {
 	 */
 	public void sendToken(String aTargetId, Token aToken, JWSResponseTokenListener aResponseListener, long aTimeout) {
 		getSender().sendToken(aTargetId, aToken, aResponseListener, aTimeout);
+	}
+
+	@Override
+	public void start() {
+		// transparently support LB plug-in integration
+		if (null == mCpuUpdater) {
+			mCpuUpdater = new JWSLoadBalancerCpuUpdater(this, getGatewayId());
+			mCpuUpdater.autoStart();
+		}
+
+		super.start();
+	}
+
+	/**
+	 * Set the LoadBalancer CPU updater timeout interval.
+	 *
+	 * @param aTimeInterval The time interval that is used to send the endpoint CPU statistics to
+	 * the Load Balancer
+	 */
+	public void setLoadBalancerCpuUpdaterInternal(long aTimeInterval) {
+		if (null == mCpuUpdater) {
+			throw new RuntimeException("The JWSEndPoint instance is not started yet!");
+		}
+		mCpuUpdater.setTimeInterval(aTimeInterval);
 	}
 }
