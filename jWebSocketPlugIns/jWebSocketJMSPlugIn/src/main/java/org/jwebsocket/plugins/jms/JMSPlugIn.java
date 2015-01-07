@@ -166,6 +166,7 @@ public class JMSPlugIn extends TokenPlugIn {
 		mAdvisoryTopicId = mSettings.getAdvisoryTopic();
 
 		mConnectionFactory = new ActiveMQConnectionFactory(mBrokerURI);
+		mConnectionFactory.setConnectionIDPrefix(mEndPointId);
 		try {
 			// registering JMSEngine once JMS connection is already started
 			Map<String, WebSocketEngine> lEngines = JWebSocketFactory.getEngines();
