@@ -25,6 +25,7 @@ import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
+import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.token.Token;
 import org.springframework.util.Assert;
 
@@ -76,14 +77,15 @@ public class LoadBalancerFilter extends TokenFilter {
 				}
 			}
 		}
-		
-		if (mLoadBalancerPlugIn.isNamespaceSupported(aToken.getNS())) {
+
+		ICluster lCluster = mLoadBalancerPlugIn.getClusterByNamespace(aToken.getNS());
+		if (null != lCluster) {
 			// redirect token
 			if (null != aToken.getInteger("utid", null)) {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Redirecting incoming token to the load balancer plug-in...");
 				}
-				mLoadBalancerPlugIn.sendToService(aConnector, aToken);
+				mLoadBalancerPlugIn.sendToService(aConnector, aToken, lCluster);
 
 				// stop token propagation
 				aResponse.rejectMessage();
