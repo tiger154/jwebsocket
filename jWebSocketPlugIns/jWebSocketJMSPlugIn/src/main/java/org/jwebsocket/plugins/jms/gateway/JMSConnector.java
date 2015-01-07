@@ -69,6 +69,9 @@ public class JMSConnector extends BaseConnector {
 		// specify the gateway per connector, 
 		// we might have multiple jWebSocket instances connected to a queue
 		setVar("$gatewayId", mJMSSender.getEndPointId());
+		
+		// specifying the client type by default
+		setVar("jwsType", "java");
 	}
 
 	@Override
