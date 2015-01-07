@@ -33,10 +33,10 @@ public class JWSLoadBalancerCpuUpdater {
 	private JWSEndPoint mEP;
 	private String mTargetId;
 	private boolean mIsServiceEndPoint = false;
-	private Long mTimeInterval = new Long(1500);
+	private Long mTimeInterval = new Long(3000);
 
 	/**
-	 * Default time interval is 1500 ms.
+	 * Default time interval is 3000 ms.
 	 *
 	 * @param aEP The jWebSocket endpoint instance
 	 * @param aTargetId The target gateway identifier
