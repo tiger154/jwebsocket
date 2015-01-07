@@ -156,6 +156,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
 								+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
 								+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+								+ ",\"connectionId\":\"" + getJMSEndPoint().getConnectionId() + "\""
 								+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
 								+ "}";
 						if (null != lGatewayId) {
@@ -181,8 +182,10 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
 								+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
 								+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+								+ ",\"connectionId\":\"" + getJMSEndPoint().getConnectionId() + "\""
 								+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
 								+ "}";
+						
 						if (null != lGatewayId) {
 							getSender().sendText(lGatewayId,
 									"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","

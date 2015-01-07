@@ -29,6 +29,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
+import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 import org.jwebsocket.util.Tools;
@@ -90,6 +91,7 @@ public class JMSEndPoint {
 			boolean aDurable) throws JMSException {
 		// instantiate connection factory for ActiveMQ broker
 		mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
+		mConnectionFactory.setConnectionIDPrefix(aEndPointId);
 		// save endpoint id 
 		mEndPointId = aEndPointId;
 		// save gateway id 
@@ -97,6 +99,7 @@ public class JMSEndPoint {
 		// create the connection object
 		mConnection = mConnectionFactory.createConnection();
 		mConnection.setClientID(aEndPointId);
+
 		// create a session for this connection
 		mSession = mConnection.createSession(false,
 				Session.AUTO_ACKNOWLEDGE);
@@ -377,4 +380,7 @@ public class JMSEndPoint {
 		return mProducer;
 	}
 
+	public String getConnectionId() {
+		return ((ActiveMQConnection)mConnection).getConnectionInfo().getConnectionId().toString();
+	}
 }
