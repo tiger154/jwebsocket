@@ -25,6 +25,7 @@ import javolution.util.FastList;
 import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -92,7 +93,7 @@ public class MemoryClusterManager implements IClusterManager {
 	@Override
 	public ICluster getClusterByNamespace(String aNS) {
 		for (ICluster lC : mClusters) {
-			if (lC.getNamespace().equals(aNS)) {
+			if (Tools.wildCardMatch(aNS, lC.getNamespace().split(","))) {
 				return lC;
 			}
 		}
@@ -110,7 +111,7 @@ public class MemoryClusterManager implements IClusterManager {
 	@Override
 	public boolean isNamespaceSupported(String aNS) {
 		for (ICluster lC : mClusters) {
-			if (lC.getNamespace().equals(aNS)) {
+			if (Tools.wildCardMatch(aNS, lC.getNamespace().split(","))) {
 				return true;
 			}
 		}
@@ -121,13 +122,19 @@ public class MemoryClusterManager implements IClusterManager {
 	@Override
 	public IClusterEndPoint getOptimumServiceEndPoint(String aNS) {
 		ICluster lCluster = getClusterByNamespace(aNS);
-		if (lCluster.isEndPointAvailable()) {
+
+		return getOptimumServiceEndPoint(lCluster);
+	}
+
+	@Override
+	public IClusterEndPoint getOptimumServiceEndPoint(ICluster aCluster) {
+		if (aCluster.isEndPointAvailable()) {
 			if (getBalancerAlgorithm() == 1) {
-				return lCluster.getRoundRobinEndPoint();
+				return aCluster.getRoundRobinEndPoint();
 			} else if (getBalancerAlgorithm() == 2) {
-				return lCluster.getOptimumEndPoint();
+				return aCluster.getOptimumEndPoint();
 			} else {
-				return lCluster.getOptimumRREndPoint();
+				return aCluster.getOptimumRREndPoint();
 			}
 		} else {
 			return null;

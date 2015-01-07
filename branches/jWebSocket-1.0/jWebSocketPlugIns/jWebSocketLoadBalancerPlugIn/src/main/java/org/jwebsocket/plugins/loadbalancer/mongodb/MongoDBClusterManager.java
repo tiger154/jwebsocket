@@ -32,6 +32,7 @@ import static org.jwebsocket.plugins.loadbalancer.api.Attributes.*;
 import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -132,7 +133,18 @@ public class MongoDBClusterManager implements IClusterManager, IInitializable {
 
 	@Override
 	public ICluster getClusterByNamespace(String aNS) {
-		return toCluster(mClusters.findOne(new BasicDBObject().append(CLUSTER_NS, aNS)));
+		DBCursor lIt = mClusters.find(new BasicDBObject(), new BasicDBObject().append(CLUSTER_NS, 1));
+		while (lIt.hasNext()) {
+			DBObject lC = lIt.next();
+			String lNS = (String) lC.get(CLUSTER_NS);
+
+			if (Tools.wildCardMatch(aNS, lNS.split(","))) {
+				BasicDBObject lCriteria = new BasicDBObject().append("_id", lC.get("_id"));
+				return toCluster(mClusters.findOne(lCriteria));
+			}
+		}
+
+		return null;
 	}
 
 	@Override
@@ -143,19 +155,35 @@ public class MongoDBClusterManager implements IClusterManager, IInitializable {
 
 	@Override
 	public boolean isNamespaceSupported(String aNS) {
-		return mClusters.count(new BasicDBObject().append(CLUSTER_NS, aNS)) > 0;
+		DBCursor lIt = mClusters.find(new BasicDBObject(), new BasicDBObject().append(CLUSTER_NS, 1));
+		while (lIt.hasNext()) {
+			DBObject lC = lIt.next();
+			String lNS = (String) lC.get(CLUSTER_NS);
+
+			if (Tools.wildCardMatch(aNS, lNS.split(","))) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
 	public IClusterEndPoint getOptimumServiceEndPoint(String aNS) {
 		ICluster lCluster = getClusterByNamespace(aNS);
-		if (lCluster.isEndPointAvailable()) {
+
+		return getOptimumServiceEndPoint(lCluster);
+	}
+
+	@Override
+	public IClusterEndPoint getOptimumServiceEndPoint(ICluster aCluster) {
+		if (aCluster.isEndPointAvailable()) {
 			if (getBalancerAlgorithm() == 1) {
-				return lCluster.getRoundRobinEndPoint();
+				return aCluster.getRoundRobinEndPoint();
 			} else if (getBalancerAlgorithm() == 2) {
-				return lCluster.getOptimumEndPoint();
+				return aCluster.getOptimumEndPoint();
 			} else {
-				return lCluster.getOptimumRREndPoint();
+				return aCluster.getOptimumRREndPoint();
 			}
 		} else {
 			return null;
@@ -171,8 +199,7 @@ public class MongoDBClusterManager implements IClusterManager, IInitializable {
 	@Override
 	public void initialize() throws Exception {
 		mClusters.createIndex(new BasicDBObject()
-				.append(CLUSTER_ALIAS, 1)
-				.append(CLUSTER_NS, 1),
+				.append(CLUSTER_ALIAS, 1),
 				new BasicDBObject().append("unique", true));
 
 		mEndPoints.createIndex(new BasicDBObject()

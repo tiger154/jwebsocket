@@ -146,6 +146,14 @@ public interface IClusterManager {
 	 * @return
 	 */
 	IClusterEndPoint getOptimumServiceEndPoint(String aNS);
+	
+	/**
+	 * Get the optimum end-point from a given cluster instance. The load balancer algorithm value is used.
+	 *
+	 * @param aCluster
+	 * @return
+	 */
+	IClusterEndPoint getOptimumServiceEndPoint(ICluster aCluster);
 
 	/**
 	 * Remove all end-points were the client connector matches the given
