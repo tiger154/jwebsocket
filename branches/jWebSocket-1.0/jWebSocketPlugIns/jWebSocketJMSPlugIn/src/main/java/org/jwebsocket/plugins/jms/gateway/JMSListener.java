@@ -142,6 +142,17 @@ public class JMSListener implements MessageListener {
 							} else {
 								mJMSSender.sendText(lToken.getString("sourceId"), lData);
 							}
+						} else if ("response".equals(lType)) {
+							if ("identify".equals(lToken.getString("reqType"))) {
+								String lConnectionId = lToken.getString("connectionId");
+								String lEndPointId = lConnectionId.split("-", 2)[0];
+								if (null != lEndPointId && null == mEngine.getConnectorById(lEndPointId)) {
+									getEngine().addConnector(new JMSConnector(mEngine, mJMSSender, lConnectionId, lEndPointId));
+									if (mLog.isInfoEnabled()) {
+										mLog.info("Remote client '" + lEndPointId + "' reconnected successfully!");
+									}
+								}
+							}
 						} else if ("identify".equals(lType)) {
 							String lGatewayId = lToken.getString("gatewayId");
 							if (mLog.isInfoEnabled()) {
