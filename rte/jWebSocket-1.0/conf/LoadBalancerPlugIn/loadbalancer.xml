@@ -2,7 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
 	
-	<!-- Service Cluster 1 definition -->
+	<!-- Service Cluster 0 definition -->
 	<bean id="jmsServerCluster" class="org.jwebsocket.plugins.loadbalancer.memory.MemoryCluster">
 		<!-- plan password value: 'admin' -->
 		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
@@ -40,7 +40,7 @@
 		<!-- plan password value: 'admin' -->
 		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
 		<property name="alias" value="clock"/>
-		<property name="namespace" value="somecompany.service.clock"/>
+		<property name="namespace" value="somecompany.service.*,com.jwebsocket.service.*"/>
 		<property name="grantedEndPoints" value="SomeCompany.Service.Node1,SomeCompany.Service.Node2"/>
 	</bean>
 	
