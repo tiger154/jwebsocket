@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.gateway;
 
-import java.util.Iterator;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -117,7 +116,7 @@ public class JMSAdvisoryListener implements MessageListener {
 									JMSConnector lConnector = (JMSConnector) mEngine.getConnectorById(lEndPointId);
 									if (null != lConnector) {
 										// is a remote client reconnection
-										lConnector.setConnectionId(lConnectionId);
+										// lConnector.setConnectionId(lConnectionId); //not necessary because the connection id remains equal
 									} else {
 										// registrating new remote client
 										lConnector = new JMSConnector(mEngine,
@@ -137,10 +136,6 @@ public class JMSAdvisoryListener implements MessageListener {
 													+ ", connection-id: '"
 													+ lConnectionId + "'.");
 										}
-										Token lToken = TokenFactory.createToken(
-												"org.jwebsocket.jms.gateway",
-												"welcome");
-										lConnector.sendPacket(JSONProcessor.tokenToPacket(lToken));
 										if (mBroadcastEvents) {
 											lBroadcastToken.setString("endPointId", lEndPointId);
 											lBroadcastToken.setString("name", "endPointConnected");
@@ -217,7 +212,7 @@ public class JMSAdvisoryListener implements MessageListener {
 	private void broadcastIdentifyMessage() {
 		Token lIdentify = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE + ".jms.gateway", "identify");
 		lIdentify.setString("sourceId", getSender().getEndPointId());
-		
+
 		try {
 			getSender().sendText("*", JSONProcessor.tokenToPacket(lIdentify).getString());
 		} catch (JMSException lEx) {
