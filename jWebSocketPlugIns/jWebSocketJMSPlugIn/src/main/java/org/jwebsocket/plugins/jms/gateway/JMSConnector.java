@@ -18,9 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.gateway;
 
-import java.net.InetAddress;
 import java.util.Map;
-import java.util.UUID;
 import javax.jms.JMSException;
 import javolution.util.FastMap;
 import org.jwebsocket.api.WebSocketEngine;
@@ -29,6 +27,7 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.kit.WebSocketSession;
+import org.jwebsocket.util.Tools;
 
 /**
  * JMS Gateway Connector, the WebSocket Connector Pendant
@@ -56,12 +55,11 @@ public class JMSConnector extends BaseConnector {
 		mJMSSender = aJMSSender;
 
 		WebSocketSession lSession = getSession();
-		lSession.setSessionId(UUID.randomUUID().toString());
+		lSession.setSessionId(Tools.getMD5(aConnectionId));
 
 		RequestHeader lHeader = new RequestHeader();
 		lHeader.put(RequestHeader.WS_PROTOCOL, "org.jwebsocket.json");
 		Map<String, String> lCookiesMap = new FastMap<String, String>().shared();
-		lCookiesMap.put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, lSession.getSessionId());
 		lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
 		setHeader(lHeader);
 

@@ -147,7 +147,8 @@ public class JMSListener implements MessageListener {
 								String lConnectionId = lToken.getString("connectionId");
 								String lEndPointId = lConnectionId.split("-", 2)[0];
 								if (null != lEndPointId && null == mEngine.getConnectorById(lEndPointId)) {
-									getEngine().addConnector(new JMSConnector(mEngine, mJMSSender, lConnectionId, lEndPointId));
+									JMSConnector lConnector = new JMSConnector(mEngine, mJMSSender, lConnectionId, lEndPointId);
+									lConnector.startConnector();
 									if (mLog.isInfoEnabled()) {
 										mLog.info("Remote client '" + lEndPointId + "' reconnected successfully!");
 									}
