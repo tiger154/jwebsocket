@@ -47,10 +47,12 @@ import org.jwebsocket.jms.endpoint.JWSEndPoint;
 import org.jwebsocket.jms.endpoint.JWSResponseTokenListener;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.jms.gateway.JMSAdvisoryListener;
+import org.jwebsocket.plugins.jms.gateway.JMSConnector;
 import org.jwebsocket.plugins.jms.gateway.JMSEngine;
 import org.jwebsocket.plugins.jms.gateway.JMSListener;
 import org.jwebsocket.plugins.jms.gateway.JMSLogger;
@@ -83,7 +85,7 @@ public class JMSPlugIn extends TokenPlugIn {
 	private JMSEngine mJMSEngine = null;
 	private ActiveMQConnectionFactory mConnectionFactory;
 	private Connection mConnection;
-	private Session mSession;
+	private Session mConsumerSession, mProducerSession;
 	private MessageConsumer mConsumer;
 	private JMSLogger mJMSLogger;
 	private MessageProducer mProducer;
@@ -167,6 +169,7 @@ public class JMSPlugIn extends TokenPlugIn {
 
 		mConnectionFactory = new ActiveMQConnectionFactory(mBrokerURI);
 		mConnectionFactory.setConnectionIDPrefix(mEndPointId);
+
 		try {
 			// registering JMSEngine once JMS connection is already started
 			Map<String, WebSocketEngine> lEngines = JWebSocketFactory.getEngines();
@@ -185,45 +188,23 @@ public class JMSPlugIn extends TokenPlugIn {
 
 			// setting the clientID is required for durable subscribers as well as to avoid/identify multiple endpoints with same endpoint id
 			mConnection.setClientID(mEndPointId);
-			
+
 			// if we detect a duplicate endpoint id this start operation
 			// will fail and cause an exception, such that we cannot
 			// connect to the queue or topic.
 			mConnection.start();
-			
 
-			mSession = mConnection.createSession(false,
+			mConsumerSession = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
-			
+			mProducerSession = mConnection.createSession(false,
+					Session.AUTO_ACKNOWLEDGE);
 
-			mGatewayTopic = mSession.createTopic(mGatewayTopicId);
-			mProducer = mSession.createProducer(mGatewayTopic);
-			mSender = new JMSSender(mSession, mProducer, mEndPointId);
+			mGatewayTopic = mConsumerSession.createTopic(mGatewayTopicId);
+			mProducer = mProducerSession.createProducer(mGatewayTopic);
+			mSender = new JMSSender(mConsumerSession, mProducer, mEndPointId);
 
-			// we use a durable subscriber here to allow a restart 
-			// of the jWebSocket server instance.
-			mConsumer = // mSession.createDurableSubscriber(
-					mSession.createConsumer(
-							mGatewayTopic,
-							"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
-			mListener = new JMSListener(mJMSEngine, mSender);
-			mConsumer.setMessageListener(mListener);
-
-			// create the listener to the advisory topic
-			Topic lAdvisoryTopic = mSession.createTopic(mAdvisoryTopicId);
-			mAdvisoryConsumer = mSession.createConsumer(lAdvisoryTopic);
-			JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
-					this, mJMSEngine, mSender, mSettings.getBroadcastAdvisoryEvents());
-			mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
-
-			/*
-			 Topic lConnectionTopic = mSession.createTopic("ActiveMQ.Advisory.Connection");
-			 MessageConsumer mConnectionConsumer = mSession.createConsumer(lConnectionTopic);
-			 mConnectionConsumer.setMessageListener(lAdvisoryListener);
-			 */
-			if (mSettings.getLoggerActive()) {
-				mJMSLogger = new JMSLogger(mConnection, new Destination[]{mGatewayTopic, lAdvisoryTopic});
-			}
+			// creating message consumers
+			createConsumers();
 
 			// give a success message to the administrator
 			if (mLog.isInfoEnabled()) {
@@ -264,6 +245,33 @@ public class JMSPlugIn extends TokenPlugIn {
 		}
 	}
 
+	private void createConsumers() throws JMSException {
+		// we use a durable subscriber here to allow a restart 
+		// of the jWebSocket server instance.
+		mConsumer = // mSession.createDurableSubscriber(
+				mConsumerSession.createConsumer(
+						mGatewayTopic,
+						"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
+		mListener = new JMSListener(mJMSEngine, mSender);
+		mConsumer.setMessageListener(mListener);
+
+		// create the listener to the advisory topic
+		Topic lAdvisoryTopic = mConsumerSession.createTopic(mAdvisoryTopicId);
+		mAdvisoryConsumer = mConsumerSession.createConsumer(lAdvisoryTopic);
+		JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
+				this, mJMSEngine, mSender, mSettings.getBroadcastAdvisoryEvents());
+		mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
+
+		/*
+		 Topic lConnectionTopic = mSession.createTopic("ActiveMQ.Advisory.Connection");
+		 MessageConsumer mConnectionConsumer = mSession.createConsumer(lConnectionTopic);
+		 mConnectionConsumer.setMessageListener(lAdvisoryListener);
+		 */
+		if (mSettings.getLoggerActive()) {
+			mJMSLogger = new JMSLogger(mConnection, new Destination[]{mGatewayTopic, lAdvisoryTopic});
+		}
+	}
+
 	@Override
 	public String getVersion() {
 		return VERSION;
@@ -299,6 +307,16 @@ public class JMSPlugIn extends TokenPlugIn {
 		return NS_JMS;
 	}
 
+	@Override
+	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
+		if (aConnector instanceof JMSConnector) {
+			Token lToken = TokenFactory.createToken(
+					"org.jwebsocket.jms.gateway",
+					"welcome");
+			aConnector.sendPacket(JSONProcessor.tokenToPacket(lToken));
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -332,12 +350,14 @@ public class JMSPlugIn extends TokenPlugIn {
 		if (null != mConsumer) {
 			try {
 				mConsumer.close();
+				mConsumerSession.close();
 			} catch (JMSException lEx) {
 			}
 		}
 		if (null != mProducer) {
 			try {
 				mProducer.close();
+				mProducerSession.close();
 			} catch (JMSException lEx) {
 			}
 		}
@@ -669,7 +689,7 @@ public class JMSPlugIn extends TokenPlugIn {
 	 * @return the mSession
 	 */
 	public Session getSession() {
-		return mSession;
+		return mConsumerSession;
 	}
 
 	/**
