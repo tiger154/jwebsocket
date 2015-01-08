@@ -26,6 +26,7 @@ import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.plugins.jms.JMSPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -151,16 +152,23 @@ public class JMSTransportListener implements TransportListener {
 			mLog.info("Transport resumed!");
 		}
 		mIsConnected = true;
-		Token lToken = TokenFactory.createToken(mJMSPlugIn.getNamespace(), "event");
+		final Token lToken = TokenFactory.createToken(mJMSPlugIn.getNamespace(), "event");
 		lToken.setString("name", "BrokerTransportResumed");
 		lToken.setString("gatewayTopic", mJMSPlugIn.getSpringSettings().getGatewayTopic());
 		lToken.setString("endpointId", mJMSPlugIn.getSpringSettings().getEndPointId());
 		lToken.setString("brokerURI", mJMSPlugIn.getSpringSettings().getBrokerURI());
-		mJMSPlugIn.broadcastToken(null, lToken,
-				new BroadcastOptions(
-						false, // lIsSenderIncluded, 
-						false // lIsResponseRequested)
-				));
+
+		Tools.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				mJMSPlugIn.broadcastToken(null, lToken,
+						new BroadcastOptions(
+								false, // lIsSenderIncluded, 
+								false // lIsResponseRequested)
+						));
+			}
+		}, 2000); // waiting for the complete AMQ client reconnection
 	}
-	
+
 }
