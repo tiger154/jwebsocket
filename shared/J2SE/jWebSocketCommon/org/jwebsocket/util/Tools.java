@@ -1382,4 +1382,20 @@ public class Tools {
 
 		return aResponse;
 	}
+
+	/**
+	 * Invokes a future task using a multithreading model.
+	 *
+	 * @param aRunnable
+	 * @param aTimeout
+	 */
+	public static void invokeLater(final Runnable aRunnable, int aTimeout) {
+		Tools.getTimer().schedule(new JWSTimerTask() {
+
+			@Override
+			protected void runTask() {
+				Tools.getThreadPool().submit(aRunnable);
+			}
+		}, aTimeout);
+	}
 }
