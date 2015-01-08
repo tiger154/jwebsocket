@@ -149,8 +149,8 @@ public class MongoDBClusterManager implements IClusterManager, IInitializable {
 
 	@Override
 	public void updateCpuUsage(String aConnectorId, double aCpuUsage) {
-		mClusters.updateMulti(new BasicDBObject().append(CONNECTOR_ID, aConnectorId),
-				new BasicDBObject().append(CPU, aCpuUsage));
+		mEndPoints.updateMulti(new BasicDBObject().append(CONNECTOR_ID, aConnectorId),
+				new BasicDBObject().append("$set", new BasicDBObject().append(CPU, aCpuUsage)));
 	}
 
 	@Override
