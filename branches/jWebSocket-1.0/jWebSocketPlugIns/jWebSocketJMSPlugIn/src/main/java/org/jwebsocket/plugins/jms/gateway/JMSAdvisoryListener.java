@@ -109,9 +109,9 @@ public class JMSAdvisoryListener implements MessageListener {
 								if (lEndPointId.equals(mJMSSender.getEndPointId())) {
 									if (mLog.isInfoEnabled()) {
 										mLog.info("JMS Gateway successfully connected to broker.");
-
-										broadcastIdentifyMessage();
 									}
+
+									broadcastIdentifyMessage();
 								} else {
 									JMSConnector lConnector = (JMSConnector) mEngine.getConnectorById(lEndPointId);
 									if (null != lConnector) {
