@@ -177,7 +177,7 @@
 				<ref bean="service2cluster" />
 				<ref bean="service3cluster" />
 				<ref bean="clockCluster" />
-				<ref bean="jmsDemo" />
+				<ref bean="jmsServerCluster" />
 			</list>
 		</property>
 	</bean>
