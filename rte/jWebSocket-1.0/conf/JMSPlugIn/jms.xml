@@ -57,7 +57,8 @@
 		<!-- broadcast all JMS transport listener events to connected clients -->
 		<beans:property name="broadcastTransportlisterEvents" value="true"/>
 		<beans:property name="broadcastAdvisoryEvents" value="true"/>
-
+		<!-- JMS Gateway gateway hostname. Set the used network interface ip-address here -->
+		<beans:property name="hostname" value="localhost"/>
 	</beans:bean>
 
 </beans:beans>
