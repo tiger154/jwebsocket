@@ -30,6 +30,7 @@ public abstract class BaseClusterEndPoint implements IClusterEndPoint {
 	public void writeToToken(Token aToken) {
 		aToken.setString(Attributes.GENERIC_ID_FIELD, getEndPointId());
 		aToken.setString(Attributes.STATUS, getStatus().name());
+		aToken.setString(Attributes.ENDPOINT_ID, getConnectorId());
 		aToken.setLong(Attributes.REQUESTS, getRequests());
 		if (getCpuUsage() != -1) {
 			aToken.setDouble(Attributes.CPU, getCpuUsage());
