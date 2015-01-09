@@ -23,7 +23,6 @@ import javax.jms.JMSException;
 import javolution.util.FastMap;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.kit.WebSocketSession;
@@ -71,7 +70,7 @@ public class JMSConnector extends BaseConnector {
 		setVar("$gatewayId", mJMSSender.getEndPointId());
 
 		// specifying the client type by default
-		setVar("jwsType", "java");
+		setVar("jwsType", "jms-gateway");
 	}
 
 	@Override
