@@ -22,6 +22,7 @@ package org.jwebsocket.plugins.jms;
  *
  * @author Johannes Smutny, Alexander Schulze
  */
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import javax.jms.Connection;
@@ -128,7 +129,7 @@ public class JMSPlugIn extends TokenPlugIn {
 					"instantiating JMS client."));
 		}
 	}
-
+	
 	private void init() {
 		// check if already initialized
 		if (mInitialized) {
@@ -194,6 +195,15 @@ public class JMSPlugIn extends TokenPlugIn {
 			// connect to the queue or topic.
 			mConnection.start();
 
+			// publishing global information that is required by other components
+			String lIpAddress = InetAddress.getByName(mSettings.getHostname()).getHostAddress();
+			System.setProperty("org.jwebsocket.plugins.jms.gateway.endPointId", mSettings.getEndPointId());
+			System.setProperty("org.jwebsocket.plugins.jms.gateway.connectionId", ((ActiveMQConnection) mConnection).getConnectionInfo().getConnectionId().getValue());
+			System.setProperty("org.jwebsocket.plugins.jms.gateway.hostname", InetAddress.getByName(lIpAddress).getHostName());
+			System.setProperty("org.jwebsocket.plugins.jms.gateway.canonicalHostname", InetAddress.getByName(lIpAddress).getCanonicalHostName());
+			System.setProperty("org.jwebsocket.plugins.jms.gateway.ipAddress", lIpAddress);
+
+			// creating JMS artifacts
 			mConsumerSession = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
 			mProducerSession = mConnection.createSession(false,
@@ -231,7 +241,7 @@ public class JMSPlugIn extends TokenPlugIn {
 			 }
 			 );
 			 */
-		} catch (JMSException lEx) {
+		} catch (Exception lEx) {
 			// cleanup engines and servers to allow at least other engines to run without side effects
 			Map<String, WebSocketEngine> lEngines = JWebSocketFactory.getEngines();
 			lEngines.remove(lEngineCfg.getId());
