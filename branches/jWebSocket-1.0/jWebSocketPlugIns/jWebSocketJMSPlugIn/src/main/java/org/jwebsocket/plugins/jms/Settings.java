@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.jms;
 
 import java.util.UUID;
+import org.jwebsocket.config.JWebSocketServerConstants;
 
 /**
  *
@@ -30,6 +31,7 @@ public class Settings {
 	private String mBrokerURI = null;
 	private String mGatewayTopic = null;
 	private String mAdvisoryTopic = null;
+	private String mHostname = JWebSocketServerConstants.DEFAULT_HOSTNAME;
 
 	private Boolean mLoggerActive = false;
 	private Boolean mBroadcastTransportlisterEvents = false;
@@ -131,5 +133,21 @@ public class Settings {
 	 */
 	public void setBroadcastAdvisoryEvents(Boolean aBroadcastAdvisoryEvents) {
 		mBroadcastAdvisoryEvents = aBroadcastAdvisoryEvents;
+	}
+
+	/**
+	 * 
+	 * @return 
+	 */
+	public String getHostname() {
+		return mHostname;
+	}
+
+	/**
+	 * 
+	 * @param aHostname 
+	 */
+	public void setHostname(String aHostname) {
+		mHostname = aHostname;
 	}
 }
