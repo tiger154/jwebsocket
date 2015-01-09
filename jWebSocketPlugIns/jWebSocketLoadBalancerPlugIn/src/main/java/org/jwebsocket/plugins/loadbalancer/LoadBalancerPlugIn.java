@@ -493,11 +493,16 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 * @param aNS
 	 * @return
 	 */
-	public ICluster getClusterByNamespace(String aNS) {
+	ICluster getClusterByNamespace(String aNS) {
 		return mClusterManager.getClusterByNamespace(aNS);
 	}
 
 	boolean isAliasSupported(String aAliasName) {
 		return mClusterManager.getClusterByAlias(aAliasName) != null;
+	}
+
+	boolean isEndPointAvailable(String aClusterAlias) {
+		ICluster lCluster = mClusterManager.getClusterByAlias(aClusterAlias);
+		return null != lCluster && lCluster.isEndPointAvailable();
 	}
 }
