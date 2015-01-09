@@ -18,8 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.gateway;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -101,22 +99,14 @@ public class JMSListener implements MessageListener {
 					String lNS = lToken.getNS();
 					String lType = lToken.getType();
 					if ("org.jwebsocket.jms.gateway".equals(lNS)) {
-						String lHostname, lCanonicalHostName, lIPAddress;
-						try {
-							lIPAddress = InetAddress.getLocalHost().getHostAddress();
-						} catch (UnknownHostException ex) {
-							lIPAddress = null;
-						}
-						try {
-							lHostname = InetAddress.getLocalHost().getHostName();
-						} catch (UnknownHostException ex) {
-							lHostname = null;
-						}
-						try {
-							lCanonicalHostName = InetAddress.getLocalHost().getCanonicalHostName();
-						} catch (UnknownHostException ex) {
-							lCanonicalHostName = null;
-						}
+						String lHostname, lCanonicalHostName, lIpAddress, lEndPointId, lConnectionId;
+
+						lEndPointId = System.getProperty("org.jwebsocket.plugins.jms.gateway.endPointId");
+						lConnectionId = System.getProperty("org.jwebsocket.plugins.jms.gateway.connectionId");
+						lHostname = System.getProperty("org.jwebsocket.plugins.jms.gateway.hostname");
+						lCanonicalHostName = System.getProperty("org.jwebsocket.plugins.jms.gateway.canonicalHostname");
+						lIpAddress = System.getProperty("org.jwebsocket.plugins.jms.gateway.ipAddress");
+
 						if ("ping".equals(lType)) {
 							String lGatewayId = lToken.getString("gatewayId");
 							if (mLog.isInfoEnabled()) {
@@ -127,10 +117,11 @@ public class JMSListener implements MessageListener {
 							String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
 									+ ",\"type\":\"response\",\"reqType\":\"ping\""
 									+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + lToken.getInteger("utid")
-									+ ",\"sourceId\":\"" + mJMSSender.getEndPointId() + "\""
+									+ ",\"sourceId\":\"" + lEndPointId + "\""
 									+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+									+ (null != lConnectionId ? ",\"connectionId\":\"" + lConnectionId + "\"" : "")
 									+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
-									+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+									+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
 									+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
 									+ "}";
 							if (null != lGatewayId) {
@@ -144,13 +135,13 @@ public class JMSListener implements MessageListener {
 							}
 						} else if ("response".equals(lType)) {
 							if ("identify".equals(lToken.getString("reqType"))) {
-								String lConnectionId = lToken.getString("connectionId");
-								String lEndPointId = lConnectionId.split("-", 2)[0];
-								if (null != lEndPointId && null == mEngine.getConnectorById(lEndPointId)) {
-									JMSConnector lConnector = new JMSConnector(mEngine, mJMSSender, lConnectionId, lEndPointId);
+								String lClientConnectionId = lToken.getString("connectionId");
+								String lClientEndPointId = lClientConnectionId.split("-", 2)[0];
+								if (null != lClientEndPointId && null == mEngine.getConnectorById(lClientEndPointId)) {
+									JMSConnector lConnector = new JMSConnector(mEngine, mJMSSender, lClientConnectionId, lClientEndPointId);
 									lConnector.startConnector();
 									if (mLog.isInfoEnabled()) {
-										mLog.info("Remote client '" + lEndPointId + "' reconnected successfully!");
+										mLog.info("Remote client '" + lClientEndPointId + "' reconnected successfully!");
 									}
 								}
 							}
@@ -164,10 +155,11 @@ public class JMSListener implements MessageListener {
 							String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
 									+ ",\"type\":\"response\",\"reqType\":\"identify\""
 									+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + lToken.getInteger("utid")
-									+ ",\"sourceId\":\"" + mJMSSender.getEndPointId() + "\""
+									+ ",\"sourceId\":\"" + lEndPointId + "\""
 									+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+									+ (null != lConnectionId ? ",\"connectionId\":\"" + lConnectionId + "\"" : "")
 									+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
-									+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+									+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
 									+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
 									+ "}";
 							if (null != lGatewayId) {
