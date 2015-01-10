@@ -149,11 +149,11 @@
 		</dependency>
 	</dependencies>
 	<repositories>
-		<!--  Note: this repository is used only for deployment -->
+		<!-- use the following if you're not using a snapshot version. -->
 		<repository>
-			<id>jWebSocket-Repo</id>
-			<name>jWebSocket Maven Repository</name>
-			<url>http://mvn.jwebsocket.org/</url>
+			<id>jWebSocketLocalRepo</id>
+			<name>jWebSocketLocalRepo</name>
+			<url>file:///${basedir}/../../../repo</url>
 		</repository>
 	</repositories>
 </project>
