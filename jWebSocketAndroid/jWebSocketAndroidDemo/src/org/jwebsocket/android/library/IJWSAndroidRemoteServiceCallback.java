@@ -5,7 +5,6 @@
 package org.jwebsocket.android.library;
 
 import android.os.IBinder;
-import android.os.RemoteException;
 
 /**
  *
@@ -16,7 +15,8 @@ public interface IJWSAndroidRemoteServiceCallback extends android.os.IInterface 
 	/**
 	 * Local-side IPC implementation stub class.
 	 */
-	public static abstract class Stub extends android.os.Binder implements org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback {
+	public static abstract class Stub extends android.os.Binder implements
+			org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback {
 
 		private static final java.lang.String DESCRIPTOR = "org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback";
 
@@ -34,21 +34,24 @@ public interface IJWSAndroidRemoteServiceCallback extends android.os.IInterface 
 		 * @param obj
 		 * @return
 		 */
-		public static org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback asInterface(android.os.IBinder obj) {
+		public static org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback asInterface(
+				android.os.IBinder obj) {
 			if ((obj == null)) {
 				return null;
 			}
-			android.os.IInterface iin = (android.os.IInterface) obj.queryLocalInterface(DESCRIPTOR);
+			android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
 			if (((iin != null) && (iin instanceof org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback))) {
 				return ((org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback) iin);
 			}
-			return new org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback.Stub.Proxy(obj);
+			return new org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback.Stub.Proxy(
+					obj);
 		}
 
 		/**
 		 *
 		 * @return
 		 */
+		@Override
 		public android.os.IBinder asBinder() {
 			return this;
 		}
@@ -63,7 +66,9 @@ public interface IJWSAndroidRemoteServiceCallback extends android.os.IInterface 
 		 * @throws android.os.RemoteException
 		 */
 		@Override
-		public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException {
+		public boolean onTransact(int code, android.os.Parcel data,
+				android.os.Parcel reply, int flags)
+				throws android.os.RemoteException {
 			switch (code) {
 				case INTERFACE_TRANSACTION: {
 					reply.writeString(DESCRIPTOR);
@@ -81,7 +86,8 @@ public interface IJWSAndroidRemoteServiceCallback extends android.os.IInterface 
 			return super.onTransact(code, data, reply, flags);
 		}
 
-		private static class Proxy implements org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback {
+		private static class Proxy implements
+				org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback {
 
 			private android.os.IBinder mRemote;
 
@@ -89,6 +95,7 @@ public interface IJWSAndroidRemoteServiceCallback extends android.os.IInterface 
 				mRemote = remote;
 			}
 
+			@Override
 			public android.os.IBinder asBinder() {
 				return mRemote;
 			}
@@ -97,7 +104,9 @@ public interface IJWSAndroidRemoteServiceCallback extends android.os.IInterface 
 				return DESCRIPTOR;
 			}
 
-			public void onError(java.lang.String error) throws android.os.RemoteException {
+			@Override
+			public void onError(java.lang.String error)
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
@@ -111,6 +120,7 @@ public interface IJWSAndroidRemoteServiceCallback extends android.os.IInterface 
 				}
 			}
 		}
+
 		static final int TRANSACTION_onError = (IBinder.FIRST_CALL_TRANSACTION + 0);
 	}
 
@@ -119,5 +129,6 @@ public interface IJWSAndroidRemoteServiceCallback extends android.os.IInterface 
 	 * @param error
 	 * @throws android.os.RemoteException
 	 */
-	public void onError(java.lang.String error) throws android.os.RemoteException;
+	public void onError(java.lang.String error)
+			throws android.os.RemoteException;
 }

@@ -48,23 +48,23 @@ public class TwitterStreamActivity extends ListActivity implements
 
 	private ArrayList<Tweet> mTweets = null;
 	private TweetAdapter mTweetAdapter;
-	TwitterStreamSettingsActivity lSettingsDialog;
+	TwitterStreamSettingsActivity mSettingsDialog;
 	private final int CAPACITY = 20;
-	private SharedPreferences prefs;
-	private String lKeywords;
+	private SharedPreferences mPrefs;
+	private String mKeywords;
 
 	/**
 	 *
-	 * @param icicle
+	 * @param aIcicle
 	 */
 	@Override
-	public void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
+	public void onCreate(Bundle aIcicle) {
+		super.onCreate(aIcicle);
 		setContentView(R.layout.twitter_stream_activity);
 		this.mTweets = new ArrayList<Tweet>();
 		this.mTweetAdapter = new TweetAdapter(this, R.layout.tweet_row, mTweets);
 		setListAdapter(mTweetAdapter);
-		prefs = getPreferences(MODE_PRIVATE);
+		mPrefs = getPreferences(MODE_PRIVATE);
 
 	}
 
@@ -90,18 +90,18 @@ public class TwitterStreamActivity extends ListActivity implements
 		// Handle item selection
 		switch (aItem.getItemId()) {
 			case R.id.twitterStreamSettings:
-				if (lSettingsDialog == null) {
-					lSettingsDialog =
-							new TwitterStreamSettingsActivity(this,
+				if (mSettingsDialog == null) {
+					mSettingsDialog = new TwitterStreamSettingsActivity(
+							this,
 							new TwitterStreamSettingsActivity.TwitterSettingsListener() {
 								@Override
 								public void setSettings(String keywords) {
 									savePreference(keywords);
 									setKeywords(keywords);
 								}
-							}, lKeywords);
+							}, mKeywords);
 				}
-				lSettingsDialog.show();
+				mSettingsDialog.show();
 				return true;
 			default:
 				return super.onOptionsItemSelected(aItem);
@@ -109,12 +109,14 @@ public class TwitterStreamActivity extends ListActivity implements
 	}
 
 	private void setKeywords(String aKeywords) {
-		Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.twitter", "setStream");
+		Token lToken = TokenFactory.createToken(
+				"org.jwebsocket.plugins.twitter", "setStream");
 		lToken.setString("keywords", aKeywords);
 		try {
 			JWC.sendToken(lToken);
 		} catch (WebSocketException ex) {
-			Logger.getLogger(TwitterStreamActivity.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(TwitterStreamActivity.class.getName()).log(
+					Level.SEVERE, null, ex);
 		}
 	}
 
@@ -125,9 +127,9 @@ public class TwitterStreamActivity extends ListActivity implements
 	protected void onResume() {
 		super.onResume();
 		connect();
-		lKeywords = prefs.getString("keywords", "");
-		if (!lKeywords.equals("")) {
-			setKeywords(lKeywords);
+		mKeywords = mPrefs.getString("keywords", "");
+		if (!mKeywords.equals("")) {
+			setKeywords(mKeywords);
 		}
 	}
 
@@ -142,7 +144,7 @@ public class TwitterStreamActivity extends ListActivity implements
 	}
 
 	private void savePreference(String aKeyWords) {
-		SharedPreferences.Editor lEditor = prefs.edit();
+		SharedPreferences.Editor lEditor = mPrefs.edit();
 		lEditor.putString("keywords", aKeyWords);
 		lEditor.commit();
 	}
@@ -174,16 +176,19 @@ public class TwitterStreamActivity extends ListActivity implements
 		if (aToken.getNS().equals("org.jwebsocket.plugins.twitter")
 				&& aToken.getType().equals("event")
 				&& aToken.getString("name").equals("status")) {
-			mTweets.add(0, new Tweet(aToken.getString("status"),
-					aToken.getString("userImgURL"), aToken.getString("userName")));
+			mTweets.add(
+					0,
+					new Tweet(aToken.getString("status"), aToken
+							.getString("userImgURL"), aToken
+							.getString("userName")));
 			if (mTweets.size() > CAPACITY) {
 				mTweets.remove(CAPACITY);
 			}
 
 			mTweetAdapter.notifyDataSetChanged();
 		}
-		//fillDemoTweets();
-		//throw new UnsupportedOperationException("Not supported yet.");
+		// fillDemoTweets();
+		// throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	/**
@@ -192,8 +197,7 @@ public class TwitterStreamActivity extends ListActivity implements
 	 */
 	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
-		//throw new UnsupportedOperationException("Not supported yet.");
-		int test = 1;
+		// throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	/**
@@ -202,8 +206,9 @@ public class TwitterStreamActivity extends ListActivity implements
 	 * @param aPacket
 	 */
 	@Override
-	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
-		//throw new UnsupportedOperationException("Not supported yet.");
+	public void processPacket(WebSocketClientEvent aEvent,
+			WebSocketPacket aPacket) {
+		// throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	/**
@@ -212,8 +217,7 @@ public class TwitterStreamActivity extends ListActivity implements
 	 */
 	@Override
 	public void processClosed(WebSocketClientEvent aEvent) {
-		//throw new UnsupportedOperationException("Not supported yet.");
-		int test = 1;
+		// throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	/**
@@ -228,6 +232,7 @@ public class TwitterStreamActivity extends ListActivity implements
 	 *
 	 * @param aEvent
 	 */
+	@Override
 	public void processReconnecting(WebSocketClientEvent aEvent) {
 	}
 
@@ -331,18 +336,22 @@ public class TwitterStreamActivity extends ListActivity implements
 			}
 			Tweet lTweet = mTweets.get(aPosition);
 			if (lTweet != null) {
-				TextView tweetText = (TextView) lView.findViewById(R.id.tweetTxt);
+				TextView tweetText = (TextView) lView
+						.findViewById(R.id.tweetTxt);
 				if (tweetText != null) {
 					tweetText.setText(lTweet.getTweet());
 				}
-				final ImageView lUserImage = (ImageView) lView.findViewById(R.id.userImg);
+				final ImageView lUserImage = (ImageView) lView
+						.findViewById(R.id.userImg);
 				Bitmap lCachedImage = null;
 				try {
-					lCachedImage = mImageLoader.loadImage(lTweet.mUserImgURL, new ImageLoadedListener() {
-						public void imageLoaded(Bitmap aImageBitmap) {
-							notifyDataSetChanged();
-						}
-					});
+					lCachedImage = mImageLoader.loadImage(lTweet.mUserImgURL,
+							new ImageLoadedListener() {
+								@Override
+								public void imageLoaded(Bitmap aImageBitmap) {
+									notifyDataSetChanged();
+								}
+							});
 				} catch (MalformedURLException e) {
 				}
 				if (lCachedImage != null) {
@@ -350,7 +359,6 @@ public class TwitterStreamActivity extends ListActivity implements
 				} else {
 					lUserImage.setImageBitmap(null);
 				}
-
 
 			}
 

@@ -32,10 +32,12 @@ public class ParcelableToken implements Parcelable {
 	 *
 	 */
 	public static final Parcelable.Creator<ParcelableToken> CREATOR = new Parcelable.Creator<ParcelableToken>() {
+		@Override
 		public ParcelableToken createFromParcel(Parcel in) {
 			return new ParcelableToken(in);
 		}
 
+		@Override
 		public ParcelableToken[] newArray(int size) {
 			return new ParcelableToken[size];
 		}

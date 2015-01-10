@@ -51,6 +51,7 @@ public class RPCDemoActivity extends Activity implements
 
 		ANDROID, BROWSER
 	};
+
 	private EditText classTxt;
 	private EditText methodTxt;
 	private EditText parameterTxt;
@@ -80,7 +81,7 @@ public class RPCDemoActivity extends Activity implements
 		targetLabel = (TextView) findViewById(R.id.targetLabel);
 		invokeBtn = (Button) findViewById(R.id.invokeBtn);
 		statusImage = (ImageView) findViewById(R.id.statusImage);
-//	targetRadioGroup = (RadioGroup) findViewById(R.id.radio_group);
+		// targetRadioGroup = (RadioGroup) findViewById(R.id.radio_group);
 
 		statusImage.setImageResource(R.drawable.disconnected);
 
@@ -89,20 +90,20 @@ public class RPCDemoActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				if (((CheckBox) v).isChecked()) {
-					targetTxt.setVisibility(EditText.VISIBLE);
-					targetLabel.setVisibility(TextView.VISIBLE);
-					//targetRadioGroup.setVisibility(RadioGroup.VISIBLE);
+					targetTxt.setVisibility(View.VISIBLE);
+					targetLabel.setVisibility(View.VISIBLE);
+					// targetRadioGroup.setVisibility(RadioGroup.VISIBLE);
 					useRRPC = true;
 				} else {
-					targetTxt.setVisibility(EditText.GONE);
-					targetLabel.setVisibility(TextView.GONE);
-					//targetRadioGroup.setVisibility(RadioGroup.GONE);
+					targetTxt.setVisibility(View.GONE);
+					targetLabel.setVisibility(View.GONE);
+					// targetRadioGroup.setVisibility(RadioGroup.GONE);
 					useRRPC = false;
 				}
 				predefinedValues();
 				targetLabel.invalidate();
 				targetTxt.invalidate();
-				//targetRadioGroup.invalidate();
+				// targetRadioGroup.invalidate();
 
 			}
 		});
@@ -114,11 +115,12 @@ public class RPCDemoActivity extends Activity implements
 			}
 		});
 
-//		final RadioButton radio_browser = (RadioButton) findViewById(R.id.radio_browser);
-//		final RadioButton radio_android = (RadioButton) findViewById(R.id.radio_android);
-//		radio_browser.setOnClickListener(radio_listener);
-//		radio_android.setOnClickListener(radio_listener);
-
+		// final RadioButton radio_browser = (RadioButton)
+		// findViewById(R.id.radio_browser);
+		// final RadioButton radio_android = (RadioButton)
+		// findViewById(R.id.radio_android);
+		// radio_browser.setOnClickListener(radio_listener);
+		// radio_android.setOnClickListener(radio_listener);
 	}
 
 	private void predefinedValues() {
@@ -136,19 +138,19 @@ public class RPCDemoActivity extends Activity implements
 		}
 	}
 
-//	private OnClickListener radio_listener = new OnClickListener() {
-//		public void onClick(View v) {
-//			// Perform action on clicks
-//			RadioButton rb = (RadioButton) v;
-//			if (rb.getId() == R.id.radio_android) {
-//				selectedTarget = Target.ANDROID;
-//			}
-//			if (rb.getId() == R.id.radio_browser) {
-//				selectedTarget = Target.BROWSER;
-//			}
-//			predefinedValues();
-//		}
-//	};
+	// private OnClickListener radio_listener = new OnClickListener() {
+	// public void onClick(View v) {
+	// // Perform action on clicks
+	// RadioButton rb = (RadioButton) v;
+	// if (rb.getId() == R.id.radio_android) {
+	// selectedTarget = Target.ANDROID;
+	// }
+	// if (rb.getId() == R.id.radio_browser) {
+	// selectedTarget = Target.BROWSER;
+	// }
+	// predefinedValues();
+	// }
+	// };
 	/**
 	 *
 	 * @param aMenu
@@ -187,9 +189,10 @@ public class RPCDemoActivity extends Activity implements
 
 		// If we make a simple rpc
 		if (useRRPC) {
-			new Rrpc(lClassName, lMethodName).to(lTarget).send(lParameter).call();
+			new Rrpc(lClassName, lMethodName).to(lTarget).send(lParameter)
+					.call();
 		} else {
-			//Sending "" or "null" will send null.
+			// Sending "" or "null" will send null.
 			if ("".equals(lParameter) || "null".equals(lParameter)) {
 				new Rpc(lClassName, lMethodName).call();
 			} else {
@@ -268,7 +271,8 @@ public class RPCDemoActivity extends Activity implements
 	 * @param aPacket
 	 */
 	@Override
-	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+	public void processPacket(WebSocketClientEvent aEvent,
+			WebSocketPacket aPacket) {
 	}
 
 	/**
@@ -294,13 +298,16 @@ public class RPCDemoActivity extends Activity implements
 	@Override
 	public void processReconnecting(WebSocketClientEvent aEvent) {
 	}
+
 	private static Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			Toast.makeText(
 					mContext,
-					msg.getData().get("method") + " has been called by the server (args "
-					+ msg.getData().get("args"), Toast.LENGTH_SHORT).show();
+					msg.getData().get("method")
+					+ " has been called by the server (args "
+					+ msg.getData().get("args"), Toast.LENGTH_SHORT)
+					.show();
 		}
 	};
 	private static Context mContext;

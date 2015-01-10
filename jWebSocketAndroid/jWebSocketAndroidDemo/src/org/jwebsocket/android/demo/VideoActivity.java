@@ -37,7 +37,8 @@ import org.jwebsocket.util.Tools;
  *
  * @author Alexander Schulze
  */
-public class VideoActivity extends Activity implements WebSocketClientTokenListener, SurfaceHolder.Callback {
+public class VideoActivity extends Activity implements
+		WebSocketClientTokenListener, SurfaceHolder.Callback {
 
 	private SurfaceView mSurfaceView;
 	private SurfaceHolder mSurfaceHolder;
@@ -69,6 +70,8 @@ public class VideoActivity extends Activity implements WebSocketClientTokenListe
 		mSurfaceView = (SurfaceView) findViewById(R.id.sfvCamera);
 		mSurfaceHolder = mSurfaceView.getHolder();
 		mSurfaceHolder.addCallback(this);
+		// TODO: Remove this, since this method was deprecated in API level 11
+		// http://developer.android.com/reference/android/view/SurfaceHolder.html#setType(int)
 		mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
 		// Instantiate an ImageView and define its properties
@@ -82,12 +85,17 @@ public class VideoActivity extends Activity implements WebSocketClientTokenListe
 				try {
 					// save file in public area and send notification
 					/*
-					 Bitmap lImg = BitmapFactory.decodeByteArray( aImageData, 0, aImageData.length );
-					 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					 lImg.compress(CompressFormat.PNG, 100, baos);
-					 JWC.sendFile("data:image/png;base64,", baos.toByteArray(), "frame_" + Tools.intToString(mFrameId, 4) + ".jpg", "target2");
+					 * Bitmap lImg = BitmapFactory.decodeByteArray( aImageData,
+					 * 0, aImageData.length ); ByteArrayOutputStream baos = new
+					 * ByteArrayOutputStream();
+					 * lImg.compress(CompressFormat.PNG, 100, baos);
+					 * JWC.sendFile("data:image/png;base64,",
+					 * baos.toByteArray(), "frame_" +
+					 * Tools.intToString(mFrameId, 4) + ".jpg", "target2");
 					 */
-					JWC.sendFile("data:image/jpeg;base64,", aImageData, "frame_" + Tools.intToString(mFrameId, 4) + ".jpg", "target2");
+					JWC.sendFile("data:image/jpeg;base64,", aImageData,
+							"frame_" + Tools.intToString(mFrameId, 4) + ".jpg",
+							"target2");
 					mFrameId++;
 				} catch (WebSocketException ex) {
 					// TODO: handle exception
@@ -149,7 +157,8 @@ public class VideoActivity extends Activity implements WebSocketClientTokenListe
 	 * @param aHeight
 	 */
 	@Override
-	public void surfaceChanged(SurfaceHolder aSurfaceHolder, int aFormat, int aWidth, int aHeight) {
+	public void surfaceChanged(SurfaceHolder aSurfaceHolder, int aFormat,
+			int aWidth, int aHeight) {
 		if (mPreviewRunning) {
 			mCamera.stopPreview();
 		}
@@ -174,7 +183,6 @@ public class VideoActivity extends Activity implements WebSocketClientTokenListe
 		mCamera.stopPreview();
 		mPreviewRunning = false;
 		mCamera.release();
-
 	}
 
 	/**
@@ -205,7 +213,8 @@ public class VideoActivity extends Activity implements WebSocketClientTokenListe
 	 * @param aPacket
 	 */
 	@Override
-	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+	public void processPacket(WebSocketClientEvent aEvent,
+			WebSocketPacket aPacket) {
 	}
 
 	/**
