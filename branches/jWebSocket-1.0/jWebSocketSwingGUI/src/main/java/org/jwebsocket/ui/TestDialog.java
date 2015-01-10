@@ -29,6 +29,7 @@ import java.io.*;
 import java.net.Proxy;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -1470,7 +1471,11 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     }//GEN-LAST:event_btnBroadcastActionPerformed
 
     private void btnDisconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisconnectActionPerformed
-		mClient.close();
+		try {
+			mClient.close();
+		} catch (Exception lEx) {
+			mLog("Error captured while closing the connection: " + lEx.getLocalizedMessage() + Arrays.toString(lEx.getStackTrace()));
+		}
     }//GEN-LAST:event_btnDisconnectActionPerformed
 
 	private void loadPropertyFile() {
