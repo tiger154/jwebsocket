@@ -31,10 +31,12 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Properties;
 import javolution.util.FastList;
+
+import org.jwebsocket.android.demo.JWC;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.client.token.BaseTokenClient;
+import org.jwebsocket.client.token.JWebSocketTokenClient;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
@@ -98,9 +100,12 @@ import org.jwebsocket.token.Token;
  *       mBoundService.open();
  *    }
  * </pre>
+ *
  * @author Alexander Schulze
  * @author <a href="http://www.purans.net/">Puran Singh</a>
  */
+// TODO: Remove deprecation annotation from here
+@SuppressWarnings("deprecation")
 public class JWSLocalAndroidService extends Service {
 
 	/**
@@ -111,8 +116,8 @@ public class JWSLocalAndroidService extends Service {
 	private final static int MT_CLOSED = 2;
 	private final static int MT_TOKEN = 3;
 	private final static String CONFIG_FILE = "jWebSocket";
-	private static String baseJWSUrl = "ws://jwebsocket.org:8787";
-	private static BaseTokenClient baseTokenClient;
+	private static String mURL = JWC.DEFAULT_URL; // "ws://jwebsocket.org:8787";
+	private static JWebSocketTokenClient mTokenClient;
 	/**
 	 *
 	 */
@@ -134,6 +139,7 @@ public class JWSLocalAndroidService extends Service {
 			return JWSLocalAndroidService.this;
 		}
 	}
+
 	// This is the object that receives interactions from clients.
 	private final IBinder mBinder = new LocalBinder();
 
@@ -153,11 +159,11 @@ public class JWSLocalAndroidService extends Service {
 	@Override
 	public void onCreate() {
 		jwsNotification = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		// Display a notification about us starting. 
+		// Display a notification about us starting.
 		showStartingNotification();
 
-		baseTokenClient = new BaseTokenClient();
-		baseTokenClient.addListener(new Listener());
+		mTokenClient = new JWebSocketTokenClient();
+		mTokenClient.addListener(new Listener());
 	}
 
 	/**
@@ -176,9 +182,11 @@ public class JWSLocalAndroidService extends Service {
 		try {
 			lProps.load(aActivity.openFileInput(CONFIG_FILE));
 		} catch (Exception ex) {
-			Toast.makeText(aActivity.getApplicationContext(), ex.getClass().getSimpleName() + ":" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(aActivity.getApplicationContext(),
+					ex.getClass().getSimpleName() + ":" + ex.getMessage(),
+					Toast.LENGTH_SHORT).show();
 		}
-		baseJWSUrl = (String) lProps.getProperty("url", "http://jwebsocket.org:8787/");
+		mURL = lProps.getProperty("url", JWC.DEFAULT_URL);
 	}
 
 	/**
@@ -188,10 +196,14 @@ public class JWSLocalAndroidService extends Service {
 	public void saveSettings(Activity aActivity) {
 		Properties lProps = new Properties();
 		try {
-			lProps.put("url", baseJWSUrl);
-			lProps.save(aActivity.openFileOutput(CONFIG_FILE, Context.MODE_PRIVATE), "jWebSocketClient Configuration");
+			lProps.put("url", mURL);
+			lProps.store(
+					aActivity.openFileOutput(CONFIG_FILE, Context.MODE_PRIVATE),
+					"jWebSocketClient Configuration");
 		} catch (Exception ex) {
-			Toast.makeText(aActivity.getApplicationContext(), ex.getClass().getSimpleName() + ":" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(aActivity.getApplicationContext(),
+					ex.getClass().getSimpleName() + ":" + ex.getMessage(),
+					Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -200,7 +212,7 @@ public class JWSLocalAndroidService extends Service {
 	 * @throws WebSocketException
 	 */
 	public void open() throws WebSocketException {
-		baseTokenClient.open(baseJWSUrl);
+		mTokenClient.open(mURL);
 	}
 
 	/**
@@ -208,7 +220,7 @@ public class JWSLocalAndroidService extends Service {
 	 * @throws WebSocketException
 	 */
 	public void close() throws WebSocketException {
-		baseTokenClient.close();
+		mTokenClient.close();
 	}
 
 	/**
@@ -217,7 +229,7 @@ public class JWSLocalAndroidService extends Service {
 	 * @throws WebSocketException
 	 */
 	public void send(String aString) throws WebSocketException {
-		baseTokenClient.send(baseJWSUrl, DEF_ENCODING);
+		mTokenClient.send(aString, DEF_ENCODING);
 	}
 
 	/**
@@ -226,7 +238,7 @@ public class JWSLocalAndroidService extends Service {
 	 * @throws WebSocketException
 	 */
 	public void sendToken(Token aToken) throws WebSocketException {
-		baseTokenClient.sendToken(aToken);
+		mTokenClient.sendToken(aToken);
 	}
 
 	/**
@@ -235,8 +247,9 @@ public class JWSLocalAndroidService extends Service {
 	 * @param aData
 	 * @throws WebSocketException
 	 */
-	public void sendText(String aTarget, String aData) throws WebSocketException {
-		baseTokenClient.sendText(aTarget, aData);
+	public void sendText(String aTarget, String aData)
+			throws WebSocketException {
+		mTokenClient.sendText(aTarget, aData);
 
 	}
 
@@ -246,7 +259,7 @@ public class JWSLocalAndroidService extends Service {
 	 * @throws WebSocketException
 	 */
 	public void broadcastText(String aData) throws WebSocketException {
-		baseTokenClient.broadcastText(aData);
+		mTokenClient.broadcastText(aData);
 	}
 
 	/**
@@ -257,8 +270,9 @@ public class JWSLocalAndroidService extends Service {
 	 * @param aNotify
 	 * @throws WebSocketException
 	 */
-	public void saveFile(byte[] aData, String aFilename, String aScope, Boolean aNotify) throws WebSocketException {
-		baseTokenClient.saveFile(aData, aFilename, aScope, aNotify);
+	public void saveFile(byte[] aData, String aFilename, String aScope,
+			Boolean aNotify) throws WebSocketException {
+		mTokenClient.saveFile(aData, aFilename, aScope, aNotify);
 	}
 
 	/**
@@ -276,7 +290,8 @@ public class JWSLocalAndroidService extends Service {
 	public void removeListener(WebSocketClientTokenListener aListener) {
 		mListeners.remove(aListener);
 	}
-	private Handler messageHandler = new Handler() {
+
+	private static Handler messageHandler = new Handler() {
 		@Override
 		public void handleMessage(Message message) {
 
@@ -301,7 +316,7 @@ public class JWSLocalAndroidService extends Service {
 	 *
 	 * @param aEvent
 	 */
-	public void notifyOpened(WebSocketClientEvent aEvent) {
+	public static void notifyOpened(WebSocketClientEvent aEvent) {
 		for (WebSocketClientTokenListener lListener : mListeners) {
 			lListener.processOpened(aEvent);
 		}
@@ -312,7 +327,8 @@ public class JWSLocalAndroidService extends Service {
 	 * @param aEvent
 	 * @param aPacket
 	 */
-	public void notifyPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+	public static void notifyPacket(WebSocketClientEvent aEvent,
+			WebSocketPacket aPacket) {
 		for (WebSocketClientTokenListener lListener : mListeners) {
 			lListener.processPacket(aEvent, aPacket);
 		}
@@ -323,7 +339,7 @@ public class JWSLocalAndroidService extends Service {
 	 * @param aEvent
 	 * @param aToken
 	 */
-	public void notifyToken(WebSocketClientEvent aEvent, Token aToken) {
+	public static void notifyToken(WebSocketClientEvent aEvent, Token aToken) {
 		for (WebSocketClientTokenListener lListener : mListeners) {
 			lListener.processToken(aEvent, aToken);
 		}
@@ -333,7 +349,7 @@ public class JWSLocalAndroidService extends Service {
 	 *
 	 * @param aEvent
 	 */
-	public void notifyClosed(WebSocketClientEvent aEvent) {
+	public static void notifyClosed(WebSocketClientEvent aEvent) {
 		for (WebSocketClientTokenListener lListener : mListeners) {
 			lListener.processClosed(aEvent);
 		}
@@ -343,7 +359,7 @@ public class JWSLocalAndroidService extends Service {
 	 * @return the URL
 	 */
 	public String getURL() {
-		return baseJWSUrl;
+		return mURL;
 	}
 
 	/**
@@ -352,19 +368,23 @@ public class JWSLocalAndroidService extends Service {
 	 */
 	class Listener implements WebSocketClientTokenListener {
 
+		@Override
 		public void processOpened(WebSocketClientEvent aEvent) {
 			Message lMsg = new Message();
 			lMsg.what = MT_OPENED;
 			messageHandler.sendMessage(lMsg);
 		}
 
-		public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+		@Override
+		public void processPacket(WebSocketClientEvent aEvent,
+				WebSocketPacket aPacket) {
 			Message lMsg = new Message();
 			lMsg.what = MT_PACKET;
 			lMsg.obj = aPacket;
 			messageHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 			Message lMsg = new Message();
 			lMsg.what = MT_TOKEN;
@@ -372,15 +392,18 @@ public class JWSLocalAndroidService extends Service {
 			messageHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processClosed(WebSocketClientEvent aEvent) {
 			Message lMsg = new Message();
 			lMsg.what = MT_CLOSED;
 			messageHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processOpening(WebSocketClientEvent aEvent) {
 		}
 
+		@Override
 		public void processReconnecting(WebSocketClientEvent aEvent) {
 		}
 	}

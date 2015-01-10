@@ -43,7 +43,8 @@ public class TwitterStreamSettingsActivity extends Dialog {
 	 * @param listener
 	 * @param defaultKeywords
 	 */
-	public TwitterStreamSettingsActivity(Context context, TwitterSettingsListener listener, String defaultKeywords) {
+	public TwitterStreamSettingsActivity(Context context,
+			TwitterSettingsListener listener, String defaultKeywords) {
 		super(context);
 		this.mListener = listener;
 		this.defaultKeywords = defaultKeywords;

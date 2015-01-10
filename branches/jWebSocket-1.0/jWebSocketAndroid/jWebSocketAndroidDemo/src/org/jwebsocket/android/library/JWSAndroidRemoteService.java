@@ -24,10 +24,12 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 import java.util.Properties;
+
+import org.jwebsocket.android.demo.JWC;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.client.token.BaseTokenClient;
+import org.jwebsocket.client.token.JWebSocketTokenClient;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 
@@ -35,47 +37,54 @@ import org.jwebsocket.token.Token;
  * jWebSocket android service that runs in a different process than the
  * application. Because it runs in another process, the client code using this
  * process must use IPC to interact with it. Please follow the sample
- * application to see the usage of this service. <p> Note that the most
- * applications do not need to deal with the complexity shown here. If your
- * application simply has a service running in its own process, the {@code JWC}
- * is a simpler way to interact with it. </p>
+ * application to see the usage of this service.
+ * <p>
+ * Note that the most applications do not need to deal with the complexity shown
+ * here. If your application simply has a service running in its own process,
+ * the {@code JWC} is a simpler way to interact with it.
+ * </p>
  *
  * @author puran
  */
+// TODO: Remove deprecation annotation from here
+@SuppressWarnings("deprecation")
 public class JWSAndroidRemoteService extends Service {
 
 	/**
 	 * This is the list of callbacks that have been registered with the service.
 	 */
-	final RemoteCallbackList<IJWSAndroidRemoteServiceCallback> jwsCallbackList = new RemoteCallbackList<IJWSAndroidRemoteServiceCallback>();
+	private static final RemoteCallbackList<IJWSAndroidRemoteServiceCallback> jwsCallbackList = new RemoteCallbackList<IJWSAndroidRemoteServiceCallback>();
 	private final static int MT_OPENED = 0;
 	private final static int MT_PACKET = 1;
 	private final static int MT_CLOSED = 2;
 	private final static int MT_TOKEN = 3;
 	private final static int MT_ERROR = -1;
 	private final static String CONFIG_FILE = "jWebSocket";
-	private static String jwsURL = "ws://jwebsocket.org:8787";
-	private static BaseTokenClient mTokenClient;
+	private static String mURL;
+	private static JWebSocketTokenClient mTokenClient;
 
 	/**
 	 *
 	 */
 	@Override
 	public void onCreate() {
-		mTokenClient = new BaseTokenClient();
+		mTokenClient = new JWebSocketTokenClient();
 		Properties lProps = new Properties();
 		try {
 			lProps.load(openFileInput(CONFIG_FILE));
 		} catch (Exception ex) {
-			Toast.makeText(getApplicationContext(), ex.getClass().getSimpleName() + ":" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(),
+					ex.getClass().getSimpleName() + ":" + ex.getMessage(),
+					Toast.LENGTH_SHORT).show();
 		}
-		jwsURL = (String) lProps.getProperty("url", "http://jwebsocket.org:8787/");
+		mURL = lProps.getProperty("url", JWC.DEFAULT_URL);
 	}
+
 	/**
 	 * Handler used to invoke the callback methods based on the remote interface
 	 * operations.
 	 */
-	private final Handler jwsHandler = new Handler() {
+	private static final Handler jwsHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -96,7 +105,7 @@ public class JWSAndroidRemoteService extends Service {
 	 *
 	 * @param message the message object
 	 */
-	private void broadCastMessageToCallback(Message message) {
+	private static void broadCastMessageToCallback(Message message) {
 		final int N = jwsCallbackList.beginBroadcast();
 		for (int i = 0; i < N; i++) {
 			try {
@@ -109,6 +118,7 @@ public class JWSAndroidRemoteService extends Service {
 		}
 		jwsCallbackList.finishBroadcast();
 	}
+
 	/**
 	 * This is the actual <tt>jWebSocket</tt> {@code BaseTokenClient} based
 	 * implementation of the remote {@code JWSAndroidRemoteService} interface.
@@ -118,16 +128,18 @@ public class JWSAndroidRemoteService extends Service {
 	private final IJWSAndroidRemoteService.Stub mBinder = new IJWSAndroidRemoteService.Stub() {
 		private void handleException(String tag, String error, Throwable lEx) {
 			Log.e(tag, error, lEx);
-			Message errorMsg = Message.obtain(jwsHandler, MT_ERROR, lEx.getMessage());
+			Message errorMsg = Message.obtain(jwsHandler, MT_ERROR,
+					lEx.getMessage());
 			jwsHandler.sendMessage(errorMsg);
 		}
 
 		@Override
 		public void open() throws RemoteException {
 			try {
-				mTokenClient.open(jwsURL);
+				mTokenClient.open(mURL);
 			} catch (WebSocketException lEx) {
-				handleException("OPEN", "Error opening jWebSocket connection", lEx);
+				handleException("OPEN", "Error opening jWebSocket connection",
+						lEx);
 			}
 		}
 
@@ -141,7 +153,8 @@ public class JWSAndroidRemoteService extends Service {
 			try {
 				mTokenClient.disconnect();
 			} catch (WebSocketException lEx) {
-				handleException("DISCONNECT", "Error disconnecting from the jWebSocket server", lEx);
+				handleException("DISCONNECT",
+						"Error disconnecting from the jWebSocket server", lEx);
 			}
 		}
 
@@ -150,7 +163,8 @@ public class JWSAndroidRemoteService extends Service {
 			try {
 				mTokenClient.send(data, "UTF-8");
 			} catch (WebSocketException lEx) {
-				handleException("SEND", "Error sending data to the jWebSocket server", lEx);
+				handleException("SEND",
+						"Error sending data to the jWebSocket server", lEx);
 			}
 		}
 
@@ -159,7 +173,8 @@ public class JWSAndroidRemoteService extends Service {
 			try {
 				mTokenClient.sendText(target, data);
 			} catch (WebSocketException lEx) {
-				handleException("SENDTEXT", "Error sending text data to the jWebSocket server", lEx);
+				handleException("SENDTEXT",
+						"Error sending text data to the jWebSocket server", lEx);
 			}
 		}
 
@@ -168,7 +183,8 @@ public class JWSAndroidRemoteService extends Service {
 			try {
 				mTokenClient.broadcastText(data);
 			} catch (WebSocketException lEx) {
-				handleException("BROADCAST", "Error broadcasting data to the jWebSocket server", lEx);
+				handleException("BROADCAST",
+						"Error broadcasting data to the jWebSocket server", lEx);
 			}
 		}
 
@@ -177,16 +193,20 @@ public class JWSAndroidRemoteService extends Service {
 			try {
 				mTokenClient.sendToken(token.getToken());
 			} catch (WebSocketException lEx) {
-				handleException("SENDTOKEN", "Error sending token data to the jWebSocket server", lEx);
+				handleException("SENDTOKEN",
+						"Error sending token data to the jWebSocket server",
+						lEx);
 			}
 		}
 
 		@Override
-		public void saveFile(String fileName, String scope, boolean notify, byte[] data) throws RemoteException {
+		public void saveFile(String fileName, String scope, boolean notify,
+				byte[] data) throws RemoteException {
 			try {
 				mTokenClient.saveFile(data, fileName, scope, notify);
 			} catch (WebSocketException lEx) {
-				handleException("FILESAVE", "Error saving file to jWebSocket server", lEx);
+				handleException("FILESAVE",
+						"Error saving file to jWebSocket server", lEx);
 			}
 		}
 
@@ -196,11 +216,13 @@ public class JWSAndroidRemoteService extends Service {
 		}
 
 		@Override
-		public void login(String aUsername, String aPassword) throws RemoteException {
+		public void login(String aUsername, String aPassword)
+				throws RemoteException {
 			try {
 				mTokenClient.login(aUsername, aPassword);
 			} catch (WebSocketException lEx) {
-				handleException("LOGIN", "Error login to jWebSocket server", lEx);
+				handleException("LOGIN", "Error login to jWebSocket server",
+						lEx);
 			}
 		}
 
@@ -209,24 +231,27 @@ public class JWSAndroidRemoteService extends Service {
 			try {
 				mTokenClient.logout();
 			} catch (WebSocketException lEx) {
-				handleException("LOGOUT", "Error logout from jWebSocket server", lEx);
+				handleException("LOGOUT",
+						"Error logout from jWebSocket server", lEx);
 			}
 		}
 
 		@Override
 		public void ping(boolean echo) throws RemoteException {
-			//TODO://fix this either display a notification or something visible to the user
+			// TODO://fix this either display a notification or something
+			// visible to the user
 			try {
 				mTokenClient.ping(echo);
 			} catch (WebSocketException lEx) {
-				handleException("PING", "Error ping operation to jWebSocket server", lEx);
+				handleException("PING",
+						"Error ping operation to jWebSocket server", lEx);
 			}
 		}
 
 		@Override
 		public void getConnections() throws RemoteException {
-			//TODO: implement this it should return something.. 
-			//need a fix in TokenClient itself
+			// TODO: implement this it should return something..
+			// need a fix in TokenClient itself
 		}
 
 		@Override
@@ -235,12 +260,14 @@ public class JWSAndroidRemoteService extends Service {
 		}
 
 		@Override
-		public void registerCallback(IJWSAndroidRemoteServiceCallback cb) throws RemoteException {
+		public void registerCallback(IJWSAndroidRemoteServiceCallback cb)
+				throws RemoteException {
 			jwsCallbackList.register(cb);
 		}
 
 		@Override
-		public void unregisterCallback(IJWSAndroidRemoteServiceCallback cb) throws RemoteException {
+		public void unregisterCallback(IJWSAndroidRemoteServiceCallback cb)
+				throws RemoteException {
 			jwsCallbackList.unregister(cb);
 		}
 	};
@@ -266,19 +293,23 @@ public class JWSAndroidRemoteService extends Service {
 	 */
 	class Listener implements WebSocketClientTokenListener {
 
+		@Override
 		public void processOpened(WebSocketClientEvent aEvent) {
 			Message lMsg = new Message();
 			lMsg.what = MT_OPENED;
 			jwsHandler.sendMessage(lMsg);
 		}
 
-		public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+		@Override
+		public void processPacket(WebSocketClientEvent aEvent,
+				WebSocketPacket aPacket) {
 			Message lMsg = new Message();
 			lMsg.what = MT_PACKET;
 			lMsg.obj = aPacket;
 			jwsHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 			Message lMsg = new Message();
 			lMsg.what = MT_TOKEN;
@@ -286,15 +317,18 @@ public class JWSAndroidRemoteService extends Service {
 			jwsHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processClosed(WebSocketClientEvent aEvent) {
 			Message lMsg = new Message();
 			lMsg.what = MT_CLOSED;
 			jwsHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processOpening(WebSocketClientEvent aEvent) {
 		}
 
+		@Override
 		public void processReconnecting(WebSocketClientEvent aEvent) {
 		}
 	}

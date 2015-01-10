@@ -34,7 +34,8 @@ import org.jwebsocket.token.TokenFactory;
  *
  * @author Alexander Schulze
  */
-public class ArduinoActivity extends Activity implements WebSocketClientTokenListener {
+public class ArduinoActivity extends Activity implements
+		WebSocketClientTokenListener {
 
 	private ImageView lBlue = null;
 	private ImageView lRed = null;
@@ -55,19 +56,15 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 		lToken.setInteger("cmd", aCmd);
 
 		/*
-		 Token lToken = TokenFactory.createToken("rc","s2c.en");
-		
-		 // pass namespace and type
-		 // for client's canvas "command"
-		 lToken.setBoolean("blue", lBlueOn);
-		 lToken.setBoolean("red", lRedOn);
-		 lToken.setBoolean("green", lGreenOn);
-		 lToken.setBoolean("yellow", lYellowOn);
-		
-		 lToken.setString("_e", "ledState");
-		 lToken.setString("_p", "rc");
-		 lToken.setString("_rt", "void");
-		 lToken.setBoolean("hc", false);
+		 * Token lToken = TokenFactory.createToken("rc","s2c.en");
+		 * 
+		 * // pass namespace and type // for client's canvas "command"
+		 * lToken.setBoolean("blue", lBlueOn); lToken.setBoolean("red", lRedOn);
+		 * lToken.setBoolean("green", lGreenOn); lToken.setBoolean("yellow",
+		 * lYellowOn);
+		 * 
+		 * lToken.setString("_e", "ledState"); lToken.setString("_p", "rc");
+		 * lToken.setString("_rt", "void"); lToken.setBoolean("hc", false);
 		 */
 		try {
 			JWC.sendToken(lToken);
@@ -75,8 +72,9 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 			// handle exception
 		}
 	}
-	// {ns=rc, type=s2c.en, blue=false, red=false, green=false, yellow=false, _e=ledState, _p=rc, _rt=void, uid=72, hc=false}
 
+	// {ns=rc, type=s2c.en, blue=false, red=false, green=false, yellow=false,
+	// _e=ledState, _p=rc, _rt=void, uid=72, hc=false}
 	/**
 	 * Called when the activity is first created.
 	 *
@@ -175,8 +173,7 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 	 */
 	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
-		if ("rc".equals(aToken.getNS())
-				&& "s2c.en".equals(aToken.getType())) {
+		if ("rc".equals(aToken.getNS()) && "s2c.en".equals(aToken.getType())) {
 			if (aToken.getBoolean("blue", false)) {
 				lBlue.setVisibility(View.VISIBLE);
 				lBlueOff.setVisibility(View.INVISIBLE);
@@ -227,7 +224,8 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 	 * @param aPacket
 	 */
 	@Override
-	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+	public void processPacket(WebSocketClientEvent aEvent,
+			WebSocketPacket aPacket) {
 	}
 
 	/**

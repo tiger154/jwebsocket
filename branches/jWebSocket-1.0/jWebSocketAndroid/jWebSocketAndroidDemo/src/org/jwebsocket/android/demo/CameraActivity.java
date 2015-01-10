@@ -39,7 +39,8 @@ import org.jwebsocket.util.Tools;
  *
  * @author Alexander Schulze
  */
-public class CameraActivity extends Activity implements WebSocketClientTokenListener, SurfaceHolder.Callback {
+public class CameraActivity extends Activity implements
+		WebSocketClientTokenListener, SurfaceHolder.Callback {
 
 	private SurfaceView mSurfaceView;
 	private SurfaceHolder mSurfaceHolder;
@@ -71,7 +72,7 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 		mSurfaceView = (SurfaceView) findViewById(R.id.sfvCamera);
 		mSurfaceHolder = mSurfaceView.getHolder();
 		mSurfaceHolder.addCallback(this);
-		mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+		// mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
 		// Instantiate an ImageView and define its properties
 		ImageView lImgStatus = (ImageView) findViewById(R.id.cameraImgStatus);
@@ -82,11 +83,10 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 			@Override
 			public void onPictureTaken(byte[] aImageData, Camera aCamera) {
 				try {
-					/* test code:
-					 byte [] lBA = new byte[1000000];
-					 JWC.saveFile(lBA,
-					 "ba_" + Tools.intToString(mImgId, 4) + ".null",
-					 JWebSocketCommonConstants.SCOPE_PUBLIC, true);
+					/*
+					 * test code: byte [] lBA = new byte[1000000];
+					 * JWC.saveFile(lBA, "ba_" + Tools.intToString(mImgId, 4) +
+					 * ".null", JWebSocketCommonConstants.SCOPE_PUBLIC, true);
 					 */
 
 					// save file in public area and send notification
@@ -97,8 +97,8 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 				} catch (WebSocketException ex) {
 					// TODO: handle exception
 				}
-				Toast.makeText(getApplicationContext(), "Photo has been taken!",
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(),
+						"Photo has been taken!", Toast.LENGTH_SHORT).show();
 			}
 		};
 
@@ -166,7 +166,8 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 	 * @param aHeight
 	 */
 	@Override
-	public void surfaceChanged(SurfaceHolder aSurfaceHolder, int aFormat, int aWidth, int aHeight) {
+	public void surfaceChanged(SurfaceHolder aSurfaceHolder, int aFormat,
+			int aWidth, int aHeight) {
 		if (mPreviewRunning) {
 			mCamera.stopPreview();
 		}
@@ -222,7 +223,8 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 	 * @param aPacket
 	 */
 	@Override
-	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+	public void processPacket(WebSocketClientEvent aEvent,
+			WebSocketPacket aPacket) {
 	}
 
 	/**

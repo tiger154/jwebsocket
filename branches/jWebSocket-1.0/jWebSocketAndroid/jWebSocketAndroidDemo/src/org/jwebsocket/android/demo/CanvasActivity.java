@@ -18,21 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.android.demo;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.*;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Gallery;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
@@ -40,16 +28,40 @@ import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 /**
  *
  * @author Alexander Schulze
  */
-public class CanvasActivity extends Activity implements WebSocketClientTokenListener {
+public class CanvasActivity extends Activity implements
+		WebSocketClientTokenListener {
 
 	private RelativeLayout mLayout = null;
 	private Canvas lCanvas = null;
 	private Paint lPaint = null;
-	private String CANVAS_ID = "c1";
+	private String CANVAS_ID = "p_canvas";
+	private String NS_CANVAS = "jws.canvas";
+	private String mClientId = "";
 	private float lSX = 0, lSY = 0;
 	private ImageView lImgView = null;
 	private ImageView lImgStatus = null;
@@ -57,6 +69,7 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	private int lHeight;
 	private Timer mTimer;
 	private volatile boolean mIsDirty = false;
+	private int lTitleBarHeight = 0;
 
 	/**
 	 * Called when the activity is first created.
@@ -76,19 +89,27 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		lWidth = metrics.widthPixels;
 		lHeight = metrics.heightPixels;
 
-		final Bitmap lBmp = Bitmap.createBitmap(lWidth, lHeight, Bitmap.Config.ARGB_8888);
+		final Bitmap lBmp = Bitmap.createBitmap(lWidth, lHeight,
+				Bitmap.Config.ARGB_8888);
 		lCanvas = new Canvas(lBmp);
 		// final ImageView lImgView = new ImageView(this);
 		lImgView = new ImageView(this);
 
-		lImgView.setLayoutParams(new Gallery.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		lImgView.setLayoutParams(new LinearLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		lImgView.setImageBitmap(lBmp);
 		lImgView.setScaleType(ImageView.ScaleType.CENTER);
 		lImgView.setPadding(0, 0, 0, 0);
 
 		lImgStatus = new ImageView(this);
-		lImgStatus.setAdjustViewBounds(true); // set the ImageView bounds to match the Drawable's dimensions
-		lImgStatus.setImageResource(R.drawable.disconnected);
+		lImgStatus.setAdjustViewBounds(true); // set the ImageView bounds to
+		// match the Drawable's
+		// dimensions
+		if (JWC.isConnected()) {
+			lImgStatus.setImageResource(R.drawable.authenticated);
+		} else {
+			lImgStatus.setImageResource(R.drawable.disconnected);
+		}
 		// lImgStatus.setAlpha(128);
 
 		final Paint lBck = new Paint();
@@ -106,25 +127,25 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 			// start and end coordinates for a single line
 			float lSX, lSY, lEX, lEY;
 
+			@Override
 			public boolean onTouch(View aView, MotionEvent aME) {
 
 				Rect lRect = new Rect();
 				Window lWindow = getWindow();
 				lWindow.getDecorView().getWindowVisibleDisplayFrame(lRect);
 				int lStatusBarHeight = lRect.top;
-				int lContentViewTop =
-						lWindow.findViewById(Window.ID_ANDROID_CONTENT).getTop();
-				final int lTitleBarHeight = lContentViewTop - lStatusBarHeight;
-
-				int lAction = aME.getAction();
+				int lContentViewTop = lWindow.findViewById(
+						Window.ID_ANDROID_CONTENT).getTop();
+				lTitleBarHeight = lContentViewTop - lStatusBarHeight;
 
 				float lX = aME.getX();
 				float lY = aME.getY();
 
-				switch (lAction) {
+				switch (aME.getAction()) {
 					case MotionEvent.ACTION_DOWN:
 						lEX = lX;
 						lEY = lY + lTitleBarHeight;
+						// Not needed anymore since we draw based in plots
 						sendBeginPath(lEX, lEY);
 						break;
 					case MotionEvent.ACTION_MOVE:
@@ -134,11 +155,14 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 						lEY = lY + lTitleBarHeight;
 						lCanvas.drawLine(lSX, lSY, lEX, lEY, lPaint);
 						// updated by Alex 2010-08-10
-						sendLineTo(lEX, lEY);
+						sendLine(lSX, lSY, lEX, lEY);
+						lSX = lEX;
+						lSY = lEY;
 						break;
 					case MotionEvent.ACTION_UP:
-					case MotionEvent.ACTION_CANCEL:
 						sendClosePath();
+						break;
+					case MotionEvent.ACTION_CANCEL:
 						break;
 				}
 				lImgView.invalidate();
@@ -152,7 +176,8 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 			public void run() {
 				if (mIsDirty) {
 					mIsDirty = false;
-					lImgView.postInvalidate();
+					// TODO: check why this doesn't work
+					// lImgView.postInvalidate();
 					try {
 						Thread.sleep(50);
 					} catch (InterruptedException ex) {
@@ -160,8 +185,6 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 				}
 			}
 		}, 0, 200);
-
-
 	}
 
 	// added by Alex: 2010-08-20
@@ -171,25 +194,12 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	 * @param ay
 	 */
 	public void sendBeginPath(float ax, float ay) {
-		// use broadcast of system plug-in
-		// use namespace and type for server's broadcast "command"
-		Token lCanvasToken = TokenFactory.createToken(
-				"org.jwebsocket.plugins.system",
-				"broadcast");
-
-		// pass namespace and type
-		// for client's canvas "command"
-		lCanvasToken.setString("reqNS", "org.jwebsocket.plugins.canvas");
-		lCanvasToken.setString("reqType", "beginPath");
-		lCanvasToken.setDouble("x", ax);
-		lCanvasToken.setDouble("y", ay);
+		Token lCanvasToken = TokenFactory.createToken();
+		lCanvasToken.setString("x", String.valueOf(ax));
+		lCanvasToken.setString("y", String.valueOf(ay));
 		lCanvasToken.setString("id", CANVAS_ID);
 
-		try {
-			JWC.sendToken(lCanvasToken);
-		} catch (WebSocketException e) {
-			//TODO: log exception
-		}
+		publish("beginPath", lCanvasToken);
 	}
 
 	/**
@@ -197,47 +207,25 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	 * @param aX
 	 * @param aY
 	 */
-	public void sendLineTo(float aX, float aY) {
+	public void sendLine(float aX1, float aY1, float aX2, float aY2) {
 		// added by Alex: 2010-08-20
-		// use broadcast of system plug-in
-		Token lCanvasToken = TokenFactory.createToken(
-				"org.jwebsocket.plugins.system",
-				"broadcast");
-
-		lCanvasToken.setString("reqNS", "org.jwebsocket.plugins.canvas");
-		lCanvasToken.setString("reqType", "lineTo");
-		lCanvasToken.setDouble("x", aX);
-		lCanvasToken.setDouble("y", aY);
+		Token lCanvasToken = TokenFactory.createToken();
+		lCanvasToken.setString("x1", String.valueOf(aX1));
+		lCanvasToken.setString("y1", String.valueOf(aY1));
+		lCanvasToken.setString("x2", String.valueOf(aX2));
+		lCanvasToken.setString("y2", String.valueOf(aY2));
+		lCanvasToken.setString("color", "#000000");
 		lCanvasToken.setString("id", CANVAS_ID);
-		try {
-			JWC.sendToken(lCanvasToken);
-		} catch (WebSocketException ex) {
-			//TODO: log exception
-		}
+
+		publish("line", lCanvasToken);
 	}
 
 	// added by Alex: 2010-08-20
-	/**
-	 *
-	 */
 	public void sendClosePath() {
-		// use broadcast of system plug-in
-		// use namespace and type for server's broadcast "command"
-		Token lCanvasToken = TokenFactory.createToken(
-				"org.jwebsocket.plugins.system",
-				"broadcast");
+		Token lCanvasToken = TokenFactory.createToken();
 		lCanvasToken.setString("id", CANVAS_ID);
 
-		// pass namespace and type
-		// for client's canvas "command"
-		lCanvasToken.setString("reqNS", "org.jwebsocket.plugins.canvas");
-		lCanvasToken.setString("reqType", "closePath");
-
-		try {
-			JWC.sendToken(lCanvasToken);
-		} catch (WebSocketException e) {
-			//TODO: log exception
-		}
+		publish("closePath", lCanvasToken);
 	}
 
 	/**
@@ -278,20 +266,50 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	}
 
 	private void sendClear() {
-		Token lCanvasToken = TokenFactory.createToken(
-				"org.jwebsocket.plugins.system",
-				"broadcast");
+		Token lCanvasToken = TokenFactory.createToken();
 		lCanvasToken.setString("id", CANVAS_ID);
 
-		// pass namespace and type
-		// for client's canvas "command"
-		lCanvasToken.setString("reqNS", "org.jwebsocket.plugins.canvas");
-		lCanvasToken.setString("reqType", "clear");
+		// Passing the action clear and the canvas id for other clients
+		publish("clear", lCanvasToken);
+	}
 
+	/**
+	 * This method will be used to send any type of data to the server Once the
+	 * server receives it, will broadcast it to a certain list of users
+	 * previously registered in the server side
+	 */
+	protected void publish(String aAction, Token aToken) {
+		if (null == aToken) {
+			aToken = TokenFactory.createToken();
+		}
+		// Type of publication, when the user receive this message he will know
+		// what to do by reading this variable in "aToken.data"
+		aToken.setNS(NS_CANVAS);
+		aToken.setType("data");
+		aToken.setString("data", aAction);
 		try {
-			JWC.sendToken(lCanvasToken);
-		} catch (WebSocketException e) {
-			//TODO: log exception
+			JWC.sendToken(aToken);
+		} catch (WebSocketException lEx) {
+			Toast.makeText(getApplicationContext(),
+					"Failed to send a " + aAction + " event.",
+					Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	protected void setAuthenticated(WebSocketClientEvent aEvent) {
+		// Once the connection opens we need to send a register token
+		Token lRegisterToken = TokenFactory.createToken(NS_CANVAS, "register");
+		try {
+			JWC.sendToken(lRegisterToken);
+		} catch (WebSocketException lEx) {
+			Toast.makeText(
+					getApplicationContext(),
+					"Failed to register to the demo, you may not be able to see incoming drawings from other users.",
+					Toast.LENGTH_LONG).show();
+		}
+		if (lImgStatus != null) {
+			// TODO: in fact it is only connected, not yet authenticated!
+			lImgStatus.setImageResource(R.drawable.authenticated);
 		}
 	}
 
@@ -303,10 +321,10 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		super.onResume();
 		try {
 			// get the display metric (width and height)
-			DisplayMetrics metrics = new DisplayMetrics();
-			getWindowManager().getDefaultDisplay().getMetrics(metrics);
-			lWidth = metrics.widthPixels;
-			lHeight = metrics.heightPixels;
+			DisplayMetrics lMetrics = new DisplayMetrics();
+			getWindowManager().getDefaultDisplay().getMetrics(lMetrics);
+			lWidth = lMetrics.widthPixels;
+			lHeight = lMetrics.heightPixels;
 
 			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -314,9 +332,13 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 			lImgStatus.setLayoutParams(lp);
 
 			JWC.addListener(this);
-			JWC.open();
+			if (!JWC.isConnected()) {
+				JWC.open();
+			} else {
+				setAuthenticated(null);
+			}
 		} catch (WebSocketException ex) {
-			//TODO: log exception
+			// TODO: log exception
 		}
 	}
 
@@ -327,12 +349,20 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	protected void onPause() {
 		super.onPause();
 		try {
+			Token lUnregisterToken = TokenFactory.createToken(NS_CANVAS,
+					"unregister");
+			try {
+				JWC.sendToken(lUnregisterToken);
+			} catch (WebSocketException lEx) {
+				// Not needed since in case of an exception the
+				// client is automatically unregistered when the connector is
+				// stopped
+			}
 			JWC.removeListener(this);
 			JWC.close();
 		} catch (WebSocketException ex) {
-			//TODO: log exception
+			// TODO: log exception
 		}
-
 	}
 
 	/**
@@ -340,64 +370,65 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	 * @param aEvent
 	 * @param aToken
 	 */
+	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 		// check if incoming token is targetted to canvas (by name space)
-		if ("org.jwebsocket.plugins.canvas".equals(aToken.getString("reqNS"))) {
-			// check "beginPath" request
-			if ("beginPath".equals(aToken.getString("reqType"))) {
-				// nothing to do here
-			} else if ("moveTo".equals(aToken.getString("reqType"))) {
-				// keep start position "in mind"
-				lSX = new Float(aToken.getDouble("x", 0.0));
-				lSY = new Float(aToken.getDouble("y", 0.0));
-				// check "lineTo" request
-			} else if ("lineTo".equals(aToken.getString("reqType"))) {
-				// TODO: implement multiple canvas, this is what is used for
-				// int id = aToken.getInteger("identifier");
-				// if (id != getTaskId()) {
-				float lEX = new Float(aToken.getDouble("x", 0.0));
-				float lEY = new Float(aToken.getDouble("y", 0.0));
-				// draw the line
-				lCanvas.drawLine(lSX, lSY, lEX, lEY, lPaint);
-				// invalidate image view to re-draw the canvas
-
-				mIsDirty = true;
-
-				lSX = lEX;
-				lSY = lEY;
-			} else if ("line".equals(aToken.getString("reqType"))) {
-				// TODO: implement multiple canvas, this is what is used for
-				// int id = aToken.getInteger("identifier");
-				// if (id != getTaskId()) {
-				lSX = new Float(aToken.getDouble("x1", 0.0));
-				lSY = new Float(aToken.getDouble("y1", 0.0));
-				float lEX = new Float(aToken.getDouble("x2", 0.0));
-				float lEY = new Float(aToken.getDouble("y2", 0.0));
-				// draw the line
-				String lColStr = aToken.getString("color");
-				if (lColStr != null
-						&& lColStr.length() == 7
-						&& lColStr.startsWith("#")) {
-					int lColVal;
-					try {
-						lColVal = Integer.valueOf(lColStr.substring(1), 16);
-					} catch (Exception lEx) {
-						lColVal = 0;
+		if (NS_CANVAS.equals(aToken.getNS())) {
+			if ("data".equals(aToken.getType())
+					&& !aToken.getString("publisher", "").equals(mClientId)) {
+				if ("line".equals(aToken.getString("data"))) {
+					// TODO: implement multiple canvas, this is what is used
+					// for
+					// int id = aToken.getInteger("identifier");
+					// if (id != getTaskId()) {
+					lSX = aToken.getDouble("x1", 0.0).floatValue();
+					lSY = aToken.getDouble("y1", 0.0).floatValue();
+					float lEX = aToken.getDouble("x2", 0.0).floatValue();
+					float lEY = aToken.getDouble("y2", 0.0).floatValue();
+					lSY += lTitleBarHeight;
+					lEY += lTitleBarHeight;
+					// draw the line
+					String lColStr = aToken.getString("color");
+					if (lColStr != null && lColStr.length() == 7
+							&& lColStr.startsWith("#")) {
+						int lColVal = Color.BLACK;
+						try {
+							lColVal = Integer.valueOf(lColStr.substring(1),
+									16);
+						} catch (Exception lEx) {
+							lColVal = Color.BLACK;
+						}
+						lPaint.setColor(lColVal);
 					}
-					lPaint.setColor(0xFF000000 | lColVal);
+					lCanvas.drawLine(lSX, lSY, lEX, lEY, lPaint);
+					// invalidate image view to re-draw the canvas
+					mIsDirty = true;
+				} else if ("moveTo".equals(aToken.getString("data"))) {
+					// keep start position "in mind"
+					lSX = aToken.getDouble("x", 0.0).floatValue();
+					lSY = aToken.getDouble("y", 0.0).floatValue();
+					// check "lineTo" request
+				} else if ("lineTo".equals(aToken.getString("data"))) {
+					// TODO: implement multiple canvas, this is what is used
+					// for
+					// int id = aToken.getInteger("identifier");
+					// if (id != getTaskId()) {
+					float lEX = aToken.getDouble("x", 0.0).floatValue();
+					float lEY = aToken.getDouble("y", 0.0).floatValue();
+					// draw the line
+					lCanvas.drawLine(lSX, lSY, lEX, lEY, lPaint);
+					// invalidate image view to re-draw the canvas
+
+					mIsDirty = true;
+
+					lSX = lEX;
+					lSY = lEY;
+				} else if ("clear".equals(aToken.getString("data"))) {
+					clearCanvas();
 				}
-				lCanvas.drawLine(lSX, lSY, lEX, lEY, lPaint);
-				// invalidate image view to re-draw the canvas
-				mIsDirty = true;
-
-				lSX = lEX;
-				lSY = lEY;
-			} else if ("closePath".equals(aToken.getString("reqType"))) {
-				// nothing to do here
-			} else if ("clear".equals(aToken.getString("reqType"))) {
-				clearCanvas();
 			}
-
+		} else if ("welcome".equals(aToken.getType())) {
+			mClientId = aToken.getString("sourceId", "");
 		}
 	}
 
@@ -407,11 +438,7 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	 */
 	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
-		// lImgStatus = (ImageView) findViewById(R.id.cameraImgStatus);
-		if (lImgStatus != null) {
-			// TODO: in fact it is only connected, not yet authenticated!
-			lImgStatus.setImageResource(R.drawable.authenticated);
-		}
+		setAuthenticated(aEvent);
 	}
 
 	/**
@@ -420,7 +447,8 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	 * @param aPacket
 	 */
 	@Override
-	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+	public void processPacket(WebSocketClientEvent aEvent,
+			WebSocketPacket aPacket) {
 	}
 
 	/**
