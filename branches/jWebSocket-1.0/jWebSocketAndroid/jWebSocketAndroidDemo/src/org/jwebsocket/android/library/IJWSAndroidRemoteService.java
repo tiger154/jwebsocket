@@ -5,9 +5,8 @@
 package org.jwebsocket.android.library;
 
 import android.os.IBinder;
-import android.os.RemoteException;
-// Declare the interface.
 
+// Declare the interface.
 /**
  *
  * @author Alexander Schulze
@@ -17,7 +16,8 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 	/**
 	 * Local-side IPC implementation stub class.
 	 */
-	public static abstract class Stub extends android.os.Binder implements org.jwebsocket.android.library.IJWSAndroidRemoteService {
+	public static abstract class Stub extends android.os.Binder implements
+			org.jwebsocket.android.library.IJWSAndroidRemoteService {
 
 		private static final java.lang.String DESCRIPTOR = "org.jwebsocket.android.library.IJWSAndroidRemoteService";
 
@@ -35,21 +35,24 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 		 * @param obj
 		 * @return
 		 */
-		public static org.jwebsocket.android.library.IJWSAndroidRemoteService asInterface(android.os.IBinder obj) {
+		public static org.jwebsocket.android.library.IJWSAndroidRemoteService asInterface(
+				android.os.IBinder obj) {
 			if ((obj == null)) {
 				return null;
 			}
-			android.os.IInterface iin = (android.os.IInterface) obj.queryLocalInterface(DESCRIPTOR);
+			android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
 			if (((iin != null) && (iin instanceof org.jwebsocket.android.library.IJWSAndroidRemoteService))) {
 				return ((org.jwebsocket.android.library.IJWSAndroidRemoteService) iin);
 			}
-			return new org.jwebsocket.android.library.IJWSAndroidRemoteService.Stub.Proxy(obj);
+			return new org.jwebsocket.android.library.IJWSAndroidRemoteService.Stub.Proxy(
+					obj);
 		}
 
 		/**
 		 *
 		 * @return
 		 */
+		@Override
 		public android.os.IBinder asBinder() {
 			return this;
 		}
@@ -64,7 +67,9 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 		 * @throws android.os.RemoteException
 		 */
 		@Override
-		public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException {
+		public boolean onTransact(int code, android.os.Parcel data,
+				android.os.Parcel reply, int flags)
+				throws android.os.RemoteException {
 			switch (code) {
 				case INTERFACE_TRANSACTION: {
 					reply.writeString(DESCRIPTOR);
@@ -118,7 +123,8 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 					data.enforceInterface(DESCRIPTOR);
 					org.jwebsocket.android.library.ParcelableToken _arg0;
 					if ((0 != data.readInt())) {
-						_arg0 = org.jwebsocket.android.library.ParcelableToken.CREATOR.createFromParcel(data);
+						_arg0 = org.jwebsocket.android.library.ParcelableToken.CREATOR
+								.createFromParcel(data);
 					} else {
 						_arg0 = null;
 					}
@@ -187,7 +193,8 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				case TRANSACTION_registerCallback: {
 					data.enforceInterface(DESCRIPTOR);
 					org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback _arg0;
-					_arg0 = org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback.Stub.asInterface(data.readStrongBinder());
+					_arg0 = org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback.Stub
+							.asInterface(data.readStrongBinder());
 					this.registerCallback(_arg0);
 					reply.writeNoException();
 					return true;
@@ -195,7 +202,8 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				case TRANSACTION_unregisterCallback: {
 					data.enforceInterface(DESCRIPTOR);
 					org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback _arg0;
-					_arg0 = org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback.Stub.asInterface(data.readStrongBinder());
+					_arg0 = org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback.Stub
+							.asInterface(data.readStrongBinder());
 					this.unregisterCallback(_arg0);
 					reply.writeNoException();
 					return true;
@@ -204,7 +212,8 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 			return super.onTransact(code, data, reply, flags);
 		}
 
-		private static class Proxy implements org.jwebsocket.android.library.IJWSAndroidRemoteService {
+		private static class Proxy implements
+				org.jwebsocket.android.library.IJWSAndroidRemoteService {
 
 			private android.os.IBinder mRemote;
 
@@ -212,6 +221,7 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				mRemote = remote;
 			}
 
+			@Override
 			public android.os.IBinder asBinder() {
 				return mRemote;
 			}
@@ -220,6 +230,7 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				return DESCRIPTOR;
 			}
 
+			@Override
 			public void open() throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -233,6 +244,7 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
+			@Override
 			public void close() throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -246,12 +258,14 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
+			@Override
 			public void disconnect() throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
 					_data.writeInterfaceToken(DESCRIPTOR);
-					mRemote.transact(Stub.TRANSACTION_disconnect, _data, _reply, 0);
+					mRemote.transact(Stub.TRANSACTION_disconnect, _data,
+							_reply, 0);
 					_reply.readException();
 				} finally {
 					_reply.recycle();
@@ -259,7 +273,9 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
-			public void send(java.lang.String data) throws android.os.RemoteException {
+			@Override
+			public void send(java.lang.String data)
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
@@ -273,14 +289,17 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
-			public void sendText(java.lang.String target, java.lang.String data) throws android.os.RemoteException {
+			@Override
+			public void sendText(java.lang.String target, java.lang.String data)
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
 					_data.writeInterfaceToken(DESCRIPTOR);
 					_data.writeString(target);
 					_data.writeString(data);
-					mRemote.transact(Stub.TRANSACTION_sendText, _data, _reply, 0);
+					mRemote.transact(Stub.TRANSACTION_sendText, _data, _reply,
+							0);
 					_reply.readException();
 				} finally {
 					_reply.recycle();
@@ -288,13 +307,16 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
-			public void broadcastText(java.lang.String data) throws android.os.RemoteException {
+			@Override
+			public void broadcastText(java.lang.String data)
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
 					_data.writeInterfaceToken(DESCRIPTOR);
 					_data.writeString(data);
-					mRemote.transact(Stub.TRANSACTION_broadcastText, _data, _reply, 0);
+					mRemote.transact(Stub.TRANSACTION_broadcastText, _data,
+							_reply, 0);
 					_reply.readException();
 				} finally {
 					_reply.recycle();
@@ -302,7 +324,10 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
-			public void sendToken(org.jwebsocket.android.library.ParcelableToken token) throws android.os.RemoteException {
+			@Override
+			public void sendToken(
+					org.jwebsocket.android.library.ParcelableToken token)
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
@@ -313,7 +338,8 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 					} else {
 						_data.writeInt(0);
 					}
-					mRemote.transact(Stub.TRANSACTION_sendToken, _data, _reply, 0);
+					mRemote.transact(Stub.TRANSACTION_sendToken, _data, _reply,
+							0);
 					_reply.readException();
 				} finally {
 					_reply.recycle();
@@ -321,7 +347,10 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
-			public void saveFile(java.lang.String fileName, java.lang.String scope, boolean notify, byte[] data) throws android.os.RemoteException {
+			@Override
+			public void saveFile(java.lang.String fileName,
+					java.lang.String scope, boolean notify, byte[] data)
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
@@ -330,7 +359,8 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 					_data.writeString(scope);
 					_data.writeInt(((notify) ? (1) : (0)));
 					_data.writeByteArray(data);
-					mRemote.transact(Stub.TRANSACTION_saveFile, _data, _reply, 0);
+					mRemote.transact(Stub.TRANSACTION_saveFile, _data, _reply,
+							0);
 					_reply.readException();
 				} finally {
 					_reply.recycle();
@@ -338,13 +368,16 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
-			public java.lang.String getUsername() throws android.os.RemoteException {
+			@Override
+			public java.lang.String getUsername()
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				java.lang.String _result;
 				try {
 					_data.writeInterfaceToken(DESCRIPTOR);
-					mRemote.transact(Stub.TRANSACTION_getUsername, _data, _reply, 0);
+					mRemote.transact(Stub.TRANSACTION_getUsername, _data,
+							_reply, 0);
 					_reply.readException();
 					_result = _reply.readString();
 				} finally {
@@ -354,7 +387,10 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				return _result;
 			}
 
-			public void login(java.lang.String aUsername, java.lang.String aPassword) throws android.os.RemoteException {
+			@Override
+			public void login(java.lang.String aUsername,
+					java.lang.String aPassword)
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
@@ -369,6 +405,7 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
+			@Override
 			public void logout() throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -382,6 +419,7 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
+			@Override
 			public void ping(boolean echo) throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -396,12 +434,14 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
+			@Override
 			public void getConnections() throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
 					_data.writeInterfaceToken(DESCRIPTOR);
-					mRemote.transact(Stub.TRANSACTION_getConnections, _data, _reply, 0);
+					mRemote.transact(Stub.TRANSACTION_getConnections, _data,
+							_reply, 0);
 					_reply.readException();
 				} finally {
 					_reply.recycle();
@@ -409,13 +449,15 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 
+			@Override
 			public boolean isAuthenticated() throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				boolean _result;
 				try {
 					_data.writeInterfaceToken(DESCRIPTOR);
-					mRemote.transact(Stub.TRANSACTION_isAuthenticated, _data, _reply, 0);
+					mRemote.transact(Stub.TRANSACTION_isAuthenticated, _data,
+							_reply, 0);
 					_reply.readException();
 					_result = (0 != _reply.readInt());
 				} finally {
@@ -429,13 +471,18 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 			 * Register a service to call back to the clients using this remote
 			 * service
 			 */
-			public void registerCallback(org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback cb) throws android.os.RemoteException {
+			@Override
+			public void registerCallback(
+					org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback cb)
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
 					_data.writeInterfaceToken(DESCRIPTOR);
-					_data.writeStrongBinder((((cb != null)) ? (cb.asBinder()) : (null)));
-					mRemote.transact(Stub.TRANSACTION_registerCallback, _data, _reply, 0);
+					_data.writeStrongBinder((((cb != null)) ? (cb.asBinder())
+							: (null)));
+					mRemote.transact(Stub.TRANSACTION_registerCallback, _data,
+							_reply, 0);
 					_reply.readException();
 				} finally {
 					_reply.recycle();
@@ -446,13 +493,18 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 			/**
 			 * Remove a previously registered callback interface.
 			 */
-			public void unregisterCallback(org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback cb) throws android.os.RemoteException {
+			@Override
+			public void unregisterCallback(
+					org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback cb)
+					throws android.os.RemoteException {
 				android.os.Parcel _data = android.os.Parcel.obtain();
 				android.os.Parcel _reply = android.os.Parcel.obtain();
 				try {
 					_data.writeInterfaceToken(DESCRIPTOR);
-					_data.writeStrongBinder((((cb != null)) ? (cb.asBinder()) : (null)));
-					mRemote.transact(Stub.TRANSACTION_unregisterCallback, _data, _reply, 0);
+					_data.writeStrongBinder((((cb != null)) ? (cb.asBinder())
+							: (null)));
+					mRemote.transact(Stub.TRANSACTION_unregisterCallback,
+							_data, _reply, 0);
 					_reply.readException();
 				} finally {
 					_reply.recycle();
@@ -460,6 +512,7 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 				}
 			}
 		}
+
 		static final int TRANSACTION_open = (IBinder.FIRST_CALL_TRANSACTION + 0);
 		static final int TRANSACTION_close = (IBinder.FIRST_CALL_TRANSACTION + 1);
 		static final int TRANSACTION_disconnect = (IBinder.FIRST_CALL_TRANSACTION + 2);
@@ -509,21 +562,24 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 	 * @param data
 	 * @throws android.os.RemoteException
 	 */
-	public void sendText(java.lang.String target, java.lang.String data) throws android.os.RemoteException;
+	public void sendText(java.lang.String target, java.lang.String data)
+			throws android.os.RemoteException;
 
 	/**
 	 *
 	 * @param data
 	 * @throws android.os.RemoteException
 	 */
-	public void broadcastText(java.lang.String data) throws android.os.RemoteException;
+	public void broadcastText(java.lang.String data)
+			throws android.os.RemoteException;
 
 	/**
 	 *
 	 * @param token
 	 * @throws android.os.RemoteException
 	 */
-	public void sendToken(org.jwebsocket.android.library.ParcelableToken token) throws android.os.RemoteException;
+	public void sendToken(org.jwebsocket.android.library.ParcelableToken token)
+			throws android.os.RemoteException;
 
 	/**
 	 *
@@ -533,7 +589,8 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 	 * @param data
 	 * @throws android.os.RemoteException
 	 */
-	public void saveFile(java.lang.String fileName, java.lang.String scope, boolean notify, byte[] data) throws android.os.RemoteException;
+	public void saveFile(java.lang.String fileName, java.lang.String scope,
+			boolean notify, byte[] data) throws android.os.RemoteException;
 
 	/**
 	 *
@@ -547,7 +604,8 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 	 * @param aPassword
 	 * @throws android.os.RemoteException
 	 */
-	public void login(java.lang.String aUsername, java.lang.String aPassword) throws android.os.RemoteException;
+	public void login(java.lang.String aUsername, java.lang.String aPassword)
+			throws android.os.RemoteException;
 
 	/**
 	 *
@@ -580,7 +638,9 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 	 * @param cb
 	 * @throws android.os.RemoteException
 	 */
-	public void registerCallback(org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback cb) throws android.os.RemoteException;
+	public void registerCallback(
+			org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback cb)
+			throws android.os.RemoteException;
 
 	/**
 	 * Remove a previously registered callback interface.
@@ -588,5 +648,7 @@ public interface IJWSAndroidRemoteService extends android.os.IInterface {
 	 * @param cb
 	 * @throws android.os.RemoteException
 	 */
-	public void unregisterCallback(org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback cb) throws android.os.RemoteException;
+	public void unregisterCallback(
+			org.jwebsocket.android.library.IJWSAndroidRemoteServiceCallback cb)
+			throws android.os.RemoteException;
 }

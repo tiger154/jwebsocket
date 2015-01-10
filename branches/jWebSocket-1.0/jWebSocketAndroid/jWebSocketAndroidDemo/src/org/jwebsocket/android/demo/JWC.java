@@ -18,13 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.android.demo;
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
-import android.widget.Toast;
 import java.util.List;
 import java.util.Properties;
+
 import javolution.util.FastList;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
@@ -32,15 +28,24 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.client.plugins.rpc.Rpc;
 import org.jwebsocket.client.plugins.rpc.RpcListener;
 import org.jwebsocket.client.plugins.rpc.Rrpc;
-import org.jwebsocket.client.token.BaseTokenClient;
+import org.jwebsocket.client.token.JWebSocketTokenClient;
+import org.jwebsocket.config.ReliabilityOptions;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.widget.Toast;
 
 /**
  *
  * @author Alexander Schulze
  */
+// TODO: Remove deprecation annotation from here
+@SuppressWarnings("deprecation")
 public class JWC {
 
 	private final static int MT_OPENED = 0;
@@ -48,21 +53,23 @@ public class JWC {
 	private final static int MT_CLOSED = 2;
 	private final static int MT_TOKEN = 3;
 	private final static String CONFIG_FILE = "jWebSocket";
-	private static String mURL = "ws://jwebsocket.org:8787";
-	private static BaseTokenClient mJWC;
+	public final static String DEFAULT_URL = "ws://jwebsocket.org:8787";
+	private static String mURL;
+	private static JWebSocketTokenClient mTokenClient;
 	private static List<WebSocketClientTokenListener> mListeners = new FastList<WebSocketClientTokenListener>();
 	private static String DEF_ENCODING = "UTF-8";
+	private static ReliabilityOptions mReliabilityOptions = null;
 
-	/**
-	 *
-	 */
 	public static void init() {
-		mJWC = new BaseTokenClient();
-		mJWC.addListener(new Listener());
-		mJWC.addListener(new RpcListener());
-		//TODO: this could be improve if we use client plugins.
-		Rpc.setDefaultBaseTokenClient(mJWC);
-		Rrpc.setDefaultBaseTokenClient(mJWC);
+		// Starting reliability options with true as first parameter to
+		// auto-reconnect
+		mReliabilityOptions = new ReliabilityOptions(true, 1500, 3000, 1, -1);
+		mTokenClient = new JWebSocketTokenClient(mReliabilityOptions);
+		mTokenClient.addListener(new Listener());
+		mTokenClient.addListener(new RpcListener());
+		// TODO: this could be improved if we use client plugins.
+		Rpc.setDefaultBaseTokenClient(mTokenClient);
+		Rrpc.setDefaultBaseTokenClient(mTokenClient);
 	}
 
 	/**
@@ -70,15 +77,20 @@ public class JWC {
 	 * @param aActivity
 	 */
 	public static void loadSettings(Activity aActivity) {
+		Toast.makeText(aActivity.getApplicationContext(),
+				"NOTE: We apologize, but some functionalities of this demo may not work " +
+				"as expected, however, it may serve you as example for further projects!",
+				Toast.LENGTH_LONG).show();
+		
 		Properties lProps = new Properties();
 		try {
 			lProps.load(aActivity.openFileInput(CONFIG_FILE));
 		} catch (Exception ex) {
 			Toast.makeText(aActivity.getApplicationContext(),
 					ex.getClass().getSimpleName() + ":" + ex.getMessage(),
-					Toast.LENGTH_SHORT).show();
+					Toast.LENGTH_LONG).show();
 		}
-		mURL = (String) lProps.getProperty("url", "ws://jwebsocket.org:8787/");
+		mURL = lProps.getProperty("url", DEFAULT_URL);
 	}
 
 	/**
@@ -89,7 +101,9 @@ public class JWC {
 		Properties lProps = new Properties();
 		try {
 			lProps.put("url", mURL);
-			lProps.save(aActivity.openFileOutput(CONFIG_FILE, Context.MODE_PRIVATE), "jWebSocketClient Configuration");
+			lProps.store(
+					aActivity.openFileOutput(CONFIG_FILE, Context.MODE_PRIVATE),
+					"jWebSocketClient Configuration");
 		} catch (Exception ex) {
 			Toast.makeText(aActivity.getApplicationContext(),
 					ex.getClass().getSimpleName() + ":" + ex.getMessage(),
@@ -102,7 +116,7 @@ public class JWC {
 	 * @throws WebSocketException
 	 */
 	public static void open() throws WebSocketException {
-		mJWC.open(mURL);
+		mTokenClient.open(mURL);
 	}
 
 	/**
@@ -110,7 +124,7 @@ public class JWC {
 	 * @throws WebSocketException
 	 */
 	public static void close() throws WebSocketException {
-		mJWC.close();
+		mTokenClient.close();
 	}
 
 	/**
@@ -119,7 +133,7 @@ public class JWC {
 	 * @throws WebSocketException
 	 */
 	public static void send(String aString) throws WebSocketException {
-		mJWC.send(mURL, DEF_ENCODING);
+		mTokenClient.send(aString, DEF_ENCODING);
 	}
 
 	/**
@@ -128,7 +142,7 @@ public class JWC {
 	 * @throws WebSocketException
 	 */
 	public static void sendToken(Token aToken) throws WebSocketException {
-		mJWC.sendToken(aToken);
+		mTokenClient.sendToken(aToken);
 	}
 
 	/**
@@ -137,8 +151,9 @@ public class JWC {
 	 * @param aData
 	 * @throws WebSocketException
 	 */
-	public static void sendText(String aTarget, String aData) throws WebSocketException {
-		mJWC.sendText(aTarget, aData);
+	public static void sendText(String aTarget, String aData)
+			throws WebSocketException {
+		mTokenClient.sendText(aTarget, aData);
 
 	}
 
@@ -148,7 +163,7 @@ public class JWC {
 	 * @throws WebSocketException
 	 */
 	public static void broadcastText(String aData) throws WebSocketException {
-		mJWC.broadcastText(aData);
+		mTokenClient.broadcastText(aData);
 	}
 
 	/**
@@ -161,7 +176,7 @@ public class JWC {
 	 */
 	public static void saveFile(byte[] aData, String aFilename, String aScope,
 			Boolean aNotify) throws WebSocketException {
-		mJWC.saveFile(aData, aFilename, aScope, aNotify);
+		mTokenClient.saveFile(aData, aFilename, aScope, aNotify);
 	}
 
 	/**
@@ -172,9 +187,9 @@ public class JWC {
 	 * @param aTarget
 	 * @throws WebSocketException
 	 */
-	public static void sendFile(String aHeader, byte[] aData, String aFilename, String aTarget)
-			throws WebSocketException {
-		mJWC.sendFile(aHeader, aData, aFilename, aTarget);
+	public static void sendFile(String aHeader, byte[] aData, String aFilename,
+			String aTarget) throws WebSocketException {
+		mTokenClient.sendFile(aHeader, aData, aFilename, aTarget);
 	}
 
 	/**
@@ -182,7 +197,9 @@ public class JWC {
 	 * @param aListener
 	 */
 	public static void addListener(WebSocketClientTokenListener aListener) {
-		mListeners.add(aListener);
+		if (!mListeners.contains(aListener)) {
+			mListeners.add(aListener);
+		}
 	}
 
 	/**
@@ -192,10 +209,14 @@ public class JWC {
 	public static void removeListener(WebSocketClientTokenListener aListener) {
 		mListeners.remove(aListener);
 	}
+
+	public static boolean isConnected() {
+		return null != mTokenClient && mTokenClient.isConnected();
+	}
+
 	private static Handler messageHandler = new Handler() {
 		@Override
 		public void handleMessage(Message aMessage) {
-
 			switch (aMessage.what) {
 				case MT_OPENED:
 					notifyOpened(null);
@@ -228,7 +249,8 @@ public class JWC {
 	 * @param aEvent
 	 * @param aPacket
 	 */
-	public static void notifyPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+	public static void notifyPacket(WebSocketClientEvent aEvent,
+			WebSocketPacket aPacket) {
 		for (WebSocketClientTokenListener lListener : mListeners) {
 			lListener.processPacket(aEvent, aPacket);
 		}
@@ -272,8 +294,8 @@ public class JWC {
 	/**
 	 * @return the mJWC
 	 */
-	public static BaseTokenClient getClient() {
-		return mJWC;
+	public static JWebSocketTokenClient getClient() {
+		return mTokenClient;
 	}
 
 	static class Listener implements WebSocketClientTokenListener {
@@ -286,7 +308,8 @@ public class JWC {
 		}
 
 		@Override
-		public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+		public void processPacket(WebSocketClientEvent aEvent,
+				WebSocketPacket aPacket) {
 			Message lMsg = new Message();
 			lMsg.what = MT_PACKET;
 			lMsg.obj = aPacket;
@@ -315,5 +338,6 @@ public class JWC {
 		@Override
 		public void processReconnecting(WebSocketClientEvent aEvent) {
 		}
+
 	}
 }

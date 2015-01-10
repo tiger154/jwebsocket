@@ -33,7 +33,8 @@ import org.jwebsocket.token.Token;
  *
  * @author Alexander Schulze
  */
-public class Fundamentals extends Activity implements WebSocketClientTokenListener {
+public class Fundamentals extends Activity implements
+		WebSocketClientTokenListener {
 
 	private Button lBtnSend;
 	private Button lBtnBroadcast;
@@ -60,12 +61,13 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 		lLog = (EditText) findViewById(R.id.lblFundLog);
 
 		// lSamplePlugIn = new SamplePlugIn(JWC.getClient());
-
 		lBtnSend.setOnClickListener(new OnClickListener() {
+			@Override
 			public void onClick(View aView) {
 				try {
 					// lSamplePlugIn.getRandom();
-					JWC.sendText(lTarget.getText().toString(), lMessage.getText().toString());
+					JWC.sendText(lTarget.getText().toString(), lMessage
+							.getText().toString());
 				} catch (WebSocketException ex) {
 					// TODO: handle exception
 				}
@@ -126,8 +128,8 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 		try {
 			lLog.append(aString);
 		} catch (Exception ex) {
-			Toast.makeText(getApplicationContext(), ex.getClass().getSimpleName(),
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(),
+					ex.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -135,6 +137,7 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 	 *
 	 * @param aEvent
 	 */
+	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
 		log("opened\n");
 		ImageView lImgView = (ImageView) findViewById(R.id.fundImgStatus);
@@ -150,7 +153,8 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 	 * @param aPacket
 	 */
 	@Override
-	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+	public void processPacket(WebSocketClientEvent aEvent,
+			WebSocketPacket aPacket) {
 		log("> " + aPacket.getUTF8() + "\n");
 	}
 

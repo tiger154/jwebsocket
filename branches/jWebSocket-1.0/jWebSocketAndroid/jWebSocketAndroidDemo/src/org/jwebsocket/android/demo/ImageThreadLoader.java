@@ -35,7 +35,8 @@ import java.util.HashMap;
 
 /**
  * This is an object that can load images from a URL on a thread. taken from
- * http://ballardhack.wordpress.com/2010/04/10/loading-images-over-http-on-a-separate-thread-on-android/
+ * http://ballardhack.wordpress.com/2010/04/10/loading-images-over-http-on-a-
+ * separate-thread-on-android/
  *
  * @author Prashant
  */
@@ -44,16 +45,18 @@ public class ImageThreadLoader {
 	private static final String TAG = "ImageThreadLoader";
 	// Global cache of images.
 	// Using SoftReference to allow garbage collector to clean cache if needed
-	private final HashMap<String, SoftReference<Bitmap>> mCache =
-			new HashMap<String, SoftReference<Bitmap>>();
+	private final HashMap<String, SoftReference<Bitmap>> mCache = new HashMap<String, SoftReference<Bitmap>>();
 
 	private final class QueueItem {
 
 		public URL url;
 		public ImageLoadedListener listener;
 	}
+
 	private final ArrayList<QueueItem> mQueue = new ArrayList<QueueItem>();
-	private final Handler mHandler = new Handler();	// Assumes that this is started from the main (UI) thread
+	private final Handler mHandler = new Handler(); // Assumes that this is
+	// started from the main
+	// (UI) thread
 	private Thread mThread;
 	private QueueRunner mRunner = new QueueRunner();
 
@@ -92,15 +95,20 @@ public class ImageThreadLoader {
 					// If in the cache, return that copy and be done
 					if (mCache.containsKey(lItem.url.toString())
 							&& mCache.get(lItem.url.toString()) != null) {
-						// Use a handler to get back onto the UI thread for the update
+						// Use a handler to get back onto the UI thread for the
+						// update
 						mHandler.post(new Runnable() {
 							@Override
 							public void run() {
 								if (lItem.listener != null) {
-									// NB: There's a potential race condition here where the cache item could get
-									//     garbage collected between when we post the runnable and it's executed.
-									//     Ideally we would re-run the network load or something.
-									SoftReference<Bitmap> ref = mCache.get(lItem.url.toString());
+									// NB: There's a potential race condition
+									// here where the cache item could get
+									// garbage collected between when we post
+									// the runnable and it's executed.
+									// Ideally we would re-run the network load
+									// or something.
+									SoftReference<Bitmap> ref = mCache
+											.get(lItem.url.toString());
 									if (ref != null) {
 										lItem.listener.imageLoaded(ref.get());
 									}
@@ -110,10 +118,13 @@ public class ImageThreadLoader {
 					} else {
 						final Bitmap bmp = readBitmapFromNetwork(lItem.url);
 						if (bmp != null) {
-							mCache.put(lItem.url.toString(), new SoftReference<Bitmap>(bmp));
+							mCache.put(lItem.url.toString(),
+									new SoftReference<Bitmap>(bmp));
 
-							// Use a handler to get back onto the UI thread for the update
+							// Use a handler to get back onto the UI thread for
+							// the update
 							mHandler.post(new Runnable() {
+								@Override
 								public void run() {
 									if (lItem.listener != null) {
 										lItem.listener.imageLoaded(bmp);
@@ -132,13 +143,13 @@ public class ImageThreadLoader {
 	/**
 	 * Queues up a URI to load an image from for a given image view.
 	 *
-	 * @param aURI	The URI source of the image
+	 * @param aURI The URI source of the image
 	 * @param aListener
 	 * @throws MalformedURLException If the provided uri cannot be parsed
 	 * @return A Bitmap image if the image is in the cache, else null.
 	 */
-	public Bitmap loadImage(final String aURI, final ImageLoadedListener aListener)
-			throws MalformedURLException {
+	public Bitmap loadImage(final String aURI,
+			final ImageLoadedListener aListener) throws MalformedURLException {
 		// If it's in the cache, just get it and quit it
 		if (mCache.containsKey(aURI)) {
 			SoftReference<Bitmap> lRef = mCache.get(aURI);
