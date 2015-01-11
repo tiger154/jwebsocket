@@ -186,6 +186,7 @@ xcopy %libs%jWebSocketRTCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSenchaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketScriptingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSharedObjectsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketSharedCanvasPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSMSPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 rem xcopy %libs%jWebSocketSSOPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketStatisticsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
@@ -466,7 +467,7 @@ set android_demo=%android_base%jWebSocketAndroidDemo\
 set dest=%down%jWebSocketAndroidDemo-%ver%.zip
 if exist "%dest%" del "%dest%"
 rem 7z u -mx9 -r -tzip "%dest%" "%android_demo%dist\jWebSocketAndroidDemo.apk"
-7z u -mx9 -r -tzip "%dest%" "%android_demo%bin\jWebSocketAndroidDemo-debug.apk"
+7z u -mx9 -r -tzip "%dest%" "%android_demo%bin\jWebSocketAndroidDemo.apk"
 7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_Android.txt"
 
 rem goto end
