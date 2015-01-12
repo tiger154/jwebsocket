@@ -129,7 +129,7 @@ public class LoadBalancerFilter extends TokenFilter {
 						}
 					} else if (mLoadBalancerPlugIn.isEndPointAvailable(lTargetId)) {
 
-						aConnector.sendPacket(new RawPacket(lData));
+						aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lTargetId)));
 						aResponse.rejectMessage();
 
 						return;
