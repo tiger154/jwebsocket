@@ -112,15 +112,14 @@ public class JMSEndPointSender {
 						if (null != lRespListener) {
 							// getting the response text
 							final String lResponse = aMessage.getText();
-							Thread lThread = new Thread() {
+							// invoke "onResponse" callback out of this thread 
+							Tools.getThreadPool().submit(new Runnable() {
+
 								@Override
 								public void run() {
 									lRespListener.onReponse(lResponse, aMessage);
 								}
-							};
-							lThread.setName("JMSEndPointSender Worker");
-							// invoke "onResponse" callback out of this thread 
-							Tools.getThreadPool().submit(lThread);
+							});
 						}
 					}
 
@@ -216,7 +215,7 @@ public class JMSEndPointSender {
 	 * @param aResponseListener
 	 * @param aTimeout
 	 */
-	public void sendText(String aTargetId, final String aCorrelationID,
+	public synchronized void sendText(String aTargetId, final String aCorrelationID,
 			final String aText, IJMSResponseListener aResponseListener,
 			long aTimeout) {
 		Message lMsg;
