@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -91,39 +92,42 @@ public class LoadBalancerFilter extends TokenFilter {
 
 			if ("ping".equals(aToken.getType())) {
 				if (null != lTargetId) {
+					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+							+ ",\"type\":\"response\",\"reqType\":\"ping\""
+							+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + aToken.getInteger("utid")
+							+ ",\"sourceId\":\"${endpoint}\""
+							+ ",\"isVirtual\":\"" + true + "\""
+							+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+							+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
+							+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
+							+ ",\"connectionId\":\"" + lConnectionId + "\""
+							+ (null != lEndPointId ? ",\"gatewayId\":\"" + lEndPointId + "\"" : "")
+							+ "}";
 					if (mLoadBalancerPlugIn.isEndPointAvailable(lTargetId)) {
-						String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
-								+ ",\"type\":\"response\",\"reqType\":\"ping\""
-								+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + aToken.getInteger("utid")
-								+ ",\"sourceId\":\"" + lEndPointId + "\""
-								+ ",\"isVirtual\":\"" + true + "\""
-								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
-								+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
-								+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
-								+ ",\"connectionId\":\"" + lConnectionId + "\""
-								+ (null != lEndPointId ? ",\"gatewayId\":\"" + lEndPointId + "\"" : "")
-								+ "}";
-
-						aConnector.sendPacket(new RawPacket(lData));
+						aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lTargetId)));
 						aResponse.rejectMessage();
-
 						return;
 					}
 				}
 			} else if ("identify".equals(aToken.getType())) {
 				if (null != lTargetId) {
-					if (mLoadBalancerPlugIn.isEndPointAvailable(lTargetId)) {
-						String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
-								+ ",\"type\":\"response\",\"reqType\":\"identify\""
-								+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + aToken.getInteger("utid")
-								+ ",\"sourceId\":\"" + lEndPointId + "\""
-								+ ",\"isVirtual\":\"" + true + "\""
-								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
-								+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
-								+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
-								+ ",\"connectionId\":\"" + lConnectionId + "\""
-								+ (null != lEndPointId ? ",\"gatewayId\":\"" + lEndPointId + "\"" : "")
-								+ "}";
+					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+							+ ",\"type\":\"response\",\"reqType\":\"identify\""
+							+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + aToken.getInteger("utid")
+							+ ",\"sourceId\":\"${endpoint}\""
+							+ ",\"isVirtual\":\"" + true + "\""
+							+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+							+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
+							+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
+							+ ",\"connectionId\":\"" + lConnectionId + "\""
+							+ (null != lEndPointId ? ",\"gatewayId\":\"" + lEndPointId + "\"" : "")
+							+ "}";
+					if ("*".equals(lTargetId)) {
+						List<String> lAliases = mLoadBalancerPlugIn.getAvailableClusters();
+						for (String lAlias : lAliases) {
+							aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lAlias)));
+						}
+					} else if (mLoadBalancerPlugIn.isEndPointAvailable(lTargetId)) {
 
 						aConnector.sendPacket(new RawPacket(lData));
 						aResponse.rejectMessage();
