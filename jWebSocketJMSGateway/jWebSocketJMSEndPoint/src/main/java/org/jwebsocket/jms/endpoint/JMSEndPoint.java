@@ -56,7 +56,7 @@ public class JMSEndPoint {
 	// the JMS connection instance/object
 	private Connection mConnection;
 	// session to create topics, producers and consumers
-	private Session mSession;
+	private Session mConsumerSession, mProducerSession;
 	//
 	private MessageProducer mProducer;
 	//
@@ -101,21 +101,23 @@ public class JMSEndPoint {
 		mConnection.setClientID(aEndPointId);
 
 		// create a session for this connection
-		mSession = mConnection.createSession(false,
+		mConsumerSession = mConnection.createSession(false,
+				Session.AUTO_ACKNOWLEDGE);
+		mProducerSession = mConnection.createSession(false,
 				Session.AUTO_ACKNOWLEDGE);
 
 		// create a producer for the given gateway topic (JMS destination)
-		mGatewayTopic = mSession.createTopic(aGatewayTopic);
-		mProducer = mSession.createProducer(mGatewayTopic);
+		mGatewayTopic = mConsumerSession.createTopic(aGatewayTopic);
+		mProducer = mProducerSession.createProducer(mGatewayTopic);
 
 		// create a consumer for the given gateway topic (JMS destination)
 		// use endPointId to listen on a certain target address only
 		mSelector = "targetId='" + mEndPointId
 				+ "' or (targetId='*' and sourceId<>'" + mEndPointId + "')";
 		if (aDurable) {
-			mConsumer = mSession.createDurableSubscriber(mGatewayTopic, mSelector);
+			mConsumer = mConsumerSession.createDurableSubscriber(mGatewayTopic, mSelector);
 		} else {
-			mConsumer = mSession.createConsumer(mGatewayTopic, mSelector);
+			mConsumer = mConsumerSession.createConsumer(mGatewayTopic, mSelector);
 		}
 		// create a listener and pass the sender to easily answer requests
 		mListener = new JMSEndPointListener(aThreadPoolSize);
@@ -147,7 +149,7 @@ public class JMSEndPoint {
 		// get endpoint id of JMS gateway
 		mEndPointId = mConnection.getClientID();
 		// take over the session
-		mSession = aSession;
+		mConsumerSession = aSession;
 		// take over the topic
 		mGatewayTopic = aGatewayTopic;
 		// gateway id, the endpoint id of the gateway.
@@ -158,9 +160,9 @@ public class JMSEndPoint {
 		mProducer = aProducer;
 
 		if (aDurable) {
-			mConsumer = mSession.createDurableSubscriber(mGatewayTopic, mSelector);
+			mConsumer = mConsumerSession.createDurableSubscriber(mGatewayTopic, mSelector);
 		} else {
-			mConsumer = mSession.createConsumer(mGatewayTopic, mSelector);
+			mConsumer = mConsumerSession.createConsumer(mGatewayTopic, mSelector);
 		}
 		// create a listener and pass the sender to easily answer requests
 		mListener = new JMSEndPointListener(aThreadPoolSize);
@@ -323,9 +325,16 @@ public class JMSEndPoint {
 				// TODO: process exceptions properly
 			}
 		}
-		if (null != mSession) {
+		if (null != mConsumerSession) {
 			try {
-				mSession.close();
+				mConsumerSession.close();
+			} catch (JMSException lEx) {
+				// TODO: process exceptions properly
+			}
+		}
+		if (null != mProducerSession) {
+			try {
+				mProducerSession.close();
 			} catch (JMSException lEx) {
 				// TODO: process exceptions properly
 			}
@@ -343,7 +352,7 @@ public class JMSEndPoint {
 			Tools.stopUtilityTimer();
 			Tools.stopUtilityThreadPool();
 		}
-		
+
 		// to end potential console loops
 		mShutDown = true;
 	}
@@ -369,7 +378,7 @@ public class JMSEndPoint {
 	 * new messages, new consumers or even to create new queues or topics.
 	 */
 	public Session getSession() {
-		return mSession;
+		return mProducerSession;
 	}
 
 	/**
@@ -381,6 +390,6 @@ public class JMSEndPoint {
 	}
 
 	public String getConnectionId() {
-		return ((ActiveMQConnection)mConnection).getConnectionInfo().getConnectionId().toString();
+		return ((ActiveMQConnection) mConnection).getConnectionInfo().getConnectionId().toString();
 	}
 }

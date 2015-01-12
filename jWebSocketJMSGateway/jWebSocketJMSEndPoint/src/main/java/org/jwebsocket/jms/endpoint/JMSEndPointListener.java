@@ -18,10 +18,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.endpoint;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import javax.jms.BytesMessage;
 import javax.jms.MapMessage;
@@ -29,20 +30,30 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
+import javolution.util.FastList;
 
 /**
  * Manages one or multiple listeners to a certain JMS Gateway connection.
  *
  * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 class JMSEndPointListener implements MessageListener {
 
 	private final List<IJMSMessageListener> mMessageListeners
-			= new ArrayList<IJMSMessageListener>();
+			= new FastList<IJMSMessageListener>();
 	private final ExecutorService mExecutor;
 
 	public JMSEndPointListener(int aThreadPoolSize) {
-		mExecutor = Executors.newFixedThreadPool(aThreadPoolSize);
+		mExecutor = Executors.newFixedThreadPool(aThreadPoolSize, new ThreadFactory() {
+
+			int lThreadCounter = 0;
+
+			@Override
+			public Thread newThread(Runnable r) {
+				return new Thread(r, "JWSEndPoint Worker Thread " + (++lThreadCounter));
+			}
+		});
 	}
 
 	public void addMessageListener(IJMSMessageListener aListener) {
@@ -57,24 +68,30 @@ class JMSEndPointListener implements MessageListener {
 		// a message has been received from the JMS Gateway
 		// select the correct type of the message and 
 		// call the corresponding listeners
+		Iterator<IJMSMessageListener> lIt = mMessageListeners.iterator();
 		if (aMsg instanceof TextMessage) {
 			TextMessage lTextMsg = (TextMessage) aMsg;
-			for (IJMSMessageListener lListener : mMessageListeners) {
+
+			while (lIt.hasNext()) {
+				IJMSMessageListener lListener = lIt.next();
 				lListener.onTextMessage(lTextMsg);
 			}
 		} else if (aMsg instanceof MapMessage) {
 			MapMessage lMapMsg = (MapMessage) aMsg;
-			for (IJMSMessageListener lListener : mMessageListeners) {
+			while (lIt.hasNext()) {
+				IJMSMessageListener lListener = lIt.next();
 				lListener.onMapMessage(lMapMsg);
 			}
 		} else if (aMsg instanceof BytesMessage) {
 			BytesMessage lByteMsg = (BytesMessage) aMsg;
-			for (IJMSMessageListener lListener : mMessageListeners) {
+			while (lIt.hasNext()) {
+				IJMSMessageListener lListener = lIt.next();
 				lListener.onBytesMessage(lByteMsg);
 			}
 		} else if (aMsg instanceof ObjectMessage) {
 			ObjectMessage lMapMsg = (ObjectMessage) aMsg;
-			for (IJMSMessageListener lListener : mMessageListeners) {
+			while (lIt.hasNext()) {
+				IJMSMessageListener lListener = lIt.next();
 				lListener.onObjectMessage(lMapMsg);
 			}
 		}
@@ -100,6 +117,5 @@ class JMSEndPointListener implements MessageListener {
 		} catch (InterruptedException ex) {
 			// TODO: Process exception properly
 		}
-		// mExecutor.isShutdown();
 	}
 }
