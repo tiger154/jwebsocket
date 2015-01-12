@@ -72,7 +72,7 @@ public class JMSAdvisoryListener implements MessageListener {
 		mBroadcastEvents = aBroadcastEvents;
 	}
 
-	String getEndPointId(ConsumerInfo aInfo) {
+	public String getEndPointId(ConsumerInfo aInfo) {
 		String lConnectionId = aInfo.getConsumerId().getConnectionId();
 		if (lIsConnectionIdPrefixed) {
 			return lConnectionId.split("-", 2)[0];
@@ -93,7 +93,11 @@ public class JMSAdvisoryListener implements MessageListener {
 		}
 	}
 
-	String getEndPointId(RemoveInfo aInfo) {
+	public String getEndPointId(String aConnectionId) {
+		return mConnections.get(aConnectionId);
+	}
+
+	public String getEndPointIdAndRemove(RemoveInfo aInfo) {
 		DataStructure lDS = aInfo.getObjectId();
 		if (lDS instanceof ConsumerId) {
 			String lConnectionId = ((ConsumerId) lDS).getConnectionId();
@@ -192,7 +196,7 @@ public class JMSAdvisoryListener implements MessageListener {
 							DataStructure lDS = lRemove.getObjectId();
 							if (lDS instanceof ConsumerId) {
 								String lConnectionId = ((ConsumerId) lDS).getConnectionId();
-								String lEndPointId = getEndPointId(lRemove);
+								String lEndPointId = getEndPointIdAndRemove(lRemove);
 								WebSocketConnector lConnector = null;
 								if (null != lEndPointId) {
 									lConnector = mEngine.getConnectors().get(lEndPointId);
