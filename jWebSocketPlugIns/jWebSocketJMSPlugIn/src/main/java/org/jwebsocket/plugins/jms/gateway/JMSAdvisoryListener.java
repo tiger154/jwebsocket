@@ -100,7 +100,7 @@ public class JMSAdvisoryListener implements MessageListener {
 			if (lIsConnectionIdPrefixed) {
 				return lConnectionId.split("-", 2)[0];
 			} else {
-				return mConnections.get(lConnectionId);
+				return mConnections.remove(lConnectionId);
 			}
 		}
 
