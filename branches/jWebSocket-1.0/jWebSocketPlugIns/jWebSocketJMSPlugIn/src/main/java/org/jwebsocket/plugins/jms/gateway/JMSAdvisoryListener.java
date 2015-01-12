@@ -18,9 +18,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.gateway;
 
+import java.util.Map;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javolution.util.FastMap;
 import org.apache.activemq.command.ActiveMQMessage;
 import org.apache.activemq.command.ConnectionInfo;
 import org.apache.activemq.command.ConsumerId;
@@ -51,6 +53,8 @@ public class JMSAdvisoryListener implements MessageListener {
 	private final boolean mBroadcastEvents;
 	private final JMSEngine mEngine;
 	private final JMSSender mJMSSender;
+	private Map<String, String> mConnections = new FastMap<String, String>().shared();
+	boolean lIsConnectionIdPrefixed = false;
 
 	/**
 	 *
@@ -66,6 +70,41 @@ public class JMSAdvisoryListener implements MessageListener {
 			mJMSPlugIn = aJMSPlugIn;
 		}
 		mBroadcastEvents = aBroadcastEvents;
+	}
+
+	String getEndPointId(ConsumerInfo aInfo) {
+		String lConnectionId = aInfo.getConsumerId().getConnectionId();
+		if (lIsConnectionIdPrefixed) {
+			return lConnectionId.split("-", 2)[0];
+		} else {
+			// get the endpoint id from the selector
+			String lEndPointId = aInfo.getSelector();
+			if (null == lEndPointId) {
+				lEndPointId = lConnectionId;
+			} else {
+				int lStart = lEndPointId.indexOf("'");
+				int lEnd = lEndPointId.indexOf("'", lStart + 1);
+				lEndPointId = lEndPointId.substring(lStart + 1, lEnd);
+
+				mConnections.put(lConnectionId, lEndPointId);
+			}
+
+			return lEndPointId;
+		}
+	}
+
+	String getEndPointId(RemoveInfo aInfo) {
+		DataStructure lDS = aInfo.getObjectId();
+		if (lDS instanceof ConsumerId) {
+			String lConnectionId = ((ConsumerId) lDS).getConnectionId();
+			if (lIsConnectionIdPrefixed) {
+				return lConnectionId.split("-", 2)[0];
+			} else {
+				return mConnections.get(lConnectionId);
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -102,7 +141,7 @@ public class JMSAdvisoryListener implements MessageListener {
 							}
 							ConsumerInfo lConsumer = (ConsumerInfo) lMessage.getDataStructure();
 							String lConnectionId = lConsumer.getConsumerId().getConnectionId();
-							String lEndPointId = lConnectionId.split("-", 2)[0];
+							String lEndPointId = getEndPointId(lConsumer);
 
 							// add connector if not event from the gateway itself.
 							if (null != lEndPointId) {
@@ -153,7 +192,7 @@ public class JMSAdvisoryListener implements MessageListener {
 							DataStructure lDS = lRemove.getObjectId();
 							if (lDS instanceof ConsumerId) {
 								String lConnectionId = ((ConsumerId) lDS).getConnectionId();
-								String lEndPointId = lConnectionId.split("-", 2)[0];
+								String lEndPointId = getEndPointId(lRemove);
 								WebSocketConnector lConnector = null;
 								if (null != lEndPointId) {
 									lConnector = mEngine.getConnectors().get(lEndPointId);
