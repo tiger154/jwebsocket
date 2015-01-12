@@ -20,6 +20,7 @@ package tld.yourname.jms.client;
 
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.jms.JMSException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -48,7 +49,7 @@ public class ClockServiceStressTest {
 
 	private static long lStartTime, lEndTime;
 	private static int lReqSent = 0;
-	private static int lResponseReceived = 0;
+	private static AtomicInteger lResponseReceived = new AtomicInteger(0);
 
 	/**
 	 *
@@ -226,15 +227,10 @@ public class ClockServiceStressTest {
 	}
 
 	private static void startStressTest() {
-		final int lIterations = 10;
+		final int lIterations = 1000;
 		int lCounter = 0;
 		lStartTime = System.currentTimeMillis();
-		final long lSleepInterval = 100;
 		while (lCounter < lIterations) {
-			try {
-				Thread.sleep(lSleepInterval);
-			} catch (InterruptedException lEx) {
-			}
 			lReqSent++;
 			Token lToken = TokenFactory.createToken("somecompany.service.clock", "getTime");
 			lToken.setString("username", "admin");
@@ -246,7 +242,6 @@ public class ClockServiceStressTest {
 
 						@Override
 						public void onTimeout() {
-							lResponseReceived++;
 						}
 
 						@Override
@@ -255,12 +250,12 @@ public class ClockServiceStressTest {
 
 						@Override
 						public void onSuccess(Token aReponse) {
-							lResponseReceived++;
+							lResponseReceived.incrementAndGet();
 							lEndTime = System.currentTimeMillis();
 
-							System.out.println(lResponseReceived + ", " + (((lEndTime - lStartTime) - lReqSent * lSleepInterval) / 1000));
+							System.out.println(lResponseReceived + ", " + (((lEndTime - lStartTime)) / 1000));
 							
-							if (lResponseReceived == lIterations){
+							if (lResponseReceived.get() == lIterations){
 								lJWSEndPoint.shutdown();
 							}
 						}
