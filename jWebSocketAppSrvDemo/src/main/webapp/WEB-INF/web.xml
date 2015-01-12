@@ -7,7 +7,7 @@
     </context-param>
     <listener>
         <description>Context listener used to start and stop the jWebSocket application server.</description>
-        <listener-class>org.jwebsocket.tomcat.ContextListener</listener-class>
+        <listener-class>org.jwebsocket.http.ContextListener</listener-class>
     </listener>
     <servlet>
         <servlet-name>jWebSocket</servlet-name>
