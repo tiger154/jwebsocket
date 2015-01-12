@@ -262,14 +262,16 @@ public class JMSPlugIn extends TokenPlugIn {
 				mConsumerSession.createConsumer(
 						mGatewayTopic,
 						"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
-		mListener = new JMSListener(mJMSEngine, mSender);
+		
+		JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
+				this, mJMSEngine, mSender, mSettings.getBroadcastAdvisoryEvents());
+		
+		mListener = new JMSListener(mJMSEngine, mSender, lAdvisoryListener);
 		mConsumer.setMessageListener(mListener);
 
 		// create the listener to the advisory topic
 		Topic lAdvisoryTopic = mConsumerSession.createTopic(mAdvisoryTopicId);
 		mAdvisoryConsumer = mConsumerSession.createConsumer(lAdvisoryTopic);
-		JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
-				this, mJMSEngine, mSender, mSettings.getBroadcastAdvisoryEvents());
 		mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
 
 		/*
