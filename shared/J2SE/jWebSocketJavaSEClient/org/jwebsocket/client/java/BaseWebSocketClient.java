@@ -40,9 +40,9 @@ import org.jwebsocket.util.JWSTimerTask;
 import org.jwebsocket.util.Tools;
 
 /**
- * Base {@code WebSocket} implementation based on
- * http://weberknecht.googlecode.com by Roderick Baier. This uses thread model
- * for handling WebSocket connection which is defined by the <tt>WebSocket</tt>
+ * Base {@code WebSocket} implementation based on http://weberknecht.googlecode.com by Roderick
+ * Baier. This uses thread model for handling WebSocket connection which is defined by the
+ * <tt>WebSocket</tt>
  * protocol specification. {@linkplain http://www.whatwg.org/specs/web-socket-protocol/}
  * {@linkplain http://www.w3.org/TR/websockets/}
  *
@@ -109,8 +109,8 @@ public class BaseWebSocketClient extends BaseClient {
 	}
 
 	/**
-	 * Make a sub protocol string for Sec-WebSocket-Protocol header. The result
-	 * is something like this:
+	 * Make a sub protocol string for Sec-WebSocket-Protocol header. The result is something like
+	 * this:
 	 * <pre>
 	 * org.jwebsocket.json org.websocket.text org.jwebsocket.binary
 	 * </pre>
@@ -374,26 +374,24 @@ public class BaseWebSocketClient extends BaseClient {
 
 	@Override
 	public synchronized void close() {
-		// on an explicit close operation ...
-		// cancel all potential re-connection tasks.
-		abortReconnect();
-		if (null != mReceiver) {
-			mReceiver.quit();
-		}
+		try {
+			// on an explicit close operation ...
+			// cancel all potential re-connection tasks.
+			abortReconnect();
+			if (null != mReceiver) {
+				mReceiver.quit();
+			}
 
-		if (!mStatus.isWritable()) {
-			return;
-		}
-		setCloseReason(CR_CLIENT);
-		try {
+			if (!mStatus.isWritable()) {
+				return;
+			}
+
+			setCloseReason(CR_CLIENT);
 			sendCloseHandshake();
-		} catch (WebSocketException lEx) {
-			// ignore that, connection is about to be terminated
-		}
-		try {
+
 			// stopping the receiver thread stops the entire client
 			terminateReceiverThread();
-		} catch (WebSocketException lEx) {
+		} catch (Exception lEx) {
 			// ignore that, connection is about to be terminated
 		}
 	}
