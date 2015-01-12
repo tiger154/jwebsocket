@@ -18,7 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.PluginConfiguration;
@@ -504,5 +506,24 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	boolean isEndPointAvailable(String aClusterAlias) {
 		ICluster lCluster = mClusterManager.getClusterByAlias(aClusterAlias);
 		return null != lCluster && lCluster.isEndPointAvailable();
+	}
+
+	/**
+	 * Get the aliases of clusters with available endpoints.
+	 *
+	 * @return
+	 */
+	List<String> getAvailableClusters() {
+		List<String> lAliases = new ArrayList<String>();
+
+		Iterator<ICluster> lIt = mClusterManager.getClusters();
+		while (lIt.hasNext()) {
+			String lAlias = lIt.next().getAlias();
+			if (isEndPointAvailable(lAlias)) {
+				lAliases.add(lAlias);
+			}
+		}
+
+		return lAliases;
 	}
 }
