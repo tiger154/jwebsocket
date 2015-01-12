@@ -42,15 +42,18 @@ public class JMSListener implements MessageListener {
 	private static final Logger mLog = Logging.getLogger();
 	final private JMSSender mJMSSender;
 	final private JMSEngine mEngine;
+	final private JMSAdvisoryListener mAdvisoryListener;
 
 	/**
 	 *
 	 * @param aEngine
 	 * @param aJMSSender
+	 * @param aAListener
 	 */
-	public JMSListener(JMSEngine aEngine, JMSSender aJMSSender) {
+	public JMSListener(JMSEngine aEngine, JMSSender aJMSSender, JMSAdvisoryListener aAListener) {
 		mEngine = aEngine;
 		mJMSSender = aJMSSender;
+		mAdvisoryListener = aAListener;
 	}
 
 	/**
@@ -136,12 +139,18 @@ public class JMSListener implements MessageListener {
 						} else if ("response".equals(lType)) {
 							if ("identify".equals(lToken.getString("reqType"))) {
 								String lClientConnectionId = lToken.getString("connectionId");
-								String lClientEndPointId = lClientConnectionId.split("-", 2)[0];
-								if (null != lClientEndPointId && null == mEngine.getConnectorById(lClientEndPointId)) {
-									JMSConnector lConnector = new JMSConnector(mEngine, mJMSSender, lClientConnectionId, lClientEndPointId);
-									lConnector.startConnector();
-									if (mLog.isInfoEnabled()) {
-										mLog.info("Remote client '" + lClientEndPointId + "' reconnected successfully!");
+								if (null == lClientConnectionId) {
+									// discard client reconnection due to not upgraded client endpoint.
+									mLog.error("No 'connectionId' provided by JMS target '" + lToken.getString("hostname")
+											+ "'on identify response, connection rejected!");
+								} else {
+									String lClientEndPointId = mAdvisoryListener.getEndPointId(lConnectionId);
+									if (null != lClientEndPointId && null == mEngine.getConnectorById(lClientEndPointId)) {
+										JMSConnector lConnector = new JMSConnector(mEngine, mJMSSender, lClientConnectionId, lClientEndPointId);
+										lConnector.startConnector();
+										if (mLog.isInfoEnabled()) {
+											mLog.info("Remote client '" + lClientEndPointId + "' reconnected successfully!");
+										}
 									}
 								}
 							}
