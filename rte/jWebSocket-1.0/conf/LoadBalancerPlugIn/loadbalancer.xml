@@ -62,7 +62,7 @@
 
 
 		The algorithm "2" was implemented only for java services; if all services are java clients
-		this is the perfect choice, because this algorithm uses the “sigar” library to get the cpu usage
+		this is the perfect choice, because this algorithm uses the "sigar" library to get the cpu usage
 		in each online service. In this way we can achieve load balance more accurately. For example:
 
 							   Algorithm Least CPU Usage ( value = 2 )
@@ -146,7 +146,7 @@
 
 
 		The algorithm "2" was implemented only for java services; if all services are java clients
-		this is the perfect choice, because this algorithm uses the “sigar” library to get the cpu usage
+		this is the perfect choice, because this algorithm uses the "sigar" library to get the cpu usage
 		in each online service. In this way we can achieve load balance more accurately. For example:
 
 							   Algorithm Least CPU Usage ( value = 2 )
