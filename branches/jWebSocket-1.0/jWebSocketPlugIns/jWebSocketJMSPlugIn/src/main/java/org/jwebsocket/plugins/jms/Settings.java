@@ -1,7 +1,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - Settings for JMS Gateway Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2015 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ import org.jwebsocket.config.JWebSocketServerConstants;
 /**
  *
  * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public class Settings {
 
@@ -31,6 +32,7 @@ public class Settings {
 	private String mBrokerURI = null;
 	private String mGatewayTopic = null;
 	private String mAdvisoryTopic = null;
+	private String mConnectionIdPrefix = JWebSocketServerConstants.JMS_GATEWAY_DEFAULT_CONNECTION_PREFIX;
 	private String mHostname = JWebSocketServerConstants.DEFAULT_HOSTNAME;
 
 	private Boolean mLoggerActive = false;
@@ -136,18 +138,36 @@ public class Settings {
 	}
 
 	/**
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public String getHostname() {
 		return mHostname;
 	}
 
 	/**
-	 * 
-	 * @param aHostname 
+	 *
+	 * @param aHostname
 	 */
 	public void setHostname(String aHostname) {
 		mHostname = aHostname;
+	}
+
+	/**
+	 * Get the gateway connection id prefix.
+	 *
+	 * @return
+	 */
+	public String getConnectionIdPrefix() {
+		return mConnectionIdPrefix;
+	}
+
+	/**
+	 * Set the gateway connection id prefix.
+	 *
+	 * @param aConnectionIdPrefix
+	 */
+	public void setConnectionIdPrefix(String aConnectionIdPrefix) {
+		mConnectionIdPrefix = aConnectionIdPrefix;
 	}
 }
