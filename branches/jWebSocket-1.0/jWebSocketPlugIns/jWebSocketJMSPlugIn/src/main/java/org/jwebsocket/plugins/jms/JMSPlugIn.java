@@ -271,7 +271,7 @@ public class JMSPlugIn extends TokenPlugIn {
 		JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
 				this, mJMSEngine, mSender, mSettings.getBroadcastAdvisoryEvents());
 
-		mListener = new JMSListener(mJMSEngine, mSender, lAdvisoryListener);
+		mListener = new JMSListener(mJMSEngine, this, mSender, lAdvisoryListener);
 		mConsumer.setMessageListener(mListener);
 
 		// create the listener to the advisory topic
