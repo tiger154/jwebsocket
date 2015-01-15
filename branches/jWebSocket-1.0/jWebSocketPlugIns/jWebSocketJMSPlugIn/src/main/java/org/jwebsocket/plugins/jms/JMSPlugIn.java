@@ -169,7 +169,7 @@ public class JMSPlugIn extends TokenPlugIn {
 		mAdvisoryTopicId = mSettings.getAdvisoryTopic();
 
 		mConnectionFactory = new ActiveMQConnectionFactory(mBrokerURI);
-		mConnectionFactory.setConnectionIDPrefix(mEndPointId);
+		mConnectionFactory.setConnectionIDPrefix(mSettings.getConnectionIdPrefix());
 
 		try {
 			// registering JMSEngine once JMS connection is already started
@@ -424,7 +424,16 @@ public class JMSPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		switch (ActionJms.get(lType)) {
+		ActionJms lCommand;
+		try {
+			lCommand = ActionJms.get(lType);
+		} catch (Exception lEx) {
+			mLog.info("Unknown message type '" + lType + "' discarded!");
+			// ignore command
+			return;
+		}
+
+		switch (lCommand) {
 			case LISTEN:
 				listen(aConnector, aToken);
 				break;
