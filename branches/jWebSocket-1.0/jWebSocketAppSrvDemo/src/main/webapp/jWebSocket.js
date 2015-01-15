@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC2 (build 40417)
+	//:const:*:VERSION:String:1.0.0 RC3 (build 50113)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 40417)",
+	VERSION: "1.0.0 RC3 (build 50113)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -343,12 +343,21 @@ var jws = {
 	},
 	
 	//:m:*:enableCometSupportForWebSockets
-	//:d:en:Sets the XHRWebSocket implementation as default WebSocket class.
-	//:d:en:Uses Comet technique to provide a WebSocket simulation.
+	//:d:en:Set the XHRWebSocket implementation as default WebSocket class.
+	//:d:en:Uses Comet technique to provides a WebSocket connection simulation.
 	//:a:en::::none
 	enableCometSupportForWebSockets: function(){
 		// setting the XHRWebSocket implementation 
 		window.WebSocket = XHRWebSocket;
+	},
+	
+	//:m:*:enableHTTPSupportForWebSockets
+	//:d:en:Set the HTTPWebSocket implementation as default WebSocket class.
+	//:d:en:Uses HTTP to provide a WebSocket connection simulation.
+	//:a:en::::none
+	enableHTTPSupportForWebSockets: function(){
+		// setting the HTTPWebSocket implementation 
+		window.WebSocket = HTTPWebSocket;
 	},
 
 	//:m:*:browserSupportsNativeWebSockets
@@ -1232,6 +1241,38 @@ String.prototype.getBytes = function () {
 //:ancestor:*:-
 //:d:en:Implements some required JavaScript tools.
 jws.tools = {
+	
+	//:m:*:b64toBlob
+	//:d:en:Converts a Base64 string to Blob
+	//:a:en::aBase64Data:String:The Base64 string
+	//:a:en::aContentType:String:The blob content type (MIME)
+	//:a:en::aSliceSize:Integer:The size of base64 string chunks for the Blob content
+	//:r:*:::Blob:The generated Blob object
+	b64toBlob: function (aBase64Data, aContentType, aSliceSize) {
+		// This code has been reused from:
+		// http://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+		aContentType = aContentType || '';
+		aSliceSize = aSliceSize || 512;
+
+		var lByteChars = atob(aBase64Data);
+		var lByteArrays = [];
+
+		for (var lOffset = 0; lOffset < lByteChars.length; lOffset += aSliceSize) {
+			var lSlice = lByteChars.slice(lOffset, lOffset + aSliceSize);
+
+			var lByteNumbers = new Array(lSlice.length);
+			for (var lIndex = 0; lIndex < lSlice.length; lIndex++) {
+				lByteNumbers[lIndex] = lSlice.charCodeAt(lIndex);
+			}
+
+			var lByteArray = new Uint8Array(lByteNumbers);
+
+			lByteArrays.push(lByteArray);
+		}
+
+		var lBlob = new Blob(lByteArrays, {type: aContentType});
+		return lBlob;
+	},
 	
 	//:m:*:str2bytes
 	//:d:en:Converts a string to byte array
@@ -2502,31 +2543,26 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	forceClose: function( aOptions ) {
 		// if client closes usually no event is fired
 		// here you optionally can fire it if required in your app!
-		var lFireClose = false;
+		var lFireClose = (aOptions || {}).fireClose || false;
 		// turn on isExplicitClose flag to not auto re-connect in case
 		// of an explicit, i.e. desired client side close operation
 		if( this.fReliabilityOptions ) {
 			this.fReliabilityOptions.isExplicitClose = true;
 		}
+		if( this.fConn ) {
+			if( this.fConn.readyState === jws.OPEN
+				|| this.fConn.readyState === jws.CONNECTING ) {
+				this.fConn.close();
+				this.processClosed();
+			}
+		}
 		if( aOptions ) {
-			if( aOptions.fireClose && this.fConn.onclose ) {
+			if( lFireClose && this.fConn.onclose ) {
 				// TODO: Adjust to event fields 
 				// if such are delivered in real event
 				var lEvent = {};
 				this.fConn.onclose( lEvent );
 			}
-		}
-		if( this.fConn ) {
-			// reset listeners to prevent any kind of potential memory leaks.
-			this.fConn.onopen = null;
-			this.fConn.onmessage = null;
-			this.fConn.onclose = null;
-			if( this.fConn.readyState === jws.OPEN
-				|| this.fConn.readyState === jws.CONNECTING ) {
-				this.fConn.close();
-			}
-			// TODO: should be called only if client was really opened before
-			this.processClosed();
 		}
 		// explicitely reset fConn to "null"
 		this.fConn = null;
@@ -2723,6 +2759,10 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	
 	registerFilters: function( ) {
 		var self = this;
+		// We need to remove the filters before adding them twice
+		if(this.fFilters && this.fFilters.length > 0){
+			this.fFilters = [];
+		}
 		this.addFilter({
 			
 			filterTokenOut: function( aToken ) {
@@ -3660,14 +3700,24 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:d:en:the same message with a prefix.
 	//:a:en::aData:String:An arbitrary string to be returned by the server.
 	//:r:*:::void:none
-	echo: function( aData ) {
+	echo: function( aData, aOptions ) {
 		var lRes = this.checkWriteable();
+		if( !aOptions ) {
+			aOptions = {};
+		}
 		if( 0 === lRes.code ) {
-			this.sendToken({
+			var lToken = {
 				ns: jws.NS_SYSTEM,
 				type: "echo",
 				data: aData
-			});
+			};
+			if( aOptions.delay ) {
+				lToken.delay = aOptions.delay;
+			}
+			if( aOptions.echoTestSize ) {
+				lToken.echoTestSize = aOptions.echoTestSize;
+			}
+			this.sendToken(lToken, aOptions);
 		}
 		return lRes;
 	},
