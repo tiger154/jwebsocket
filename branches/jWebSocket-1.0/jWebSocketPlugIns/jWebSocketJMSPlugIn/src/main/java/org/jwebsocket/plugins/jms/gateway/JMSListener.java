@@ -26,6 +26,7 @@ import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
@@ -144,12 +145,16 @@ public class JMSListener implements MessageListener {
 									mLog.error("No 'connectionId' provided by JMS target '" + lToken.getString("hostname")
 											+ "'on identify response, connection rejected!");
 								} else {
-									String lClientEndPointId = mAdvisoryListener.getEndPointId(lConnectionId);
-									if (null != lClientEndPointId && null == mEngine.getConnectorById(lClientEndPointId)) {
-										JMSConnector lConnector = new JMSConnector(mEngine, mJMSSender, lClientConnectionId, lClientEndPointId);
-										lConnector.startConnector();
-										if (mLog.isInfoEnabled()) {
-											mLog.info("Remote client '" + lClientEndPointId + "' reconnected successfully!");
+									// discarding parallel gateways
+									if (!lConnectionId.startsWith(JWebSocketServerConstants.JMS_GATEWAY_DEFAULT_CONNECTION_PREFIX)) {
+										// endpoints reconnection fallback
+										String lClientEndPointId = mAdvisoryListener.getEndPointId(lConnectionId);
+										if (null != lClientEndPointId && null == mEngine.getConnectorById(lClientEndPointId)) {
+											JMSConnector lConnector = new JMSConnector(mEngine, mJMSSender, lClientConnectionId, lClientEndPointId);
+											lConnector.startConnector();
+											if (mLog.isInfoEnabled()) {
+												mLog.info("Remote client '" + lClientEndPointId + "' reconnected successfully!");
+											}
 										}
 									}
 								}
