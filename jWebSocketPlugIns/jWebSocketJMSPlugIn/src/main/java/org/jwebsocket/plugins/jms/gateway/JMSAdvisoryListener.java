@@ -155,6 +155,8 @@ public class JMSAdvisoryListener implements MessageListener {
 									}
 
 									broadcastIdentifyMessage();
+								} else if (lConnectionId.startsWith(mJMSPlugIn.getSpringSettings().getConnectionIdPrefix())) {
+									// discard event, is another gateway connection
 								} else {
 									JMSConnector lConnector = (JMSConnector) mEngine.getConnectorById(lEndPointId);
 									if (null != lConnector) {
