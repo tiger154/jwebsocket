@@ -66,8 +66,8 @@ public final class JWebSocketServerConstants {
 	 */
 	public static String DEFAULT_ENGINE = "tcp";
 	/**
-	 * Default node id if non given in jWebSocket.xml. Empty means do not use
-	 * node-id for single stand-alone systems
+	 * Default node id if non given in jWebSocket.xml. Empty means do not use node-id for single
+	 * stand-alone systems
 	 */
 	public static String DEFAULT_NODE_ID = "";
 	/**
@@ -75,8 +75,7 @@ public final class JWebSocketServerConstants {
 	 */
 	public static final int DEFAULT_MAX_CONNECTIONS = 10000;
 	/**
-	 * The default "on max connections reached" strategy {wait, close, reject,
-	 * redirect}
+	 * The default "on max connections reached" strategy {wait, close, reject, redirect}
 	 */
 	public static final String DEFAULT_ON_MAX_CONNECTIONS_STRATEGY = "reject";
 	/**
@@ -89,11 +88,16 @@ public final class JWebSocketServerConstants {
 	 * @see conf/bootstrap.xml
 	 */
 	public static final String CONNECTION_MANAGER_BEAN_ID = "org.jwebsocket.server.connection_manager";
-	
+
 	public static final boolean KEEP_ALIVE_CONNECTORS = false;
-	
+
 	public static final Integer KEEP_ALIVE_CONNECTORS_INTERVAL = 20000;
-	
+
 	public static final Integer KEEP_ALIVE_CONNECTORS_TIMEOUT = 10000;
+
+	/**
+	 * The default JMSGateway connection prefix value.
+	 */
+	public static final String JMS_GATEWAY_DEFAULT_CONNECTION_PREFIX = "JWS_JMS_GW";
 
 }
