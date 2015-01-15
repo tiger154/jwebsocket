@@ -129,7 +129,7 @@ public class JMSPlugIn extends TokenPlugIn {
 					"instantiating JMS client."));
 		}
 	}
-	
+
 	private void init() {
 		// check if already initialized
 		if (mInitialized) {
@@ -196,7 +196,12 @@ public class JMSPlugIn extends TokenPlugIn {
 			mConnection.start();
 
 			// publishing global information that is required by other components
-			String lIpAddress = InetAddress.getByName(mSettings.getHostname()).getHostAddress();
+			String lIpAddress;
+			if (JWebSocketServerConstants.DEFAULT_HOSTNAME.equals(mSettings.getHostname())) {
+				lIpAddress = InetAddress.getLocalHost().getHostAddress();
+			} else {
+				lIpAddress = InetAddress.getByName(mSettings.getHostname()).getHostAddress();
+			}
 			System.setProperty("org.jwebsocket.plugins.jms.gateway.endPointId", mSettings.getEndPointId());
 			System.setProperty("org.jwebsocket.plugins.jms.gateway.connectionId", ((ActiveMQConnection) mConnection).getConnectionInfo().getConnectionId().getValue());
 			System.setProperty("org.jwebsocket.plugins.jms.gateway.hostname", InetAddress.getByName(lIpAddress).getHostName());
@@ -262,10 +267,10 @@ public class JMSPlugIn extends TokenPlugIn {
 				mConsumerSession.createConsumer(
 						mGatewayTopic,
 						"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
-		
+
 		JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
 				this, mJMSEngine, mSender, mSettings.getBroadcastAdvisoryEvents());
-		
+
 		mListener = new JMSListener(mJMSEngine, mSender, lAdvisoryListener);
 		mConsumer.setMessageListener(mListener);
 
