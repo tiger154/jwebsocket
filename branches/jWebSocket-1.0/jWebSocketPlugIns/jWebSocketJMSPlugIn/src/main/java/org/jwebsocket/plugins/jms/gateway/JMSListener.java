@@ -26,10 +26,10 @@ import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
+import org.jwebsocket.plugins.jms.JMSPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.Tools;
 
@@ -44,17 +44,20 @@ public class JMSListener implements MessageListener {
 	final private JMSSender mJMSSender;
 	final private JMSEngine mEngine;
 	final private JMSAdvisoryListener mAdvisoryListener;
+	final private JMSPlugIn mJMSPlugIn;
 
 	/**
 	 *
 	 * @param aEngine
+	 * @param aJMSPlugIn
 	 * @param aJMSSender
 	 * @param aAListener
 	 */
-	public JMSListener(JMSEngine aEngine, JMSSender aJMSSender, JMSAdvisoryListener aAListener) {
+	public JMSListener(JMSEngine aEngine, JMSPlugIn aJMSPlugIn, JMSSender aJMSSender, JMSAdvisoryListener aAListener) {
 		mEngine = aEngine;
 		mJMSSender = aJMSSender;
 		mAdvisoryListener = aAListener;
+		mJMSPlugIn = aJMSPlugIn;
 	}
 
 	/**
@@ -146,7 +149,7 @@ public class JMSListener implements MessageListener {
 											+ "'on identify response, connection rejected!");
 								} else {
 									// discarding parallel gateways
-									if (!lConnectionId.startsWith(JWebSocketServerConstants.JMS_GATEWAY_DEFAULT_CONNECTION_PREFIX)) {
+									if (!lConnectionId.startsWith(mJMSPlugIn.getSpringSettings().getConnectionIdPrefix())) {
 										// endpoints reconnection fallback
 										String lClientEndPointId = mAdvisoryListener.getEndPointId(lConnectionId);
 										if (null != lClientEndPointId && null == mEngine.getConnectorById(lClientEndPointId)) {
