@@ -361,10 +361,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		if (null != lScript) {
 			lScript.notifyEvent(BaseScriptApp.EVENT_BEFORE_APP_RELOAD, new Object[]{aHotLoad});
 			if (!aHotLoad) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Invoking script app active beans destruction...");
-				}
-				lScript.getAppBeanFactory().destroy();
+				destroyAppBeans(lScript);
 			}
 		}
 
@@ -922,6 +919,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// notifying event before undeploy
 		lScriptApp.notifyEvent(BaseScriptApp.EVENT_UNDEPLOYING, new Object[0]);
 
+		// propertly destroying script app active beans
+		destroyAppBeans(lScriptApp);
+
 		// deleting app
 		mApps.remove(lApp);
 		FileUtils.deleteDirectory(new File(lScriptApp.getPath()));
@@ -967,5 +967,13 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		throw new AccessControlException("The '" + aBeanPath + "' bean access "
 				+ "is not allowed in '" + aAppName + "' app!");
+	}
+
+	private void destroyAppBeans(BaseScriptApp aScriptApp) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Invoking script app active beans destruction...");
+		}
+		aScriptApp.getAppBeanFactory().refresh();
+		aScriptApp.getAppBeanFactory().destroy();
 	}
 }
