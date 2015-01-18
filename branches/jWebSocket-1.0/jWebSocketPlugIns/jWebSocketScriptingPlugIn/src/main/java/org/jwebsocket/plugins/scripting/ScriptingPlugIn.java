@@ -100,8 +100,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 */
 	protected ApplicationContext mBeanFactory;
 	/**
-	 * Configuration settings for the scripting plug-in. Controlled by Spring
-	 * configuration.
+	 * Configuration settings for the scripting plug-in. Controlled by Spring configuration.
 	 */
 	protected Settings mSettings;
 
@@ -361,6 +360,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		BaseScriptApp lScript = mApps.get(aAppName);
 		if (null != lScript) {
 			lScript.notifyEvent(BaseScriptApp.EVENT_BEFORE_APP_RELOAD, new Object[]{aHotLoad});
+			if (!aHotLoad) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Invoking script app active beans destruction...");
+				}
+				lScript.getAppBeanFactory().destroy();
+			}
 		}
 
 		// parsing app manifest
