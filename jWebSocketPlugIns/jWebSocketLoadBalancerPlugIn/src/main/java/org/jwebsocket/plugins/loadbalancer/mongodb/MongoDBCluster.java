@@ -205,7 +205,8 @@ public class MongoDBCluster implements ICluster {
 		while (lCursor.hasNext()) {
 			lInfoCluster = new HashMap<String, String>();
 			lInfoCluster.put(CLUSTER_ALIAS, getAlias());
-			lInfoCluster.put(ENDPOINT_ID, (String) lCursor.next().get(ENDPOINT_ID));
+			lInfoCluster.put(GENERIC_ID_FIELD, (String) lCursor.next().get(ENDPOINT_ID));
+			lInfoCluster.put(ENDPOINT_ID, (String) lCursor.next().get(CONNECTOR_ID));
 
 			aBuffer.add(lInfoCluster);
 		}
