@@ -156,11 +156,12 @@ public class MemoryCluster implements ICluster {
 	@Override
 	public void getStickyRoutes(List<Map<String, String>> aStickyRoutes) {
 		Map<String, String> lInfoCluster;
-		List<String> lIDs = getStickyIds();
-		for (int lPos = 0; lPos < lIDs.size(); lPos++) {
+		Map<String, String> lIDs = getStickyIds();
+		for (String lId : lIDs.keySet()) {
 			lInfoCluster = new FastMap<String, String>();
 			lInfoCluster.put(Attributes.CLUSTER_ALIAS, getAlias());
-			lInfoCluster.put(Attributes.ENDPOINT_ID, lIDs.get(lPos));
+			lInfoCluster.put(Attributes.GENERIC_ID_FIELD, lId);
+			lInfoCluster.put(Attributes.ENDPOINT_ID, lIDs.get(lId));
 
 			aStickyRoutes.add(lInfoCluster);
 		}
@@ -253,11 +254,12 @@ public class MemoryCluster implements ICluster {
 		return mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE);
 	}
 
-	private List<String> getStickyIds() {
-		List<String> lIDs = new FastList<String>();
+	private Map<String, String> getStickyIds() {
+		Map<String, String> lIDs = new HashMap<String, String>();
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
-			if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
-				lIDs.add(mEndPoints.get(lPos).getEndPointId());
+			IClusterEndPoint lEndPoint = mEndPoints.get(lPos);
+			if (lEndPoint.getStatus().equals(EndPointStatus.ONLINE)) {
+				lIDs.put(lEndPoint.getEndPointId(), lEndPoint.getConnectorId());
 			}
 		}
 
