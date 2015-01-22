@@ -102,7 +102,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 			}
 			String lPayload = aText;
 			Token lToken = JSONProcessor.JSONStringToToken(lPayload);
-			
+
 			// fields for requests
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();
@@ -185,7 +185,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 								+ ",\"connectionId\":\"" + getJMSEndPoint().getConnectionId() + "\""
 								+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
 								+ "}";
-						
+
 						if (null != lGatewayId) {
 							getSender().sendText(lGatewayId,
 									"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
@@ -197,34 +197,34 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 						}
 					}
 				}
+			}
 
-				// listeners for all messages
-				IJWSMessageListener lListener;
-				Iterator<IJWSMessageListener> lIterator = mMessageListeners.iterator();
-				while (lIterator.hasNext()) {
-					lListener = lIterator.next();
-					try {
-						lListener.processToken(lSourceId, lToken);
-					} catch (Exception lEx) {
-						mLog.error(lEx.getClass().getSimpleName() + " processing message.");
-					}
+			// listeners for all messages
+			IJWSMessageListener lListener;
+			Iterator<IJWSMessageListener> lIterator = mMessageListeners.iterator();
+			while (lIterator.hasNext()) {
+				lListener = lIterator.next();
+				try {
+					lListener.processToken(lSourceId, lToken);
+				} catch (Exception lEx) {
+					mLog.error(lEx.getClass().getSimpleName() + " processing message.");
 				}
+			}
 
-				// listeners for all requests
-				lListener = mRequestListeners.get(lNS + "." + lType);
-				if (null != lListener) {
-					try {
-						lListener.processToken(lSourceId, lToken);
-					} catch (Exception lEx) {
-						if (getSender() instanceof JWSEndPointSender) {
-							((JWSEndPointSender) getSender()).respondPayload(
-									lToken,
-									-1, // return code
-									lEx.getClass().getSimpleName() + ": "
-									+ lEx.getMessage(), // return message
-									null,
-									null);
-						}
+			// listeners for all requests
+			lListener = mRequestListeners.get(lNS + "." + lType);
+			if (null != lListener) {
+				try {
+					lListener.processToken(lSourceId, lToken);
+				} catch (Exception lEx) {
+					if (getSender() instanceof JWSEndPointSender) {
+						((JWSEndPointSender) getSender()).respondPayload(
+								lToken,
+								-1, // return code
+								lEx.getClass().getSimpleName() + ": "
+								+ lEx.getMessage(), // return message
+								null,
+								null);
 					}
 				}
 			}

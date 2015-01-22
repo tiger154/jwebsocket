@@ -36,6 +36,7 @@ public class Settings {
 	private String mHostname = JWebSocketServerConstants.DEFAULT_HOSTNAME;
 
 	private Boolean mLoggerActive = false;
+	private Boolean mFullTextLogging = false;
 	private Boolean mBroadcastTransportlisterEvents = false;
 	private Boolean mBroadcastAdvisoryEvents = false;
 
@@ -170,4 +171,14 @@ public class Settings {
 	public void setConnectionIdPrefix(String aConnectionIdPrefix) {
 		mConnectionIdPrefix = aConnectionIdPrefix;
 	}
+
+	public Boolean getFullTextLogging() {
+		return mFullTextLogging;
+	}
+
+	public void setFullTextLogging(Boolean aFullTextLogging) {
+		mFullTextLogging = aFullTextLogging;
+	}
+
+
 }

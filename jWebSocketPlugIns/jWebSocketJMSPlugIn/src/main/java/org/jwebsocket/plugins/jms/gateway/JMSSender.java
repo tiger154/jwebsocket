@@ -23,6 +23,7 @@ import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import org.apache.log4j.Logger;
+import org.jwebsocket.jms.endpoint.JMSLogging;
 
 /**
  *
@@ -56,10 +57,10 @@ public class JMSSender {
 	 */
 	public void sendText(final String aTargetId, final String aText) throws JMSException {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Sending text: "
-					+ "[content suppressed, length="
-					+ (null != aText ? aText.length() : "0") + " bytes]"
-					// + aText 
+			mLog.debug("Sending text to '" + aTargetId + "': "
+					+ (JMSLogging.isFullTextLogging() ? aText
+							: "[content suppressed, length="
+							+ (null != aText ? aText.length() : "0") + " bytes]")
 					+ "...");
 		}
 		Message lMsg;

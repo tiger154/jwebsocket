@@ -214,7 +214,7 @@ public class JMSClient {
 		String lGatewayId = lConfig.getString("GatewayId", "org.jwebsocket.jms.gateway");
 		String lEndPointId = lConfig.getString("EndPointId", UUID.randomUUID().toString());
 
-		lTargetEndPointId = lGatewayId;
+		lTargetEndPointId = lConfig.getString("TargetEndPointId", lGatewayId);
 
 		// get authentication information against jWebSocket
 		final String lJWSUsername = lConfig.getString("JWSUsername");
@@ -381,9 +381,8 @@ public class JMSClient {
 					public void processToken(String aSourceId, Token aToken) {
 						mLog.info("Login successful, initiating client communication process...");
 
-						runProgressTest();
-						//runOAuthTest();
-
+						// runProgressTest();
+						// runOAuthTest();
 						Map<String, Object> lArgs = new FastMap<String, Object>();
 
 						// echo on login
@@ -397,10 +396,12 @@ public class JMSClient {
 						}
 
 						lArgs.put("echo", "This is the echo message");
+						lArgs.put("targetId", lTargetEndPointId);
+
 						lJWSEndPoint.sendPayload(
-								lTargetEndPointId,
-								// "org.jwebsocket.jms.gateway", // target id
-								"org.jwebsocket.plugins.jmsdemo", // ns
+								// lTargetEndPointId,
+								"org.jwebsocket.jms.gateway", // target id
+								"org.jwebsocket.jms.demo", // ns
 								"echo", // type
 								lArgs,
 								"any additional payload if required",
@@ -426,13 +427,16 @@ public class JMSClient {
 
 								}, 10000);
 					}
-				});
+				}
+		);
 
 		// process response echo request to the JMS demo plug-in...
-		lJWSEndPoint.addResponseListener("org.jwebsocket.plugins.jmsdemo", "echo",
+		lJWSEndPoint.addResponseListener(
+				"org.jwebsocket.plugins.jmsdemo", "echo",
 				new JWSMessageListener(lJWSEndPoint) {
 					@Override
-					public void processToken(String aSourceId, Token aToken) {
+					public void processToken(String aSourceId, Token aToken
+					) {
 						mLog.info("Response from '" + aSourceId
 								+ "' to 'echo' received: "
 								+ (JMSLogging.isFullTextLogging()
@@ -440,13 +444,16 @@ public class JMSClient {
 										: aToken.getLogString())
 						);
 					}
-				});
+				}
+		);
 
 		// process response of the JMS Gateway login...
-		lJWSEndPoint.addResponseListener("org.jwebsocket.svcep.demo", "sso1",
+		lJWSEndPoint.addResponseListener(
+				"org.jwebsocket.svcep.demo", "sso1",
 				new JWSMessageListener(lJWSEndPoint) {
 					@Override
-					public void processToken(String aSourceId, Token aToken) {
+					public void processToken(String aSourceId, Token aToken
+					) {
 						int lCode = aToken.getInteger("code", -1);
 						if (0 == lCode) {
 							if (mLog.isInfoEnabled()) {
@@ -454,13 +461,16 @@ public class JMSClient {
 							}
 						}
 					}
-				});
+				}
+		);
 
 		// process response of the get data response...
-		lJWSEndPoint.addResponseListener("tld.yourname.jms", "getData",
+		lJWSEndPoint.addResponseListener(
+				"tld.yourname.jms", "getData",
 				new JWSMessageListener(lJWSEndPoint) {
 					@Override
-					public void processToken(String aSourceId, Token aToken) {
+					public void processToken(String aSourceId, Token aToken
+					) {
 						int lCode = aToken.getInteger("code", -1);
 						if (0 == lCode) {
 							if (mLog.isInfoEnabled()) {
@@ -514,7 +524,8 @@ public class JMSClient {
 						mLog.info("Gracefully shutting down...");
 						lJWSEndPoint.shutdown();
 					}
-				});
+				}
+		);
 
 		// start the endpoint all all listener have been assigned
 		lJWSEndPoint.start();
@@ -540,6 +551,7 @@ public class JMSClient {
 		}
 
 		// and show final status message in the console
-		mLog.info("JMS Client Endpoint properly shutdown.");
+		mLog.info(
+				"JMS Client Endpoint properly shutdown.");
 	}
 }

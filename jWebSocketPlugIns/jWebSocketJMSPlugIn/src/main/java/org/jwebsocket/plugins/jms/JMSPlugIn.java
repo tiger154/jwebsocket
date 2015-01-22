@@ -44,6 +44,7 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.config.xml.EngineConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.jms.endpoint.JMSLogging;
 import org.jwebsocket.jms.endpoint.JWSEndPoint;
 import org.jwebsocket.jms.endpoint.JWSResponseTokenListener;
 import org.jwebsocket.kit.CloseReason;
@@ -76,7 +77,7 @@ public class JMSPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
 	private static final String NS_JMS = JWebSocketServerConstants.NS_BASE + ".plugins.jms";
-	private final static String VERSION = "1.0.5";
+	private final static String VERSION = "1.0.6";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JMSPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
@@ -121,6 +122,9 @@ public class JMSPlugIn extends TokenPlugIn {
 			mJmsManager = JmsManager.getInstance(aConfiguration.getSettings(),
 					lBeanFactory);
 			mSettings = (Settings) lBeanFactory.getBean("org.jwebsocket.plugins.jms.settings");
+			// set full text logging based on spring config, should be false per default, 
+			// only for debugging purposes, never use true in production environments, security issue!
+			JMSLogging.setFullTextLogging(mSettings.getFullTextLogging());
 
 			mDomains = new FastList<String>();
 			mDomains.add("*");
@@ -131,6 +135,9 @@ public class JMSPlugIn extends TokenPlugIn {
 	}
 
 	private void init() {
+		// turn this on for debugging purposes ONLY!
+		// this might save security related content like passwords to the logs
+
 		// check if already initialized
 		if (mInitialized) {
 			return;
@@ -194,7 +201,7 @@ public class JMSPlugIn extends TokenPlugIn {
 			// will fail and cause an exception, such that we cannot
 			// connect to the queue or topic.
 			mConnection.start();
-
+			
 			// publishing global information that is required by other components
 			String lIpAddress;
 			if (JWebSocketServerConstants.DEFAULT_HOSTNAME.equals(mSettings.getHostname())) {

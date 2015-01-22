@@ -155,7 +155,7 @@ jws.LoadBalancerPlugIn = {
 			utid: aToken.utid,
 			sourceId: aToken.sourceId,
 			reqType: aToken.type
-		}
+		};
 
 		return lResponse;
 	},
@@ -176,33 +176,34 @@ jws.LoadBalancerPlugIn = {
 		
 		lWSC.open(lURL, {
 			OnWelcome: function() {
-				if(lWSC.isLoggedIn() != "root"){
+				if(lWSC.isLoggedIn() !== "root"){
 					lWSC.login(aOptions.connectionUsername || "root", aOptions.connectionPassword || "root"); 
 				}
 					
 				lWSC.lbRegisterServiceEndPoint(aClusterAlias, aPassword, aOptions);
 				lWSC.addPlugIn({
 					processToken: function(aToken) {
-						if (aToken.ns == aOptions.nameSpace) {
-							if ('test' == aToken.type) {
+						if (aToken.ns === aOptions.nameSpace) {
+							if ('test' === aToken.type) {
 								var lResponse = lWSC.lbCreateResponse(aToken);
 								lWSC.sendToken(lResponse);
 							}
 						}
 
-						if (aToken.ns == jws.LoadBalancerPlugIn.NS) {
-							if ('event' == aToken.type && 'shutdownServiceEndPoint' == aToken.name) {
+						if (aToken.ns === jws.LoadBalancerPlugIn.NS) {
+							if ('event' === aToken.type 
+									&& 'shutdownServiceEndPoint' === aToken.name) {
 								lWSC.close();
 							}
 						}
 					}
 				});
-			}, 
+			},
 			
 			OnMessage: function(aMessage) {
-				if ('function' == typeof log){
+				if ('function' === typeof log){
 					log('Message "' + aMessage.data + '" received on endpoint: ' 
-						+ (lWSC.getId() == null 
+						+ (lWSC.getId() === null 
 							? aMessage.data.split('"')[11] 
 							: lWSC.getId()));
 				}

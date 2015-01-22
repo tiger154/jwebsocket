@@ -48,7 +48,7 @@ public class JMSEndPointSender {
 	private final MessageProducer mProducer;
 	private final Session mSession;
 	private final String mEndPointId;
-	private static final Map<String, IJMSResponseListener> mResponseListeners
+	private final Map<String, IJMSResponseListener> mResponseListeners
 			= new FastMap<String, IJMSResponseListener>().shared();
 	private final JMSEndPoint mEndPoint;
 
@@ -75,14 +75,17 @@ public class JMSEndPointSender {
 			@Override
 
 			public void onMessage(Message aMessage) {
+				// mLog.debug("onMessage: " + aMessage);
 			}
 
 			@Override
 			public void onBytesMessage(BytesMessage aMessage) {
+				// mLog.debug("onBytesMessage: " + aMessage);
 			}
 
 			@Override
 			public void onTextMessage(final TextMessage aMessage) {
+				// mLog.debug("### onTextMessage: " + aMessage);
 				try {
 					boolean lIsProgressEvent = false;
 					// try to get the correlation id (utid) directly from the message
@@ -238,15 +241,13 @@ public class JMSEndPointSender {
 						lPropStr.append(", ");
 					}
 				}
-				mLog.debug("Sending text: "
+				mLog.debug("Sending text to '" + aTargetId + "': "
 						+ (JMSLogging.isFullTextLogging()
 								? aText
 								: "[content suppressed, length: " + aText.length() + " bytes]")
 						+ ", props: " + lPropStr
 						+ "...");
 			}
-
-			mProducer.send(lMsg);
 
 			// processing callbacks
 			if (null != aResponseListener) {
@@ -277,6 +278,9 @@ public class JMSEndPointSender {
 					}
 				}, aTimeout);
 			}
+
+			mProducer.send(lMsg);
+
 		} catch (JMSException lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " sending message: "

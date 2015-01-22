@@ -188,7 +188,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 	@Override
 	public synchronized void engineStarted(WebSocketEngine aEngine) {
-		if (mSettings.isMonitoringActive() 
+		if (mSettings.isMonitoringActive()
 				&& getServer().getEngines().size() >= 1) {
 			startAliasesMonitor(mSettings.getMonitoringInterval());
 		}
@@ -196,7 +196,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 	@Override
 	public synchronized void engineStopped(WebSocketEngine aEngine) {
-		if (mSettings.isMonitoringActive() 
+		if (mSettings.isMonitoringActive()
 				&& getServer().getEngines().size() >= 1) {
 			stopAliasesMonitor();
 		}
@@ -316,7 +316,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		// getting alias
 		String lBaseDir = getAliasPath(aConnector, lAlias);
-		File lFile = null;
+		File lFile;
 		if (lBaseDir != null) {
 			lFile = new File(lBaseDir + "/" + lFilename);
 		} else {
@@ -567,8 +567,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				// supporting HTTP download
 				ServletUtils.sendFile(((HTTPConnector) aConnector).getHttpResponse(), lFile);
 				((HTTPConnector) aConnector).setHttpResponse(null);
-				if (mLog.isDebugEnabled()){
-					mLog.debug("File '"+ lFilename + "' sent in the HTTP response!");
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("File '" + lFilename + "' sent in the HTTP response!");
 				}
 			} else {
 
