@@ -457,7 +457,7 @@ public class JWSEndPoint extends JMSEndPoint {
 	 * @param aTimeInterval The time interval that is used to send the endpoint CPU statistics to
 	 * the Load Balancer
 	 */
-	public void setLoadBalancerCpuUpdaterInternal(long aTimeInterval) {
+	public void setLoadBalancerCpuUpdaterInterval(long aTimeInterval) {
 		if (null == mCpuUpdater) {
 			throw new RuntimeException("The JWSEndPoint instance is not started yet!");
 		}

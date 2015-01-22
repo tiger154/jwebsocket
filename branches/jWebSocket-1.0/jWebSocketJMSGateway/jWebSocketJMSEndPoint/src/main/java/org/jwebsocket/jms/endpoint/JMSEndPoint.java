@@ -91,14 +91,21 @@ public class JMSEndPoint {
 			boolean aDurable) throws JMSException {
 		// instantiate connection factory for ActiveMQ broker
 		mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
+		// set the endpoint id as prefix to the connection id to allow a 
+		// better client identification in the advisory listeners 
+		// which only provider the connection id
 		mConnectionFactory.setConnectionIDPrefix(aEndPointId);
-		// save endpoint id 
+		// save endpoint id
 		mEndPointId = aEndPointId;
-		// save gateway id 
+		// save gateway id
 		mGatewayId = aGatewayId;
 		// create the connection object
 		mConnection = mConnectionFactory.createConnection();
+		// set the client id, AMQ does not allow to connect multiple 
+		// endpoints with esame client id (endpoint id)
 		mConnection.setClientID(aEndPointId);
+		
+		// mConnection.start();
 
 		// create a session for this connection
 		mConsumerSession = mConnection.createSession(false,
@@ -127,7 +134,7 @@ public class JMSEndPoint {
 	}
 
 	public void setReleaseJWSResources(boolean aRelease) {
-		this.mReleaseJWSResources = aRelease;
+		mReleaseJWSResources = aRelease;
 	}
 
 	/**

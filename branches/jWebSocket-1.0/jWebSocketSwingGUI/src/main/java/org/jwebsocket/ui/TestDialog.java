@@ -26,7 +26,6 @@ package org.jwebsocket.ui;
 
 import java.awt.Toolkit;
 import java.io.*;
-import java.net.Proxy;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;

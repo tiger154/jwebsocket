@@ -85,7 +85,7 @@
 	    <!-- if the buffer contains xx mails, the email should be sent -->
 		<param name="bufferSize" value="10" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="Alsius Server Error Event%n%nTime  : %d{yyyy-MM-dd HH:mm:ss,SSS z}%nLevel : %-5p%nClass : %C%nFile  : %F%nLine  : %L%nMethod: %M%n%n%m%n%n%n" />
+			<param name="ConversionPattern" value="jWebSocket Server Error Event%n%nTime  : %d{yyyy-MM-dd HH:mm:ss,SSS z}%nLevel : %-5p%nClass : %C%nFile  : %F%nLine  : %L%nMethod: %M%n%n%m%n%n%n" />
 		</layout>
 	</appender>	
 	
