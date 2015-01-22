@@ -25,7 +25,6 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.kit.RawPacket;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.token.Token;
@@ -39,7 +38,7 @@ import org.springframework.util.Assert;
  */
 public class LoadBalancerFilter extends TokenFilter {
 
-	private static final Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logger.getLogger(LoadBalancerFilter.class);
 	/**
 	 * Load balancer plug-in id.
 	 */
@@ -69,6 +68,9 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("LoadBalancer filtering incoming token: " + aToken.getLogString());
+		}
 		String lTargetId = aToken.getString("targetId");
 		String lAction = aToken.getString("action");
 		if ("forward.json".equals(lAction) && null != lTargetId) {

@@ -219,7 +219,8 @@ public class JMSAdvisoryListener implements MessageListener {
 										lBroadcast = true;
 									}
 								} else {
-									mLog.error("Connector '" + lConnectionId
+									// todo: this should not happen, even in a clustered environment
+									mLog.warn("Connector '" + lConnectionId
 											+ "' could not be removed from JMSEngine!");
 								}
 							} else {

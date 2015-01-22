@@ -54,6 +54,10 @@
 
 		<!-- activate the traffic logger -->
 		<beans:property name="loggerActive" value="false"/>
+		<!-- This is for debugging purposes only. Please ensure set this to 
+		false, to not log any credentials or secrets in any live environment! -->
+		<beans:property name="fullTextLogging" value="false"/>
+		
 		<!-- broadcast all JMS transport listener events to connected clients -->
 		<beans:property name="broadcastTransportlisterEvents" value="true"/>
 		<beans:property name="broadcastAdvisoryEvents" value="true"/>

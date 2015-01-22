@@ -61,9 +61,9 @@ public class JMSTransportListener implements TransportListener {
 	 */
 	@Override
 	public void onCommand(Object aObject) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Transport Command: " + aObject.toString());
-		}
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Transport Command: " + aObject.toString());
+//		}
 		boolean lBroadcast = true;
 		final Token lToken = TokenFactory.createToken(mJMSPlugIn.getNamespace(), "event");
 		lToken.setString("name", aObject.getClass().getSimpleName());

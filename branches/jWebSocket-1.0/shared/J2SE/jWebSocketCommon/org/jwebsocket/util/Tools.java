@@ -82,6 +82,7 @@ public class Tools {
 	private static final Map<String, String> GENERIC_2_JAVA_MAP = new FastMap<String, String>();
 	private static Timer mTimer = null;
 	private static ExecutorService mThreadPool = null;
+	private static String mOS = null;
 	/**
 	 *
 	 */
@@ -153,7 +154,7 @@ public class Tools {
 	 */
 	public static double getCpuUsage() throws Exception {
 		Double lJavaVersion = Double.parseDouble(System.getProperty("java.vm.specification.version"));
-		if (lJavaVersion >= 1.6) {
+		if (!getOperatingSystem().startsWith("Windows") && lJavaVersion >= 1.6) {
 			OperatingSystemMXBean lOSBean = ManagementFactory.getPlatformMXBean(
 					OperatingSystemMXBean.class);
 
@@ -181,6 +182,18 @@ public class Tools {
 			System.out.println("getMD5: " + lEx.getMessage());
 		}
 		return null;
+	}
+	
+	/**
+	 * Get the operating system name.
+	 * @return 
+	 */
+	public static String getOperatingSystem(){
+		if (null == mOS){
+			mOS = System.getProperty("os.name");
+		}
+		
+		return mOS;
 	}
 
 	/**

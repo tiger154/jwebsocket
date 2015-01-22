@@ -26,6 +26,7 @@ import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.jms.endpoint.JMSLogging;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
@@ -145,7 +146,7 @@ public class JMSListener implements MessageListener {
 								String lClientConnectionId = lToken.getString("connectionId");
 								if (null == lClientConnectionId) {
 									// discard client reconnection due to not upgraded client endpoint.
-									mLog.error("No 'connectionId' provided by JMS target '" + lToken.getString("hostname")
+									mLog.warn("No 'connectionId' provided by JMS target '" + lToken.getString("hostname")
 											+ "'on identify response, connection rejected!");
 								} else {
 									// discarding parallel gateways
@@ -196,8 +197,10 @@ public class JMSListener implements MessageListener {
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Processing JMS packet from '"
 										+ lSourceId
-										+ "' [content suppressed, length="
-										+ (null != lJSON ? lJSON.length() : "0")
+										+ (JMSLogging.isFullTextLogging()
+												? lJSON
+												: "' [content suppressed, length="
+												+ (null != lJSON ? lJSON.length() : "0"))
 										+ " bytes]...");
 								// don't log JSON text packet here, it could contain sensitive data!
 							}

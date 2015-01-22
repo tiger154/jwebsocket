@@ -23,7 +23,7 @@ import javolution.util.FastMap;
 
 /**
  *
- * @author Rolando Betancourt Toucet
+ * @author Alexander Schulze, Rolando Betancourt Toucet
  */
 public class Settings {
 
@@ -41,7 +41,7 @@ public class Settings {
 	 * @param aConnections
 	 */
 	public void setConnections(Map<String, NativeAccess> aConnections) {
-		this.mConnections = aConnections;
+		mConnections = aConnections;
 	}
 
 	/**

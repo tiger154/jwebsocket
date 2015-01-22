@@ -164,10 +164,15 @@
 	<bean id="settings" class="org.jwebsocket.plugins.jdbc.Settings">
 		<property name="connections">
 			<map>
-				<!-- Uncomment for enable mysql to default jdbc connection
+				<!-- Uncomment to enable mysql to default jdbc connection
 					<entry key="default" value-ref="mySQLNativeAccess_jwsSys"/> 
 				-->
 				<entry key="jwsDemo" value-ref="mySQLNativeAccess_jwsDemo"/>
+				<!-- CAUTION! The "jwsSys" alias allows root access to the 
+				database and IS NOT RECOMMENDED for security reasons!
+				It is here only for test and demonstration purposes and 
+				should be commented out in production environments! -->
+				<entry key="jwsSys" value-ref="mySQLNativeAccess_jwsSys"/>
 				<entry key="default" value-ref="derbyNativeAccess"/>
 				<entry key="jws_extjs_crud" value-ref="mySQLNativeAccess_jWS_ExtJS_CRUD"/>
 			</map>
