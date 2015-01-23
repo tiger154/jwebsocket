@@ -39,7 +39,7 @@ import org.jwebsocket.util.Tools;
  */
 public class SystemFilter extends TokenFilter {
 
-	private static final Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logger.getLogger(SystemFilter.class);
 	private static final List<String> mSupportedEncodings;
 
 	static {
@@ -173,7 +173,7 @@ public class SystemFilter extends TokenFilter {
 					} catch (Exception lEx) {
 						mLog.error(Logging.getSimpleExceptionMessage(lEx,
 								"trying to encode '" + lAttr + "' value to '"
-										+ lFormat + "' format..."));
+								+ lFormat + "' format..."));
 						aResponse.rejectMessage();
 					}
 				}
