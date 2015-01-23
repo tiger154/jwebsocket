@@ -33,7 +33,7 @@ import org.jwebsocket.token.Token;
  */
 public class SampleFilter extends TokenFilter {
 
-	private static final Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logger.getLogger(SampleFilter.class);
 
 	/**
 	 *

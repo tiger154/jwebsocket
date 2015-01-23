@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.kit.PlugInResponse;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.annotations.AnnotationManager;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
@@ -35,7 +34,7 @@ import org.jwebsocket.token.Token;
  */
 public class ActionPlugIn extends TokenPlugIn {
 
-	private final Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logger.getLogger(ActionPlugIn.class);
 
 	/**
 	 *
@@ -47,7 +46,7 @@ public class ActionPlugIn extends TokenPlugIn {
 
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		String lActionName = aToken.getType();
+		String lActionName = aToken.getNS() + "." + aToken.getType();
 
 		if (isActionSupported(lActionName)) {
 			if (mLog.isDebugEnabled()) {

@@ -48,12 +48,12 @@ import org.springframework.util.Assert;
 
 /**
  * @author Alexander Schulze
- * @author jang
+ * @author Jan Gnezda
  * @author Rolando Betancourt Toucet
  */
 public class TokenServer extends BaseServer {
 
-	private static final Logger mLog = Logging.getLogger(TokenServer.class);
+	private static final Logger mLog = Logger.getLogger(TokenServer.class);
 	// specify shared connector variables
 	/**
 	 *
@@ -276,9 +276,10 @@ public class TokenServer extends BaseServer {
 		// is the data packet supposed to be interpreted as token?
 		if (!WebSocketFrameType.BINARY.equals(aDataPacket.getFrameType())) {
 			if (aConnector.supportTokens()) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Processing packet as token...");
-				}
+//				// avoid too much debug logs
+//				if (mLog.isDebugEnabled()) {
+//					mLog.debug("Processing packet as token...");
+//				}
 
 				final Token lToken = packetToToken(aConnector, aDataPacket);
 				if (lToken != null) {
@@ -311,9 +312,11 @@ public class TokenServer extends BaseServer {
 							+ "' could not be converted into token.");
 				}
 			} else {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Processing packet as custom packet...");
-				}
+//				// avoid too much debug logs
+//				if (mLog.isDebugEnabled()) {
+//					mLog.debug("Processing packet as custom packet...");
+//				}
+				// TODO: implement
 			}
 		}
 		super.processPacket(aEngine, aConnector, aDataPacket);
