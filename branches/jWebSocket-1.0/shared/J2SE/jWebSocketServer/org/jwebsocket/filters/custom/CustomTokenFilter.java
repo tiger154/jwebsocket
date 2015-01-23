@@ -23,7 +23,6 @@ import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.FilterResponse;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
 
 /**
@@ -32,7 +31,7 @@ import org.jwebsocket.token.Token;
  */
 public class CustomTokenFilter extends TokenFilter {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logger.getLogger(CustomTokenFilter.class);
 
 	/**
 	 *

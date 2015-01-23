@@ -120,6 +120,38 @@
 		<appender-ref ref="developmentLog"/>
 	</logger>
 
+	<!-- special treatment for all logging activities of the jWebSocket load balancer -->
+	<logger name="org.jwebsocket.plugins.loadbalancer.LoadBalancerFilter" additivity="false">
+		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
+		<level value="INFO"/>
+		<!--  select one of the above declared appenders -->
+		<appender-ref ref="developmentLog"/>
+	</logger>
+
+	<!-- special treatment for all logging activities of the jWebSocket statistic plug-in -->
+	<logger name="org.jwebsocket.plugins.statistics.StatisticsFilter" additivity="false">
+		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
+		<level value="INFO"/>
+		<!--  select one of the above declared appenders -->
+		<appender-ref ref="developmentLog"/>
+	</logger>
+
+	<!-- special treatment for all logging activities of the jWebSocket sample filter -->
+	<logger name="org.jwebsocket.filters.sample.SampleFilter" additivity="false">
+		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
+		<level value="INFO"/>
+		<!--  select one of the above declared appenders -->
+		<appender-ref ref="developmentLog"/>
+	</logger>
+
+	<!-- special treatment for all logging activities of the jWebSocket system filter -->
+	<logger name="org.jwebsocket.filters.system.SystemFilter" additivity="false">
+		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
+		<level value="INFO"/>
+		<!--  select one of the above declared appenders -->
+		<appender-ref ref="developmentLog"/>
+	</logger>
+
 	<!-- special treatment for all logging activities on the JMS gateway -->
 	<logger name="org.jwebsocket.plugins.jms.gateway.JMSLogger" additivity="false">
 		<level value="DEBUG"/>

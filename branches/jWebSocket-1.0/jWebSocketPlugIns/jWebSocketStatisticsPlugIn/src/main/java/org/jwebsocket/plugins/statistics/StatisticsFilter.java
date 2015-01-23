@@ -33,7 +33,7 @@ import org.jwebsocket.token.Token;
  */
 public class StatisticsFilter extends TokenFilter {
 
-	private static final Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logger.getLogger(StatisticsFilter.class);
 
 	/**
 	 *
@@ -63,8 +63,8 @@ public class StatisticsFilter extends TokenFilter {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Analyzing incoming token from "
 					+ (aConnector != null
-					? aConnector.getId()
-					: "[not given]")
+							? aConnector.getId()
+							: "[not given]")
 					+ ": " + Logging.getTokenStr(aToken) + "...");
 		}
 
