@@ -46,11 +46,11 @@ public class ActionPlugIn extends TokenPlugIn {
 
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		String lActionName = aToken.getNS() + "." + aToken.getType();
+		String lActionName = aToken.getType();
 
 		if (isActionSupported(lActionName)) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Processing action '" + lActionName + "'...");
+				mLog.debug("Processing action '" + aToken.getNS() + "." + lActionName + "'...");
 			}
 			callAction(lActionName, aConnector, aToken);
 			aResponse.abortChain();
