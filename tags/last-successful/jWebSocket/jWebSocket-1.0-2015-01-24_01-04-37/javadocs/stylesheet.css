@@ -1,0 +1,110 @@
+/* Javadoc style sheet */
+	/* Define colors, fonts and other style attributes here to override the defaults */
+	/* Page background color */ /* a,ul,li,i,b,td */
+body {
+	border: none;
+	background: #fff;
+	font-family: Verdana, Helvetica, sans-serif;
+	font-size: 10pt;
+	color: #202020;
+}
+
+/* Headings */
+h1 {
+	font-size: 145%;
+	font-family: Arial, Helvetica, sans-serif
+}
+
+h2 {
+	font-size: 145%;
+	font-family: Arial, Helvetica, sans-serif
+}
+
+h3 {
+	font-family: Arial, Helvetica, sans-serif
+}
+
+/* Table colors */
+.TableHeadingColor {
+	font-family: Arial, Helvetica, sans-serif;
+	background: #F0F0F0;
+	color: #006bb5;
+}  /* Dark mauve */
+.TableSubHeadingColor {
+	background: #F0F0F0;
+	color: #000000
+}  /* Light mauve */
+.TableRowColor {
+	background: #FFFFFF;
+	color: #000000
+}  /* White */ /* Font used in left-hand frame lists */
+.FrameTitleFont {
+	font-size: 100%;
+	font-family: Verdana, Helvetica, sans-serif;
+	color: #000000
+}
+
+.FrameHeadingFont {
+	font-size: 90%;
+	font-family: Verdana, Helvetica, sans-serif;
+	color: #000000
+}
+
+.FrameItemFont {
+	font-size: 90%;
+	font-family: Verdana, Helvetica, sans-serif;
+	color: #000000
+}
+
+/* Navigation bar fonts and colors */
+.NavBarCell1 {
+	background-color: #F0F0F0;
+	color: #000000
+}  /* Light mauve */
+.NavBarCell1Rev {
+	background-color: #81a0b5;
+	color: #FFFFFF
+}  /* Dark Blue */
+.NavBarFont1 {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000000;
+	color: #000000;
+}
+
+.NavBarFont1Rev {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #FFFFFF;
+	color: #FFFFFF;
+}
+
+.NavBarCell2 {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #FFFFFF;
+	color: #000000
+}
+
+.NavBarCell3 {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #FFFFFF;
+	color: #000000
+}
+
+a {
+	color: #202020;
+}
+
+a:hover {
+	background-color: #f0f0f0;
+}
+
+a:active {
+	background-color: #f0f0f0;
+}
+
+a:focus {
+	background-color: #f0f0f0;
+}
+
+th font b {
+	font-size: 14pt;
+}
