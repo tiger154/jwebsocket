@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DFC4CF68-DF77-48B8-B486-3F44518DA862}</ProjectGuid>
+    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebSocketWPClient</RootNamespace>
+    <AssemblyName>WebSocketWPClient</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <TargetFrameworkProfile>WindowsPhone71</TargetFrameworkProfile>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\API Binary\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\API Binary\WebSocketWPClient.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\API Binary\</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\API Binary\WebSocketWPClient.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>JSON.NET\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="mscorlib.extensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Common Code\org\jwebsocket\client\api\WebSocketClientListener.cs">
+      <Link>HelperClasses\WebSocketClientListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\api\WebSocketPacket.cs">
+      <Link>HelperClasses\WebSocketPacket.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\config\WebSocketConstants.cs">
+      <Link>HelperClasses\WebSocketConstants.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketCloseReason.cs">
+      <Link>HelperClasses\WebSocketCloseReason.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketConvert.cs">
+      <Link>HelperClasses\WebSocketConvert.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketEncoding.cs">
+      <Link>HelperClasses\WebSocketEncoding.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketError.cs">
+      <Link>HelperClasses\WebSocketError.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketException.cs">
+      <Link>HelperClasses\WebSocketException.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketExceptionType.cs">
+      <Link>HelperClasses\WebSocketExceptionType.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketFrameType.cs">
+      <Link>HelperClasses\WebSocketFrameType.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketRawPacket.cs">
+      <Link>HelperClasses\WebSocketRawPacket.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketReliabilityOptions.cs">
+      <Link>HelperClasses\WebSocketReliabilityOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketRuntimeException.cs">
+      <Link>HelperClasses\WebSocketRuntimeException.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketStatus.cs">
+      <Link>HelperClasses\WebSocketStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketSubProtocol.cs">
+      <Link>HelperClasses\WebSocketSubProtocol.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\kit\WebSocketTypeEncoding.cs">
+      <Link>HelperClasses\WebSocketTypeEncoding.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\packetProcessor\TokenProcessor.cs">
+      <Link>HelperClasses\TokenProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\token\DictionaryToken.cs">
+      <Link>HelperClasses\DictionaryToken.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\token\Token.cs">
+      <Link>HelperClasses\Token.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\token\TokenFactory.cs">
+      <Link>HelperClasses\TokenFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Common Code\org\jwebsocket\client\token\WebSocketClientTokenListener.cs">
+      <Link>HelperClasses\WebSocketClientTokenListener.cs</Link>
+    </Compile>
+    <Compile Include="JSONTokenProcessor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebSocketBaseClient.cs" />
+    <Compile Include="WebSocketErrorEventArgs.cs" />
+    <Compile Include="WebSocketHandshake.cs" />
+    <Compile Include="WebSocketPacketReader.cs" />
+    <Compile Include="WebSocketProtocolAbstraction.cs" />
+    <Compile Include="WebSocketTokenClient.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <ProjectExtensions />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

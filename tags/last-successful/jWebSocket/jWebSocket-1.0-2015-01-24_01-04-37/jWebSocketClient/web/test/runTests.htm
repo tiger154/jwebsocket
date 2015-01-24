@@ -1,0 +1,281 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>jWebSocketServer 1.0 automated tests</title>
+
+		<!-- jasmine test framework related files -->
+		<link rel="stylesheet" type="text/css" href="../lib/jasmine-1.0.2/jasmine.css">
+		<script type="text/javascript" src="../lib/jasmine-1.0.2/jasmine.js"></script>
+		<script type="text/javascript" src="../lib/jasmine-1.0.2/jasmine-html.js"></script>
+		<!-- include spec files here... -->
+		<script type="text/javascript" src="spec/Matchers.js"></script>
+
+		<!-- JQUERY DEPENDENCIES -->
+		<link rel="stylesheet" href="../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+        <script type="text/javascript" src='../lib/jQuery/jquery.js'></script>
+        <script type="text/javascript" src='../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+		<script type="text/javascript" src='../res/js/widgets/dialogs.js'></script>
+
+		<!-- jWebSocket style sheet -->
+		<link rel="stylesheet" type="text/css" href="../res/css/demos.css">
+		<link rel="stylesheet" type="text/css" href="css/tests.css">
+
+		<!-- use bundle to check if all plug-ins are embedded in the bundle -->
+		<!--  <script type="text/javascript" src="../res/js/jWebSocket_Bundle.js"></script> -->
+
+		<!-- also use minified version to check/validate obfuscator -->
+		<!-- <script type="text/javascript" src="../res/js/jWebSocket_Bundle_min.js"></script> -->
+
+		<!-- use separate files if you are updating individual files -->
+		<script type="text/javascript" src="../res/js/jWebSocket.js"></script>
+		<script type="text/javascript" src="../lib/cujojs-aop/aop-0.5.2.js"></script>
+		<script type="text/javascript" src="../lib/JSZip/jszip_min.js"></script>
+		<script type="text/javascript" src="../lib/JSZip/jszip-deflate_min.js"></script>
+		<script type="text/javascript" src="../lib/JSZip/jszip-inflate_min.js"></script>
+		<script type="text/javascript" src="../lib/JSZip/jszip-load_min.js"></script>
+		<script type="text/javascript" src="../res/js/jwsIOC.js"></script>
+		<script type="text/javascript" src="../res/js/jwsCache.js"></script>
+		<script type="text/javascript" src="../res/js/jwsAPIPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsChannelPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsCanvasPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsChatPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsClientGamingPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsEventsPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsLoadBalancerPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsFilesystemPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsItemStoragePlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsJDBCPlugIn.js"></script>
+        <script type="text/javascript" src="../res/js/jwsScriptingPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsJMSPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsLoggingPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsMailPlugIn.js"></script>
+        <script type="text/javascript" src="../res/js/jwsQuotaPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsRPCPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsSamplesPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsSharedObjectsPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsStreamingPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsTestPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsReportingPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsTwitterPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsXMPPPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsWorker.js"></script>
+		<!-- Including Enterprise jWebSocket plug-ins-->
+		<script type="text/javascript" src="../res/js/jwsFilesystemPlugInEE_min.js"></script>
+		<script type="text/javascript" src="../res/js/jwsItemStoragePlugInEE_min.js"></script>
+
+		<!-- 
+			#####################################
+			#  INCLUDE YOUR TEST FILES HERE		#
+			#####################################
+		-->
+		<!-- shared test specs for opening and closing connections -->
+		<script type="text/javascript" src="js/jwsSharedTests.js"></script>
+		<!-- test specs for the system plug-in, system plug-in is integrated in jWebSocket.js -->
+		<script type="text/javascript" src="js/jwsSystemTests.js"></script>
+		<!-- tests for the filesystem plug-in -->
+		<script type="text/javascript" src="js/jwsFilesystemTests.js"></script>
+		<!-- tests for the enterprise filesystem plug-in -->
+		<script type="text/javascript" src="js/jwsFilesystemEETests.js"></script>
+		<!-- tests for the itemstorage plug-in -->
+		<script type="text/javascript" src="js/jwsItemStorageTests.js"></script>
+		<!-- tests for the enterprise itemstorage plug-in -->
+		<script type="text/javascript" src="js/jwsItemStorageEETests.js"></script>
+		<!-- tests for the logging plug-in -->
+		<script type="text/javascript" src="js/jwsLoggingTests.js"></script>
+		<!-- tests for the RPC plug-in -->
+		<script type="text/javascript" src="js/jwsRPCTests.js"></script>
+		<!-- tests for the JDBC plug-in -->
+		<script type="text/javascript" src="js/jwsJDBCTests.js"></script>
+		<!-- tests for the JMS plug-in -->
+		<script type="text/javascript" src="js/jwsJMSTests.js"></script>
+		<!-- tests for the Channel plug-in -->
+		<script type="text/javascript" src="js/jwsChannelTests.js"></script>
+		<!-- tests for the Streaming plug-in -->
+		<script type="text/javascript" src="js/jwsStreamingTests.js"></script>
+		<!-- tests for the Load tests -->
+		<script type="text/javascript" src="js/jwsLoadTests.js"></script>
+		<!-- tests for the Reporting plug-in -->
+		<script type="text/javascript" src="js/jwsReportingTests.js"></script>
+		<!-- tests for the Load Balancer plug-in -->
+		<script type="text/javascript" src="js/jwsLoadBalancerTests.js"></script>
+		<!-- tests for the Quota plug-in -->
+		<script type="text/javascript" src="js/jwsQuotaTests.js"></script>
+		<!-- tests for the AutomatedAPI plug-in -->
+		<script type="text/javascript" src="js/jwsAutomatedAPITests.js"></script>
+		<!-- tests for the Dependency Injection Container -->
+		<script type="text/javascript" src="js/jwsIOC.js"></script>
+		<!-- tests for Benchmark suite -->
+		<script type="text/javascript" src="js/jwsBenchmarks.js"></script>
+		<!-- tests for REST support -->
+		<script type="text/javascript" src="js/jwsREST.js"></script>
+		<!-- tests for scripting plug-in -->
+        <script type="text/javascript" src="js/jwsScriptingPlugInTest.js"></script>
+        <!-- tests for backbone scrip plug-in -->
+        <script type="text/javascript" src="js/jwsBackboneTest.js"></script>
+		<!-- the central test suite code contains the various test suites -->
+		<script type="text/javascript" src="js/jwsTestSuites.js"></script>
+
+	</head>
+	<body onunload="storePageState();">
+		<div id="demo_box">
+			<!--       DEMO_HEADER       -->
+            <div id="demo_box_header">
+                <h1>jWebSocketServer 1.0 automated tests</h1>
+                <div id="demo_box_header_login"></div>
+            </div>
+			<table>
+				<tr>
+					<td>
+						<h3>Select tests to be executed</h3>
+						&nbsp;Test categories:
+						<div id="categories">
+						</div>
+						&nbsp;System Speed:<select id="speed">
+							<option value="generic">Generic</option>
+							<option value="generic_debug">Generic [log_mode=debug]</option>
+							<option value="normal">Normal</option>
+							<option value="slow">Slow</option>
+							<option value="very_slow">Very slow</option>
+							<option value="fast">Fast</option>
+							<option value="ultra_fast">Ultra fast</option>
+							<option value="fastest">Fastest</option>
+						</select>
+						&nbsp;TLS:<select id="tls_set">
+							<option value="ws">Unsecure (ws)</option>
+							<option value="wss">Secure (wss)</option>
+						</select>
+
+						<p>
+							<label><input id="openConns" type="checkbox" disabled checked="checked"> Open connections for admin and guest</label>
+							<br>
+							<span id="tests"></span>
+							<label><input id="closeConns" type="checkbox" disabled checked="checked"> Close connections for admin and guest</label>
+							<br>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div id="sbtnManualTest" class="button" 
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'" 
+							 onclick="run();
+									 this.className = 'button onmouseover';"
+							 title="Runs the manual (programmatic) test suite.">
+							<div class="btn_left"></div>
+							<div class="btn_center">Run selected tests!</div>
+							<div class="btn_right"></div>
+						</div>
+
+						<div id="sbtnBenchmarkTest" class="button onmouseup" 
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'" 
+							 onclick="runBenchmarkTests();
+									 this.className = 'button onmouseover';"
+							 title="Runs the benchmark suite.">
+							<div class="btn_left"></div>
+							<div class="btn_center">Run benchmark test!</div>
+							<div class="btn_right"></div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<script type="text/javascript">
+			var lCategories = $("#categories");
+			var lCategoriesSelectStr = "<select id='test_set'><option value='__ALL__'>All</option>";
+			var lTests = initTestsIndex();
+			$.each(lTests.categories, function(aIndex, aCategory) {
+				lCategoriesSelectStr += "<option value'" + aCategory + "'>" + aCategory + "</option>";
+			});
+			lCategoriesSelectStr += "</select/>";
+			lCategories.html(lCategoriesSelectStr);
+			// rendering category tests
+			var lCombo = $('#test_set');
+			var lState = restorePageState();
+			renderTests(lTests.getTestsByCategory(lCombo.val()), $("#tests"));
+			if (null != lState) {
+				selectTests(lState.selectedTests);
+			}
+			lCombo.bind('change', function(aSelect) {
+                var lCategory = $(aSelect.target).val();
+				renderTests(lTests.getTestsByCategory(lCategory), $("#tests"), lCategory);
+			});
+			function runBenchmarkTests() {
+				lCombo.val('Server Benchmarks');
+				renderTests(lTests.getTestsByCategory($(lCombo).val()), $("#tests"));
+				run();
+			}
+
+			function run() {
+				if (!jws.browserSupportsWebSockets()) {
+					var lMsg = jws.MSG_WS_NOT_SUPPORTED;
+					jwsDialog(lMsg, "jWebSocket Message", true, "alert");
+				} else {
+					// creating a new jasmine evironment to refresh from previous execution
+					jasmine.currentEnv_ = new jasmine.Env();
+					// removing previous jasmine report logs if exists
+					$('.jasmine_reporter').remove();
+					var lSelectedTests = getSelectedTests();
+					runFullTestSuite({
+						speed: $('#speed').val(),
+						tests: lSelectedTests
+					});
+					jws.TestPlugIn.execTests();
+				}
+			}
+
+			function getSelectedTests() {
+				var lCheckboxes = $('#tests').find('input[type=checkbox]');
+				var lSelectedTests = [];
+				$.each(lCheckboxes, function(aIndex, aItem) {
+					if ($(aItem).prop('checked'))
+						lSelectedTests.push($(aItem).prop('id'));
+				});
+				return lSelectedTests;
+			}
+
+			function selectTests(aTests) {
+				var lCheckboxes = $('#tests').find('input[type=checkbox]');
+				$.each(lCheckboxes, function(aIndex, aItem) {
+					if (aTests.indexOf($(aItem).attr('id')) == -1) {
+						$(aItem).attr('checked', false);
+					} else {
+						$(aItem).attr('checked', true);
+					}
+				});
+			}
+
+			function storePageState() {
+				var lPageState = {
+					speed: $('#speed').val(),
+					tls: $('#tls_set').val(),
+					category: $('#test_set').val(),
+					selectedTests: getSelectedTests()
+				};
+				sessionStorage.setItem("page_state", JSON.stringify(lPageState));
+			}
+
+			function restorePageState() {
+				var lJSON = sessionStorage.getItem("page_state");
+				if (null != lJSON) {
+					var lPageState = JSON.parse(lJSON);
+					$('#speed').val(lPageState.speed);
+					$('#tls_set').val(lPageState.tls);
+					$('#test_set').val(lPageState.category);
+
+					return lPageState;
+				} else {
+					$('#tls_set').val('__ALL__');
+
+					return null;
+				}
+			}
+		</script>
+	</body>
+</html>
