@@ -1,0 +1,39 @@
+{
+    "type": "Ext.app.Application",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "models": [
+            "File"
+        ],
+        "name": "BPMNManager",
+        "views": [
+            "Login",
+            "Markup"
+        ]
+    },
+    "name": "Application",
+    "designerId": "application",
+    "cn": [
+        {
+            "type": "Ext.Loader",
+            "reference": {
+                "name": "loader",
+                "type": "object"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "paths": [
+                    "{",
+                    "\t\t'Ext.jws': '../../../lib/ExtJS/jWebSocketSenchaPlugIn/'",
+                    "\t}"
+                ]
+            },
+            "name": "Loader41",
+            "designerId": "871adc64-0035-419a-8f40-ff33535a1734"
+        }
+    ]
+}
