@@ -32,6 +32,7 @@ import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.token.MapToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.MapAppender;
 
 /**
  * converts JSON formatted data packets into tokens and vice versa.
@@ -199,6 +200,8 @@ public class JSONProcessor {
 			listToJSONString((List) aObject, aBuffer);
 		} else if (aObject instanceof Map) {
 			mapToJSONString((Map) aObject, aBuffer);
+		} else if (aObject instanceof MapAppender) {
+			mapToJSONString(((MapAppender) aObject).getMap(), aBuffer);
 		} else {
 			aBuffer.append("\"").append(escapeForJSON(aObject.toString())).append("\"");
 		}
