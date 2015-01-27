@@ -70,7 +70,7 @@ public class MemoryCluster implements ICluster {
 
 	@Override
 	public void setGrantedEndPoints(String aGrantedEndPoints) {
-		mGrantedEndPoints = aGrantedEndPoints;
+		mGrantedEndPoints = aGrantedEndPoints.replaceAll("\\s", "");
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class MemoryCluster implements ICluster {
 
 	@Override
 	public void setNamespace(String aNamespace) {
-		this.mNamespace = aNamespace;
+		this.mNamespace = aNamespace.replaceAll("\\s", "");
 	}
 
 	@Override
