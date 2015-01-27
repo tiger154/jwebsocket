@@ -12,6 +12,12 @@
    "url": null,
    "js": [
       {
+         "path": "jWebSocket.js",
+         "update": "delta",
+         "remote": true,
+         "x-bootstrap": true
+      },
+      {
          "path": "${ext.dir}/build/ext-all-rtl-debug.js"
       },
       {
