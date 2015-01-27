@@ -1,6 +1,6 @@
 {
     "expandedState": {
-        "view": true,
+        "view": false,
         "0c6a6aed-7a59-42b2-a7d2-e3b04b282b55": {
             "id": "0c6a6aed-7a59-42b2-a7d2-e3b04b282b55",
             "cn": [
@@ -47,6 +47,7 @@
             "cn": [
                 {
                     "id": "e6caf558-e338-46e9-8461-1378b1b9933d",
+                    "expanded": false,
                     "cn": [
                         {
                             "id": "fb70fddb-e0e7-42a6-ab36-16e0e35b484f"
@@ -77,7 +78,8 @@
             ]
         },
         "0afa1b88-8886-4abc-ae77-a11c75edef06": {
-            "id": "0afa1b88-8886-4abc-ae77-a11c75edef06"
+            "id": "0afa1b88-8886-4abc-ae77-a11c75edef06",
+            "expanded": false
         },
         "f424266c-6f44-48ec-9f0a-728f4ccea1ca": {
             "id": "f424266c-6f44-48ec-9f0a-728f4ccea1ca"
@@ -96,7 +98,7 @@
                 }
             ]
         },
-        "model": true,
+        "model": false,
         "95bafd94-ebfb-4652-9420-927a1306fbfd": {
             "id": "95bafd94-ebfb-4652-9420-927a1306fbfd",
             "cn": [
@@ -106,7 +108,7 @@
             ]
         },
         "controller": true,
-        "resource": true,
+        "resource": false,
         "a4ad843c-15f5-468e-85db-63b0a0ea2798": {
             "id": "a4ad843c-15f5-468e-85db-63b0a0ea2798"
         },
@@ -120,15 +122,16 @@
             "9d0529fb-377e-4911-961c-e80593e3f266",
             "95bafd94-ebfb-4652-9420-927a1306fbfd",
             "76511564-fa11-4c20-81d6-6997f2d897e8",
-            "application"
+            "application",
+            "55a4f430-ceea-4e25-b215-60beac66a629"
         ]
     },
     "canvasState": {
         "topInstance": null
     },
     "inspectorState": {
-        "topInstance": "55a4f430-ceea-4e25-b215-60beac66a629",
-        "selectedInstance": "55a4f430-ceea-4e25-b215-60beac66a629"
+        "topInstance": "application",
+        "selectedInstance": "946d7589-f797-4a38-85d9-516f6131d706"
     },
     "editMode": "code",
     "userSettings": {
