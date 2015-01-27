@@ -16,7 +16,7 @@
 // @require @packageOverrides
 Ext.Loader.setConfig({
     paths: {
-        'Ext.jws': '../../../lib/ExtJS/jWebSocketSenchaPlugIn/'
+        'Ext.jws': 'packages/jws/jWebSocketSenchaPlugIn/'
     }
 });
 
@@ -24,7 +24,8 @@ Ext.Loader.setConfig({
 Ext.application({
 
     requires: [
-        'Ext.Loader'
+        'Ext.Loader',
+        'Ext.jws.Client'
     ],
     models: [
         'File'
@@ -37,6 +38,15 @@ Ext.application({
 
     launch: function() {
         Ext.create('BPMNManager.view.Login', {renderTo: Ext.getBody()});
+
+        Ext.jwsClient.on('open', function(aToken){
+            console.log("open");
+        });
+        Ext.jwsClient.on('close', function(aToken){
+            console.log("close");
+        });
+        Ext.jwsClient.open("ws://jwebsocket.org:8787");
+        // Ext.jwsClient.getConnection();
     }
 
 });
