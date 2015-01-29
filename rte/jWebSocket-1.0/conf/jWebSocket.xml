@@ -705,6 +705,11 @@
 		<!-- configuration of system plug-in specific rights -->
 		<right>
 			<ns>org.jwebsocket.plugins.system</ns>
+			<id>getjvminfo</id>
+			<description>Allow clients to get the server JVM settings and properties</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.system</ns>
 			<id>broadcast</id>
 			<description>Allow to broadcast message to all other clients.</description>
 		</right>
@@ -1223,6 +1228,7 @@
 			<rights>
 				<!-- list of rights for "Administrator" role (ns + . + id) -->
 				<right>org.jwebsocket.plugins.system.broadcast</right>
+				<right>org.jwebsocket.plugins.system.getjvminfo</right>
 				<right>org.jwebsocket.plugins.system.send</right>
 				<right>org.jwebsocket.plugins.chat.broadcast</right>
 				<right>org.jwebsocket.plugins.rpc.rpc</right>
