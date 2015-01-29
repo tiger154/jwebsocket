@@ -3635,6 +3635,22 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		}
 		return lRes;
 	},
+	
+	//:m:*:getServerJVMInfo
+	//:d:en:Get the jWebSocket server JVM settings and properties.
+	//:a:en::aOptions:Object:...
+	//:r:*:::void:none
+	getServerJVMInfo: function ( aOptions ){
+		var lRes = this.checkLoggedIn();
+		if( 0 === lRes.code ) {
+			this.sendToken({
+				ns: jws.NS_SYSTEM,
+				type: "getjvminfo"
+			}, aOptions);
+		}
+		
+		return lRes;
+	},
 
 	//:m:*:broadcastText
 	//:d:en:Broadcasts a simple text message to all clients or a limited set _
