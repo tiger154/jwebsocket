@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.system;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jms.MapMessage;
@@ -59,6 +61,7 @@ import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.JMSManager;
+import org.jwebsocket.util.MapAppender;
 import org.jwebsocket.util.MessagingControl;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
@@ -104,6 +107,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	 *
 	 */
 	public static final String TT_LOGON = "logon";
+	public static final String TT_GET_JVM_INFO = "getjvminfo";
 	private static final String TT_LOGOFF = "logoff";
 	private static final String TT_GET_AUTHORITIES = "getAuthorities";
 	private static final String TT_CLOSE = "close";
@@ -273,6 +277,8 @@ public class SystemPlugIn extends TokenPlugIn {
 				send(aConnector, aToken);
 			} else if (lType.equals(TT_RESPOND)) {
 				respond(aConnector, aToken);
+			} else if (lType.equals(TT_GET_JVM_INFO)) {
+				getJVMInfo(aConnector, aToken);
 			} else if (lType.equals(TT_HEADER)) {
 				getHeaders(aConnector, aToken);
 			} else if (lType.equals(TT_BROADCAST)) {
@@ -703,6 +709,37 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// don't send session-id on good bye, neither required nor desired
 		sendToken(aConnector, aConnector, lGoodBye);
+	}
+
+	private void getJVMInfo(WebSocketConnector aConnector, Token aToken) {
+		// check if user is allowed to run 'getjvminfo' command
+		if (!hasAuthority(aConnector, NS_SYSTEM + ".getjvminfo")) {
+			sendToken(aConnector, aConnector, createAccessDenied(aToken));
+			return;
+		}
+
+		Token lResponse = createResponse(aToken);
+		RuntimeMXBean lBean = ManagementFactory.getRuntimeMXBean();
+
+		lResponse.setMap("data", new MapAppender()
+				.append("inputArguments", lBean.getInputArguments())
+				.append("libraryPath", lBean.getLibraryPath())
+				.append("managementSpecVersion", lBean.getManagementSpecVersion())
+				.append("name", lBean.getName())
+				.append("specName", lBean.getSpecName())
+				.append("specVendor", lBean.getSpecVendor())
+				.append("specVersion", lBean.getSpecVersion())
+				.append("startTime", lBean.getStartTime())
+				.append("systemProperties", lBean.getSystemProperties())
+				.append("uptime", lBean.getUptime())
+				.append("vmName", lBean.getVmName())
+				.append("vmVendor", lBean.getVmVendor())
+				.append("vmVersion", lBean.getVmVersion())
+				.append("classPath", lBean.getClassPath())
+				.getMap()
+		);
+
+		sendToken(aConnector, lResponse);
 	}
 
 	private void send(WebSocketConnector aConnector, Token aToken) {
