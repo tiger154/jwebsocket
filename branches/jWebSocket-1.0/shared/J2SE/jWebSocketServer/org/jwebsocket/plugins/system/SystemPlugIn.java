@@ -19,6 +19,9 @@
 package org.jwebsocket.plugins.system;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.util.*;
 import java.util.Map.Entry;
@@ -720,6 +723,8 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		Token lResponse = createResponse(aToken);
 		RuntimeMXBean lBean = ManagementFactory.getRuntimeMXBean();
+		MemoryMXBean lMemory = ManagementFactory.getMemoryMXBean();
+		OperatingSystemMXBean lOS = ManagementFactory.getOperatingSystemMXBean();
 
 		lResponse.setMap("data", new MapAppender()
 				.append("inputArguments", lBean.getInputArguments())
@@ -736,6 +741,17 @@ public class SystemPlugIn extends TokenPlugIn {
 				.append("vmVendor", lBean.getVmVendor())
 				.append("vmVersion", lBean.getVmVersion())
 				.append("classPath", lBean.getClassPath())
+				.append("osArch", lOS.getArch())
+				.append("osAvailableProcessors", lOS.getAvailableProcessors())
+				.append("osName", lOS.getName())
+				.append("osVersion", lOS.getVersion())
+				.append("osLoadAverage", lOS.getSystemLoadAverage())
+				.append("heapMemoryUsed", lMemory.getHeapMemoryUsage().getUsed())
+				.append("heapMemoryMax", lMemory.getHeapMemoryUsage().getMax())
+				.append("heapMemoryInit", lMemory.getHeapMemoryUsage().getInit())
+				.append("nonheapMemoryInit", lMemory.getNonHeapMemoryUsage().getInit())
+				.append("nonheapMemoryMax", lMemory.getNonHeapMemoryUsage().getMax())
+				.append("nonheapMemoryUsed", lMemory.getNonHeapMemoryUsage().getUsed())
 				.getMap()
 		);
 
