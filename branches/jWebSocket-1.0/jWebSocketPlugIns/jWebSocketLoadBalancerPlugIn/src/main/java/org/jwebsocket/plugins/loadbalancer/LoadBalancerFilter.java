@@ -68,6 +68,15 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+		String lType = aToken.getType();
+		String lNS = aToken.getNS();
+		if (null == lType || null == lNS) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Discarding invalid incoming token: " + aToken.getLogString());
+			}
+			return;
+		}
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("LoadBalancer filtering incoming token: " + aToken.getLogString());
 		}
@@ -126,8 +135,10 @@ public class LoadBalancerFilter extends TokenFilter {
 							+ "}";
 					if ("*".equals(lTargetId)) {
 						List<String> lAliases = mLoadBalancerPlugIn.getAvailableClusters();
-						for (String lAlias : lAliases) {
-							aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lAlias)));
+						if (!lAliases.isEmpty()) {
+							for (String lAlias : lAliases) {
+								aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lAlias)));
+							}
 						}
 					} else if (mLoadBalancerPlugIn.isEndPointAvailable(lTargetId)) {
 
