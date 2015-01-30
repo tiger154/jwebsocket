@@ -25,6 +25,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.kit.RawPacket;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.token.Token;
@@ -102,67 +103,79 @@ public class LoadBalancerFilter extends TokenFilter {
 			lIpAddress = System.getProperty("org.jwebsocket.plugins.jms.gateway.ipAddress");
 
 			if ("ping".equals(aToken.getType())) {
-				if (null != lTargetId) {
-					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
-							+ ",\"type\":\"response\",\"reqType\":\"ping\""
-							+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + aToken.getInteger("utid")
-							+ ",\"sourceId\":\"${endpoint}\""
-							+ ",\"isVirtual\":\"" + true + "\""
-							+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
-							+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
-							+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
-							+ ",\"connectionId\":\"" + lConnectionId + "\""
-							+ (null != lEndPointId ? ",\"gatewayId\":\"" + lEndPointId + "\"" : "")
-							+ "}";
-					if (mLoadBalancerPlugIn.isEndPointAvailable(lTargetId)) {
-						aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lTargetId)));
-						aResponse.rejectMessage();
-						return;
+				try {
+					if (null != lTargetId) {
+						String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+								+ ",\"type\":\"response\",\"reqType\":\"ping\""
+								+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + aToken.getInteger("utid")
+								+ ",\"sourceId\":\"${endpoint}\""
+								+ ",\"isVirtual\":\"" + true + "\""
+								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+								+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
+								+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
+								+ ",\"connectionId\":\"" + lConnectionId + "\""
+								+ (null != lEndPointId ? ",\"gatewayId\":\"" + lEndPointId + "\"" : "")
+								+ "}";
+						if (mLoadBalancerPlugIn.isEndPointAvailable(lTargetId)) {
+							aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lTargetId)));
+							aResponse.rejectMessage();
+							return;
+						}
 					}
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "processing JMS-Gateway 'ping' command"));
 				}
 			} else if ("identify".equals(aToken.getType())) {
-				if (null != lTargetId) {
-					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
-							+ ",\"type\":\"response\",\"reqType\":\"identify\""
-							+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + aToken.getInteger("utid")
-							+ ",\"sourceId\":\"${endpoint}\""
-							+ ",\"isVirtual\":\"" + true + "\""
-							+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
-							+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
-							+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
-							+ ",\"connectionId\":\"" + lConnectionId + "\""
-							+ (null != lEndPointId ? ",\"gatewayId\":\"" + lEndPointId + "\"" : "")
-							+ "}";
-					if ("*".equals(lTargetId)) {
-						List<String> lAliases = mLoadBalancerPlugIn.getAvailableClusters();
-						if (!lAliases.isEmpty()) {
-							for (String lAlias : lAliases) {
-								aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lAlias)));
+				try {
+					if (null != lTargetId) {
+						String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+								+ ",\"type\":\"response\",\"reqType\":\"identify\""
+								+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + aToken.getInteger("utid")
+								+ ",\"sourceId\":\"${endpoint}\""
+								+ ",\"isVirtual\":\"" + true + "\""
+								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+								+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
+								+ (null != lIpAddress ? ",\"ip\":\"" + lIpAddress + "\"" : "")
+								+ ",\"connectionId\":\"" + lConnectionId + "\""
+								+ (null != lEndPointId ? ",\"gatewayId\":\"" + lEndPointId + "\"" : "")
+								+ "}";
+						if ("*".equals(lTargetId)) {
+							List<String> lAliases = mLoadBalancerPlugIn.getAvailableClusters();
+							if (!lAliases.isEmpty()) {
+								for (String lAlias : lAliases) {
+									aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lAlias)));
+								}
 							}
+						} else if (mLoadBalancerPlugIn.isEndPointAvailable(lTargetId)) {
+
+							aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lTargetId)));
+							aResponse.rejectMessage();
+
+							return;
 						}
-					} else if (mLoadBalancerPlugIn.isEndPointAvailable(lTargetId)) {
-
-						aConnector.sendPacket(new RawPacket(lData.replace("${endpoint}", lTargetId)));
-						aResponse.rejectMessage();
-
-						return;
 					}
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "processing JMS-Gateway 'identify' command"));
 				}
 			}
 		}
 
-		ICluster lCluster = mLoadBalancerPlugIn.getClusterByNamespace(aToken.getNS());
-		if (null != lCluster) {
-			// redirect token
-			if (null != aToken.getInteger("utid", null)) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Redirecting incoming token to the load balancer plug-in...");
-				}
-				mLoadBalancerPlugIn.sendToService(aConnector, aToken, lCluster);
+		try {
+			ICluster lCluster = mLoadBalancerPlugIn.getClusterByNamespace(aToken.getNS());
+			if (null != lCluster) {
+				// redirect token
+				if (null != aToken.getInteger("utid", null)) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Redirecting incoming token to the load balancer plug-in...");
+					}
+					mLoadBalancerPlugIn.sendToService(aConnector, aToken, lCluster);
 
-				// stop token propagation
-				aResponse.rejectMessage();
+					// stop token propagation
+					aResponse.rejectMessage();
+				}
 			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "redirecting incoming token processing to service endpoints"));
 		}
 	}
 
