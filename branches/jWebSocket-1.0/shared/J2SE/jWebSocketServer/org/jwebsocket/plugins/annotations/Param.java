@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - JWSDefaultAnnotationManager (Community Edition, CE)
+//	jWebSocket - Param (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
@@ -18,20 +18,35 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.annotations;
 
-import org.jwebsocket.plugins.annotations.processor.Authorization;
-import org.jwebsocket.plugins.annotations.processor.Dependency;
-import org.jwebsocket.plugins.annotations.processor.Parameters;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * The annotation allows to developers to details information about method parameters.
  *
  * @author Rolando Santamaria Maso
  */
-public class DefaultAnnotationManager extends AnnotationManager {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Param {
 
-	public DefaultAnnotationManager() {
-		getProcessors().add(new Authorization());
-		getProcessors().add(new Dependency());
-		getProcessors().add(new Parameters());
-	}
+	/**
+	 *
+	 * @return The parameter identifier
+	 */
+	String id();
 
+	/**
+	 *
+	 * @return Indicates if the parameter is required (if could be null)
+	 */
+	boolean required() default true;
+
+	/**
+	 *
+	 * @return Indicates the parameter class type
+	 */
+	Class type() default Class.class;
 }

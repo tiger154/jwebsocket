@@ -20,13 +20,22 @@ package org.jwebsocket.plugins;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.plugins.annotations.AllowMethodInvokation;
 import org.jwebsocket.plugins.annotations.AnnotationManager;
+import org.jwebsocket.plugins.annotations.Param;
+import org.jwebsocket.plugins.annotations.Params;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.MapAppender;
+import org.jwebsocket.util.ReflectionUtils;
 
 /**
  *
@@ -58,9 +67,8 @@ public class ActionPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Listener method that is executed before every action execution. If an
-	 * exception is thrown during the method execution, the target action
-	 * execution is canceled.
+	 * Listener method that is executed before every action execution. If an exception is thrown
+	 * during the method execution, the target action execution is canceled.
 	 *
 	 * @param aActionName The target action name
 	 * @param aConnector The calling connector
@@ -72,7 +80,6 @@ public class ActionPlugIn extends TokenPlugIn {
 	public class AssertionException extends RuntimeException {
 
 		private int mCode;
-		private String mMessage;
 
 		public AssertionException(int mCode, String mMessage) {
 			super(mMessage);
@@ -140,6 +147,23 @@ public class ActionPlugIn extends TokenPlugIn {
 	}
 
 	/**
+	 * Get a parameter value from Token instance. Throws an AssertionException if parameter value is
+	 * null.
+	 *
+	 * @param aToken
+	 * @param aParameterName
+	 * @return
+	 */
+	protected Object getParam(Token aToken, String aParameterName) {
+		Object lValue = aToken.getObject(aParameterName);
+		if (null == lValue) {
+			fail(-1, "The parameter '" + aParameterName + "' value cannot be NULL!");
+		}
+
+		return lValue;
+	}
+
+	/**
 	 * Throws an AssertionException
 	 *
 	 * @param aMessage
@@ -148,44 +172,90 @@ public class ActionPlugIn extends TokenPlugIn {
 		fail(-1, aMessage);
 	}
 
-	/**
-	 * Plug-in action's executor
-	 *
-	 * @param aMethodName
-	 * @param aConnector
-	 * @param aToken
-	 */
-	@SuppressWarnings("UseSpecificCatch")
-	protected void callAction(String aMethodName, WebSocketConnector aConnector, Token aToken) {
-		aMethodName += "Action";
-		try {
-			// processing annotations
-			Method lMethod = getClass().getMethod(aMethodName, WebSocketConnector.class, Token.class);
+	private class AnnotatedObject {
 
-			// calling before execute action method on plug-in
-			beforeExecuteAction(aMethodName, aConnector, aToken);
+		Annotation annotation;
+		Object object;
 
-			// processing annotations
-			AnnotationManager lAnnotationManager = (AnnotationManager) JWebSocketBeanFactory
-					.getInstance().getBean("annotationManager");
+		public AnnotatedObject(Annotation annotation, Object object) {
+			this.annotation = annotation;
+			this.object = object;
+		}
+	}
 
-			for (Annotation lA : lMethod.getAnnotations()) {
-				if (lAnnotationManager.supports(lA.annotationType())) {
+	protected boolean doServicesInvokation(Object[] aServices, WebSocketConnector aConnector, Token aToken) {
+		// getting the token type
+		String lType = aToken.getType();
+
+		// iterating over given services
+		for (Object lService : aServices) {
+			Method[] lServiceMethods = lService.getClass().getMethods();
+			for (Method lServiceMethod : lServiceMethods) {
+				if (lServiceMethod.getName().equals(lType) && lServiceMethod.isAnnotationPresent(AllowMethodInvokation.class)) {
 					try {
-						lAnnotationManager.processAnnotation(lA, lMethod, new Object[]{aConnector, aToken});
+						// processing method annotations
+						processAnnotations(lServiceMethod, aConnector, aToken);
 					} catch (Exception lEx) {
 						Token lResponse = createResponse(aToken);
 						lResponse.setCode(-1);
 						lResponse.setString("msg", lEx.getLocalizedMessage());
 
 						sendToken(aConnector, lResponse);
-						return;
+						return true;
 					}
+
+					// parameter's value container
+					List<Object> lInvokationParams = new ArrayList<Object>();
+
+					// getting method parameters values according to annotations
+					List<ReflectionUtils.MethodParameter> lMethodParams = ReflectionUtils.getMethodParametersAnnotations(lServiceMethod);
+					for (ReflectionUtils.MethodParameter lMethodParam : lMethodParams) {
+						Param lParamAnnotation = (Param) lMethodParam.getAnnotation(Param.class);
+						if (null != lParamAnnotation) {
+							if (lParamAnnotation.required()) {
+								lInvokationParams.add(getParam(aToken, lParamAnnotation.id()));
+							} else {
+								lInvokationParams.add(aToken.getObject(lParamAnnotation.id()));
+							}
+						}
+					}
+
+					// invoking service method
+					invokeMethod(lService, lServiceMethod, lInvokationParams, aConnector, aToken);
+
+					return true;
 				}
 			}
+		}
+		return false;
+	}
 
-			// invoking method
-			lMethod.invoke(this, aConnector, aToken);
+	protected boolean routeToServices(WebSocketConnector aConnector, Token aToken) {
+		return false;
+	}
+
+	protected AnnotationManager getAnnotationManager() {
+		// processing annotations
+		AnnotationManager lAnnotationManager = (AnnotationManager) JWebSocketBeanFactory
+				.getInstance().getBean("annotationManager");
+
+		return lAnnotationManager;
+	}
+
+	private void invokeMethod(Object aSubject, Method aMethod, List<Object> aParams, WebSocketConnector aConnector, Token aToken) {
+		try {
+			// calling before execute action method on plug-in
+			beforeExecuteAction(aMethod.getName(), aConnector, aToken);
+
+			// invoke method
+			Object lResult = aMethod.invoke(aSubject, aParams.toArray());
+			boolean lIsServiceMethod = aMethod.isAnnotationPresent(AllowMethodInvokation.class);
+			if (lIsServiceMethod) {
+				// send method's invokation result to calling client
+				Token lResponse = createResponse(aToken);
+				lResponse.getMap().put("data", lResult);
+				sendToken(aConnector, lResponse);
+			}
 		} catch (Exception lEx) {
 			String lExMsg, lExClass;
 			Integer lExCode = -1;
@@ -213,7 +283,7 @@ public class ActionPlugIn extends TokenPlugIn {
 				} else if (mLog.isDebugEnabled()) {
 					// nested expections are debugged only
 					mLog.debug("Exception (" + lExClass + ":" + lExMsg + ") produced calling '"
-							+ aMethodName + "' action on " + lEx.getCause().getStackTrace()[1].getClassName() + ":"
+							+ aMethod.getName() + "' action on " + lEx.getCause().getStackTrace()[1].getClassName() + ":"
 							+ lEx.getCause().getStackTrace()[1].getLineNumber()
 							+ " class...");
 				}
@@ -225,6 +295,63 @@ public class ActionPlugIn extends TokenPlugIn {
 		}
 	}
 
+	private void processAnnotations(Method aMethod, WebSocketConnector aConnector, Token aToken) throws Exception {
+		List<AnnotatedObject> lAnnotations = new ArrayList<AnnotatedObject>();
+		// getting method annotations
+		Annotation[] lMethodAnnotations = aMethod.getAnnotations();
+		for (Annotation lMethodAnnotation : lMethodAnnotations) {
+			lAnnotations.add(new AnnotatedObject(lMethodAnnotation, aMethod));
+		}
+		// getting method parameter's annotations
+		List<ReflectionUtils.MethodParameter> lMethodParamsAnnotations = ReflectionUtils.getMethodParametersAnnotations(aMethod);
+		for (ReflectionUtils.MethodParameter lMethodParam : lMethodParamsAnnotations) {
+			for (Annotation lA : lMethodParam.getAnnotations()) {
+				lAnnotations.add(new AnnotatedObject(lA, lMethodParam));
+			}
+		}
+
+		// processing annotations
+		for (AnnotatedObject lAO : lAnnotations) {
+			if (getAnnotationManager().supports(lAO.annotation.annotationType())) {
+				getAnnotationManager().processAnnotation(lAO.annotation, lAO.object,
+						new Object[]{aConnector, aToken});
+			}
+		}
+	}
+
+	/**
+	 * Plug-in action's executor
+	 *
+	 * @param aMethodName
+	 * @param aConnector
+	 * @param aToken
+	 */
+	protected void callAction(String aMethodName, WebSocketConnector aConnector, Token aToken) {
+		Method lMethod;
+		try {
+			aMethodName += "Action";
+			// processing annotations
+			lMethod
+					= getClass().getMethod(aMethodName, WebSocketConnector.class, Token.class
+					);
+
+			processAnnotations(lMethod, aConnector, aToken);
+		} catch (Exception lEx) {
+			Token lResponse = createResponse(aToken);
+			lResponse.setCode(-1);
+			lResponse.setString("msg", lEx.getLocalizedMessage());
+
+			sendToken(aConnector, lResponse);
+			return;
+		}
+
+		// invoke plug-in method
+		List<Object> lParams = new ArrayList<Object>();
+		lParams.add(aConnector);
+		lParams.add(aToken);
+		invokeMethod(this, lMethod, lParams, aConnector, aToken);
+	}
+
 	/**
 	 *
 	 * @param aActionName
@@ -233,11 +360,86 @@ public class ActionPlugIn extends TokenPlugIn {
 	protected boolean isActionSupported(String aActionName) {
 		Method[] lMethods = getClass().getMethods();
 		for (Method lMethod : lMethods) {
-			if (lMethod.getName().equals(aActionName + "Action")) {
+			if (lMethod.getName().equals(aActionName + "Action") && !lMethod.getName().equals("beforeExecuteAction")) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the action plug-in API.
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	public void getAPIAction(WebSocketConnector aConnector, Token aToken) {
+		List<Map> lAPI = new ArrayList<Map>();
+
+		// getting plugin methods
+		Method[] lMethods = getClass().getMethods();
+		for (Method lMethod : lMethods) {
+			if (lMethod.getName().endsWith("Action")
+					// excluding core methods
+					&& !lMethod.getName().equals("getAPIAction")
+					&& !lMethod.getName().equals("beforeExecuteAction")) {
+				// get method api
+				lAPI.add(getMethodAPI(lMethod));
+			}
+		}
+
+		// getting services methods
+		for (Object lService : getServices()) {
+			lMethods = lService.getClass().getMethods();
+			for (Method lMethod : lMethods) {
+				if (lMethod.isAnnotationPresent(AllowMethodInvokation.class)) {
+					lAPI.add(getMethodAPI(lMethod));
+				}
+			}
+		}
+
+		Token lResponse = createResponse(aToken);
+		lResponse.setList("data", lAPI);
+		sendToken(aConnector, lResponse);
+	}
+
+	private Map getMethodAPI(Method aMethod) {
+		Map lMethodAPI = new HashMap();
+		List<Map> lParams = new ArrayList<Map>();
+		lMethodAPI.put("params", lParams);
+
+		if (aMethod.getName().endsWith("Action")) {
+			Params lParamsAnnotation = aMethod.getAnnotation(Params.class);
+			lMethodAPI.put("name", aMethod.getName().substring(0, aMethod.getName().length() - 6));
+			if (null != lParamsAnnotation) {
+				for (Param lParam : lParamsAnnotation.params()) {
+					lParams.add(new MapAppender()
+							.append("name", lParam.id())
+							.append("required", lParam.required())
+							.append("type", lParam.type().getCanonicalName())
+							.getMap()
+					);
+				}
+			}
+		} else {
+			lMethodAPI.put("name", aMethod.getName());
+			List<ReflectionUtils.MethodParameter> lParamAnnotations = ReflectionUtils.getMethodParametersAnnotations(aMethod);
+			for (ReflectionUtils.MethodParameter lParamAnnotation : lParamAnnotations) {
+				Param lParam = (Param) lParamAnnotation.getAnnotation(Param.class);
+				lParams.add(new MapAppender()
+						.append("name", lParam.id())
+						.append("required", lParam.required())
+						.append("type", lParamAnnotation.getType().getCanonicalName())
+						.getMap()
+				);
+			}
+		}
+
+		return lMethodAPI;
+	}
+
+	public Object[] getServices() {
+		return new Object[0];
 	}
 }
