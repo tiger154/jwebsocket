@@ -725,6 +725,18 @@
 			<id>broadcast</id>
 			<description>Broadcast message to all other clients.</description>
 		</right>
+		
+		<!-- configuration of ontology plug-in specific rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.ontology</ns>
+			<id>read</id>
+			<description>Allow users to perform read operations on ontologies.</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.ontology</ns>
+			<id>write</id>
+			<description>Allow users to perform write operations on ontologies.</description>
+		</right>
 
 		<!-- configuration of rpc plug-in specific rights -->
 		<right>
@@ -1227,10 +1239,18 @@
 			<description>Administrators</description>
 			<rights>
 				<!-- list of rights for "Administrator" role (ns + . + id) -->
+				<!-- Ontology rights -->
+				<right>org.jwebsocket.plugins.ontology.read</right>
+				<right>org.jwebsocket.plugins.ontology.write</right>
+				
+				<!-- System rights -->
 				<right>org.jwebsocket.plugins.system.broadcast</right>
 				<right>org.jwebsocket.plugins.system.getjvminfo</right>
 				<right>org.jwebsocket.plugins.system.send</right>
+				
+				<!-- Chat rights -->
 				<right>org.jwebsocket.plugins.chat.broadcast</right>
+				
 				<right>org.jwebsocket.plugins.rpc.rpc</right>
 				<right>org.jwebsocket.plugins.rpc.rrpc</right>
 				<!-- rights for RPC's consists of the name space for the RPC plug-in plus the class name plus the method -->
@@ -2268,7 +2288,7 @@
 			<name>org.jwebsocket.enterprise.plugins.ontology.OntologyPlugIn</name>
 			<id>jWebSocketOntologyPlugIn</id>
 			<jars>
-				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketOntologyPlugInEE-1.0.jar</jar>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketOntologyPlugInEE-Bundle-1.0.jar</jar>
 			</jars>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/OntologyPlugInEE/ontology.xml</setting>
