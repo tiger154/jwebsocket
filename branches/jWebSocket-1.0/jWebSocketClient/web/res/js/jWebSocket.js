@@ -4523,8 +4523,64 @@ jws.SystemClientPlugIn = {
 			data: JSON.stringify( lData )
 		};
 		this.sendToken( lToken, aOptions );
+	},
+	
+	//:m:*:getActionPlugIn
+	//:d:en:Get the JavaScript object representation of a server side ActionPlugIn
+	//:a:en::aNS:String:The action plug-in namespace
+	//:a:en::aOptions.OnSuccess:function:Function to be called when the plugin instance has been generated.
+	//:a:en::aOptions.filter:function: Function that is called per plugin instance method for customization.
+	//:r:*:::void:none
+	getActionPlugIn: function (aNS, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: aNS,
+				type: "getAPI"
+			};
+			var self = this;
+			this.sendToken(lToken, {
+				OnSuccess: function (aResponse) {
+					var lPlugIn = {};
+					var lAPI = aResponse.data;
+					// iterating by app controllers
+					for (var lMethodsIndex in lAPI) {
+						var lMethodName = lAPI[lMethodsIndex].name;
+						var lParams = [];
+						for (var lParamsIndex in lAPI[lMethodsIndex].params) {
+							lParams.push(lAPI[lMethodsIndex].params[lParamsIndex].name);
+						}
+						// allowing custom plug-ins modification
+						if (aOptions["filter"]) {
+							aOptions["filter"](lMethodName, lParams);
+						}
+						var lFn = "var _Fn_ = {fn:function(" + lParams.join() + ((lParams.length > 0) ? "," : "") + "aOptions){";
+						lFn += "var lRes = self.checkConnected();if (0 === lRes.code) {";
+						lFn += "var lToken = {";
+						lFn += "ns: '" + aNS + "',";
+						lFn += "type: '" + lMethodName + "'";
+						
+						for (var lIndex in lParams) {
+							lFn += "," + lParams[lIndex] + ": " + lParams[lIndex];
+						}
+						
+						lFn += "};";
+						lFn += "self.sendToken(lToken,aOptions);";
+						lFn += "}";
+						lFn += "return lRes; }};";
+						
+						eval(lFn);
+						lPlugIn[lMethodName] = _Fn_.fn;
+					}
+
+					if (aOptions["OnSuccess"]) {
+						aOptions["OnSuccess"](lPlugIn);
+					}
+				}
+			});
+		}
+		return lRes;
 	}
-			
 };
 
 // add the JWebSocket SystemClient PlugIn into the BaseClient class
