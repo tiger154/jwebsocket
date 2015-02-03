@@ -71,12 +71,12 @@ public class ReflectionUtils {
 	}
 
 	/**
-	 * Get method parameters annotations.
+	 * Get method parameters.
 	 *
 	 * @param aMethod
 	 * @return
 	 */
-	public static List<MethodParameter> getMethodParametersAnnotations(Method aMethod) {
+	public static List<MethodParameter> getMethodParameters(Method aMethod) {
 		Class<?>[] lParameterTypes = aMethod.getParameterTypes();
 		Annotation[][] lAnnotations = aMethod.getParameterAnnotations();
 
