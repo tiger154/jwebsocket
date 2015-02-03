@@ -208,7 +208,7 @@ public class ActionPlugIn extends TokenPlugIn {
 					List<Object> lInvokationParams = new ArrayList<Object>();
 
 					// getting method parameters values according to annotations
-					List<ReflectionUtils.MethodParameter> lMethodParams = ReflectionUtils.getMethodParametersAnnotations(lServiceMethod);
+					List<ReflectionUtils.MethodParameter> lMethodParams = ReflectionUtils.getMethodParameters(lServiceMethod);
 					for (ReflectionUtils.MethodParameter lMethodParam : lMethodParams) {
 						Param lParamAnnotation = (Param) lMethodParam.getAnnotation(Param.class);
 						if (null != lParamAnnotation) {
@@ -303,7 +303,7 @@ public class ActionPlugIn extends TokenPlugIn {
 			lAnnotations.add(new AnnotatedObject(lMethodAnnotation, aMethod));
 		}
 		// getting method parameter's annotations
-		List<ReflectionUtils.MethodParameter> lMethodParamsAnnotations = ReflectionUtils.getMethodParametersAnnotations(aMethod);
+		List<ReflectionUtils.MethodParameter> lMethodParamsAnnotations = ReflectionUtils.getMethodParameters(aMethod);
 		for (ReflectionUtils.MethodParameter lMethodParam : lMethodParamsAnnotations) {
 			for (Annotation lA : lMethodParam.getAnnotations()) {
 				lAnnotations.add(new AnnotatedObject(lA, lMethodParam));
@@ -424,7 +424,7 @@ public class ActionPlugIn extends TokenPlugIn {
 			}
 		} else {
 			lMethodAPI.put("name", aMethod.getName());
-			List<ReflectionUtils.MethodParameter> lParamAnnotations = ReflectionUtils.getMethodParametersAnnotations(aMethod);
+			List<ReflectionUtils.MethodParameter> lParamAnnotations = ReflectionUtils.getMethodParameters(aMethod);
 			for (ReflectionUtils.MethodParameter lParamAnnotation : lParamAnnotations) {
 				Param lParam = (Param) lParamAnnotation.getAnnotation(Param.class);
 				lParams.add(new MapAppender()
