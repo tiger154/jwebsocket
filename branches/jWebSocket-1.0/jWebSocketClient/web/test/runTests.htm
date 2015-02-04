@@ -63,6 +63,7 @@
 		<!-- Including Enterprise jWebSocket plug-ins-->
 		<script type="text/javascript" src="../res/js/jwsFilesystemPlugInEE_min.js"></script>
 		<script type="text/javascript" src="../res/js/jwsItemStoragePlugInEE_min.js"></script>
+		<script type="text/javascript" src="../res/js/jwsOntologyPlugInEE_min.js"></script>
 
 		<!-- 
 			#####################################
@@ -81,6 +82,8 @@
 		<script type="text/javascript" src="js/jwsItemStorageTests.js"></script>
 		<!-- tests for the enterprise itemstorage plug-in -->
 		<script type="text/javascript" src="js/jwsItemStorageEETests.js"></script>
+		<!-- tests for the enterprise ontology plug-in -->
+		<script type="text/javascript" src="js/jwsOntologyEETests.js"></script>
 		<!-- tests for the logging plug-in -->
 		<script type="text/javascript" src="js/jwsLoggingTests.js"></script>
 		<!-- tests for the RPC plug-in -->
@@ -190,7 +193,7 @@
 			var lCategories = $("#categories");
 			var lCategoriesSelectStr = "<select id='test_set'><option value='__ALL__'>All</option>";
 			var lTests = initTestsIndex();
-			$.each(lTests.categories, function(aIndex, aCategory) {
+			$.each(lTests.categories, function (aIndex, aCategory) {
 				lCategoriesSelectStr += "<option value'" + aCategory + "'>" + aCategory + "</option>";
 			});
 			lCategoriesSelectStr += "</select/>";
@@ -202,8 +205,8 @@
 			if (null != lState) {
 				selectTests(lState.selectedTests);
 			}
-			lCombo.bind('change', function(aSelect) {
-                var lCategory = $(aSelect.target).val();
+			lCombo.bind('change', function (aSelect) {
+				var lCategory = $(aSelect.target).val();
 				renderTests(lTests.getTestsByCategory(lCategory), $("#tests"), lCategory);
 			});
 			function runBenchmarkTests() {
@@ -233,7 +236,7 @@
 			function getSelectedTests() {
 				var lCheckboxes = $('#tests').find('input[type=checkbox]');
 				var lSelectedTests = [];
-				$.each(lCheckboxes, function(aIndex, aItem) {
+				$.each(lCheckboxes, function (aIndex, aItem) {
 					if ($(aItem).prop('checked'))
 						lSelectedTests.push($(aItem).prop('id'));
 				});
@@ -242,7 +245,7 @@
 
 			function selectTests(aTests) {
 				var lCheckboxes = $('#tests').find('input[type=checkbox]');
-				$.each(lCheckboxes, function(aIndex, aItem) {
+				$.each(lCheckboxes, function (aIndex, aItem) {
 					if (aTests.indexOf($(aItem).attr('id')) == -1) {
 						$(aItem).attr('checked', false);
 					} else {
