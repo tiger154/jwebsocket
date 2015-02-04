@@ -36,6 +36,7 @@ jws.Tests = {
 	mGuestConnSSL: null,
 	mTestConnsOpened: 0,
 	mTestConns: [],
+	// run jwebsocket oriented test case
 	runTC: function (aService, aMethod, aArgs, aExpectedCode, aAssertHandler) {
 		if (!aExpectedCode) {
 			aExpectedCode = 0;
@@ -44,7 +45,7 @@ jws.Tests = {
 		var lTimeout = 3000;
 		if (!aAssertHandler) {
 			aAssertHandler = function (aResponse) {
-
+				expect(aExpectedCode).toEqual(aResponse.code);
 			};
 		} else if (aAssertHandler["timeout"]) {
 			lTimeout = aAssertHandler["timeout"];
