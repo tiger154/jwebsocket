@@ -17,7 +17,7 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-// @author kyberneees 
+// @author Rolando Santamaria Maso 
 
 (function() {
 

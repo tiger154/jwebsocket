@@ -1474,7 +1474,7 @@ jws.tools = {
 	},
 	
 	isArrayOf: function( aArray, aType ){
-		if ( !Ext.isArray(aArray) ){
+		if ( this.getType(aArray) == "array" ){
 			return false;
 		}
 		for ( var lIndex in aArray ){
@@ -4575,6 +4575,9 @@ jws.SystemClientPlugIn = {
 
 					if (aOptions["OnSuccess"]) {
 						aOptions["OnSuccess"](lPlugIn);
+					} else
+					if (aOptions["OnResponse"]) {
+						aOptions["OnResponse"](lPlugIn);
 					}
 				}
 			});
