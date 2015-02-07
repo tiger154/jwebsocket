@@ -37,13 +37,14 @@ jws.Tests = {
 	mTestConnsOpened: 0,
 	mTestConns: [],
 	// run jwebsocket oriented test case
-	runTC: function (aService, aMethod, aArgs, aExpectedCode, aAssertHandler) {
-		if (!aExpectedCode) {
-			aExpectedCode = 0;
+	runTC: function (aService, aMethod, aArgs, aAssertHandler) {
+		var aExpectedCode = 0;
+		if (jws.tools.getType(aAssertHandler) == "integer") {
+			aExpectedCode = aAssertHandler;
 		}
 
 		var lTimeout = 3000;
-		if (!aAssertHandler) {
+		if (!aAssertHandler || jws.tools.getType(aAssertHandler) == "integer") {
 			aAssertHandler = function (aResponse) {
 				expect(aExpectedCode).toEqual(aResponse.code);
 			};
@@ -73,6 +74,8 @@ jws.Tests = {
 				for (var lIndex in aArgs) {
 					aArgs[lIndex] = fnEval(aArgs[lIndex]);
 				}
+				 
+				return aArgs;
 			}
 		};
 
