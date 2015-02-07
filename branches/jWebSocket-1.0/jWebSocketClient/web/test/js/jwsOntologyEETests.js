@@ -41,11 +41,12 @@ jws.tests.OntologyEE = {
 		// getting the test case runner function
 		var run = jws.Tests.runTC;
 		var iri = self.buildIRI;
+		var ontAlias = self.ontologyAlias;
 
 		// generating plugin
 		run(function () {
 			return jws.Tests.getAdminConn();
-		}, "getOntologyPlugIn", [], 0, function (aPlugIn) {
+		}, "getOntologyPlugIn", [], function (aPlugIn) {
 			self.ontology = aPlugIn;
 			expect(null != self.ontology).toEqual(true);
 		});
@@ -53,169 +54,430 @@ jws.tests.OntologyEE = {
 		// getting ontology IRI
 		run(function () {
 			return self.ontology;
-		}, "getOntologyIRI", [self.ontologyAlias], 0, function (aResponse) {
+		}, "getOntologyIRI", [ontAlias], function (aResponse) {
 			self.ontologyIRI = aResponse.data;
 			expect(null != self.ontologyIRI).toEqual(true);
 		});
 
+		run(function () {
+			return self.ontology;
+		}, "getIRI", [ontAlias, iri("Head"), true], -1);
+
+		run(function () {
+			return self.ontology;
+		}, "getIRI", [ontAlias, iri("Head"), false]);
+
 		// - Executing API test cases
 		run(function () {
 			return self.ontology;
-		}, "getClasses", [self.ontologyAlias], 0);
+		}, "getClasses", [ontAlias]);
 
 		run(function () {
 			return self.ontology;
-		}, "addClass", [self.ontologyAlias, iri("Head"), iri("HumanBodyPart")], 0);
+		}, "addClass", [ontAlias, iri("Head"), iri("HumanBodyPart")]);
 
 		run(function () {
 			return self.ontology;
-		}, "addClass", [self.ontologyAlias, iri("Ear"), iri("Head")], 0);
+		}, "getIRI", [ontAlias, iri("Head"), true]);
 
 		run(function () {
 			return self.ontology;
-		}, "addClass", [self.ontologyAlias, iri("Noise"), iri("Head")], 0);
+		}, "addClass", [ontAlias, iri("Ear"), iri("Head")]);
 
 		run(function () {
 			return self.ontology;
-		}, "addClass", [self.ontologyAlias, iri("Eye"), iri("Head")], 0);
+		}, "addClass", [ontAlias, iri("Noise"), iri("Head")]);
 
 		run(function () {
 			return self.ontology;
-		}, "addClass", [self.ontologyAlias, iri("Hair"), iri("Head")], 0);
+		}, "addClass", [ontAlias, iri("Eye"), iri("Head")]);
 
 		run(function () {
 			return self.ontology;
-		}, "addClass", [self.ontologyAlias, iri("Mouth"), iri("Head")], 0);
+		}, "addClass", [ontAlias, iri("Hair"), iri("Head")]);
 
 		run(function () {
 			return self.ontology;
-		}, "getClasses", [self.ontologyAlias], 0);
+		}, "addClass", [ontAlias, iri("Mouth"), iri("Head")]);
 
 		run(function () {
 			return self.ontology;
-		}, "addDataProperty", [self.ontologyAlias, iri("size"), null], 0);
+		}, "addDisjointClassesAxiom", [ontAlias, ["Noise", "Eye", "Hair", "Mouth"]]);
 
 		run(function () {
 			return self.ontology;
-		}, "addDataPropertyRangeAxiom", [self.ontologyAlias, iri("size"), null], 0);
+		}, "getClasses", [ontAlias], function (aResponse) {
+			expect(7).toEqual(aResponse.data.rowCount);
+		});
 
 		run(function () {
 			return self.ontology;
-		}, "addDataPropertyDomainAxiom", [self.ontologyAlias, iri("size"), "xsd:string"], 0);
-		
-		run(function () {
-			return self.ontology;
-		}, "addFunctionalDataPropertyAxiom", [self.ontologyAlias, iri("size")], 0);
+		}, "refreshReasoner", [ontAlias]);
 
 		run(function () {
 			return self.ontology;
-		}, "addObjectProperty", [self.ontologyAlias, iri("hasPart"), null], 0);
+		}, "getSubClasses", [ontAlias, iri("Head"), true], function (aResponse) {
+			expect(5).toEqual(aResponse.data.rowCount);
+		});
 
 		run(function () {
 			return self.ontology;
-		}, "addObjectPropertyRangeAxiom", [self.ontologyAlias, iri("hasPart"), "HumanBodyPart"], 0);
+		}, "addDataProperty", [ontAlias, iri("size"), null]);
 
 		run(function () {
 			return self.ontology;
-		}, "addObjectPropertyDomainAxiom", [self.ontologyAlias, iri("hasPart"), "HumanBodyPart"], 0);
+		}, "addDataProperty", [ontAlias, iri("name"), null]);
 
 		run(function () {
 			return self.ontology;
-		}, "addAnnotationProperty", [self.ontologyAlias, iri("description"), "rdfs:comment"], 0);
+		}, "addDataProperty", [ontAlias, iri("address"), null]);
 
 		run(function () {
 			return self.ontology;
-		}, "addAnnotationAssertionAxiom", [self.ontologyAlias, iri("HumanBodyPart"), iri("description"), "The human body parts...", "xsd:string"], 0);
+		}, "addDisjointDataPropertiesAxiom", [ontAlias, [iri("name"), iri("address")]]);
 
 		run(function () {
 			return self.ontology;
-		}, "addIndividual", [self.ontologyAlias, iri("RolandoHead"), iri("Head")], 0);
+		}, "addDataPropertyRangeAxiom", [ontAlias, iri("size"), "xsd:string"]);
 
 		run(function () {
 			return self.ontology;
-		}, "getIndividuals", [self.ontologyAlias], 0, function (aResponse) {
+		}, "addDataPropertyDomainAxiom", [ontAlias, iri("size"), "HumanBodyPart"]);
+
+		run(function () {
+			return self.ontology;
+		}, "addFunctionalDataPropertyAxiom", [ontAlias, iri("size")]);
+
+		run(function () {
+			return self.ontology;
+		}, "addObjectProperty", [ontAlias, iri("hasPart"), null]);
+
+		run(function () {
+			return self.ontology;
+		}, "addObjectPropertyRangeAxiom", [ontAlias, iri("hasPart"), "HumanBodyPart"]);
+
+		run(function () {
+			return self.ontology;
+		}, "addObjectPropertyDomainAxiom", [ontAlias, iri("hasPart"), "HumanBodyPart"]);
+
+		run(function () {
+			return self.ontology;
+		}, "getObjectProperty", [ontAlias, iri("hasPart")], function (aResponse) {
+			expect(aResponse.data.IRI).toEqual(iri("hasPart")());
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "addAnnotationProperty", [ontAlias, iri("description"), "rdfs:comment"]);
+
+		run(function () {
+			return self.ontology;
+		}, "addAnnotationAssertionAxiom", [ontAlias, iri("HumanBodyPart"), iri("description"), "The human body parts...", "xsd:string"]);
+
+		run(function () {
+			return self.ontology;
+		}, "addIndividual", [ontAlias, iri("RolandoHead"), iri("Head")]);
+
+		run(function () {
+			return self.ontology;
+		}, "getAllIndividuals", [ontAlias], function (aResponse) {
 			expect(1).toEqual(aResponse.data.rowCount);
 		});
 
 		run(function () {
 			return self.ontology;
-		}, "removeIndividual", [self.ontologyAlias, iri("RolandoHead")], 0);
+		}, "refreshReasoner", [ontAlias]);
 
 		run(function () {
 			return self.ontology;
-		}, "getIndividuals", [self.ontologyAlias], 0, function (aResponse) {
+		}, "removeIndividual", [ontAlias, iri("RolandoHead")]);
+
+		run(function () {
+			return self.ontology;
+		}, "getAllIndividuals", [ontAlias], function (aResponse) {
 			expect(0).toEqual(aResponse.data.rowCount);
 		});
 
 		run(function () {
 			return self.ontology;
-		}, "addIndividual", [self.ontologyAlias, iri("RolandoHead"), iri("Head")], 0);
+		}, "addIndividual", [ontAlias, iri("RolandoHead"), iri("Head")]);
 		run(function () {
 			return self.ontology;
-		}, "addIndividual", [self.ontologyAlias, iri("RolandoEye1"), iri("Eye")], 0);
+		}, "addIndividual", [ontAlias, iri("RolandoEye1"), iri("Eye")]);
 		run(function () {
 			return self.ontology;
-		}, "addIndividual", [self.ontologyAlias, iri("RolandoEye2"), iri("Eye")], 0);
+		}, "addIndividual", [ontAlias, iri("RolandoEye2"), iri("Eye")]);
+		run(function () {
+			return self.ontology;
+		}, "addIndividual", [ontAlias, iri("RolandoNoise"), iri("Noise")]);
+		run(function () {
+			return self.ontology;
+		}, "addIndividual", [ontAlias, iri("RolandoMouth"), iri("Mouth")]);
+		run(function () {
+			return self.ontology;
+		}, "addIndividual", [ontAlias, iri("RolandoHair"), iri("Hair")]);
 
 		run(function () {
 			return self.ontology;
-		}, "addDataPropertyAssertionAxiom", [self.ontologyAlias, iri("RolandoHead"), iri("size"), "big", "xsd:string"], 0);
-		
-		run(function () {
-			return self.ontology;
-		}, "addObjectPropertyAssertionAxiom", [self.ontologyAlias, iri("RolandoHead"), iri("hasPart"), iri("RolandoEye1")], 0);
+		}, "addDataPropertyAssertionAxiom", [ontAlias, iri("RolandoHead"), iri("size"), "big", "xsd:string"]);
 
 		run(function () {
 			return self.ontology;
-		}, "addObjectPropertyAssertionAxiom", [self.ontologyAlias, iri("RolandoHead"), iri("hasPart"), iri("RolandoEye2")], 0);
+		}, "addObjectPropertyAssertionAxiom", [ontAlias, iri("RolandoHead"), iri("hasPart"), iri("RolandoEye1")]);
 
-//		// invoking remove*
-//		run(function () {
-//			return self.ontology;
-//		}, "removeIndividual", [self.ontologyAlias, iri("RolandoEye1")], 0);
-//		
-//		run(function () {
-//			return self.ontology;
-//		}, "removeIndividual", [self.ontologyAlias, iri("RolandoEye2")], 0);
-//		
-//		run(function () {
-//			return self.ontology;
-//		}, "removeIndividual", [self.ontologyAlias, iri("RolandoHead")], 0);
-//		
-//		run(function () {
-//			return self.ontology;
-//		}, "removeClass", [self.ontologyAlias, iri("Ear")], 0);
-//
-//		run(function () {
-//			return self.ontology;
-//		}, "removeClass", [self.ontologyAlias, iri("Noise")], 0);
-//
-//		run(function () {
-//			return self.ontology;
-//		}, "removeClass", [self.ontologyAlias, iri("Eye")], 0);
-//
-//		run(function () {
-//			return self.ontology;
-//		}, "removeClass", [self.ontologyAlias, iri("Hair")], 0);
-//
-//		run(function () {
-//			return self.ontology;
-//		}, "removeClass", [self.ontologyAlias, iri("Mouth")], 0);
-//
-//		run(function () {
-//			return self.ontology;
-//		}, "removeClass", [self.ontologyAlias, iri("Head")], 0);
-//
-//		run(function () {
-//			return self.ontology;
-//		}, "removeClass", [self.ontologyAlias, iri("HumanBodyPart")], 0);
-//
-//		run(function () {
-//			return self.ontology;
-//		}, "removeProperty", [self.ontologyAlias, iri("size"), "data"], 0);
-//
-//		run(function () {
-//			return self.ontology;
-//		}, "removeProperty", [self.ontologyAlias, iri("size"), "data"], -1);
+		run(function () {
+			return self.ontology;
+		}, "addObjectPropertyAssertionAxiom", [ontAlias, iri("RolandoHead"), iri("hasPart"), iri("RolandoEye2")]);
+
+		run(function () {
+			return self.ontology;
+		}, "addObjectPropertyAssertionAxiom", [ontAlias, iri("RolandoHead"), iri("hasPart"), iri("RolandoHair")]);
+
+		run(function () {
+			return self.ontology;
+		}, "addObjectPropertyAssertionAxiom", [ontAlias, iri("RolandoHead"), iri("hasPart"), iri("RolandoNoise")]);
+
+		run(function () {
+			return self.ontology;
+		}, "addObjectPropertyAssertionAxiom", [ontAlias, iri("RolandoHead"), iri("hasPart"), iri("RolandoMouth")]);
+
+		run(function () {
+			return self.ontology;
+		}, "addEquivalentClasssAxiom", [ontAlias, ["Head",
+				"hasPart some Hair and hasPart exactly 2 Eye and hasPart exactly 1 Mouth and hasPart exactly 1 Noise"]]);
+
+		run(function () {
+			return self.ontology;
+		}, "refreshReasoner", [ontAlias], function (aResponse) {
+			expect(true).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "getInconsistencies", [ontAlias], function (aResponse) {
+			expect(0).toEqual(aResponse.data.length);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "getIndividual", [ontAlias, iri("RolandoHead")], function (aResponse) {
+			expect(aResponse.data.objectProperties["hasPart"].indexOf(iri("RolandoEye1")()) >= 0).toEqual(true);
+			expect(aResponse.data.objectProperties["hasPart"].indexOf(iri("RolandoEye2")()) >= 0).toEqual(true);
+			expect(aResponse.data.dataProperties["size"].indexOf("big") >= 0).toEqual(true);
+			expect(aResponse.data.type).toEqual(iri("Head")());
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "getSuperClassesAxioms", [ontAlias, iri("Eye"), true], function (aResponse) {
+			expect(2).toEqual(aResponse.data.rowCount);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "isClassExpressionValid", [ontAlias, "Eye"], function (aResponse) {
+			expect(true).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "isClassExpressionValid", [ontAlias, iri("Wrong Class Exression")], function (aResponse) {
+			expect(false).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasClass", [ontAlias, iri("Eye")], function (aResponse) {
+			expect(true).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasClass", [ontAlias, iri("SuperEye")], function (aResponse) {
+			expect(false).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasIndividual", [ontAlias, iri("RolandoHead")], function (aResponse) {
+			expect(true).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasIndividual", [ontAlias, iri("Batman")], function (aResponse) {
+			expect(false).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasDataProperty", [ontAlias, iri("size")], function (aResponse) {
+			expect(true).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasDataProperty", [ontAlias, iri("SuperSize")], function (aResponse) {
+			expect(false).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasObjectProperty", [ontAlias, iri("hasPart")], function (aResponse) {
+			expect(true).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasObjectProperty", [ontAlias, iri("hasLeg")], function (aResponse) {
+			expect(false).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasAnnotationProperty", [ontAlias, iri("description")], function (aResponse) {
+			expect(true).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "hasAnnotationProperty", [ontAlias, iri("priority")], function (aResponse) {
+			expect(false).toEqual(aResponse.data);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "getClassAxioms", [ontAlias, iri("Eye")], function (aResponse) {
+			expect(2).toEqual(aResponse.data.rowCount);
+		});
+
+		run(function () {
+			return self.ontology;
+		}, "getClassAxioms", [ontAlias, iri("Eye2")], -1);
+
+		run(function () {
+			return self.ontology;
+		}, "getClassAxiomsAsString", [ontAlias, iri("Eye")]);
+
+		run(function () {
+			return self.ontology;
+		}, "getClassAxiomsAsString", [ontAlias, iri("Eye2")], -1);
+
+		run(function () {
+			return self.ontology;
+		}, "getAnnotationPropertyAxioms", [ontAlias, iri("description")]);
+
+
+		run(function () {
+			return self.ontology;
+		}, "getAnnotationPropertyAxioms", [ontAlias, iri("description2")], -1);
+
+		run(function () {
+			return self.ontology;
+		}, "getAnnotationPropertyAxiomsAsString", [ontAlias, iri("description2")], -1);
+
+		run(function () {
+			return self.ontology;
+		}, "getIndividualAxioms", [ontAlias, iri("RolandoHead")]);
+
+		run(function () {
+			return self.ontology;
+		}, "getIndividualAxioms", [ontAlias, iri("RolandoHead2")], -1);
+
+		run(function () {
+			return self.ontology;
+		}, "getIndividualAxiomsAsString", [ontAlias, iri("RolandoHead")]);
+
+		run(function () {
+			return self.ontology;
+		}, "getIndividualAxiomsAsString", [ontAlias, iri("RolandoHead2")], -1);
+
+		run(function () {
+			return self.ontology;
+		}, "getClass", [ontAlias, iri("Head")], function (aResponse) {
+			expect(aResponse.data).toEqual(iri("Head")());
+		});
+
+		// class does not exists
+		run(function () {
+			return self.ontology;
+		}, "getClass", [ontAlias, iri("unexisting_class")], -1);
+
+		// invoking remove*
+		run(function () {
+			return self.ontology;
+		}, "removeIndividual", [ontAlias, iri("RolandoEye1")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeIndividual", [ontAlias, iri("RolandoEye2")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeIndividual", [ontAlias, iri("RolandoHair")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeIndividual", [ontAlias, iri("RolandoNoise")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeIndividual", [ontAlias, iri("RolandoMouth")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeIndividual", [ontAlias, iri("RolandoHead")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeClass", [ontAlias, iri("Ear")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeClass", [ontAlias, iri("Noise")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeClass", [ontAlias, iri("Eye")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeClass", [ontAlias, iri("Hair")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeClass", [ontAlias, iri("Mouth")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeClass", [ontAlias, iri("Head")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeClass", [ontAlias, iri("HumanBodyPart")]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeProperty", [ontAlias, iri("size"), "data"]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeProperty", [ontAlias, iri("name"), "data"]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeProperty", [ontAlias, iri("address"), "data"]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeProperty", [ontAlias, iri("size"), "data"], -1);
+
+		run(function () {
+			return self.ontology;
+		}, "removeProperty", [ontAlias, iri("hasPart"), "object"]);
+
+		run(function () {
+			return self.ontology;
+		}, "removeProperty", [ontAlias, iri("description"), "annotation"]);
 	}
 };
