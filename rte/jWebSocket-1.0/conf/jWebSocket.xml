@@ -2342,6 +2342,21 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
+
+		<!-- BPMN2OWL plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.bpmn2owl.BPMN2OWLPlugIn</name>
+			<id>jWebSocketBPMN2OWLPlugIn</id>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketBPMN2OWLPlugInEE-1.0.jar</jar>
+			</jars>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/BPMN2OWLPlugInEE/bpmn2owl.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
 		 
 		<!--
 		<plugin>
