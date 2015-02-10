@@ -1230,6 +1230,13 @@
 			<id>uploadTemplate</id>
 			<description>Allows to jwebsocket  users to generate reports</description>
 		</right>
+		
+		<!-- jWebSocket BPMN2OWL rights-->
+		<right>
+			<ns>org.jwebsocket.plugins.bpmn2owl</ns>
+			<id>convert_bpmn_file</id>
+			<description>Allows to convert a bpmn file to owl</description>
+		</right>
 	</rights>
 
 	<!-- jWebSocket roles -->
@@ -1242,6 +1249,9 @@
 				<!-- Ontology rights -->
 				<right>org.jwebsocket.plugins.ontology.read</right>
 				<right>org.jwebsocket.plugins.ontology.write</right>
+				
+				<!-- BPMN2OWL rights -->
+				<right>org.jwebsocket.plugins.bpmn2owl.convert_bpmn_file</right>
 				
 				<!-- System rights -->
 				<right>org.jwebsocket.plugins.system.broadcast</right>
@@ -1369,6 +1379,7 @@
 				<right>org.jwebsocket.plugins.bpmn.get_execution_processes</right>
 				<right>org.jwebsocket.plugins.bpmn.get_tasks_by_processinstance</right>
 				<right>org.jwebsocket.plugins.bpmn.complete_task</right>
+				
 			</rights>
 		</role>
 		<role>
@@ -2108,7 +2119,7 @@
 		<!-- performance tests plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.test.PerfTestPlugIn</name>
-			<id>jws.test</id>
+			<id>jws.perftest</id>
 			<ns>org.jwebsocket.plugins.test</ns>
 			<jar>jWebSocketTestPlugIn-1.0.jar</jar>
 			<server-assignments>
@@ -2130,7 +2141,7 @@
 		<!-- automated tests plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.test.AutomTestPlugIn</name>
-			<id>jws.test</id>
+			<id>jws.automatedtest</id>
 			<ns>org.jwebsocket.plugins.test</ns>
 			<jar>jWebSocketTestPlugIn-1.0.jar</jar>
 			<server-assignments>
@@ -2141,7 +2152,7 @@
 		<!-- Sencha Demo plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.extjs.SenchaDemoPlugIn</name>
-			<id>SenchaDemoPlugIn</id>
+			<id>jws.senchademo</id>
 			<jar>jWebSocketSenchaPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
@@ -2151,7 +2162,7 @@
 		<!-- jQuery Mobile Form plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.jquery.JQueryDemoPlugIn</name>
-			<id>jWebSocketJQueryPlugIn</id>
+			<id>jws.jquerydemo</id>
 			<jar>jWebSocketJQueryPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
@@ -2161,7 +2172,7 @@
 		<!-- jWeSocket Ping-Pong Game Plug-in -->
 		<plugin>
 			<name>org.jwebsocket.gaming.pingpong.plugin.PingPongPlugIn</name>
-			<id>jWebSocketPingPongGame</id>
+			<id>jws.pingpong</id>
 			<jar>jWebSocketPingPongGame-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
@@ -2177,7 +2188,7 @@
 		<!-- External processes plug-in, e.g. to call perl or other server side scripts -->
 		<plugin>
 			<name>org.jwebsocket.plugins.extprocess.ExtProcessPlugIn</name>
-			<id>jWebSocketExtProcessPlugIn</id>
+			<id>jws.extprocess</id>
 			<jar>jWebSocketExtProcessPlugIn-1.0.jar</jar>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ExtProcessPlugIn/extprocess.xml</setting>
@@ -2188,10 +2199,9 @@
 		</plugin>
 		
 		<!-- Scripting plug-in, e.g. to call JavaScript on the server side -->
-		<!-- will be released in jWebSocket 1.1 -->
 		<plugin>
 			<name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
-			<id>jWebSocketScriptingPlugIn</id>
+			<id>jws.scripting</id>
 			<jar>jWebSocketScriptingPlugIn-1.0.jar</jar>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripting.xml</setting>
@@ -2204,7 +2214,7 @@
 		<!-- RTC plug-in -->
 		<plugin>
 			<name>org.jwebsocket.plugins.rtc.RTCPlugIn</name>
-			<id>jWebSocketRTCPlugIn</id>
+			<id>jws.rtcp</id>
 			<jar>jWebSocketRTCPlugIn-1.0.jar</jar>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/RTCPlugIn/rtc.xml</setting>
@@ -2217,7 +2227,7 @@
 		<!-- FTP plug-in -->
 		<plugin>
 			<name>org.jwebsocket.plugins.ftp.FTPPlugIn</name>
-			<id>jWebSocketFTPPlugIn</id>
+			<id>jws.ftpp</id>
 			<jar>jWebSocketFTPPlugIn-1.0.jar</jar>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/FTPPlugIn/ftp.xml</setting>
@@ -2230,7 +2240,7 @@
 		<!-- TTS plug-in -->
 		<plugin>
 			<name>org.jwebsocket.plugins.tts.TTSPlugIn</name>
-			<id>jWebSocketTTSPlugIn</id>
+			<id>jws.ttsp</id>
 			<jar>jWebSocketTTSPlugIn-1.0.jar</jar>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/TTSPlugIn/tts.xml</setting>
@@ -2243,7 +2253,7 @@
 		<!-- Cloud plug-in -->
 		<plugin>
 			<name>org.jwebsocket.plugins.cloud.CloudPlugIn</name>
-			<id>jWebSocketCloudPlugIn</id>
+			<id>jws.cloud</id>
 			<jar>jWebSocketCloudPlugIn-1.0.jar</jar>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/CloudPlugIn/cloud.xml</setting>
@@ -2256,7 +2266,7 @@
 		<!-- StringTemplatePlugIn plug-in -->
 		<plugin>
 			<name>org.jwebsocket.enterprise.plugins.stringtemplate.StringTemplatePlugIn</name>
-			<id>jWebSocketStringTemplatePlugIn</id>
+			<id>jwsee.stringtemplate</id>
 			<jars>
 				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketStringTemplatePlugInEE-1.0.jar</jar>
 			</jars>
@@ -2271,7 +2281,7 @@
 		<!-- ANTLR plug-in -->
 		<plugin>
 			<name>org.jwebsocket.enterprise.plugins.antlr.ANTLRPlugIn</name>
-			<id>jWebSocketANTLRPlugIn</id>
+			<id>jwseeantlr</id>
 			<jars>
 				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketANTLRPlugInEE-1.0.jar</jar>
 			</jars>
@@ -2286,7 +2296,7 @@
 		<!-- Ontology plug-in -->
 		<plugin>
 			<name>org.jwebsocket.enterprise.plugins.ontology.OntologyPlugIn</name>
-			<id>jWebSocketOntologyPlugIn</id>
+			<id>jwsee.ontology</id>
 			<jars>
 				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketOntologyPlugInEE-Bundle-1.0.jar</jar>
 			</jars>
@@ -2301,7 +2311,7 @@
 		<!-- BPMN plug-in -->
 		<plugin>
 			<name>org.jwebsocket.enterprise.plugins.bpmn.BPMNPlugIn</name>
-			<id>jWebSocketBPMNPlugIn</id>
+			<id>jwsee.bpmn</id>
 			<jars>
 				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketBPMNPlugInEE-1.0.jar</jar>
 			</jars>
@@ -2312,11 +2322,11 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		 
+		
 		<!-- MAS plug-in -->
 		<plugin>
 			<name>org.jwebsocket.enterprise.plugins.mas.MASPlugIn</name>
-			<id>jWebSocketMASPlugIn</id>
+			<id>jwsee.mas</id>
 			<jars>
 				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketMASPlugInEE-1.0.jar</jar>
 			</jars>
@@ -2331,7 +2341,7 @@
 		<!-- Enapso plug-in -->
 		<plugin>
 			<name>org.jwebsocket.enterprise.plugins.enapso.EnapsoPlugIn</name>
-			<id>jWebSocketEnapsoPlugIn</id>
+			<id>jwsee.enapso</id>
 			<jars>
 				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketEnapsoPlugInEE-1.0.jar</jar>
 			</jars>
@@ -2346,7 +2356,7 @@
 		<!-- BPMN2OWL plug-in -->
 		<plugin>
 			<name>org.jwebsocket.enterprise.plugins.bpmn2owl.BPMN2OWLPlugIn</name>
-			<id>jWebSocketBPMN2OWLPlugIn</id>
+			<id>jwsee.bpmn2owl</id>
 			<jars>
 				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketBPMN2OWLPlugInEE-1.0.jar</jar>
 			</jars>
