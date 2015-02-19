@@ -77,7 +77,7 @@ public class JMSPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
 	private static final String NS_JMS = JWebSocketServerConstants.NS_BASE + ".plugins.jms";
-	private final static String VERSION = "1.0.6";
+	private final static String VERSION = "1.0.7";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JMSPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
