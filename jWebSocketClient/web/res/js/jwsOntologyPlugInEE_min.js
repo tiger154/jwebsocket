@@ -6,21 +6,22 @@
 //	---------------------------------------------------------------------------
 
 jws.OntologyPlugIn = {
-	// namespace for Ontology plugin
-	// if namespace is changed update server plug-in accordingly!
-	NS: jws.NS_BASE + ".plugins.ontology",
-	
-	//:m:*:getOntologyPlugIn
-	//:d:en:Get the JavaScript object representation of the OntologyPlugIn
-	//:a:en::aOptions.OnSuccess:function:Function to be called when the plugin instance has been generated.
-	//:r:*:::void:none
-	getOntologyPlugIn: function (aOptions) {
-		aOptions.filter = function (aMethodName, aParams) {
-			aParams.splice(0, 0, "ontologyAlias");
-		};
+    // namespace for Ontology plugin
+    // if namespace is changed update server plug-in accordingly!
+    NS: jws.NS_BASE + ".plugins.ontology",
+    //:m:*:getOntologyPlugIn
+    //:d:en:Get the JavaScript object representation of the OntologyPlugIn
+    //:a:en::aOptions.OnSuccess:function:Function to be called when the plugin instance has been generated.
+    //:r:*:::void:none
+    getOntologyPlugIn: function (aOptions) {
+        aOptions.filter = function (aMethodName, aParams) {
+            if ("getOntologyAliases" !== aMethodName) {
+                aParams.splice(0, 0, "ontologyAlias");
+            }
+        };
 
-		return this.getActionPlugIn(jws.OntologyPlugIn.NS, aOptions);
-	}
+        return this.getActionPlugIn(jws.OntologyPlugIn.NS, aOptions);
+    }
 };
 
 // add the jWebSocket OntologyPlugIn into the TokenClient class
