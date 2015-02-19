@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package tld.yourname.jms.client;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import javax.jms.JMSException;
@@ -35,6 +37,7 @@ import org.jwebsocket.jms.endpoint.JMSLogging;
 import org.jwebsocket.jms.endpoint.JWSEndPoint;
 import org.jwebsocket.jms.endpoint.JWSResponseTokenListener;
 import org.jwebsocket.plugins.ActionPlugInAPIWrapper;
+import org.jwebsocket.util.MapAppender;
 
 /**
  * Example usage of invoking gateway Action's plug-ins.
@@ -225,13 +228,23 @@ public class OntologyPlugInUsage {
 
 			@Override
 			public void onSuccess(Token aResponse) {
-				ActionPlugInAPIWrapper lPlugIn = new ActionPlugInAPIWrapper(aResponse, new String[]{"ontologyAlias"}) {
+				ActionPlugInAPIWrapper lPlugIn = new ActionPlugInAPIWrapper(aResponse) {
 
 					@Override
 					public void sendTokenStrategy(Token aToken, Object aListener) {
 						lJWSEndPoint.sendToken(lJWSEndPoint.getGatewayId(), aToken, (JWSResponseTokenListener) aListener);
 					}
 
+					@Override
+					public void filter(String aMethodName, List<Map> aParams) {
+						if (!aMethodName.equals("getOntologyAliases")) {
+							aParams.add(0, new MapAppender()
+									.append("name", "ontologyAlias")
+									.append("type", "java.lang.String")
+									.append("required", true)
+									.getMap());
+						}
+					}
 				};
 				testInvokeAction(lPlugIn);
 			}
@@ -240,12 +253,24 @@ public class OntologyPlugInUsage {
 
 	private static void testInvokeAction(ActionPlugInAPIWrapper aPlugIn) {
 		try {
+			aPlugIn.invoke("getOntologyAliases", new JWSResponseTokenListener() {
+
+				@Override
+				public void onSuccess(Token aResponse) {
+					mLog.info("Response from action plug-in: " + aResponse.getLogString());
+				}
+
+			});
 			aPlugIn.invoke("getClasses", "blankOntology", new JWSResponseTokenListener() {
 
 				@Override
 				public void onSuccess(Token aResponse) {
 					mLog.info("Response from action plug-in: " + aResponse.getLogString());
 
+					/**
+					 * STOPPING endpoint connection, here only for proper connection termination.
+					 * Not related to the demo.
+					 */
 					lJWSEndPoint.shutdown();
 				}
 
