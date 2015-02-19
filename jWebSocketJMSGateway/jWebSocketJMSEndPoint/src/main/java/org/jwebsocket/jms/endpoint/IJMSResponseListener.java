@@ -37,7 +37,7 @@ public interface IJMSResponseListener {
 	 * @param aReponse
 	 * @param aMessage
 	 */
-	void onReponse(String aReponse, Message aMessage);
+	void onResponse(String aReponse, Message aMessage);
 
 	/**
 	 * Called when the sent token processing has timed out on the remote

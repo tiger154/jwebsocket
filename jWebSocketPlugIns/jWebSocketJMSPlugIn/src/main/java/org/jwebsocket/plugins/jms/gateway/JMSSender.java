@@ -72,7 +72,9 @@ public class JMSSender {
 			lMsg.setStringProperty("targetId", aTargetId);
 			mProducer.send(lMsg);
 		} catch (JMSException lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + " sending message: " + lEx.getMessage());
+			// TODO: Try in higher level to not send in case the session 
+			// is closed and expose this then as error
+			mLog.warn(lEx.getClass().getSimpleName() + " sending message: " + lEx.getMessage());
 			throw new JMSException(lEx.getMessage());
 		}
 	}
