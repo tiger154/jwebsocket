@@ -53,14 +53,14 @@ public class JWSResponseTokenListener implements IJWSResponseListener {
 	}
 
 	@Override
-	public void onReponse(String aReponse, Message aMessage) {
-		Token lResponseToken = JSONProcessor.JSONStringToToken(aReponse);
+	public void onResponse(String aResponse, Message aMessage) {
+		Token lResponseToken = JSONProcessor.JSONStringToToken(aResponse);
 		if (null != mResponseTimeField && null != lResponseToken) {
 			lResponseToken.setLong(mResponseTimeField,
 					System.currentTimeMillis() - mRequestTime);
 		}
 		// calling token callbacks
-		onReponse(lResponseToken);
+		onResponse(lResponseToken);
 
 		if (null != lResponseToken) {
 			if ("event".equals(lResponseToken.getString("type"))
@@ -80,9 +80,9 @@ public class JWSResponseTokenListener implements IJWSResponseListener {
 	 * does not parse the message and does not distinguish between a successful
 	 * and a failing response.
 	 *
-	 * @param aReponse
+	 * @param aResponse
 	 */
-	public void onReponse(Token aReponse) {
+	public void onResponse(Token aResponse) {
 	}
 
 	/**
@@ -91,10 +91,10 @@ public class JWSResponseTokenListener implements IJWSResponseListener {
 	 * <tt>code</tt> field of the response token. If code equals 0 (zero) this
 	 * method is called.
 	 *
-	 * @param aReponse The entire response token to be processed by the
+	 * @param aResponse The entire response token to be processed by the
 	 * application.
 	 */
-	public void onSuccess(Token aReponse) {
+	public void onSuccess(Token aResponse) {
 	}
 
 	/**
@@ -103,10 +103,10 @@ public class JWSResponseTokenListener implements IJWSResponseListener {
 	 * <tt>code</tt> field of the response token. If code does not equal 0
 	 * (zero) this method is called.
 	 *
-	 * @param aReponse The entire response token to be processed by the
+	 * @param aResponse The entire response token to be processed by the
 	 * application.
 	 */
-	public void onFailure(Token aReponse) {
+	public void onFailure(Token aResponse) {
 	}
 
 	@Override

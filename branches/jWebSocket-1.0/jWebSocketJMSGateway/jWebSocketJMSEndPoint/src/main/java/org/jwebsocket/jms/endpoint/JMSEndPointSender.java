@@ -120,7 +120,7 @@ public class JMSEndPointSender {
 
 								@Override
 								public void run() {
-									lRespListener.onReponse(lResponse, aMessage);
+									lRespListener.onResponse(lResponse, aMessage);
 								}
 							});
 						}
@@ -168,7 +168,7 @@ public class JMSEndPointSender {
 //								@Override
 //								public void run() {
 //									mLog.warn("#### Message B: " + lResponse);
-//									lRespListener.onReponse(lResponse, aMessage);
+//									lRespListener.onResponse(lResponse, aMessage);
 //								}
 //							});
 //						}
