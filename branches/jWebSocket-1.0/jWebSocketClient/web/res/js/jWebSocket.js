@@ -4088,7 +4088,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::::none
 	//:r:*:::Boolean:[tt]true[/tt] when the client is authenticated, otherwise [tt]false[/tt].
 	isLoggedIn: function() {
-		return( this.isOpened() && this.fUsername );
+		return( this.isOpened() && null !== this.fUsername && "anonymous" !== this.fUsername);
 	},
 
 	broadcastToken: function( aToken, aOptions ) {
