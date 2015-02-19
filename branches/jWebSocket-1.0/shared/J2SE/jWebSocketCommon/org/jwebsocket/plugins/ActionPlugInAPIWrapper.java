@@ -32,29 +32,20 @@ public abstract class ActionPlugInAPIWrapper {
 
 	private final Token mAPI;
 	private final List<Map> mMethods;
-	private String[] mExtraParams = new String[0];
 
 	/**
 	 * Create a new instance.
 	 *
 	 * @param aPlugInAPI The server response Token to a getAPI command.
 	 */
+	@SuppressWarnings("OverridableMethodCallInConstructor")
 	public ActionPlugInAPIWrapper(Token aPlugInAPI) {
 		mAPI = aPlugInAPI;
 		mMethods = mAPI.getList("data");
-	}
 
-	/**
-	 * Create a new instance.
-	 *
-	 * @param aPlugInAPI The server response Token to a getAPI command.
-	 * @param aExtraParams In rare cases, remote action plug-in could require extra parameters in
-	 * the request that are not related to the method itself, use extra-params to set them. Example:
-	 * new String[]{"ontologyAlias"}
-	 */
-	public ActionPlugInAPIWrapper(Token aPlugInAPI, String[] aExtraParams) {
-		this(aPlugInAPI);
-		mExtraParams = aExtraParams;
+		for (Map<String, Object> lMethod : mMethods) {
+			filter((String) lMethod.get("name"), (List) lMethod.get("params"));
+		}
 	}
 
 	/**
@@ -79,12 +70,6 @@ public abstract class ActionPlugInAPIWrapper {
 			if (aMethodName.equals((String) lMethod.get("name"))) {
 				Token lRequest = TokenFactory.createToken(getNS(), aMethodName);
 
-				if (mExtraParams.length > 0) {
-					for (int lIndex = 0; lIndex < mExtraParams.length; lIndex++) {
-						lRequest.getMap().put(mExtraParams[lIndex], aParams[lIndex]);
-					}
-				}
-
 				List<Map> lMethodParams = (List) lMethod.get("params");
 				for (int lIndex = 0; lIndex < lMethodParams.size(); lIndex++) {
 					// getting the expected parameter type
@@ -92,7 +77,7 @@ public abstract class ActionPlugInAPIWrapper {
 					// check that given parameter matches expected type
 					lType.cast(aParams[lIndex]);
 					// setting the property/value in the request token
-					lRequest.getMap().put(lMethodParams.get(lIndex).get("name"), aParams[mExtraParams.length + lIndex]);
+					lRequest.getMap().put(lMethodParams.get(lIndex).get("name"), aParams[lIndex]);
 				}
 
 				sendTokenStrategy(lRequest, aParams[aParams.length - 1]);
@@ -105,4 +90,13 @@ public abstract class ActionPlugInAPIWrapper {
 	}
 
 	public abstract void sendTokenStrategy(Token aToken, Object aListener);
+
+	/**
+	 * Allow custom modification on action plug-ins API.
+	 *
+	 * @param aMethodName
+	 * @param aParams
+	 */
+	public void filter(String aMethodName, List<Map> aParams) {
+	}
 }
