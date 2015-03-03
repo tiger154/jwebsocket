@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<!-- If Google's chrome frame installed, use it! -->
+		<!-- Comment needs to be BELOW this meta tag! -->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket API Demo (Community Edition, CE)
+		//	****************************************************************************
+		//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+		//  Alexander Schulze, Germany (NRW)
+		//
+		//	Licensed under the Apache License, Version 2.0 (the "License");
+		//	you may not use this file except in compliance with the License.
+		//	You may obtain a copy of the License at
+		//
+		//	http://www.apache.org/licenses/LICENSE-2.0
+		//
+		//	Unless required by applicable law or agreed to in writing, software
+		//	distributed under the License is distributed on an "AS IS" BASIS,
+		//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		//	See the License for the specific language governing permissions and
+		//	limitations under the License.
+		//	****************************************************************************
+		-->
+		<meta http-equiv="Content-Language" content="en">
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<title>jWebSocket API Demo</title>
+		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
+
+		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsAPIPlugIn.js" type="text/javascript"></script>
+
+		<script type="text/javascript" language="JavaScript">
+
+			function getPlugInInfo() {
+				log( "Calling getPlugInInfo..." );
+				if( lWSC.isConnected() ) {
+					lWSC.getPlugInInfo({
+						OnResponse: function( aToken ) {
+							// log("Reports " + JSON.stringify( aToken ) );
+						}
+					});
+				} else {
+					log( "Not connected." );
+				}
+			}
+
+			function getServerAPI() {
+				log( "Calling getServerAPI..." );
+				if( lWSC.isConnected() ) {
+					lWSC.getServerAPI({
+						OnResponse: function( aToken ) {
+							// log("Reports " + JSON.stringify( aToken ) );
+						}
+					});
+				} else {
+					log( "Not connected." );
+				}
+			}
+
+			function getPlugInIds() {
+				log( "Calling getPlugInIds..." );
+				if( lWSC.isConnected() ) {
+					lWSC.getPlugInIds({
+						OnResponse: function( aToken ) {
+							// log("Reports " + JSON.stringify( aToken ) );
+						}
+					});
+				} else {
+					log( "Not connected." );
+				}
+			}
+
+			function initPage() {
+			}
+
+			function exitPage() {
+			}
+
+		</script>
+	</head>
+
+	<body
+		onload="initPage();"
+		onunload="exitPage();"
+		>
+		<script type="text/javascript">
+			jws.DemoPlugIn.buildDemoPage({
+				title: "API",
+				header: "jWebSocket API Demo",
+				description: "This demo shows how to easily query the jWebSocket server API."
+			});
+			processInitPage();
+		</script>
+
+		<div class="sdivContainer">
+			<table>
+				<tr class="strDlg">				
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnGetPlugInInfo" type="button" value="PlugInInfo" onclick="getPlugInInfo()"
+							   title="Gets the list of plug-ins including the detailed info."/>
+						<input class="sbtnDlg" id="sbtnGetServerAPI" type="button" value="ServerAPI" onclick="getServerAPI()"
+							   title="Gets the Server API."/>
+						<input class="sbtnDlg" id="sbtnGetPlugInIDs" type="button" value="PlugIn IDs" onclick="getPlugInIds()"
+							   title="Gets the Server API."/>
+						
+					</td>
+				</tr>
+			</table>		
+
+	</body>
+</html>

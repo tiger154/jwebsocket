@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <!-- If Google's chrome frame installed, use it! -->
+        <!-- Comment needs to be BELOW this meta tag! -->
+        <!--
+        //	****************************************************************************
+        //	jWebSocket Reporting Demo (Community Edition, CE)
+        //	****************************************************************************
+        //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+        //  Alexander Schulze, Germany (NRW)
+        //
+        //	Licensed under the Apache License, Version 2.0 (the "License");
+        //	you may not use this file except in compliance with the License.
+        //	You may obtain a copy of the License at
+        //
+        //	http://www.apache.org/licenses/LICENSE-2.0
+        //
+        //	Unless required by applicable law or agreed to in writing, software
+        //	distributed under the License is distributed on an "AS IS" BASIS,
+        //	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        //	See the License for the specific language governing permissions and
+        //	limitations under the License.
+        //	****************************************************************************
+        -->
+        <meta http-equiv="Content-Language" content="en"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+
+        <title>jWebSocket Reporting Demo</title>
+
+        <!-- JQUERY STYLES -->
+        <link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+
+        <!-- DEMO STYLES  -->
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+        <link rel="stylesheet" type="text/css" href="css/jwsReporting.css"/>
+        <link rel="stylesheet" type="text/css" href="../../lib/jQuery/plugins/gritter/css/jquery.gritter.css"/>
+
+
+        <!-- JQUERY DEPENDENCIES -->
+        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+        <script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/plugins/gritter/js/jquery.gritter.min.js'></script>
+
+        <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+        <script type="text/javascript" src='js/pdfobject.js'></script>
+
+        <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+        <script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
+        <script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
+        <script type="text/javascript" src="../../res/js/jwsJDBCPlugIn.js"></script>
+
+        <!--  PUBLIC WIDGETS   -->
+        <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
+        <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
+
+        <!--  MY WIDGETS   -->
+        <script type="text/javascript" src='js/wReporting.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+
+        <!--  MAIN JAVASCRIPT FILE   -->
+        <script type="text/javascript" src='js/init.js'></script>
+    </head>
+    <body>
+        <div id="demo_box">
+            <!--       DEMO_HEADER       -->
+            <div id="demo_box_header">
+                <h1>jWebSocket Reporting</h1>
+                <div id="demo_box_header_login">
+                    <div id="logoff_area">
+                        <div id="user_info">
+                            <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
+                            <div id="logoff_button" class="button">Logout</div>
+                        </div>
+                    </div>
+                    <div id="login_area">
+                        <div id="login_form">
+                            <label class="first">Username</label>
+                            <label class="second">Password</label>
+                            <input type="text" id="user_text" value="root"/>
+                            <input type="password" id="user_password" value="root"/>
+                        </div>
+                        <div id="login_button" class="button">Login</div>
+                    </div>
+
+                </div>
+            </div>
+            <div id="container">
+                <!--       STATUSBAR         -->
+                <div id="demo_box_statusbar">
+                    <div id='status'>Status: </div>
+                    <div id="client_status" class='offline'>disconnected</div><div class="line"></div>
+                    <div id='client_id'>Client-ID: - </div><div class="line"></div>
+                    <div id='websocket_type'>WebSocket: - </div>
+                </div>      
+
+                <!--       DESCRIPTION       -->
+                <div class="box" id="help_header">
+                    <p>Here we show how easily jWebSocketReporting can be used to generate reports.
+                        You will be able to upload a custom report template, 
+                        get the list of existing templates on server and generate a report by typing your own data or
+                        loading data from a JDBC connection.  
+                        <br/> 
+                        If the "Create Report" form is empty a default report will be shown. 
+                        To avoid that you need to pick a item after you get the list of available reports from server.
+                        On this demo to try the "JDBCExampleReport" the following SQL 
+                        <a href="createDataBaseScript.txt" target="blank">script</a> 
+                        has been executed in the <strong>default</strong> JDBCPlugIn connection alias.
+                        <br/>
+                        For Opera browser you will require Adobe Reader plug-in to preveiw generated reports.
+                        Internet Explorer 10- does not support javascript pdf embbeding.
+                    </p>
+                </div>
+                <!--       SCENARIO          -->
+                <div id="scenario_container" class="box">
+                    <div id="jws_reporting_content">
+                        <!--       GET REPORTS BOX           -->
+                        <div class="jws_get_reports">
+                            <div class="box_header">Get Reports</div>
+                            <div class="box_content">
+                                <div id="get_reports_btn" class="button"> Get Reports </div>
+                                <select id="report_list_cb" class="select_reports_btn" style="width: 150px;"
+                                        title="List of availables reports">											
+                                </select>
+                            </div>
+                        </div>
+                        <!--       UPLOAD TEMPLATE BOX           -->
+                        <div class="jws_upload_template">
+                            <div class="box_header">Upload Templates</div>
+                            <div class="box_content">
+                                <div id="upload_template_btn" class="button "> Upload Template</div>
+                                <input type="file" id="jws_upload_template_f" class="upload_template_btn"
+                                       title="Choose a *.jrxml file">																					   
+                                </input>
+                            </div>
+                        </div>
+                        <!--       CREATE REPORT BOX           -->
+                        <div class="jws_create_report">
+                            <div class="box_header">Create Report</div>
+                            <div class="box_content_gen" id="gen_content_box">								
+                                <div class="jws_fields_params">
+                                    <div class="jws_fields">
+                                        <div class="jws_fields_label">Fields</div>
+                                        <input type="textarea" id="jws_reporting_fields_txa" class="jws_fields_txta"></input>
+                                    </div>
+                                    <div class="jws_params">
+                                        <div class="jws_params_label">Params</div>
+                                        <input type="textarea" id="jws_reporting_params_txa" class="jws_params_txta"></input>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box_content_genbtn">
+                                <div id="create_report_btn" class="button">Create Report</div>
+                            </div>
+                        </div>						
+                    </div>
+                    <!--       DESCRIPTION       -->						
+                    <div class="description_box">
+                        <p>
+                            To know more about how it works please visit the
+                            <a href="http://jwebsocket.org/documentation/Plug-Ins/Reporting-Plug-In/" target="blank">jWebSocket Reporting Help</a>
+
+                        </p>
+                    </div>
+                </div>
+
+                <!-- pdf -->
+                <iframe id="pdf_area" scrolling="auto"></iframe>
+                <!--       LOG BOX           -->
+
+                <div id="log_box" class="jws_log_box">
+                    <div id="log_box_header">
+                        <div id="show_hide_log" class="hide">Hide Log</div>
+                        <div id="clear_log">Clear Log</div>
+                    </div>
+                    <div id="log_box_content" class="log_box_visible"></div>
+                </div>
+
+            </div>
+
+            <!--       DOWNLOAD_BUTTON   -->
+            <div id="demo_box_footer">
+                <div id="jws_download_button" class="button download">
+                    <a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
+            </div>
+        </div>
+    </body>
+</html>

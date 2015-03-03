@@ -1,0 +1,138 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	<name>jWebSocketActiveMQStockTicker</name>
+	<groupId>jWebSocketActiveMQStockTicker</groupId>
+	<artifactId>jWebSocketActiveMQStockTicker</artifactId>
+	<description>jWebSocket ActiveMQ StockTicker Demo</description>
+	<version>1.0</version>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- shared version number properties -->
+		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<!-- directory for the html javadocs -->
+					<reportOutputDirectory>${project.basedir}/../../../javadocs/${project.name}</reportOutputDirectory>
+					<!-- directory for the jar javadocs -->
+					<jarOutputDirectory>${project.basedir}/../../../javadocs</jarOutputDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<!-- directory for the source code jar -->
+					<outputDirectory>${project.basedir}/../../../javadocs</outputDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+				
+				<!-- temporary add-on to not run tests in incomplete dev-envs -->
+				<!-- this section can be remarked for test purposes once the 
+				ActiveMQ environment has been properly set up! -->
+				<executions>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<configuration>
+							<testExcludes>
+								<exclude>**/*</exclude>
+							</testExcludes>
+						</configuration> 
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>                  
+				</executions>				
+			</plugin>
+			
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<version>2.4</version>
+				<executions>
+					<!-- create embedded version unpackaged -->
+					<execution>
+						<id>Standard</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<finalName>jWebSocketAMQStockTicker-${project.version}</finalName>
+							<outputDirectory>../../../rte/jWebSocket-${project.version}/libs
+							</outputDirectory>
+							<archive>
+								<manifest>
+									<addClasspath>true</addClasspath>
+									<mainClass>org.jwebsocket.jms.producer.JMSDataSource</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketCommon</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketServerAPI</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketServer</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketJMSPlugIn</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+	</dependencies>
+</project>

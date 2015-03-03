@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+        <!-- If Google's chrome frame installed, use it! -->
+        <!-- Comment needs to be BELOW this meta tag! -->
+        <!--
+		@author Victor Antonio Barzana Crespo (vbarzana@jwebsocket.org, Münster Deutschland)
+		
+		//	****************************************************************************
+		//	jWebSocket jwsFileUploader Demo (Community Edition, CE)
+		//	****************************************************************************
+		//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+		//  Alexander Schulze, Germany (NRW)
+		//
+		//	Licensed under the Apache License, Version 2.0 (the "License");
+		//	you may not use this file except in compliance with the License.
+		//	You may obtain a copy of the License at
+		//
+		//	http://www.apache.org/licenses/LICENSE-2.0
+		//
+		//	Unless required by applicable law or agreed to in writing, software
+		//	distributed under the License is distributed on an "AS IS" BASIS,
+		//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		//	See the License for the specific language governing permissions and
+		//	limitations under the License.
+		//	****************************************************************************
+        -->
+        <meta http-equiv="Content-Language" content="en"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+        <title>jWebSocket File Uploader Demo</title>
+
+		<!-- JQUERY STYLES -->
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+
+		<!-- DEMO STYLES  -->
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+        <link rel="stylesheet" type="text/css" href="css/jwsFileUploader.css"/>
+
+		<!-- JQUERY DEPENDENCIES -->
+		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+
+		<!--  [if lte IE 9]>
+		<script type="text/javascript" src='js/FileReader/swfobject/swfobject.js'></script>
+         -->
+
+        <!-- JWEBSOCKET CLIENT JAVASCRIPT LIBRARIES -->
+        <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+        <script type="text/javascript" src="../../res/js/widgets/dialogs.js"></script>
+
+		<!--  jQuery Tooltip -->
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+
+		<!-- this one imports the client side jWebSocketUploaderPlugIn -->
+		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
+		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugInEE_min.js"></script>
+
+		<!-- FLASH FALLBACK FOR THE HTML5 FILE API -->
+        <script type="text/javascript" src='js/FileReader/FileReader.js'></script>
+
+		<script type="text/javascript" src="../../res/js/jwsFileUploaderPlugIn.js"></script>
+		<script type="text/javascript" src="../../lib/crypto-js/md5.js"></script>
+		<script type="text/javascript" src="../../lib/crypto-js/sha1.js"></script>
+
+        <!--  PUBLIC WIDGETS   -->
+        <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
+        <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
+
+        <!--  MAIN JAVASCRIPT FILE   -->
+        <script type="text/javascript" src='js/wFileUploaderDemo.js'></script>
+        <script type="text/javascript" src='js/init.js'></script>
+    </head>
+    <body>
+        <div id="demo_box">
+            <!--       DEMO_HEADER       -->
+            <div id="demo_box_header">
+                <h1>jWebSocket File Uploader Demo</h1>
+                <div id="demo_box_header_login">
+                    <div id="logoff_area">
+                        <div id="user_info">
+                            <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
+                            <div id="logoff_button" class="button">Logout</div>
+                        </div>
+                    </div>
+                    <div id="login_area">
+                        <div id="login_form">
+                            <label class="first">Username</label>
+                            <label class="second">Password</label>
+                            <input type="text" id="user_text" value="root"/>
+                            <input type="password" id="user_password" value="root"/>
+                        </div>
+                        <div id="login_button" class="button">Login</div>
+                    </div>
+
+                </div>
+            </div>
+            <div id="container">
+                <!--       STATUSBAR         -->
+                <div id="demo_box_statusbar">
+                    <div id='status'>Status: </div>
+                    <div id="client_status" class='offline'>disconnected</div><div class="line"></div>
+                    <div id='client_id'>Client-ID: - </div><div class="line"></div>
+                    <div id='websocket_type'>WebSocket: - </div>
+                </div>
+
+				<!--       SCENARIO          -->
+                <div id="scenario_container" class="box">
+
+					<!--       DESCRIPTION       -->
+					<div class="description_box">
+						<p>This demo shows how to easily upload files with jWebSocket 
+							File Uploader PlugIn. This example is based on the 
+							<b>File System PlugIn</b> which allows to submit and 
+							receive from the server base64 data from a files. 
+							This PlugIn also brings a complete HTML 5 File API 
+							independency, so, now you will be able to select files, 
+							split them and do whatever you want with them by 
+							using the jWebSocket Flash File API fallback.
+							Note: To enable upload by chunks you need to have 
+							the environment variable JWEBSOCKET_EE_HOME and the 
+							library libs/jWebSocketFileSystemPlugInEE-1.0.jar
+						</p>
+					</div>
+
+                    <!--    MESSAGE_BOX      -->
+                    <div id="upload_options" class="options_box">
+						<div class="buttons">
+							<div id="options">Upload Options:</div>
+							<div id="chunkSize">Chunk size: <input type="text" value="500000"></input></div>
+							<div id="alias">Alias: 
+								<input type="text" value="publicDir" title="The folder in the server side where you will upload your data, by default the files will be uploaded to the public folder, but you can change this alias to privateDir or any other existing in the server side"></input></div>
+							<div id="filemask">Filemask: <input type="text" value="*.*" title="This value is used to filter the list of files that you want to get from the server. To see the results, please change your mask and see what happens"></input></div>
+							<div id="scope">Scope:
+								<input type="radio" name="scope" value="private">Private</input>
+								<input type="radio" name="scope" value="public" checked="true">Public</input>
+							</div>
+							<div id="checksum">Verify Checksum:
+								<input type="checkbox" id="checksumEnabled" checked="checked" />
+								<select id="checksumAlgorithm">
+									<option>MD5</option>
+									<option>SHA1</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div id="buttons_area" class="options_box">
+						<div class="centered">
+							<div id="select_file" class="button"
+								 title="Select a file to be uploaded">
+								Attach files</div>
+							<div id="start_upload" class="button"
+								 title="Starts the upload to the jWebSocket server">
+								Start upload</div>
+							<div id="get_file_list" class="button"
+								 title="Gets a list of files from the server">
+								Get File List</div>
+							<div id="download" class="button"
+								 title="Downloads a file from the server">
+								Download file</div>
+						</div>
+					</div>
+
+					<div id="file_tree">
+						<!-- <div class="folder">asdkfljaskdf lj asdfklj asdf</div>
+							<div class="file">Rolando.txt</div>
+							<div class="file">Victor.txt</div>-->
+					</div>
+					<div id="filelist">
+						<table cellpadding="0" cellspacing="0">
+							<thead>
+								<tr>
+									<td class="first" width="60%">Filename</td>
+									<td>Progress</td>
+									<td>Chunked?</td>
+									<td class="last">Actions</td>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- <tr>
+									<td>file 1.txt</td>
+									<td>0%</td>
+									<td><input type="checkbox" checked="true"></input></td>
+									<td><div class="delete_file"></div></td>
+								</tr>
+								<tr>
+									<td>file 2.doc</td>
+									<td>0%</td>
+									<td><input type="checkbox" checked="true"></input></td>
+									<td><div class="delete_file"></div></td>
+								</tr>-->
+							</tbody>
+						</table>
+					</div>
+
+					<!--       LOG BOX           -->
+					<div id="log_box" class="box">
+						<div id="log_box_header">
+							<div id="show_hide_log" class="hide">Hide Log</div>
+							<div id="clear_log">Clear Log</div>
+						</div>
+						<div id="log_box_content" class="log_box_visible"></div>
+					</div>
+
+					<!--       DOWNLOAD_BUTTON   -->
+					<div id="demo_box_footer">
+						<div id="jws_download_button" class="button download">
+							<a href="http://jwebsocket.org/downloads/jwebsocket-latest-versions" 
+							   target="blank">Download jWebSocket</a>
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+    </body>
+</html>

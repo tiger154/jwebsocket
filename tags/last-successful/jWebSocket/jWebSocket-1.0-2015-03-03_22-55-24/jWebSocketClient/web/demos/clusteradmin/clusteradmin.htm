@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<!-- If Google's chrome frame installed, use it! -->
+		<!-- Comment needs to be BELOW this meta tag! -->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket Cluster Admin Demo (Community Edition, CE)
+		//	****************************************************************************
+		//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+		//  Alexander Schulze, Germany (NRW)
+		//
+		//	Licensed under the Apache License, Version 2.0 (the "License");
+		//	you may not use this file except in compliance with the License.
+		//	You may obtain a copy of the License at
+		//
+		//	http://www.apache.org/licenses/LICENSE-2.0
+		//
+		//	Unless required by applicable law or agreed to in writing, software
+		//	distributed under the License is distributed on an "AS IS" BASIS,
+		//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		//	See the License for the specific language governing permissions and
+		//	limitations under the License.
+		//	****************************************************************************
+		-->
+		<meta http-equiv="Content-Language" content="en">
+		<title>jWebSocket Cluster Admin Management</title>
+		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
+
+		<script src="../../lib/stomp/stomp.js" type="text/javascript"></script>
+		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
+		<script src="../../res/js/jWebSocketStomp.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsClusterAdminPlugInEE_min.js" type="text/javascript"></script>
+
+		<script type="text/javascript" language="JavaScript">
+
+			function callIfLogin(fn) {
+				if (!lWSC.isConnected()) {
+					log("Connect first!");
+				} else {
+					if (lWSC.getUsername() !== null && lWSC.getUsername() !== 'anonymous') {
+						fn();
+					} else {
+						log("Login first!");
+					}
+				}
+			}
+
+			function getInfo() {
+				callIfLogin(function() {
+					lWSC.clusterGetinfo();
+				});
+			}
+
+			function shutdownNode() {
+				lWSC.clusterShutdownNode(document.getElementById("nodes").value, {
+					OnSuccess: function(){
+						setTimeout(function(){
+							fillNodesSelect();
+						}, 1500);
+					}
+				});
+			}
+			
+			function getOptimumNode() {
+				lWSC.clusterGetOptimumNode();
+			}
+
+			function pauseNode() {
+				lWSC.clusterPauseNode(document.getElementById("nodes").value, {
+					OnSuccess: function(){
+						fillNodesSelect();
+					}
+				});
+			}
+
+			function resumeNode() {
+				lWSC.clusterResumeNode(document.getElementById("nodes").value, {
+					OnSuccess: function(){
+						fillNodesSelect();
+					}
+				});
+			}
+
+			var lNodeStatus = ['UP', 'PAUSED', 'DOWN'];
+			function fillNodesSelect() {
+				var select = document.getElementById("nodes");
+				while (select.options.length > 0) {
+					select.options.remove(select.options.length - 1);
+				}
+
+				lWSC.clusterListNodes({
+					OnSuccess: function(aResponse) {
+						var select = document.getElementById("nodes");
+						for (var lIndex in aResponse.data) {
+							var lNode = aResponse.data[lIndex];
+							if (lNode.status < 2)
+								select.options[select.options.length] = new Option(lNode.nodeId + ':' + lNodeStatus[lNode.status], lNode.nodeId);
+						}
+					}
+				});
+			}
+
+			function initPage() {
+				eURL.value = "ws://localhost:61614/stomp?cluster=jws_cloud1";
+				eFunc = jws.$("stxfFunc");
+				eArgs = jws.$("stxfArgs");
+				lWSC.addPlugIn({
+					processToken: function(aToken) {
+						if (aToken.type === 'welcome') {
+							if (aToken.username !== 'anonymous')
+								fillNodesSelect();
+						}
+						if (0 === aToken.code) {
+							if (aToken.reqType === 'login') {
+								fillNodesSelect();
+							} else if (aToken.reqType === 'logout') {
+								var select = document.getElementById("nodes");
+								while (select.options.length > 0) {
+									select.options.remove(select.options.length - 1);
+								}
+							}
+						}
+					}
+				});
+			}
+
+			function exitPage() {
+				// processExitPage();
+			}
+
+		</script>
+	</head>
+
+	<body
+		onload="initPage();"
+		onunload="exitPage();"
+		>
+		<script type="text/javascript">
+			jws.DemoPlugIn.buildDemoPage({
+				title: "Cluster Admin Management",
+				header: "jWebSocket Cluster Admin Management Demo",
+				description: "This demo provides basic jWebSocket server cluster management/monitoring features."
+			});
+			processInitPage();</script>
+
+		<div class="sdivContainer">
+			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
+				<tr class="strDlg">
+					<td class="stdDlg">
+						Select node:
+					</td>
+					<td class="stdDlg">
+						<select class="sselDlg" id="nodes" title="List of cluster nodes" style="width:99%">
+						</select>
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnPause" type="button" value="Pause" onclick="pauseNode();"
+							   title="Pause the selected cluster node.">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnResume" type="button" value="Resume" onclick="resumeNode();"
+							   title="Resume the selected cluster node.">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnShutdown" type="button" value="Shutdown" onclick="shutdownNode();"
+							   title="Shutdown the selected cluster node.">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnGetInfo" type="button" value="Cluster info" onclick="getInfo();"
+							   title="Get cluster info.">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnListNodes" type="button" value="List nodes" onclick="fillNodesSelect();"
+							   title="Get cluster nodes list">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnOptimumNode" type="button" value="Optimum node" onclick="getOptimumNode();"
+							   title="Get the jWebSocket cluster optimum node identifier">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

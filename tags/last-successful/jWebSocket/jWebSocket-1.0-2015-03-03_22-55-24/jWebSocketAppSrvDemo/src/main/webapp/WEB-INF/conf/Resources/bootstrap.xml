@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
+<beans>
+	
+	<!-- MongoDB connection -->
+	<bean id="mongodbConnection0" class="com.mongodb.MongoClient" destroy-method="close">
+		<constructor-arg value="localhost"/>
+	</bean>
+	
+	<!-- JMS connection -->
+	<bean id="jmsBroker" class="org.apache.activemq.broker.BrokerService" 
+		  init-method="start" destroy-method="stop">
+		<property name="brokerName" value="brokerAppSrvDemo" />
+		<property name="persistent" value="false" />
+	</bean>
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" 
+		  depends-on="jmsBroker" >
+		<property name="brokerURL">
+			<!--<value>tcp://amq_broker_server:61616</value>-->
+			<value>vm://brokerAppSrvDemo</value>
+		</property>
+		<!--		
+		<property name="userName">
+			<value>admin</value>
+		</property>
+		<property name="password">
+			<value>admin</value>
+		</property>
+		-->
+	</bean>
+	<bean id="jmsConnection0" factory-bean="jmsConnectionFactory" factory-method="createConnection" 
+		  init-method="start" destroy-method="close">
+		<property name="clientID" value="jws_server_shared_conn_01" />
+	</bean>
+					
+	<!-- JDBC data source for ItemStorage plug-in -->
+	<bean id="itemStorageDataSource"
+		  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
+		<property name="url">
+			<bean class="org.jwebsocket.config.JWebSocketConfig"
+				  factory-method="expandEnvAndJWebSocketVars">
+				<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/itemstorage;create=true" />
+			</bean>
+		</property>
+	</bean>
+	<!-- JDBC data source for ChannelPlugIn -->
+	<bean id="channelsDataSource"
+		  class="com.j256.ormlite.jdbc.JdbcConnectionSource" init-method="initialize">
+		<property name="url">
+			<bean class="org.jwebsocket.config.JWebSocketConfig"
+				  factory-method="expandEnvAndJWebSocketVars">
+				<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/channels;create=true" />
+			</bean>
+		</property>
+		<property name="databaseType">
+			<bean class="com.j256.ormlite.db.DerbyEmbeddedDatabaseType" />
+		</property>
+	</bean>
+	
+	<!--
+	<bean id="itemStorageDataSource"
+		  class="com.j256.ormlite.jdbc.JdbcConnectionSource" init-method="initialize">
+		<property name="url">
+			<bean class="org.jwebsocket.config.JWebSocketConfig"
+				  factory-method="expandEnvAndJWebSocketVars">
+				<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/itemstorage;create=true" />
+			</bean>
+		</property>
+		<property name="username" value="" />
+		<property name="password" value="" />
+		<property name="databaseType">
+			<bean class="com.j256.ormlite.db.DerbyEmbeddedDatabaseType" />
+		</property>
+	</bean>
+	-->
+	
+	<!-- Global connections manager. REQUIRED BEAN -->
+	<bean id="org.jwebsocket.server.connection_manager" class="org.jwebsocket.util.ConnectionManager">
+		<constructor-arg>
+			<map>
+				<entry key="mongodbConnection0" value-ref="mongodbConnection0" />
+				<entry key="jmsConnection0" value-ref="jmsConnection0" />
+				<entry key="org.jwebsocket.plugins.itemstorage" value-ref="itemStorageDataSource" />
+				<entry key="org.jwebsocket.plugins.channels" value-ref="channelsDataSource" />
+				<entry key="org.jwebsocket.plugins.monitoring" value-ref="mongodbConnection0" />
+				<entry key="org.jwebsocket.plugins.pingpong" value-ref="mongodbConnection0" />
+			</map>
+		</constructor-arg>
+	</bean>
+	
+</beans>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+	<!-- jWebSocketServerAPI -->
+	<!-- this id is appended to filename given in pom.xml -->
+	<id>${project.version}</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	
+	<includeBaseDirectory>false</includeBaseDirectory>
+	
+	<dependencySets>
+		
+		<dependencySet>
+			<outputDirectory/>
+			
+			<includes>
+				<include>${groupId}:${artifactId}</include>
+				
+				<!-- commented out to prevent slf4j double binding issue -->
+				<!-- <include>org.slf4j:slf4j-api</include> -->
+				<!-- <include>org.slf4j:slf4j-log4j12</include> -->
+				<!-- <include>org.slf4j:slf4j-simple</include> -->
+				
+				<include>javax.mail:mail</include>
+				<!--
+				<include>javax.activation:activation</include>
+				-->
+				
+				<include>log4j:log4j</include>
+				<include>org.jdom:jdom</include>
+
+				<include>org.springframework:spring-aop</include>
+				<include>org.springframework:spring-asm</include>
+				<include>org.springframework:spring-beans</include>
+				<include>org.springframework:spring-context</include>
+				<include>org.springframework:spring-expression</include>
+				<include>org.springframework:spring-jdbc</include>
+				<include>org.springframework:spring-jms</include>
+				<include>org.springframework.security:spring-security-config</include>
+				<include>org.springframework.security:spring-security-core</include>
+				<include>org.springframework.security:spring-security-crypto</include>
+				<include>org.springframework.ldap:spring-ldap-core</include>
+				<include>org.springframework.security:spring-security-ldap</include>
+				<include>org.springframework.security:spring-security-web</include>
+				<include>org.springframework:spring-tx</include>
+				<include>org.springframework:spring-web</include>
+				<!--
+				<include>org.apache.xbean:xbean-spring-common</include>
+				<include>org.apache.xbean:xbean-spring-v2</include>
+				<include>org.apache.xbean:xbean-spring-v2c</include>
+				-->
+			</includes>
+			<unpack>true</unpack>
+		</dependencySet>
+		
+	</dependencySets>
+
+	<files>
+		<file>
+			<source>META-INF/spring.schemas</source>
+			<outputDirectory>META-INF</outputDirectory>
+			<filtered>true</filtered>
+		</file>
+		<file>
+			<source>META-INF/spring.handlers</source>
+			<outputDirectory>META-INF</outputDirectory>
+			<filtered>true</filtered>
+		</file>
+		<file>
+			<source>META-INF/spring.tooling</source>
+			<outputDirectory>META-INF</outputDirectory>
+			<filtered>true</filtered>
+		</file>
+	</files>
+
+</assembly>
