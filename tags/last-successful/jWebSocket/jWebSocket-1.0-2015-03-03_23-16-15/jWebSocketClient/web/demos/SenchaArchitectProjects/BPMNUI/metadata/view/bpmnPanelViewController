@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "bpmnpanel",
+        "designer|userClassName": "bpmnPanelViewController"
+    },
+    "designerId": "c2addecb-a25e-43b3-bf94-b70acbeffb01"
+}

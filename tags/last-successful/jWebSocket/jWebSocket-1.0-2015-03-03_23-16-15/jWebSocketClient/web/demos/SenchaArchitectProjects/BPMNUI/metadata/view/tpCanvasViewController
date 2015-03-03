@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "tpcanvas",
+        "designer|userClassName": "tpCanvasViewController"
+    },
+    "designerId": "34968b48-22df-49eb-8376-d92666f44834"
+}

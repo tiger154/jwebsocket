@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<!-- If Google's chrome frame installed, use it! -->
+		<!-- Comment needs to be BELOW this meta tag! -->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket Reporting Demo (Community Edition, CE)
+		//	****************************************************************************
+		//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+		//  Alexander Schulze, Germany (NRW)
+		//
+		//	Licensed under the Apache License, Version 2.0 (the "License");
+		//	you may not use this file except in compliance with the License.
+		//	You may obtain a copy of the License at
+		//
+		//	http://www.apache.org/licenses/LICENSE-2.0
+		//
+		//	Unless required by applicable law or agreed to in writing, software
+		//	distributed under the License is distributed on an "AS IS" BASIS,
+		//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		//	See the License for the specific language governing permissions and
+		//	limitations under the License.
+		//	****************************************************************************
+		-->
+		<meta http-equiv="Content-Language" content="en">
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<title>jWebSocket Reporting Demo</title>
+		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
+
+		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsFilesystemPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsReportingPlugIn.js" type="text/javascript"></script>
+
+		<script type="text/javascript" language="JavaScript">
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			function testGetReports() {
+				log("Retreiving list of reports via jWebSocket...");
+				if (lWSC.isConnected()) {
+					lWSC.sendToken({
+						ns: "org.jwebsocket.plugins.testreporting",
+						type: "testGetReport"
+					});
+				} else {
+					log("Not connected.");
+				}
+			}
+
+			function testGenerateReport() {
+				log("Creating a report...");
+				if (lWSC.isConnected()) {
+					lWSC.sendToken({
+						ns: "org.jwebsocket.plugins.testreporting",
+						type: "testGenerateReport"
+					});
+				} else {
+					log("Not connected.");
+				}
+			}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			function disableFields() {
+				if (eJDBConnection.checked) {
+					eFields.enabled = false;
+				}
+			}
+
+			function useConnection() {
+				if (eJDBConnection.checked == true) {
+					eFields.disabled = true;
+					eConnectionAlias.disabled = false;
+				}
+				else {
+					eConnectionAlias.disabled = true;
+					eFields.disabled = false;
+
+				}
+			}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			function getReports() {
+				log("Retreiving list of reports via jWebSocket...");
+				if (lWSC.isConnected()) {
+					lWSC.reportingGetReports();
+				} else {
+					log("Not connected.");
+				}
+			}
+
+			function createReport() {
+				var lReportId = eReportSel.value;
+				var lFormat = eFormatSel.value;
+				eval("var lParams =" + eParams.value);
+				var lFields = eval(eFields.value);
+
+				log("Creating Report...");
+
+				if (lWSC.isConnected()) {
+
+					lWSC.reportingGenerateReport(
+							lReportId,
+							lParams,
+							lFields,
+							{
+								useConection: eJDBConnection.checked,
+								outputType: lFormat
+							}
+					);
+				} else {
+					log("Not connected.");
+				}
+			}
+
+			function useFileSystemPlugIn() {
+				var lFile = eUploadFile.files[0];
+				if (!lFile) {
+					alert('Select a report template first!');
+					return;
+				}
+				if (!confirm('Are you sure to upload the selected template ? If the template already exists it will get replaced!')) {
+					return;
+				}
+				log("Uploading template report to the user home directory...");
+
+				var lFR = new FileReader();
+				lFR.onload = function(aEvt) {
+					var lFileContent = aEvt.currentTarget.result;
+					lWSC.fileSave(lFile.name, lFileContent, {
+						encode: false,
+						OnSuccess: function() {
+							lWSC.reportingUploadTemplate(
+									lFile.name
+									);
+						},
+						OnFailure: function() {
+							log("An error ocurred trying to upload the required template");
+						}
+					});
+				};
+				lFR.readAsDataURL(lFile);
+			}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			function handleReportAvail(aToken) {
+				lWSC.fileLoad(aToken.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
+					OnSuccess: function(aToken) {
+						if (eFormatSel.value == "pdf")
+							window.open("data:application/pdf;base64," + aToken.data, "_blank");
+						else
+							window.open("data:application/zip;base64," + aToken.data, "_blank");
+
+					}
+				});
+			}
+
+			function handleReports(aToken) {
+				while (eReportSel.options.length > 0) {
+					eReportSel.removeChild();
+				}
+
+				var lReports = aToken.data;
+				for (i = 0; i < lReports.length; i++) {
+					eReportSel.appendChild(new Option(lReports[i], lReports[i]));
+				}
+			}
+
+			function handleUpload(aToken) {
+
+			}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			function initPage() {
+				// get reports
+				eReportSel = jws.$("sselReports");
+
+				// get formats
+				eFormatSel = jws.$("sselFormats");
+
+				// use JDBConnection
+				eJDBConnection = jws.$("chkJDBConnection");
+				eJDBConnection.checked = false;
+
+				// fields statements
+				eFields = jws.$("txaFields");
+				eFields.value = "[{name: 'Javier', lastName: 'Alejandro Puentes', age: 27, dni: 9898797987}]";
+
+				// params statements
+				eParams = jws.$("txaParams");
+				eParams.value = "{reportTitle: 'My Report'}";
+
+				// connection alias
+				eConnectionAlias = jws.$("txtJDBCName");
+				eConnectionAlias.disabled = true;
+				eConnectionAlias.value = "   --- no necesary ---";
+
+				// file upload
+				eUploadFile = jws.$("flTemplatePath");
+
+
+				eFormatSel.appendChild(new Option("PDF", "pdf"));
+				eFormatSel.appendChild(new Option("HTML", "html"));
+
+				lWSC.setReportingCallbacks({
+					OnReport: handleReportAvail,
+					OnReports: handleReports,
+					OnUploadTemplate: handleUpload
+				});
+			}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			function exitPage() {
+				// processExitPage();
+			}
+
+		</script>
+	</head>
+
+	<body
+		onload="initPage();"
+		onunload="exitPage();"
+		>
+		<script type="text/javascript">
+			jws.DemoPlugIn.buildDemoPage({
+				title: "Reporting",
+				header: "jWebSocket Reporting Demo",
+				description: "This demo shows how to easily create reports via jWebSocket."
+			});
+			processInitPage();
+		</script>
+
+		<div class="sdivContainer">
+			<table>
+				<tr class="strDlg">				
+					<td class="stdDlg" width="5">
+						<fieldset>
+							<table>
+								<tr>
+									<td class="stdDlg" width="5">
+										<input class="sbtnDlg" id="sbtnGetReports" type="button" value="Get Reports" onclick="getReports()"
+											   title="Gets the list of avaliable reports."/>
+									</td>
+									<td class="stdDlg" width="5">
+										<select id="sselReports" title="Available Reports on the server." style="width:150px" >
+										</select>	
+									</td>
+								</tr>
+							</table>
+						</fieldset>	
+					</td>
+					<td>
+						<fieldset>
+
+
+							<table>
+								<tr>
+									<td class="stdDlg" width="auto">
+										<p> select template</p>
+									</td>
+									<td class="stdDlg" width="5">
+										<input type="file" id="flTemplatePath" class="sbtnDlg" >
+									</td>
+									<td>
+										<input class="sbtnDlg" id="sbtnUpload" type="button" value="Upload" onclick="useFileSystemPlugIn()">
+									</td>
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td>
+						<fieldset>
+							<table class="stlbDlg">							
+								<tr class="strDlg">	
+									<td>
+										<label class="sbtnDlg" for ="sselFormats">Formats</label>
+									</td>
+									<td class="stdDlg" width="5">
+										<select id="sselFormats" title="Available Formats to export reports." style="width:150px">
+										</select>
+									</td>	
+									<td>
+										<input type="checkbox" class="stdDlg" id="chkJDBConnection" 
+											   title="on/off Use JDBConnection Plug-in" onclick= "useConnection()"/> Use connection?
+									</td><td>
+										<input type="text" id="txtJDBCName" />
+									</td>
+								</tr>
+								<tr>					
+									<td>
+										<label class="sbtnDlg" for ="txaFields" title="Enter an array with JSON objects">Fields</label>
+									</td>
+									<td class="stdDlg" width="5">
+										<textarea class="sbtnDlg" id="txaFields" title="Enter an array with JSON objects"></textarea>
+									</td>					
+									<td>
+										<label class="sbtnDlg" for ="txaParams" title="Enter a JSON object">Params</label>
+									</td>
+									<td class="stdDlg" width="5">
+										<textarea class="sbtnDlg" id="txaParams" title="Enter a JSON object"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td class="stdDlg" width="5">
+										<br>
+										<input class="sbtnDlg" id="sbtCreateReport" type="button" value="Create Report" onclick="createReport();"
+											   title="Creates the currently selected report using the given parameters.">
+									</td>
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+					<td>
+						<table style="margin-left: 100px">
+							<tr>
+								<td>
+									<p>Testing Reporting PlugIn</p>
+								</td>
+							</tr>
+							<tr>								
+								<td>
+									<input type="button" class="sbtnDlg" id="btnTestGetReports" value="Get Reports" onclick="testGetReports()"/>
+								</td>
+								<td>
+									<input type="button" class="sbtnDlg" id="btnTestGenReports" value="Create Report" onclick="testGenerateReport()"/>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="sdivContainer" id="sdivFilter">
+
+		</div>
+
+		<div class="sdivContainer" id="sdivPdf">
+
+		</div>
+
+
+	</body>
+</html>
