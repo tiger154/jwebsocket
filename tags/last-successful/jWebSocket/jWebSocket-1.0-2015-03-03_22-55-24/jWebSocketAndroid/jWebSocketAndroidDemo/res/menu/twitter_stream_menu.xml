@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : twitter_stream_menu.xml
+    Created on : November 21, 2010, 12:29 PM
+    Author     : Prashant
+    Description:
+        defines menu items for twitter stream activity
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:id="@+id/twitterStreamSettings"
+          android:title="Settings" />
+</menu>
