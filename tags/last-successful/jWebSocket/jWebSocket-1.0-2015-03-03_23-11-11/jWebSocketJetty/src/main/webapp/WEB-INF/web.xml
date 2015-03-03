@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<display-name>jWebSocket Jetty Demo</display-name>
+
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+	<servlet>
+		<servlet-name>jWebSocket</servlet-name>
+		<servlet-class>org.jwebsocket.jetty.jWebSocket</servlet-class>
+		<!-- this init-param is essential!
+			If not set Jetty crashes cannot be excluded in latest 8.0.0.M2 -->
+		<init-param>
+			<param-name>bufferSize</param-name>
+			<param-value>1048576</param-value>
+		</init-param>
+		<init-param>
+			<param-name>timeout</param-name>
+			<param-value>1000</param-value>
+		</init-param>
+ 	</servlet>
+	<servlet-mapping>
+		<servlet-name>jWebSocket</servlet-name>
+		<url-pattern>/jWebSocket</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>Test</servlet-name>
+		<servlet-class>org.jwebsocket.jetty.Test</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Test</servlet-name>
+		<url-pattern>/Test</url-pattern>
+	</servlet-mapping>
+
+	<!-- add all your context, session and request listeners here -->
+    <listener>
+        <description>ServletContextListener</description>
+        <listener-class>org.jwebsocket.jetty.ContextListener</listener-class>
+    </listener>
+<!--
+    <listener>
+        <description>HttpSessionListener</description>
+        <listener-class>org.jwebsocket.jetty.SessionListener</listener-class>
+    </listener>
+-->
+
+</web-app>

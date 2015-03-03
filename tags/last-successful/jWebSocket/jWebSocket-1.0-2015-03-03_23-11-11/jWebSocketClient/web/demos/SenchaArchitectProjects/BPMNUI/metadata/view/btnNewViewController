@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "btnnew",
+        "designer|userClassName": "btnNewViewController"
+    },
+    "designerId": "6a64b2d5-0985-4e61-8ad9-95d67755ba3e"
+}
