@@ -1,0 +1,13 @@
+{
+    "type": "Ext.app.ViewController",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "vpdiagram",
+        "designer|userClassName": "vpDiagramViewController"
+    },
+    "designerId": "9352ad7d-827c-4328-9eb9-e439377717c1"
+}

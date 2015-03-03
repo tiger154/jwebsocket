@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{849C86D0-5E73-4521-974E-201FC80764AF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebSocket</RootNamespace>
+    <AssemblyName>WebSocket</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="JSON, Version=3.0.138.2148, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\JSON.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="org\jwebsocket\common\WebSocketConstants.cs" />
+    <Compile Include="org\jwebsocket\common\WebSocketConvert.cs" />
+    <Compile Include="org\jwebsocket\common\WebSocketMessage.cs" />
+    <Compile Include="org\jwebsocket\common\WebSocketTypeEncoding.cs" />
+    <Compile Include="org\jwebsocket\protocol\api\IWebSocketCookiesManager.cs" />
+    <Compile Include="org\jwebsocket\protocol\api\IWebSocketPacket.cs" />
+    <Compile Include="org\jwebsocket\protocol\api\IWebSocketProtocol.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketCloseReason.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketCookieManager.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketEncoding.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketError.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketException.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketExceptionType.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketFrameType.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketHandshake.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketHeaders.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketProtocolAbstraction.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketReliabilityOptions.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketRuntimeException.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketStateOfStatus.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketStatus.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketSubProtocol.cs" />
+    <Compile Include="org\jwebsocket\protocol\kit\WebSocketTimeout.cs" />
+    <Compile Include="org\jwebsocket\protocol\WebSocketPacket.cs" />
+    <Compile Include="org\jwebsocket\protocol\WebSocketProtocol.cs" />
+    <Compile Include="org\jwebsocket\token\api\IToken.cs" />
+    <Compile Include="org\jwebsocket\token\kit\PendingResponseQueue.cs" />
+    <Compile Include="org\jwebsocket\token\kit\TokenResponse.cs" />
+    <Compile Include="org\jwebsocket\token\processor\JSONTokenProcessor.cs" />
+    <Compile Include="org\jwebsocket\token\Token.cs" />
+    <Compile Include="org\jwebsocket\token\TokenFactory.cs" />
+    <Compile Include="org\jwebsocket\token\WebSocketTokenClient.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
