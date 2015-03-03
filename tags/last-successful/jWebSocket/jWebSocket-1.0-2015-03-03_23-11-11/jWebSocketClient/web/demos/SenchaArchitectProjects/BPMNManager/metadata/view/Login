@@ -1,0 +1,157 @@
+{
+    "type": "Ext.window.Window",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "autoShow": true,
+        "closable": false,
+        "designer|initialView": true,
+        "designer|userAlias": "login",
+        "designer|userClassName": "Login",
+        "height": 150,
+        "layout": "border",
+        "modal": true,
+        "requires": [
+            "BPMNManager.view.Markup"
+        ],
+        "title": "Log in",
+        "width": 400
+    },
+    "name": "MyWindow",
+    "designerId": "0c6a6aed-7a59-42b2-a7d2-e3b04b282b55",
+    "viewControllerInstanceId": "31c682ff-4143-4210-bd47-e28adb0b98e3",
+    "viewModelInstanceId": "a6a7ac5b-c956-49fb-8535-0320eb9ed4a0",
+    "cn": [
+        {
+            "type": "Ext.form.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "bodyPadding": 10,
+                "designer|uiInterfaceName": "default-framed",
+                "frame": true,
+                "layout|region": "center",
+                "title": ""
+            },
+            "name": "MyForm",
+            "designerId": "824bfe08-ae67-48c2-9213-2bce5dad8688",
+            "cn": [
+                {
+                    "type": "Ext.form.field.Text",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|createAlias": "",
+                        "fieldLabel": "Username",
+                        "layout|anchor": "100%"
+                    },
+                    "name": "MyTextField",
+                    "designerId": "dce3445c-dc95-439d-b166-229cb25abb94"
+                },
+                {
+                    "type": "Ext.form.field.Text",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|createAlias": "",
+                        "fieldLabel": "Password",
+                        "inputType": "password",
+                        "layout|anchor": "100%"
+                    },
+                    "name": "MyTextField1",
+                    "designerId": "1b798467-c78f-4448-b3a9-5562f363d871"
+                },
+                {
+                    "type": "Ext.toolbar.Toolbar",
+                    "reference": {
+                        "name": "dockedItems",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dock": "bottom"
+                    },
+                    "name": "MyToolbar",
+                    "designerId": "2194d70d-86e1-46fd-af00-c6a12469c79e",
+                    "cn": [
+                        {
+                            "type": "Ext.toolbar.Fill",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "layout|flex": null
+                            },
+                            "name": "MyFill",
+                            "designerId": "09ce52cf-2c20-43c4-9d1d-c6d890503172"
+                        },
+                        {
+                            "type": "Ext.button.Button",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "layout|flex": null,
+                                "text": "Ok"
+                            },
+                            "name": "MyButton",
+                            "designerId": "4f82b13b-57d9-4447-b942-4082cd14bbe2",
+                            "cn": [
+                                {
+                                    "type": "basiceventbinding",
+                                    "reference": {
+                                        "name": "listeners",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "fn": "onButtonClick",
+                                        "implHandler": [
+                                            "this.hide();",
+                                            "Ext.create('BPMNManager.view.Markup');",
+                                            "console.log(lWSC);"
+                                        ],
+                                        "name": "click",
+                                        "scope": "me"
+                                    },
+                                    "name": "onButtonClick",
+                                    "designerId": "0868aac8-e41b-454f-ab4b-c930b12f48fc"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Ext.button.Button",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "layout|flex": null,
+                                "text": "Cancel"
+                            },
+                            "name": "MyButton1",
+                            "designerId": "5fbdf5a0-8d0d-4795-bb37-c8e2e760afdc"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:amq="http://activemq.apache.org/schema/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans.xsd 
+http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+	<!-- lets create an embedded ActiveMQ Broker -->
+	<amq:broker useJmx="false" persistent="false">
+		<amq:transportConnectors>
+			<amq:transportConnector uri="tcp://localhost:0" />
+		</amq:transportConnectors>
+	</amq:broker>
+	<amq:queue id="testQueue" physicalName="test.queue" />
+	<amq:topic id="testTopic" physicalName="test.topic" />
+	<amq:connectionFactory id="connectionFactory"
+		brokerURL="vm://localhost" />
+
+	<bean id="dmd"
+		class="org.jwebsocket.plugins.jms.infra.impl.DefaultMessageDelegate" />	
+</beans>

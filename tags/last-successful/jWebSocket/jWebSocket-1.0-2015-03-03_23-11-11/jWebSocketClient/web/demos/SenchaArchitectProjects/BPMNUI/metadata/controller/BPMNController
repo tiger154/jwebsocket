@@ -1,0 +1,84 @@
+{
+    "type": "Ext.app.Controller",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userAlias": "bpmnController",
+        "designer|userClassName": "BPMNController"
+    },
+    "name": "MyController",
+    "designerId": "59efe4be-3f11-4b98-8930-65819cdacab5",
+    "cn": [
+        {
+            "type": "controllerref",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "ref": "canvasTabPanel",
+                "selector": "tpcanvas"
+            },
+            "name": "canvasTabPanel",
+            "designerId": "c86ae5f2-436f-469f-8017-cb6dde7e22fc"
+        },
+        {
+            "type": "controllerref",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "ref": "btnNew",
+                "selector": "pCanvas btnNew"
+            },
+            "name": "btnNew",
+            "designerId": "8ccb7587-9e39-436c-862d-dd4b1a8044b8"
+        },
+        {
+            "type": "controlleraction",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|controlQuery": "btnnew",
+                "designer|targetType": "btnNew",
+                "fn": "onMybuttonClick",
+                "implHandler": [
+                    "this.getCanvasTabPanel().add(Ext.create('BPMNEditor.view.pCanvas'));"
+                ],
+                "name": "click",
+                "scope": "me"
+            },
+            "name": "onMybuttonClick",
+            "designerId": "a6974f0f-90cd-415d-a057-c93e8b1c352a"
+        },
+        {
+            "type": "controlleraction",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|controlQuery": "btnopen",
+                "designer|targetType": "btnOpen",
+                "fn": "onButtonClick",
+                "implHandler": [
+                    "Ext.create('BPMNEditor.view.winLoadDiagram').show();"
+                ],
+                "name": "click",
+                "scope": "me"
+            },
+            "name": "onButtonClick",
+            "designerId": "1f4e543f-fbae-4382-85ed-395fb1a18f09"
+        }
+    ]
+}

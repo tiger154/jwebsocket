@@ -1,0 +1,309 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<!-- If Google's chrome frame installed, use it! -->
+		<!-- Comment needs to be BELOW this meta tag! -->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket Filesystem Demo (Community Edition, CE)
+		//	****************************************************************************
+		//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+		//  Alexander Schulze, Germany (NRW)
+		//
+		//	Licensed under the Apache License, Version 2.0 (the "License");
+		//	you may not use this file except in compliance with the License.
+		//	You may obtain a copy of the License at
+		//
+		//	http://www.apache.org/licenses/LICENSE-2.0
+		//
+		//	Unless required by applicable law or agreed to in writing, software
+		//	distributed under the License is distributed on an "AS IS" BASIS,
+		//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		//	See the License for the specific language governing permissions and
+		//	limitations under the License.
+		//	****************************************************************************
+		-->
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<title>jWebSocket FileSystem Demo</title>
+		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
+
+		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+		<script type="text/javascript" src="../../res/js/jwsDemoPlugIn.js"></script>
+		<!-- this one imports the client side file system plug-in -->
+		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
+		<script type="text/javascript" src="../../lib/JSZip/jszip-full_min.js"></script>
+
+		<script type="text/javascript">
+
+			var eData = null;
+			var eFilename = null;
+			var ePrivate = null;
+			var eInclDirs = null;
+			var mAlias = "publicDir";
+
+			function usePrivate() {
+				return ePrivate.checked;
+			}
+			
+			function getSelectedScope() {
+				return ( 
+					usePrivate()
+					? jws.SCOPE_PRIVATE
+					: jws.SCOPE_PUBLIC 
+				);
+			}
+
+			function getSelectedAlias() {
+				return ( 
+					usePrivate()
+					? jws.FileSystemPlugIn.ALIAS_PRIVATE
+					: jws.FileSystemPlugIn.ALIAS_PUBLIC
+				);
+			}
+
+			function loadFile() {
+				log( "Loading a file from the server via WebSockets..." );
+				// call the getTime method of the client side plug-in
+				var lRes = lWSC.fileLoad(
+						eFilename.value,
+						getSelectedAlias(),
+						{	OnSuccess : handleLoad
+						}
+				);
+				// log error only, on success don't confuse the user
+				if(0 !== lRes.code) {
+					log(lWSC.resultToString(lRes));
+				}
+			}
+
+			function loadCompressed() {
+				log( "Loading a file from the server via WebSockets using GZip compression transport..." );
+				// call the getTime method of the client side plug-in
+				var lRes = lWSC.fileLoad(
+						eFilename.value,
+						getSelectedAlias(),
+						{	encoding: "zipBase64",
+							OnSuccess : handleLoad
+						}
+				);
+				// log error only, on success don't confuse the user
+				if(0 !== lRes.code) {
+					log(lWSC.resultToString(lRes));
+				}
+			}
+			
+			function loadZip() {
+				log( "Loading a zip file from the server and unpacks show the content in the log..." );
+				// call the getTime method of the client side plug-in
+				var lRes = lWSC.fileLoad(
+						eFilename.value,
+						getSelectedAlias(),
+						{	OnSuccess : handleZip
+						}
+				);
+				// log error only, on success don't confuse the user
+				if(0 !== lRes.code) {
+					log(lWSC.resultToString(lRes));
+				}
+			}
+			
+			function handleLoad( aToken ) {
+				eData.value = aToken.data;
+			}
+
+			function handleZip( aToken ) {
+				var lZip = new JSZip( aToken.data, { base64: true } );
+				lZip.filter(
+					function( aRelPath, aFile ) {
+						log( "File in archive: " + aFile.name 
+								+ ", length: " + (aFile.data.length/1024).toFixed(1) + " kb" );
+						// here aFile.data allows access to the file
+					}
+				);
+				eData.value = "[Please refer to log to view zip archive content]";
+			}
+
+			function saveFile() {
+				log( "Saving a file from the server via WebSockets..." );
+				// call the getTime method of the client side plug-in
+				var lRes = lWSC.fileSave(
+						eFilename.value,
+						eData.value,
+						{	scope: getSelectedScope()
+							//, encode: false,
+							//, encoding: "plain"
+						}
+				);
+				// log error only, on success don't confuse the user
+				if(0 !== lRes.code ) {
+					log( lWSC.resultToString(lRes) );
+				}
+			}
+
+			function appendFile() {
+				log( "Appending a file from the server via WebSockets..." );
+				// call the getTime method of the client side plug-in
+				var lRes = lWSC.fileAppend(
+						eFilename.value,
+						eData.value,
+						{ scope: getSelectedScope()
+						}
+				);
+				// log error only, on success don't confuse the user
+				if( 0 !== lRes.code ) {
+					log(lWSC.resultToString(lRes));
+				}
+			}
+
+			function deleteFile() {
+				log("Deleting a file from the server via WebSockets...");
+				// call the getTime method of the client side plug-in
+				var lRes = lWSC.fileDelete(
+						eFilename.value,
+						true, // force delete
+						{	scope: getSelectedScope()
+						}
+				);
+				// log error only, on success don't confuse the user
+				if( 0 !== lRes.code ) {
+					log(lWSC.resultToString(lRes));
+				}
+			}
+
+			function getFilelist() {
+				log("Retrieving file list from the server via WebSockets...");
+				// call the getFilelist method of the client side plug-in
+				var lRes = lWSC.fileGetFilelist(
+						getSelectedAlias(), 
+						[ "*.*" ],
+						{	recursive: true,
+							includeDirs: eInclDirs.checked
+						}
+				);
+				// log error only, on success don't confuse the user
+				if( 0 !== lRes.code ) {
+					log(lWSC.resultToString(lRes));
+				}
+			}
+
+			function onFileLoadedObs(aToken) {
+				if( aToken.filename.match(/\.zip/ig) ) {
+					log( "Loaded zip archive: " + aToken.filename );
+				} else {
+					log( "Loaded file: " + aToken.filename + ", content: " + aToken.data );
+				}
+			}
+
+			function onFileDeletedObs(aToken) {
+				log("Deleted file: " + aToken.filename);
+				eData.value = aToken.data;
+			}
+
+			function onFileErrorObs(aToken) {
+				error("Error loading file: " + aToken.msg);
+			}
+
+			function onFileSavedObs(aToken) {
+				var lFilename = aToken.filename;
+				log("File " + lFilename + " has been stored on server.");
+			}
+
+			function initPage() {
+				ePrivate = jws.$("schkPrivate");
+				eInclDirs = jws.$("schkInclDir");
+				
+				eFilename = jws.$("stxfFilename");
+				eData = jws.$("stxfData");
+
+				lWSC.setFileSystemCallbacks({
+					OnFileLoaded: onFileLoadedObs,
+					OnFileSaved: onFileSavedObs,
+					OnFileDeleted: onFileDeletedObs,
+					OnFileError: onFileErrorObs
+				});
+			}
+
+			function exitPage() {
+				// processExitPage();
+			}
+
+		</script>
+	</head>
+
+	<body
+		onload="initPage();"
+		onunload="exitPage();"
+		>
+		<script type="text/javascript">
+			jws.DemoPlugIn.buildDemoPage({
+				title: "FileSystem",
+				header: "jWebSocket FileSystem Demo",
+				description: "This demo shows how to securely access and share remote file systems via jWebSocket."
+			});
+			processInitPage();
+		</script>
+
+		<div class="sdivContainer">
+			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" width="100%">
+				<tr class="strDlg">
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnSaveFile" type="button" value="Save File" onclick="saveFile();"
+							   title="Saves the message below into a shared file on the jWebSocket server.">
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnAppendFile" type="button" value="Append File" onclick="appendFile();"
+							   title="Appends the message below to a shared file on the jWebSocket server.">
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnLoadFile" type="button" value="Load File" onclick="loadFile();"
+							   title="Loads a file from the jWebSocket server and displays it below.">
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnloadCompressed" type="button" value="Zipped load" onclick="loadCompressed();"
+							   title="Loads a file from the jWebSocket server using gzip compression and displays it below.">
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnLoadZip" type="button" value="Load zip" onclick="loadZip();"
+							   title="Loads a zip file from the jWebSocket server and logs its contents.">
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnDeleteFile" type="button" value="Delete File" onclick="deleteFile();"
+							   title="Deletes a file on the jWebSocket server.">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnGetFilelist" type="button" value="Filelist" onclick="getFilelist();"
+							   title="Retreives the filelist from the server.">
+					</td>
+				</tr>
+				<tr class="strDlg">
+					<td class="stdDlg" width="5">Private</td>
+					<td class="stdDlg" width="" align="left">
+						<input class="schkDlg" id="schkPrivate" type="checkbox" value="" style="text-align: left"
+							   title="Check if you want to access your private file area (not accessible by other users)">
+					</td>
+					<td class="stdDlg" width="">Include Dirs</td>
+					<td class="stdDlg" width="" colspan="4" align="left">
+						<input class="schkDlg" id="schkInclDir" type="checkbox" value="" style="text-align: left"
+							   title="Check if you want to return directories too in a filelist">
+					</td>
+				</tr>
+				<tr class="strDlg">
+					<td class="stdDlg" width="5">Filename</td>
+					<td class="stdDlg" width="" colspan="6">
+						<input class="stxfDlg" id="stxfFilename" type="text" value="test.txt" style="width:99%"
+							   title="Type here the name of file which you intend to save, load, check for existance etc.">
+					</td>
+				</tr>
+				<tr class="strDlg">
+					<td class="stdDlg" width="5">Data</td>
+					<td class="stdDlg" width="" colspan="6">
+						<input class="stxfDlg" id="stxfData" type="text" value="Your File Content" style="width:99%"
+							   title="Data to be saved in a file or appended to a file.">
+					</td>
+				</tr>
+			</table>
+		</div>
+
+	</body>
+</html>

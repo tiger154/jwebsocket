@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<!-- If Google's chrome frame installed, use it! -->
+		<!-- Comment needs to be BELOW this meta tag! -->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket Load Balancer Demo (Community Edition, CE)
+		//	****************************************************************************
+		//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+		//  Alexander Schulze, Germany (NRW)
+		//
+		//	Licensed under the Apache License, Version 2.0 (the "License");
+		//	you may not use this file except in compliance with the License.
+		//	You may obtain a copy of the License at
+		//
+		//	http://www.apache.org/licenses/LICENSE-2.0
+		//
+		//	Unless required by applicable law or agreed to in writing, software
+		//	distributed under the License is distributed on an "AS IS" BASIS,
+		//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		//	See the License for the specific language governing permissions and
+		//	limitations under the License.
+		//	****************************************************************************
+		-->
+		<meta http-equiv="Content-Language" content="en">
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<title>jWebSocket Load Balancer Demo</title>
+		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
+		<link rel="stylesheet" type="text/css" href="loadbalancer.css">
+
+		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsLoadBalancerPlugIn.js" type="text/javascript"></script>
+
+		<script type="text/javascript" language="JavaScript">
+		
+			var mClusterInfoValues = new Array();
+			
+			function clustersInfo(){
+				log(" ");
+				log("Getting clusters information...");
+				if( lWSC.isConnected() ) {
+					lWSC.lbClustersInfo({
+						OnResponse: function( aToken ) {
+							mClusterInfoValues = aToken.data;
+						}
+					});
+				} else {
+					log( "Not connected." );
+				}
+			}
+		
+			function stickyRoutes() {
+				log(" ");
+				log("Getting sticky routes...");
+				if( lWSC.isConnected() ) {
+					lWSC.lbStickyRoutes({
+						OnResponse: function( aToken ) {
+							loadEndpointIdOptions( aToken.data );
+						}
+					});
+				} else {
+					log( "Not connected." );
+				}
+			}
+			
+			function createServiceEndPoint(){
+				log(" ");
+				log("Running create new service endpoint...");
+				if( lWSC.isConnected() ) {
+					if(mClusterInfoValues.length == 0){
+						log("INFO - Select the cluster alias!.")
+					}else{
+						var lPassword = document.getElementById("stxPass").value;
+						var lClusterAlias = document.getElementById("stxService").value;
+						var lNamespace = getServicesNamespace();
+						if(lNamespace == -1){
+							log("INFO - Select the cluster alias!.")
+						}else{
+							lWSC.lbSampleService( lClusterAlias, lPassword, {
+								nameSpace: getServicesNamespace()
+							});
+						}
+					}
+				} else {
+					log( "Not connected." );
+				}
+			}
+			
+			function deregisterServiceEndPoint() {
+				log(" ");
+				log("Running deregister service endpoint...");
+				if( lWSC.isConnected() ) {
+					var lEndPointId = document.getElementById("stxfEpId").value;
+					var lClusterAlias = document.getElementById("stxService").value;
+					var lPassword = document.getElementById("stxPass").value;
+					lWSC.lbDeregisterServiceEndPoint(lClusterAlias, lPassword, lEndPointId);
+				} else {
+					log( "Not connected." );
+				}
+			}
+			
+			function shutdownEndPoint(){
+				log(" ");
+				log("Running Shutting down endpoint...");
+				if( lWSC.isConnected() ) {
+					var lEndPointId = document.getElementById("stxfEpId").value;
+					var lClusterAlias = document.getElementById("stxService").value;
+					var lPassword = document.getElementById("stxPass").value;
+					lWSC.lbShutdownEndPoint(lClusterAlias, lPassword, lEndPointId);
+				} else {
+					log( "Not connected." );
+				}
+			}
+				
+			function ChooseBalanceAlgorithm(){
+				log(" ");
+				log("Running choose balance algorithm...");
+				if( lWSC.isConnected() ) {
+					var lChosenAlgorithm =  parseInt( document.getElementById("stxChoAlg").value );
+					lWSC.lbChangeAlgorithm(lChosenAlgorithm, {});
+				} else {
+					log( "Not connected." );
+				}
+			}
+			
+			function testServiceEndpoint() {
+				log(" ");
+				log("Running test services...");
+				if( lWSC.isConnected() ) {
+					var lNamespace = getServicesNamespace();
+					if(lNamespace == -1){
+						log("INFO - Select the cluster alias!.")
+					}else{
+						lWSC.sendToken( {
+							ns: lNamespace,
+							type: 'test'
+						});
+					}
+				} else {
+					log( "Not connected." );
+				}
+			}
+			
+			function removeOptions(optionMenu){
+				for (var i=0; i < optionMenu.options.length; i++)
+					optionMenu.options[i] = null;
+			}
+			
+			function addOptions(optionList, optionMenu){
+				removeOptions(optionMenu); 
+				for (var i=0; i < optionList.length; i++)
+					optionMenu[i] = new Option(optionList[i]);
+			}
+			
+			function loadEndpointIdOptions( aOptionList ){
+				var lEndpointsId  = new Array();	
+				var lClusterOptions = document.getElementById("stxService");
+				var lPosEndpointId = 0;
+				for(var lPos=0; lPos < aOptionList.length; lPos++){
+					if(aOptionList[lPos].clusterAlias == lClusterOptions.value){
+						lEndpointsId[lPosEndpointId] = aOptionList[lPos].id;
+						lPosEndpointId ++;
+					}
+				}	
+		
+				var lEndpointOptions = document.getElementById("stxfEpId");
+				addOptions(lEndpointsId, lEndpointOptions);
+				
+				if(lEndpointOptions.options.length == 0)
+					lEndpointOptions[0] = new Option("--------- Select service endpoint id ---------");
+			}
+			
+			function loadServiceOptions(){
+				if(mClusterInfoValues.length == 0){
+					log(" ");
+					log("INFO - Press key 'Endpoints Info' to load dynamically the cluster alias and their namespaces!.")
+				}else{
+			
+					var lService  = new Array();
+					for(var lPos=0; lPos < mClusterInfoValues.length; lPos++)
+						lService[lPos] = mClusterInfoValues[lPos].clusterAlias;
+					
+					var lClusterOptions = document.getElementById("stxService");
+					addOptions(lService, lClusterOptions);
+				
+					if(lClusterOptions.options.length == 0)
+						lClusterOptions[0] = new Option("-Select-");
+				}
+			}
+			
+			function getServicesNamespace() {
+				var lClusterOptions = document.getElementById("stxService").value;
+				for(var lPos=0; lPos < mClusterInfoValues.length; lPos++){
+					if(mClusterInfoValues[lPos].clusterAlias == lClusterOptions){
+						return mClusterInfoValues[lPos].clusterNS;
+					}
+				}
+				return -1;
+			}
+
+		</script>
+	</head>
+
+	<body>
+		<script type="text/javascript">
+			jws.DemoPlugIn.buildDemoPage({
+				title: "Load Balancer",
+				header: "jWebSocket Load Balancer Demo",
+				description: "This demo shows how to use the Load Balancer and your functionalities."
+			});
+			processInitPage();
+		</script>
+		
+		<div class="sdivContainer">
+			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
+				<tr class="strDlg">
+					<td class="stdDlg" id="stdAlg"> Select the algorithm:
+					</td>
+					<td>
+					    <select name="cluster" id="stxChoAlg">
+							<option value="1"> Round Robin </option>
+							<option value="2"> Least CPU Usage </option>
+							<option value="3"> Optimum Balance </option>
+						</select>
+						<input class="sbtnDlg" id="sbtnChoAlg" type="button" value="Choose" onclick="ChooseBalanceAlgorithm();"
+							   title="Choose the convenient algorithm for load balance.">
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnEndPointInfo" type="button" value="Endpoints Info" onclick="clustersInfo();"
+							   title="Detailed information about all endpoints of the clusters.">
+					</td>
+					<td class="stdDlg">
+						<input class="sbtnDlg" id="sbtnStickyRoutes" type="button" value="Sticky Routes" onclick="stickyRoutes();"
+							   title="Detailed information about all sticky routes ( The endpoints with status ONLINE ).">
+					</td>
+				</tr> 
+			</table>
+		</div>
+
+		<div class="sdivContainer" id="myDiv">
+			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" id="myTable">
+				<tr class="strDlg">
+					<td class="stdDlg" id="stdPass"> Password:
+					</td>
+					<td class="stdDlg" id="stdSelect">
+						<input type="password" id="stxPass" value="admin">
+					</td>
+					<td class="stdDlg" id="stdCluster"> Select Cluster Alias:
+					</td>
+					<td class="stdDlg" id="stdService">
+						<select name="cluster" id="stxService" onfocus="loadServiceOptions();">
+							<option> -Select- </option>
+						</select>
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnCreateServiceEndPoint" type="button" value="Create New Service EndPoint" onclick="createServiceEndPoint();"
+							   title="Create a new service endpoint in the selected service.">
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnTest" type="button" value="Test Services" onclick="testServiceEndpoint();"
+							   title="Select a cluster alias for make a test.">
+					</td>
+				</tr> 
+			</table>
+		</div>
+
+		<div class="sdivContainer">
+			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
+				<tr class="strDlg">
+					<td class="stdDlg" id="stdDlg"> Endpoint Id:
+					</td>
+					<td class="stdDlg" width="100">
+						<select name="cluster" id="stxfEpId" onmouseover  ="stickyRoutes();">
+							<option> --------- Select service endpoint id --------- </option>
+						</select>				     
+					</td>
+					<td class="stdDlg">
+						<input class="sbtnDlg" id="sbtnShutdownEndpoint" type="button" value="Shutdown EndPoint" onclick="shutdownEndPoint();"
+							   title="Select the cluster alias and endpoint id for do you can shutdown a specific endpoint.">	
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnDeregisterServiceEndPoint" type="button" value="Deregister Service EndPoint" onclick="deregisterServiceEndPoint();"
+							   title="Select the cluster alias and endpoint id for do you can deregister a specific endpoint.">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
