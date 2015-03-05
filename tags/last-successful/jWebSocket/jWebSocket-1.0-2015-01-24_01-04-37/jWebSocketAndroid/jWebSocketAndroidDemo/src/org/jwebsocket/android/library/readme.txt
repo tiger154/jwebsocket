@@ -1,1 +1,0 @@
-http://stackoverflow.com/questions/2179453/how-do-i-use-aidl-tool-from-command-line-using-sdk-sample-code
