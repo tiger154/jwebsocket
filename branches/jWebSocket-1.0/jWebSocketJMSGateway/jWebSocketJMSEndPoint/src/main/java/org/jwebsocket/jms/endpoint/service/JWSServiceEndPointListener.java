@@ -32,6 +32,10 @@ public class JWSServiceEndPointListener extends JWSMessageListener {
 	JWSBaseServiceEndPoint mService;
 	String mGatewayId;
 
+	/**
+	 *
+	 * @param aService
+	 */
 	public JWSServiceEndPointListener(JWSBaseServiceEndPoint aService) {
 		super(aService.getEndPoint());
 		mService = aService;
@@ -68,6 +72,14 @@ public class JWSServiceEndPointListener extends JWSMessageListener {
 		}
 	}
 
+	/**
+	 *
+	 * @param aSourceId
+	 * @param aUser
+	 * @param aRequest
+	 * @param aResponse
+	 * @throws Exception
+	 */
 	public void processToken(String aSourceId, String aUser, Token aRequest, Token aResponse) throws Exception {
 
 	}

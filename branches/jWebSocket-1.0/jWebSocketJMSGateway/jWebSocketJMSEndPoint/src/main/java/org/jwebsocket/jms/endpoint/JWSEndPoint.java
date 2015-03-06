@@ -99,6 +99,18 @@ public class JWSEndPoint extends JMSEndPoint {
 		return lEP;
 	}
 
+	/**
+	 *
+	 * @param aConnection
+	 * @param aSession
+	 * @param aGatewayTopic
+	 * @param aProducer
+	 * @param aConsumer
+	 * @param aThreadPoolSize
+	 * @param aDurable
+	 * @return
+	 * @throws JMSException
+	 */
 	public static JWSEndPoint getInstance(Connection aConnection,
 			Session aSession, Topic aGatewayTopic, MessageProducer aProducer,
 			MessageConsumer aConsumer, int aThreadPoolSize,

@@ -133,6 +133,10 @@ public class JMSEndPoint {
 
 	}
 
+	/**
+	 *
+	 * @param aRelease
+	 */
 	public void setReleaseJWSResources(boolean aRelease) {
 		mReleaseJWSResources = aRelease;
 	}
@@ -147,6 +151,17 @@ public class JMSEndPoint {
 		return mReleaseJWSResources;
 	}
 
+	/**
+	 *
+	 * @param aConnection
+	 * @param aSession
+	 * @param aGatewayTopic
+	 * @param aProducer
+	 * @param aConsumer
+	 * @param aThreadPoolSize
+	 * @param aDurable
+	 * @throws JMSException
+	 */
 	protected void init(Connection aConnection, Session aSession,
 			Topic aGatewayTopic,
 			MessageProducer aProducer, MessageConsumer aConsumer,
@@ -250,6 +265,18 @@ public class JMSEndPoint {
 		return lEP;
 	}
 
+	/**
+	 *
+	 * @param aConnection
+	 * @param aSession
+	 * @param aGatewayTopic
+	 * @param aProducer
+	 * @param aConsumer
+	 * @param aThreadPoolSize
+	 * @param aDurable
+	 * @return
+	 * @throws JMSException
+	 */
 	public static JMSEndPoint getInstance(Connection aConnection,
 			Session aSession, Topic aGatewayTopic, MessageProducer aProducer,
 			MessageConsumer aConsumer, int aThreadPoolSize,
@@ -396,6 +423,10 @@ public class JMSEndPoint {
 		return mProducer;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getConnectionId() {
 		return ((ActiveMQConnection) mConnection).getConnectionInfo().getConnectionId().toString();
 	}

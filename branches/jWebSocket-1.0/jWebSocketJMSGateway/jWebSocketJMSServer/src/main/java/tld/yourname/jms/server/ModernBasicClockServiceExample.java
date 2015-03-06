@@ -32,6 +32,10 @@ import org.jwebsocket.token.Token;
  */
 public class ModernBasicClockServiceExample {
 
+	/**
+	 *
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		/**
 		 * Creating a clock service endpoint (basic example). The service respond to 'getTime'
