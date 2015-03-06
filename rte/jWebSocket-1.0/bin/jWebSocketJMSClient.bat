@@ -10,6 +10,13 @@ popd
 
 :start
 
+rem Command-line Java VM Memory options (example):
+rem initial memory usage: -Xms256m
+rem maximum memory usage: -Xmx2048m
+
+rem Environment Java VM Memory options (example):
+rem JAVA_OPTS=-Xms512m -Xmx2048m
+
 java -jar ..\libs\jWebSocketJMSClient-Bundle-1.0.jar
 
 pause
