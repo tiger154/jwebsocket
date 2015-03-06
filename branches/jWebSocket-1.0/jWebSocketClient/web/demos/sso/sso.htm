@@ -39,41 +39,19 @@
 
 			var OAUTH_DEFAULT_TIMEOUT = 5000;						// the default timeout for request against the OAuth server
 			//
-//			var APP_URL = "https://<host>/sso/index.html";
-//			var OAUTH_APP_ID = "<ID>";								// the application id
-//			var OAUTH_APP_SECRET = "<SECRET>";						// the application secret		
-//			var OAUTH_HOST = "https://<HOST>";						// the OAuth host 
-//			URL to a SSO enabled web page, which provides the session cookie (session id)
-//			var SSO_COOKIE_PAGE = "https://<HOST>/getcookie/index.html";
-//			var SSO_SESSION_COOKIE = "SMSESSION";					// the name of the SSO server's session cookie
-
-			var APP_URL = "https://hqdvalsap01.nvidia.com/sso/index.html";
-			var OAUTH_APP_ID = "alsiusdev";
-			var OAUTH_APP_SECRET = "ffdf1D56-5825-49e5-Afb9-335393a94606]";
-			var OAUTH_HOST = "https://aschulze-dt.nvidia.com";
-			var SSO_COOKIE_PAGE = "https://aschulze-dt.nvidia.com/getcookie/index.html";
+			var APP_URL = "https://<host>/sso/index.html";
+			var OAUTH_APP_ID = "<ID>";								// the application id
+			var OAUTH_APP_SECRET = "<SECRET>";						// the application secret		
+			var OAUTH_HOST = "https://<HOST>";						// the OAuth host 
+			URL to a SSO enabled web page, which provides the session cookie (session id)
+			var SSO_COOKIE_PAGE = "https://<HOST>/getcookie/index.html";
 			var SSO_SESSION_COOKIE = "SMSESSION";					// the name of the SSO server's session cookie
-
-//			var APP_URL = "https://hqstalsap01.nvidia.com/sso/index.html";
-//			var OAUTH_APP_ID = "alsiusdev";						
-//			var OAUTH_APP_SECRET = "ffdf1D56-5825-49e5-Afb9-335393a94606]";
-//			var OAUTH_HOST = "https://aschulze-dt.nvidia.com";
-//			var SSO_COOKIE_PAGE = "https://alsius.stage.nvidia.com/getcookie/index.html";
-//			var SSO_SESSION_COOKIE = "SMSESSION";					// the name of the SSO server's session cookie
-
-//			var APP_URL = "https://hqnvalsap01.nvidia.com/sso/index.html";
-//			var OAUTH_APP_ID = "alsiusdev";						
-//			var OAUTH_APP_SECRET = "ffdf1D56-5825-49e5-Afb9-335393a94606]";
-//			var OAUTH_HOST = "https://aschulze-dt.nvidia.com";
-//			var SSO_COOKIE_PAGE = "https://alsius.nvidia.com/getcookie/index.html";
-//			var SSO_SESSION_COOKIE = "SMSESSION";					// the name of the SSO server's session cookie
 
 			var OAUTH_AUTHSESSION_URL = "/auth/oauth/v2/token";		// the URL to authenticate a user by session id
 			var OAUTH_GETUSER_URL = "/use-token";					// the URL to obtain the user data by access token
 			var OAUTH_REFRESHTOKEN_URL = "/auth/oauth/v2/token";	// the URL to obtain a new access token by refresh token
 			var OAUTH_GETSESSION_URL = "/get-smsession";			// the URL to obtain a session id by user credentials
 			var OAUTH_INVALIDATETOKEN_URL = "/delete-token";		// the URL to invalidate an access token
-
 
 			var mIsStressTest = false;
 			var hStressTest = null;

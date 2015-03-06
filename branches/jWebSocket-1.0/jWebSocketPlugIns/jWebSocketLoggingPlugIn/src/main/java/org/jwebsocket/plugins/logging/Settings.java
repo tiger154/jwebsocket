@@ -44,10 +44,18 @@ public class Settings {
 		mTarget = aTarget;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public FastSet<ILog4JAppender> getAppenders() {
 		return mAppenders;
 	}
 
+	/**
+	 *
+	 * @param aAppenders
+	 */
 	public void setAppenders(FastSet<ILog4JAppender> aAppenders) {
 		mAppenders = aAppenders;
 	}
