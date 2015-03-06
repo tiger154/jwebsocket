@@ -18,6 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
+import javolution.util.FastSet;
+import org.jwebsocket.logging.ILog4JAppender;
+
 /**
  *
  * @author Alexander Schulze
@@ -25,6 +28,7 @@ package org.jwebsocket.plugins.logging;
 public class Settings {
 
 	private ILogger mTarget = null;
+	private FastSet<ILog4JAppender> mAppenders = new FastSet<ILog4JAppender>();
 
 	/**
 	 * @return the mTarget
@@ -34,9 +38,18 @@ public class Settings {
 	}
 
 	/**
-	 * @param mTarget the mTarget to set
+	 * @param aTarget
 	 */
-	public void setTarget(ILogger mTarget) {
-		this.mTarget = mTarget;
+	public void setTarget(ILogger aTarget) {
+		mTarget = aTarget;
 	}
+
+	public FastSet<ILog4JAppender> getAppenders() {
+		return mAppenders;
+	}
+
+	public void setAppenders(FastSet<ILog4JAppender> aAppenders) {
+		mAppenders = aAppenders;
+	}
+
 }

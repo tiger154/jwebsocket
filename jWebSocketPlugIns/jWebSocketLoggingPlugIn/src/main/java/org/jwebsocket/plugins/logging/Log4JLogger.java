@@ -18,9 +18,12 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
-import org.jwebsocket.logging.Logging;
 
 /**
  * Logger Implementation for Log4J
@@ -29,34 +32,50 @@ import org.jwebsocket.logging.Logging;
  */
 public class Log4JLogger extends BaseLogger implements ILogger {
 
-	private static final Logger mLog = Logging.getLogger(Log4JLogger.class);
+	private static final Logger mLog = Logger.getLogger(Log4JLogger.class);
 
 	/**
 	 *
 	 * @param aMsg
 	 */
 	@Override
-	public void log(LogLevel aLogLevel, String aInfo, String aMsg) {
-		Priority lPrio = Priority.DEBUG;
+	public void log(LogLevel aLogLevel, String aMsg, Map aInfo) {
+
+		String lInfo = null;
+		if (null != aInfo) {
+			ObjectMapper lObjMap = new ObjectMapper();
+			try {
+				ByteArrayOutputStream lBAOS = new ByteArrayOutputStream();
+				lObjMap.writeValue(lBAOS, aInfo);
+				lInfo = new String(lBAOS.toByteArray(), "UTF-8");
+			} catch (IOException ex) {
+				aInfo = null;
+			}
+		}
+
+		// don't change "info: " here, this is required to extract the info object again from the string!
+		String lMessage = aMsg + (aInfo != null ? ", info: " + lInfo : "");
 		switch (aLogLevel) {
 			case INFO: {
-				lPrio = Priority.INFO;
+				mLog.info(lMessage);
 				break;
 			}
 			case WARN: {
-				lPrio = Priority.WARN;
+				mLog.warn(lMessage);
 				break;
 			}
 			case ERROR: {
-				lPrio = Priority.ERROR;
+				mLog.error(lMessage);
 				break;
 			}
 			case FATAL: {
-				lPrio = Priority.FATAL;
+				mLog.fatal(lMessage);
 				break;
 			}
+			default: {
+				mLog.debug(lMessage);
+			}
 		}
-		mLog.log(lPrio, (aInfo != null ? "[" + aInfo + "] " : "") + aMsg);
 	}
 
 	/**

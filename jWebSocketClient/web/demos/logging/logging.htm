@@ -34,10 +34,10 @@
 
 			var eLog = null;
 
-			function log( aString ) {
+			function log(aString) {
 				eLog.innerHTML +=
-					aString + "<br>";
-				if( eLog.scrollHeight > eLog.clientHeight ) {
+						aString + "<br>";
+				if (eLog.scrollHeight > eLog.clientHeight) {
 					eLog.scrollTop = eLog.scrollHeight - eLog.clientHeight;
 				}
 			}
@@ -53,129 +53,131 @@
 				// URL is ws[s]://[hostname|localhost][:port][/context][/servlet/][;args...]
 				// var lURL = "wss://localhost:9797/jWebSocket/jWebSocket"; // for Jetty SSL Servlet
 				var lURL = jws.getDefaultServerURL();
+				// var lURL = "ws://hqstalsap01:8787/jWebSocket/jWebSocket";
 
-				log( "Connecting to " + lURL + " ..." );
-				if( lWSC.isConnected()) {
-					log( "Already connected." );
+				log("Connecting to " + lURL + " ...");
+				if (lWSC.isConnected()) {
+					log("Already connected.");
 					return;
 				}
 
 				try {
-					lWSC.open( lURL, {
-
+					lWSC.open(lURL, {
 						// use JSON sub protocol
 						subProtocol: jws.WS_SUBPROT_JSON,
-
 						// OnOpen callback
-						OnOpen: function( aEvent ) {
-							log( "jWebSocket connection established." );
+						OnOpen: function (aEvent) {
+							log("jWebSocket connection established.");
 							jws.$("simgStatus").src = "../../images/connected.png";
 						},
-
 						// OnWelcome event
-						OnWelcome: function( aEvent )  {
-							log( "<font style='color:red'>jWebSocket Welcome received.</font>" );
+						OnWelcome: function (aEvent) {
+							log("<font style='color:red'>jWebSocket Welcome received.</font>");
 						},
-
 						// OnGoodBye event
-						OnGoodBye: function( aEvent )  {
-							log( "<font style='color:red'>jWebSocket GoodBye received.</font>" );
+						OnGoodBye: function (aEvent) {
+							log("<font style='color:red'>jWebSocket GoodBye received.</font>");
 						},
-
 						// OnMessage callback
-						OnMessage: function( aEvent ) {
-							log( "jWebSocket message received: '" + aEvent.data + "'" );
+						OnMessage: function (aEvent) {
+							log("jWebSocket message received: '" + aEvent.data + "'");
 
-							if( lWSC.isLoggedIn() ) {
+							if (lWSC.isLoggedIn()) {
 								jws.$("simgStatus").src = "../../images/authenticated.png";
 							} else {
 								jws.$("simgStatus").src = "../../images/connected.png";
 							}
 							jws.$("slblClientId").innerHTML =
-								"&nbsp;Client&#x2011;Id:&nbsp;"
-								+ lWSC.getId() + "&nbsp;"
-								+ ( jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)" );
+									"&nbsp;Client&#x2011;Id:&nbsp;"
+									+ lWSC.getId() + "&nbsp;"
+									+ (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)");
 
 						},
-
 						// OnClose callback
-						OnClose: function( aEvent ) {
-							log( "jWebSocket connection closed." );
+						OnClose: function (aEvent) {
+							log("jWebSocket connection closed.");
 
 							jws.$("simgStatus").src = "../../images/disconnected.png";
 							jws.$("slblClientId").innerHTML = "&nbsp;Client&#x2011;Id:&nbsp;-";
 						}
 
 					});
-				} catch( ex ) {
-					log( "Exception: " + ex.message );
+				} catch (ex) {
+					log("Exception: " + ex.message);
 				}
 			}
 
 			function disconnect() {
-				if( lWSC ) {
-					log( "Disconnecting..." );
+				if (lWSC) {
+					log("Disconnecting...");
 					try {
-						var lRes = lWSC.close({ timeout: 3000 });
-						if( lRes.code == 0 ) {
+						var lRes = lWSC.close({timeout: 3000});
+						if (0 === lRes.code) {
 							// it's send with timeout, so wait for server response
 							// log( "Disconnected." );
 						} else {
-							log( lRes.msg );
+							log(lRes.msg);
 						}
-					} catch( ex ) {
-						log( "Exception: " + ex.message );
+					} catch (ex) {
+						log("Exception: " + ex.message);
 					}
 				}
 			}
-			
-			function sum(){
+
+			function sum() {
 				lWSC.sendToken({
 					ns: 'org.jwebsocket.plugins.calc',
 					type: 'sum',
 					a: parseFloat(jws.$('argA').value),
 					b: parseFloat(jws.$('argB').value)
 				}, {
-					OnSuccess: function(aResponse){
+					OnSuccess: function (aResponse) {
 						alert('La respuseta es: ' + aResponse.result);
 					},
-					OnFailure: function(aError){
-						
+					OnFailure: function (aError) {
+
 					},
-					OnResponse: function(aResponse){
-						
+					OnResponse: function (aResponse) {
+
 					}
 				});
 			}
 
 			function login() {
-				if( lWSC ) {
-					log( "Logging in..." );
+				if (lWSC) {
+					log("Logging in...");
 					try {
-						var lRes = lWSC.login( "guest", "aPassword" );
-						if( lRes.code == 0 ) {
-							log( "Asychronously waiting for response..." );
+						var lRes = lWSC.login(
+//								jws.GUEST_USER_LOGINNAME,
+//								jws.GUEST_USER_PASSWORD
+//								jws.DEMO_ROOT_LOGINNAME,
+//								jws.DEMO_ROOT_PASSWORD
+								"alsnowcsvcusr",
+								"24DFhIDDG6PehTlGmbqs"
+								);
+						if (0 === lRes.code) {
+							log("Asychronously waiting for response...");
 						} else {
-							log( lRes.msg );
+							log(lRes.msg);
 						}
-					} catch( ex ) {
-						log( "Exception: " + ex.message );
+					} catch (ex) {
+						log("Exception: " + ex.message);
 					}
 				}
 			}
 
 			function logout() {
-				if( lWSC ) {
-					log( "Logging out..." );
+				if (lWSC) {
+					log("Logging out...");
 					try {
 						var lRes = lWSC.logout();
-						if( lRes.code == 0 ) {
-							log( "Asychronously waiting for response..." );
+						if (0 === lRes.code) {
+							log("Asychronously waiting for response...");
 						} else {
-							log( lRes.msg );
+							log(lRes.msg);
 						}
-					} catch( ex ) {
-						log( "Exception: " + ex.message );
+					} catch (ex) {
+						log("Exception: " + ex.message);
 					}
 				}
 			}
@@ -183,13 +185,13 @@
 			var lLogLevel = jws.LoggingPlugIn.DEBUG;
 
 			function switchLevel() {
-				if( document.getElementById( "srbtInfo" ).checked ) {
+				if (document.getElementById("srbtInfo").checked) {
 					lLogLevel = jws.LoggingPlugIn.INFO;
-				} else if( document.getElementById( "srbtWarn" ).checked ) {
+				} else if (document.getElementById("srbtWarn").checked) {
 					lLogLevel = jws.LoggingPlugIn.WARN;
-				} else if( document.getElementById( "srbtError" ).checked ) {
+				} else if (document.getElementById("srbtError").checked) {
 					lLogLevel = jws.LoggingPlugIn.ERROR;
-				} else if( document.getElementById( "srbtFatal" ).checked ) {
+				} else if (document.getElementById("srbtFatal").checked) {
 					lLogLevel = jws.LoggingPlugIn.FATAL;
 				} else {
 					lLogLevel = jws.LoggingPlugIn.DEBUG;
@@ -198,24 +200,24 @@
 
 			function sendLog() {
 				var lMsg = eMessage.value;
-				log( "Logging '" + lMsg + "'..." );
+				log("Logging '" + lMsg + "'...");
 				try {
-					var lRes = lWSC.loggingLog( lLogLevel, null, lMsg, {
-						OnResponse: function( aToken ) {
-							log( "Logged: " + aToken.msg );
+					var lRes = lWSC.loggingLog(lLogLevel, lMsg, {level: lLogLevel}, {
+						OnResponse: function (aToken) {
+							log("Logged: " + aToken.msg);
 						}
 					});
-					if( lRes.code != 0 ) {
-						log( "Error: " + lRes.msg );
+					if (0 !== lRes.code) {
+						log("Error: " + lRes.msg);
 					}
-				} catch( ex ) {
-					log( "Exception: " + ex.message );
+				} catch (ex) {
+					log("Exception: " + ex.message);
 				}
 			}
-			
+
 			function logEvent() {
 				var lMsg = eMessage.value;
-				log( "Logging '" + lMsg + "'..." );
+				log("Logging '" + lMsg + "'...");
 				try {
 					var lNow = new Date();
 					var lData = {
@@ -223,62 +225,131 @@
 						"BROWSER": "Mein Browser",
 						"IP": "${ip}",
 						"TIMESTAMP": "TO_DATE( '" +
-							lNow.getUTCFullYear().toString() + "/" +
-							jws.tools.zerofill( lNow.getUTCMonth() + 1, 2 ) + "/" +
-							jws.tools.zerofill( lNow.getUTCDate(), 2 ) + " " +
-							jws.tools.zerofill( lNow.getUTCHours(), 2 ) + "/" +
-							jws.tools.zerofill( lNow.getUTCMinutes(), 2 ) + "/" +
-							jws.tools.zerofill( lNow.getUTCSeconds(), 2 ) +
-							"','YYYY/MM/DD HH24/MI/SS')"
+								lNow.getUTCFullYear().toString() + "/" +
+								jws.tools.zerofill(lNow.getUTCMonth() + 1, 2) + "/" +
+								jws.tools.zerofill(lNow.getUTCDate(), 2) + " " +
+								jws.tools.zerofill(lNow.getUTCHours(), 2) + "/" +
+								jws.tools.zerofill(lNow.getUTCMinutes(), 2) + "/" +
+								jws.tools.zerofill(lNow.getUTCSeconds(), 2) +
+								"','YYYY/MM/DD HH24/MI/SS')"
 					};
-					var lRes = lWSC.loggingEvent( "ACTION_LOG", lData, {
+					var lRes = lWSC.loggingEvent("ACTION_LOG", lData, {
 						primaryKey: "ID",
 						sequence: "SQ_ACTION_LOG_ID",
-						OnResponse: function( aToken ) {
-							log( "Logged: " + aToken.msg );
+						OnResponse: function (aToken) {
+							log("Logged: " + aToken.msg);
 						}
 					});
-					if( lRes.code != 0 ) {
-						log( "Error: " + lRes.msg );
+					if (0 !== lRes.code) {
+						log("Error: " + lRes.msg);
 					}
-				} catch( ex ) {
-					log( "Exception: " + ex.message );
+				} catch (ex) {
+					log("Exception: " + ex.message);
 				}
 			}
-			
-			function getLogEvents() {
-				log( "Retreiving events..." );
-				try {
-					var lRes = lWSC.loggingGetEvents( "ACTION_LOG", {
-						OnResponse: function( aToken ) {
-							log( "Events: " + aToken.data );
-						}
-					});
-					if( lRes.code != 0 ) {
-						log( "Error: " + lRes.msg );
-					}
-				} catch( ex ) {
-					log( "Exception: " + ex.message );
-				}
-			}
-			
-			function initPage() {
-				eLog = jws.$( "sdivLog" );
-				eMessage = jws.$( "stxfMsg" );
 
-				if( window.WebSocket ) {
+			function debug() {
+				var lMsg = eMessage.value;
+				log("Debug '" + lMsg + "'...");
+				lWSC.debug(lMsg, {info: "debug"});
+			}
+
+			function info() {
+				var lMsg = eMessage.value;
+				log("Info '" + lMsg + "'...");
+				lWSC.info(lMsg, {info: "info", client: "Logging Demo", user: lWSC.getUsername()});
+			}
+
+			function warn() {
+				var lMsg = eMessage.value;
+				log("Warn '" + lMsg + "'...");
+				lWSC.warn(lMsg, {info: "warn"});
+			}
+
+			function error() {
+				var lMsg = eMessage.value;
+				log("Error '" + lMsg + "'...");
+				lWSC.error(lMsg, {info: "error"});
+			}
+
+			function fatal() {
+				var lMsg = eMessage.value;
+				log("Fatal '" + lMsg + "'...");
+				lWSC.fatal(lMsg, {info: "fatal"});
+			}
+
+			function getLogEvents() {
+				log("Retreiving events...");
+				try {
+					var lRes = lWSC.loggingGetEvents("ACTION_LOG", {
+						OnResponse: function (aToken) {
+							log("Events: " + aToken.data);
+						}
+					});
+					if (0 !== lRes.code) {
+						log("Error: " + lRes.msg);
+					}
+				} catch (ex) {
+					log("Exception: " + ex.message);
+				}
+			}
+
+			function getServerJVMInfo() {
+				if (lWSC) {
+					log("Retrieving Server's Java Virtual Machine (JVM) Info ...");
+					try {
+						var lRes = lWSC.getServerJVMInfo({
+							OnSuccess: function (aToken) {
+								var lHeapMax = (aToken.data.heapMemoryMax / 1000 / 1000).toFixed(2);
+								var lHeapUsed = (aToken.data.heapMemoryUsed / 1000 / 1000).toFixed(2);
+								var lHeapInit = (aToken.data.heapMemoryInit / 1000 / 1000).toFixed(2);
+								var lNonHeapUsed = (aToken.data.nonheapMemoryUsed / 1000 / 1000).toFixed(2);
+								var lNonHeapInit = (aToken.data.nonheapMemoryInit / 1000 / 1000).toFixed(2);
+								log("<b>Success: "
+										+ "max: " + lHeapMax
+										+ "mb, used: " + lHeapUsed
+										+ "mb, init: " + lHeapInit
+										+ "mb, non-heap used: " + lNonHeapUsed
+										+ "mb, non-heap init: " + lNonHeapInit
+										+ "mb</b>");
+							}
+						});
+						if (0 === lRes.code) {
+							log("Asychronously waiting for response...");
+						} else {
+							log(lRes.msg);
+						}
+					} catch (ex) {
+						log("Exception: " + ex.message);
+					}
+				}
+			}
+
+			function initPage() {
+				eLog = jws.$("sdivLog");
+				eMessage = jws.$("stxfMsg");
+
+				if (window.WebSocket) {
 					lWSC = new jws.jWebSocketJSONClient();
 				} else {
-					jws.$( "sbtnConnect" ).setAttribute( "disabled", "disabled" );
-					jws.$( "sbtnDisconnect" ).setAttribute( "disabled", "disabled" );
-					jws.$( "sbtnClear" ).setAttribute( "disabled", "disabled" );
-					jws.$( "stxfMsg" ).setAttribute( "disabled", "disabled" );
-					jws.$( "sbtnSend" ).setAttribute( "disabled", "disabled" );
+					jws.$("sbtnConnect").setAttribute("disabled", "disabled");
+					jws.$("sbtnDisconnect").setAttribute("disabled", "disabled");
+					jws.$("sbtnClear").setAttribute("disabled", "disabled");
+					jws.$("stxfMsg").setAttribute("disabled", "disabled");
+					jws.$("sbtnSend").setAttribute("disabled", "disabled");
 
 					var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-					alert( lMsg );
-					log( lMsg );
+					alert(lMsg);
+					log(lMsg);
 				}
+
+				jws.console.setLevel(jws.console.ALL);
+				// jws.console.setActive(true);
+
+				lWSC.addLogger();
+				lWSC.setLogLevel(jws.console.ALL);
+				lWSC.setLogToConsole(true);
+				lWSC.setLogToServer(true);
 			}
 
 			function exitPage() {
@@ -383,6 +454,27 @@
 					</td>
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnSend" type="button" value="Sum" onclick="sum();">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnDebug" type="button" value="Debug" onclick="debug();">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnInfo" type="button" value="Info" onclick="info();">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnWarn" type="button" value="Warn" onclick="warn();">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnError" type="button" value="Error" onclick="error();">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="sbtnDlg" id="sbtnFatal" type="button" value="Fatal" onclick="fatal();">
+					</td>
+				</tr>
+				<tr class="strDlg">
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnJVMInfo" type="button" value="JVM Info" onclick="getServerJVMInfo();"
+							   title="Returns the server side JVM info record (for administrators only).">
 					</td>
 				</tr>
 			</table>

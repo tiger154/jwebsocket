@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
+import java.util.Map;
+
 /**
  *
  * @author Alexander Schulze
@@ -49,7 +51,7 @@ public class BaseLogger implements ILogger {
 	 * @param aMsg
 	 */
 	@Override
-	public void log(LogLevel aLogLevel, String aInfo, String aMsg) {
+	public void log(LogLevel aLogLevel, String aMsg, Map aInfo) {
 	}
 
 	/**
@@ -58,7 +60,7 @@ public class BaseLogger implements ILogger {
 	 */
 	@Override
 	public void debug(String aMsg) {
-		log(LogLevel.DEBUG, null, aMsg);
+		log(LogLevel.DEBUG, aMsg, null);
 	}
 
 	/**
@@ -67,7 +69,7 @@ public class BaseLogger implements ILogger {
 	 */
 	@Override
 	public void info(String aMsg) {
-		log(LogLevel.INFO, null, aMsg);
+		log(LogLevel.INFO, aMsg, null);
 	}
 
 	/**
@@ -76,7 +78,7 @@ public class BaseLogger implements ILogger {
 	 */
 	@Override
 	public void warn(String aMsg) {
-		log(LogLevel.WARN, null, aMsg);
+		log(LogLevel.WARN, aMsg, null);
 	}
 
 	/**
@@ -85,7 +87,7 @@ public class BaseLogger implements ILogger {
 	 */
 	@Override
 	public void error(String aMsg) {
-		log(LogLevel.ERROR, null, aMsg);
+		log(LogLevel.ERROR, aMsg, null);
 	}
 
 	/**
@@ -94,6 +96,7 @@ public class BaseLogger implements ILogger {
 	 */
 	@Override
 	public void fatal(String aMsg) {
-		log(LogLevel.FATAL, null, aMsg);
+		log(LogLevel.FATAL, aMsg, null);
 	}
+
 }
