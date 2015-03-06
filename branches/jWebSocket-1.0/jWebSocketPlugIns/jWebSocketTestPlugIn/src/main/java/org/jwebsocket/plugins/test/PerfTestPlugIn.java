@@ -45,11 +45,11 @@ public class PerfTestPlugIn extends TokenPlugIn {
 			= JWebSocketServerConstants.NS_BASE + ".plugins.test";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
-	private final static String LABEL = "jWebSocket PerfTestPlugIn";
+	private final static String LABEL = "jWebSocket Performance Test Plug-In";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION
-			= "jWebSocket Performance Tests PlugIn - Community Edition";
+			= "jWebSocket Performance Test Plug-In - Community Edition";
 
 	/**
 	 *
@@ -58,7 +58,7 @@ public class PerfTestPlugIn extends TokenPlugIn {
 	public PerfTestPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Instantiating performane test plug-in...");
+			mLog.debug("Instantiating performance test plug-in...");
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_TEST);
