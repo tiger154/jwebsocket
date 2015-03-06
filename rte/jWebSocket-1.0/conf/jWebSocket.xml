@@ -689,11 +689,16 @@
 				<setting key="suppresed_log_fields_value">******</setting>
 			</settings>
 		</server>
+		
+		<!-- use the custom server if you intend to parse non-token based custom data streams -->
+		<!--
 		<server>
 			<name>org.jwebsocket.server.CustomServer</name>
 			<id>cs0</id>
 			<jar>jWebSocketCustomServer-1.0.jar</jar>
 		</server>
+		-->
+		
 		<settings>
 			<setting key="suppresed_log_fields" value="password,newPassword,secretPassword,accessPassword"></setting>
 			<setting key="suppresed_log_fields_value" value="******"></setting>
@@ -1901,11 +1906,13 @@
 			</server-assignments>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/LoggingPlugIn/logging.xml</setting>
+				<!--
 				<setting key="implementation">Log4J</setting>
 				<setting key="table:name">log</setting>
 				<setting key="field:level">level</setting>
 				<setting key="field:info">info</setting>
 				<setting key="field:message">message</setting>
+				-->
 			</settings>
 		</plugin>
 

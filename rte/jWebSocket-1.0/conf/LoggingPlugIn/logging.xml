@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
-	<!-- this is the simple JDBC logger which logs to a SQL table -->
-	<bean id="targetJDBC" class="org.jwebsocket.plugins.logging.JDBCLogger">
-	</bean>
-
 	<!-- this is the simple log4j logger which logs to all targets configured in the log4j.xml -->
 	<bean id="targetLog4J" class="org.jwebsocket.plugins.logging.Log4JLogger">
+	</bean>
+
+	<bean id="demoAppender" class="org.jwebsocket.plugins.logging.DemoAppender">
+	</bean>
+
+	<bean id="jdbcAppender" class="org.jwebsocket.plugins.logging.JDBCAppender">
 	</bean>
 
 	<!-- here you configure which logger of the above ones to use in the plug-in -->
 	<bean id="org.jwebsocket.plugins.logging.settings" class="org.jwebsocket.plugins.logging.Settings">
 		<property name="target" ref="targetLog4J"/>
+		<property name="appenders">
+			<list>
+				<!-- Select here the appenders to be used -->
+				<!-- <ref local="demoAppender"/> -->
+				<ref local="jdbcAppender"/>
+			</list>
+		</property>
 	</bean>
 
 </beans>

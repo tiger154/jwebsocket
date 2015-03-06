@@ -106,6 +106,10 @@
 		</layout>
 	</appender>
 	
+	<appender name="jWebSocketAppender" class="org.jwebsocket.logging.JWSLog4JAppender">
+		<level value="debug"/>
+	</appender>
+
 	<!-- special treatment for all logging activities of the spring-framework -->
 	<logger name="org.springframework" additivity="false">
 		<level value="WARN"/>
@@ -118,6 +122,7 @@
 		<level value="DEBUG"/>
 		<!--  select one of the above declared appenders -->
 		<appender-ref ref="developmentLog"/>
+		<appender-ref ref="jWebSocketAppender"/>
 	</logger>
 
 	<!-- special treatment for all logging activities of the jWebSocket load balancer -->
@@ -169,6 +174,7 @@
 		<!-- during the development -->
 		<appender-ref ref="developmentLog"/>
 		<appender-ref ref="jmsLog"/>
+		<appender-ref ref="jWebSocketAppender"/>
 
 		<!-- during debug cycles  -->
 		<!-- <appender-ref ref="debugLog"/> -->
