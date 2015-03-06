@@ -50,6 +50,10 @@ public class OntologyPlugInUsage {
 
 	private static JWSEndPoint lJWSEndPoint;
 
+	/**
+	 *
+	 * @param aArgs
+	 */
 	public static void main(String[] aArgs) {
 
 		// set up log4j logging

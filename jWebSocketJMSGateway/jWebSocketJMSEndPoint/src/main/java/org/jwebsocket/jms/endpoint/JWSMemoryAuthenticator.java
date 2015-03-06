@@ -33,17 +33,33 @@ public class JWSMemoryAuthenticator implements IJWSAuthenticator {
 
 	private Map<String, String> mCredentials = new FastMap<String, String>();
 
+	/**
+	 *
+	 */
 	public JWSMemoryAuthenticator() {
 	}
 
+	/**
+	 *
+	 * @param aCredentials
+	 */
 	public JWSMemoryAuthenticator(Map<String, String> aCredentials) {
 		mCredentials.putAll(mCredentials);
 	}
 
+	/**
+	 *
+	 * @param aUsername
+	 * @param aPassword
+	 */
 	public void addCredentials(String aUsername, String aPassword) {
 		mCredentials.put(aUsername, aPassword);
 	}
 
+	/**
+	 *
+	 * @param aUsername
+	 */
 	public void removeCredentials(String aUsername) {
 		mCredentials.remove(aUsername);
 	}

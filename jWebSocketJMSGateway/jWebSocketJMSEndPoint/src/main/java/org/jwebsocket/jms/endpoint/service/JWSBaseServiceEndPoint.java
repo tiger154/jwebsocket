@@ -36,6 +36,9 @@ import org.jwebsocket.token.TokenFactory;
  */
 public abstract class JWSBaseServiceEndPoint {
 
+	/**
+	 *
+	 */
 	protected final Logger mLog = Logger.getLogger(JWSBaseServiceEndPoint.class);
 	private JWSAutoSelectAuthenticator mAuthenticator = new JWSAutoSelectAuthenticator();
 	private JWSEndPoint mEndPoint;
@@ -43,6 +46,10 @@ public abstract class JWSBaseServiceEndPoint {
 	private String mServiceNamespace;
 	private String mClusterAlias, mClusterPassword;
 
+	/**
+	 *
+	 * @return
+	 */
 	public JWSAutoSelectAuthenticator getAuthManager() {
 		return mAuthenticator;
 	}
@@ -69,6 +76,12 @@ public abstract class JWSBaseServiceEndPoint {
 		PropertyConfigurator.configure(lProps);
 	}
 
+	/**
+	 *
+	 * @param aServiceNamespace
+	 * @param aClusterAlias
+	 * @param aClusterPassword
+	 */
 	public JWSBaseServiceEndPoint(String aServiceNamespace, String aClusterAlias, String aClusterPassword) {
 		mServiceNamespace = aServiceNamespace;
 		mClusterAlias = aClusterAlias;
@@ -77,6 +90,12 @@ public abstract class JWSBaseServiceEndPoint {
 		setupLog4j();
 	}
 
+	/**
+	 *
+	 * @param aEndPoint
+	 * @param aGatewayUsername
+	 * @param aGatewayPassword
+	 */
 	public void setEndPoint(final JWSEndPoint aEndPoint, final String aGatewayUsername,
 			final String aGatewayPassword) {
 		mEndPoint = aEndPoint;
@@ -127,27 +146,52 @@ public abstract class JWSBaseServiceEndPoint {
 		aEndPoint.start();
 	}
 
+	/**
+	 *
+	 * @param aActionName
+	 * @param aListener
+	 */
 	protected void registerAction(String aActionName, JWSServiceEndPointListener aListener) {
 		getEndPoint().addRequestListener(mServiceNamespace, aActionName, aListener);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public JWSEndPoint getEndPoint() {
 		return mEndPoint;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Logger getLogger() {
 		return mLog;
 	}
 
+	/**
+	 *
+	 */
 	public abstract void specifyService();
 
+	/**
+	 *
+	 */
 	public void OnWelcome() {
 	}
 
+	/**
+	 *
+	 */
 	public void OnLogin() {
 
 	}
 
+	/**
+	 *
+	 */
 	public void OnServiceRegistered() {
 
 	}
