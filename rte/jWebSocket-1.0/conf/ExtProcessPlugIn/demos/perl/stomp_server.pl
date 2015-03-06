@@ -32,7 +32,6 @@ $flag_exit = 0;
 
 # create STOMP client
 $stomp = Net::STOMP::Client->new(uri => "stomp://127.0.0.1:61613");
-# $stomp = Net::STOMP::Client->new(uri => "stomp://hqdvalsap01:61613");
 
 # the unique client id (the message selector)
 $endPointId = "org.jwebsocket.perl.server";
