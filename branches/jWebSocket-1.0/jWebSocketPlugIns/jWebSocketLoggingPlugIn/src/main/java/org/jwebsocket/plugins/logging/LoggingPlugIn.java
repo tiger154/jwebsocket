@@ -20,6 +20,7 @@ package org.jwebsocket.plugins.logging;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
@@ -27,6 +28,8 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.logging.ILog4JAppender;
+import org.jwebsocket.logging.JWSLog4JAppender;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
@@ -56,8 +59,8 @@ public class LoggingPlugIn extends TokenPlugIn {
 	// private final Map<String, String> mListeners = new FastMap<String, String>();
 	private Class JDBCTools = null;
 	private TokenPlugIn mJDBCPlugIn = null;
-	private static ApplicationContext mBeanFactory;
-	private static Settings mSettings;
+	private ApplicationContext mBeanFactory;
+	private Settings mSettings;
 
 	/**
 	 *
@@ -78,6 +81,15 @@ public class LoggingPlugIn extends TokenPlugIn {
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.logging.settings");
 				mLogger = mSettings.getTarget();
+
+				JWSLog4JAppender lJWSAppender = JWSLog4JAppender.getInstance();
+				if (null != lJWSAppender) {
+					Set<ILog4JAppender> lAppenders = mSettings.getAppenders();
+					for (ILog4JAppender lAppender : lAppenders) {
+						lJWSAppender.addAppender(lAppender);
+					}
+				}
+
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Logging plug-in successfully instantiated.");
 				}
@@ -177,13 +189,13 @@ public class LoggingPlugIn extends TokenPlugIn {
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
-		String lInfo = aToken.getString("info");
+		Map lInfoMap = aToken.getMap("info");
 		String lMessage = aToken.getString("message");
 		String lLevel = aToken.getString("level");
 
 		try {
 			LogLevel lLogLevel = LogLevel.stringToLevel(lLevel);
-			mLogger.log(lLogLevel, lInfo, lMessage);
+			mLogger.log(lLogLevel, lMessage, lInfoMap);
 		} catch (Exception lEx) {
 			String lMsg = lEx.getClass().getSimpleName() + ": " + lEx.getMessage();
 			mLog.error(lMsg);
