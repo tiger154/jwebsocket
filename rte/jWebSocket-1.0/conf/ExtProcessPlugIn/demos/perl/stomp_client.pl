@@ -32,8 +32,6 @@ $jms_gateway = "/topic/org.jwebsocket.jms.gateway";
 $flag_exit = 0;
 
 # create STOMP client
-# my $brokerURI = "stomp://172.20.100.125:61613";
-# my $brokerURI = "stomp://hqdvalsap01:61613";
 my $brokerURI = "stomp://localhost:61613";
 printf( "Connecting to %s...\n", $brokerURI );
 $stomp = Net::STOMP::Client->new(uri => $brokerURI);

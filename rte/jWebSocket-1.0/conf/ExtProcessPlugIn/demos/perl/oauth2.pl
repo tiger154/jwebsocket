@@ -30,9 +30,9 @@ use JSON;
 # test settings
 my $access_token = "";
 my $refresh_token = "";
-my $client_secret = '2Federate';
-my $base_url = 'https://hqdvpngpoc01.nvidia.com/as/token.oauth2';
-my $username = 'aschulze@nvidia.com';
+my $client_secret = 'xxxx';
+my $base_url = 'https://server.tld/as/token.oauth2';
+my $username = 'aschulze@jwebsocket.org';
 my $password = 'xxxx';
 
 # initiate the user agent (the http(s) web client) 

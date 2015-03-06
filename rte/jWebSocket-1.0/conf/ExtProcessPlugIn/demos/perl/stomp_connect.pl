@@ -11,7 +11,6 @@ $jms_gateway = "/topic/org.jwebsocket.jms.gateway";
 $flag_exit = 0;
 
 # create STOMP client
-# $stomp = Net::STOMP::Client->new(uri => "stomp://rsouza-dt2:61613");
 # $stomp = Net::STOMP::Client->new(uri => "stomp://localhost:61613");
 $stomp = Net::STOMP::Client->new(uri => "stomp://127.0.0.1:61613");
 
