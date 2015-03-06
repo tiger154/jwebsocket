@@ -13,6 +13,13 @@ popd
 rem if JWEBSOCKET_EE_HOME not set set it to JWEBSOCKET_HOME
 if "%JWEBSOCKET_EE_HOME%"=="" set JWEBSOCKET_EE_HOME=%JWEBSOCKET_HOME%
 
+rem Command-line Java VM Memory options (example):
+rem initial memory usage: -Xms256m
+rem maximum memory usage: -Xmx2048m
+
+rem Environment Java VM Memory options (example):
+rem JAVA_OPTS=-Xms512m -Xmx2048m
+
 java -jar ..\libs\jWebSocketSwingGUI-1.0.jar %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 rem pause
