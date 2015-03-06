@@ -69,6 +69,10 @@ public class JMSLoadBalancer implements IInitializable {
 		mHostname = aHostname;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public MessageProducer getNodesMessagesProducer() {
 		return mNodesMessagesProducer;
 	}

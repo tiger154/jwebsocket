@@ -34,6 +34,10 @@ public class MongoDBConnectorsPacketQueue implements IConnectorsPacketQueue {
 
 	private final DBCollection mPackets;
 
+	/**
+	 *
+	 * @param aPackets
+	 */
 	public MongoDBConnectorsPacketQueue(DBCollection aPackets) {
 		Assert.notNull(aPackets, "The packets collection argument is not valid!");
 
