@@ -66,6 +66,10 @@ public class JMSConnector extends BaseConnector {
 		mConsumerId = aConsumerId;
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 */
 	public void setCustomVarsContainer(Map<String, Object> aMap) {
 		mCustomVars = aMap;
 	}

@@ -52,6 +52,9 @@ public class CleanExpiredSessionsTask extends JWSTimerTask {
 		mStorageProvider = aStorageProvider;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void runTask() {
 		Iterator<String> lKeys = mSessionIdsTrash.keySet().iterator();

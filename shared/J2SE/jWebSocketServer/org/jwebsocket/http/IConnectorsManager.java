@@ -32,35 +32,115 @@ import org.jwebsocket.api.WebSocketEngine;
  */
 public interface IConnectorsManager extends IInitializable {
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @param aConnectionId
+	 * @return
+	 * @throws Exception
+	 */
 	WebSocketConnector add(String aSessionId, String aConnectionId) throws Exception;
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @return
+	 */
 	boolean connectorExists(String aConnectorId);
 
+	/**
+	 *
+	 * @return
+	 */
 	Long count();
 
+	/**
+	 *
+	 * @return
+	 * @throws Exception
+	 */
 	Map<String, WebSocketConnector> getAll() throws Exception;
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @return
+	 * @throws Exception
+	 */
 	WebSocketConnector getConnectorById(String aConnectorId) throws Exception;
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @param aStartupConnection
+	 * @return
+	 * @throws Exception
+	 */
 	WebSocketConnector getConnectorById(String aConnectorId, boolean aStartupConnection) throws Exception;
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @return
+	 * @throws Exception
+	 */
 	WebSocketConnector getConnectorBySessionId(String aSessionId) throws Exception;
 
+	/**
+	 *
+	 * @return
+	 */
 	WebSocketEngine getEngine();
 
+	/**
+	 *
+	 * @return
+	 */
 	IConnectorsPacketQueue getPacketsQueue();
 
+	/**
+	 *
+	 * @return
+	 */
 	ISessionManager getSessionManager();
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @return
+	 * @throws Exception
+	 */
 	Map<String, WebSocketConnector> getSharedSession(String aSessionId) throws Exception;
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @throws Exception
+	 */
 	void remove(String aConnectorId) throws Exception;
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @return
+	 */
 	boolean sessionExists(String aSessionId);
 
+	/**
+	 *
+	 * @param aEngine
+	 */
 	void setEngine(WebSocketEngine aEngine);
 
+	/**
+	 *
+	 * @param aPacketsQueue
+	 */
 	void setPacketsQueue(IConnectorsPacketQueue aPacketsQueue);
 
+	/**
+	 *
+	 * @return
+	 */
 	Iterator<WebSocketConnector> getIterator();
 }

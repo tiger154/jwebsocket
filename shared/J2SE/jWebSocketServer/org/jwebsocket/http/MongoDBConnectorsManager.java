@@ -47,26 +47,46 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 	private WebSocketEngine mEngine;
 	private IConnectorsPacketQueue mPacketsQueue;
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public ISessionManager getSessionManager() {
 		return mSessionManager;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public IConnectorsPacketQueue getPacketsQueue() {
 		return mPacketsQueue;
 	}
 
+	/**
+	 *
+	 * @param aPacketsQueue
+	 */
 	@Override
 	public void setPacketsQueue(IConnectorsPacketQueue aPacketsQueue) {
 		mPacketsQueue = aPacketsQueue;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public WebSocketEngine getEngine() {
 		return mEngine;
 	}
 
+	/**
+	 *
+	 * @param aEngine
+	 */
 	@Override
 	public void setEngine(WebSocketEngine aEngine) {
 		mEngine = aEngine;
@@ -107,28 +127,55 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 		mPacketsQueue.shutdown();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public Long count() {
 		return mConnectors.count();
 	}
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @return
+	 */
 	@Override
 	public boolean sessionExists(String aSessionId) {
 		return null != mConnectors.findOne(new BasicDBObject()
 				.append(Attributes.SESSION_ID, aSessionId));
 	}
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @return
+	 */
 	@Override
 	public boolean connectorExists(String aConnectorId) {
 		return null != mConnectors.findOne(new BasicDBObject()
 				.append(Attributes.CONNECTION_ID, aConnectorId));
 	}
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public HTTPConnector getConnectorById(String aConnectorId) throws Exception {
 		return getConnectorById(aConnectorId, false);
 	}
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @param aStartupConnection
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public HTTPConnector getConnectorById(String aConnectorId, boolean aStartupConnection) throws Exception {
 		DBObject lConnector = mConnectors.findOne(new BasicDBObject()
@@ -137,6 +184,12 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 		return (null == lConnector) ? null : toConnector(lConnector, aStartupConnection);
 	}
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public HTTPConnector getConnectorBySessionId(String aSessionId) throws Exception {
 		DBObject lConnector = mConnectors.findOne(new BasicDBObject()
@@ -166,11 +219,23 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 		return lConnector;
 	}
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @throws Exception
+	 */
 	@Override
 	public void remove(String aConnectorId) throws Exception {
 		mConnectors.remove(new BasicDBObject().append(Attributes.CONNECTION_ID, aConnectorId), WriteConcern.SAFE);
 	}
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @param aConnectionId
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public HTTPConnector add(String aSessionId, String aConnectionId) throws Exception {
 		Assert.notNull(aConnectionId);
@@ -186,6 +251,11 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 		return getConnectorById(aConnectionId, true);
 	}
 
+	/**
+	 *
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Map<String, WebSocketConnector> getAll() throws Exception {
 		DBCursor lCursor = mConnectors.find();
@@ -199,6 +269,12 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 		return lConnectors;
 	}
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Map<String, WebSocketConnector> getSharedSession(String aSessionId) throws Exception {
 		DBCursor lCursor = mConnectors.find(new BasicDBObject()
@@ -213,6 +289,10 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 		return lConnectors;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public Iterator<WebSocketConnector> getIterator() {
 		final DBCursor lCursor = mConnectors.find();

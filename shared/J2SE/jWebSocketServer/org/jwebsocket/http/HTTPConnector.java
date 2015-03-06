@@ -39,9 +39,19 @@ public class HTTPConnector extends BaseConnector {
 	private final String mId;
 	private InetAddress mRemoteHost;
 	private final IConnectorsPacketQueue mPacketsQueue;
+
+	/**
+	 *
+	 */
 	public final static String CLOSE_COMMAND = "http.command.close";
 	private HttpServletResponse mHttpResponse;
 
+	/**
+	 *
+	 * @param aEngine
+	 * @param aConnectorId
+	 * @param aPacketsQueue
+	 */
 	public HTTPConnector(WebSocketEngine aEngine, String aConnectorId, IConnectorsPacketQueue aPacketsQueue) {
 		super(aEngine);
 		mId = aConnectorId;
@@ -52,10 +62,18 @@ public class HTTPConnector extends BaseConnector {
 		setHeader(lHeader);
 	}
 
+	/**
+	 *
+	 * @param aHttpResponse
+	 */
 	public void setHttpResponse(HttpServletResponse aHttpResponse) {
 		mHttpResponse = aHttpResponse;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public HttpServletResponse getHttpResponse() {
 		return mHttpResponse;
 	}
@@ -65,6 +83,10 @@ public class HTTPConnector extends BaseConnector {
 		return mRemoteHost;
 	}
 
+	/**
+	 *
+	 * @param aRemoteHost
+	 */
 	public void setRemoteHost(InetAddress aRemoteHost) {
 		mRemoteHost = aRemoteHost;
 	}
@@ -89,6 +111,10 @@ public class HTTPConnector extends BaseConnector {
 		return getEngine().getConfiguration().getMaxFramesize();
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 */
 	public void setCustomVarsContainer(Map<String, Object> aMap) {
 		mCustomVars = aMap;
 	}

@@ -33,10 +33,18 @@ public class AnnotationManager implements IAnnotationProcessor {
 
 	private final List<IAnnotationProcessor> mProcessors = new FastList<IAnnotationProcessor>();
 
+	/**
+	 *
+	 * @return
+	 */
 	public List<IAnnotationProcessor> getProcessors() {
 		return mProcessors;
 	}
 
+	/**
+	 *
+	 * @param aProcessors
+	 */
 	public void setProcessors(List<IAnnotationProcessor> aProcessors) {
 		mProcessors.addAll(aProcessors);
 	}

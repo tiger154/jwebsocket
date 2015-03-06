@@ -77,14 +77,26 @@ public class ActionPlugIn extends TokenPlugIn {
 	public void beforeExecuteAction(String aActionName, WebSocketConnector aConnector, Token aToken) {
 	}
 
+	/**
+	 *
+	 */
 	public class AssertionException extends RuntimeException {
 
 		private int mCode;
 
+		/**
+		 *
+		 * @param mCode
+		 * @param mMessage
+		 */
 		public AssertionException(int mCode, String mMessage) {
 			super(mMessage);
 		}
 
+		/**
+		 *
+		 * @return
+		 */
 		public int getCode() {
 			return mCode;
 		}
@@ -183,6 +195,13 @@ public class ActionPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aServices
+	 * @param aConnector
+	 * @param aToken
+	 * @return
+	 */
 	protected boolean doServicesInvokation(Object[] aServices, WebSocketConnector aConnector, Token aToken) {
 		// getting the token type
 		String lType = aToken.getType();
@@ -230,10 +249,20 @@ public class ActionPlugIn extends TokenPlugIn {
 		return false;
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @return
+	 */
 	protected boolean routeToServices(WebSocketConnector aConnector, Token aToken) {
 		return false;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	protected AnnotationManager getAnnotationManager() {
 		// processing annotations
 		AnnotationManager lAnnotationManager = (AnnotationManager) JWebSocketBeanFactory
@@ -439,6 +468,10 @@ public class ActionPlugIn extends TokenPlugIn {
 		return lMethodAPI;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Object[] getServices() {
 		return new Object[0];
 	}

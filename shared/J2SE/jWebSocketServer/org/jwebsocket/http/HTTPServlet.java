@@ -119,6 +119,13 @@ public class HTTPServlet extends HttpServlet {
 						+ (mEngine.getConfiguration().getTimeout() * 60 * 1000));
 	}
 
+	/**
+	 *
+	 * @param aReq
+	 * @param aResp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@Override
 	protected void doGet(HttpServletRequest aReq, HttpServletResponse aResp) throws ServletException, IOException {
 		String lAction = aReq.getParameter("action");
@@ -159,6 +166,13 @@ public class HTTPServlet extends HttpServlet {
 		updateSessionTimeout(lSessionId);
 	}
 
+	/**
+	 *
+	 * @param aReq
+	 * @param aResp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@Override
 	protected void doPost(HttpServletRequest aReq, HttpServletResponse aResp) throws ServletException, IOException {
 		String lAction = aReq.getParameter("action");
@@ -180,6 +194,13 @@ public class HTTPServlet extends HttpServlet {
 		updateSessionTimeout(lSessionId);
 	}
 
+	/**
+	 *
+	 * @param aStatusCode
+	 * @param aMessage
+	 * @param aResp
+	 * @throws IOException
+	 */
 	protected static void sendMessage(int aStatusCode, String aMessage, HttpServletResponse aResp) throws IOException {
 		aResp.setStatus(aStatusCode);
 		aResp.getWriter().print(aMessage);
@@ -328,6 +349,11 @@ public class HTTPServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 *
+	 * @param aReq
+	 * @return
+	 */
 	public Integer getUTID(HttpServletRequest aReq) {
 		String lUTID = aReq.getParameter("utid");
 		if (null != lUTID) {

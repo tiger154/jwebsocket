@@ -110,6 +110,10 @@ public class SystemPlugIn extends TokenPlugIn {
 	 *
 	 */
 	public static final String TT_LOGON = "logon";
+
+	/**
+	 *
+	 */
 	public static final String TT_GET_JVM_INFO = "getjvminfo";
 	private static final String TT_LOGOFF = "logoff";
 	private static final String TT_GET_AUTHORITIES = "getAuthorities";
@@ -145,6 +149,10 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static boolean BROADCAST_LOGOUT = true;
 	private static final String BROADCAST_LOGOUT_KEY = "broadcastLogoutEvent";
 	private static final String ALLOW_ANONYMOUS_KEY = "allowAnonymousLogin";
+
+	/**
+	 *
+	 */
 	public static final String ANONYMOUS_USER = "anonymous";
 	private static boolean ALLOW_ANONYMOUS_LOGIN = false;
 	private static final String ALLOW_AUTO_ANONYMOUS_KEY = "allowAutoAnonymous";

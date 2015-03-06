@@ -40,6 +40,10 @@ public abstract class HTTPEngine extends BaseEngine {
 	private static final Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
 	private IConnectorsManager mConnectorsManager;
+
+	/**
+	 *
+	 */
 	public static final String NS = "org.jwebsocket.engine.http";
 
 	/**
@@ -50,10 +54,18 @@ public abstract class HTTPEngine extends BaseEngine {
 		super(aConfiguration);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public IConnectorsManager getConnectorsManager() {
 		return mConnectorsManager;
 	}
 
+	/**
+	 *
+	 * @param aConnectorsManager
+	 */
 	public void setConnectorsManager(IConnectorsManager aConnectorsManager) {
 		mConnectorsManager = aConnectorsManager;
 		mConnectorsManager.setEngine(this);
