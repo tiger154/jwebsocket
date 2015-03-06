@@ -184,8 +184,10 @@
 					log("Logging in...");
 					try {
 						var lRes = lWSC.login(
-								jws.GUEST_USER_LOGINNAME,
-								jws.GUEST_USER_PASSWORD
+//								jws.GUEST_USER_LOGINNAME,
+//								jws.GUEST_USER_PASSWORD
+								jws.DEMO_ROOT_LOGINNAME,
+								jws.DEMO_ROOT_PASSWORD
 								);
 						if (0 === lRes.code) {
 							log("Asychronously waiting for response...");
@@ -481,7 +483,7 @@
 					</td>
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnTest" type="button" value="Test" onclick="test();"
-							   title="This starts a custome specific test method.">
+							   title="Starts a custom specific test method.">
 					</td>
 				</tr>
 			</table>
