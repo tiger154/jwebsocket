@@ -28,6 +28,9 @@ import org.jwebsocket.plugins.annotations.processor.Parameters;
  */
 public class DefaultAnnotationManager extends AnnotationManager {
 
+	/**
+	 *
+	 */
 	public DefaultAnnotationManager() {
 		getProcessors().add(new Authorization());
 		getProcessors().add(new Dependency());

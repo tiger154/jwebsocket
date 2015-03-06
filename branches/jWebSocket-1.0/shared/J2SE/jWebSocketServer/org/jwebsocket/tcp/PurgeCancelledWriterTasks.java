@@ -37,6 +37,9 @@ public class PurgeCancelledWriterTasks extends JWSTimerTask {
 		mTimer = aTimer;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void runTask() {
 		mTimer.purge(); // Keep the timer cleaned up

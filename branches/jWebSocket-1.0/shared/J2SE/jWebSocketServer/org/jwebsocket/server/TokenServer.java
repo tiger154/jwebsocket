@@ -66,6 +66,10 @@ public class TokenServer extends BaseServer {
 	private final int mKeepAliveTime;
 	private final int mBlockingQueueSize;
 	private JMSManager mJMSManager = null;
+
+	/**
+	 *
+	 */
 	protected IEventBus mEventBus;
 
 	/**
@@ -216,6 +220,13 @@ public class TokenServer extends BaseServer {
 		return TokenFactory.tokenToPacket(lFormat, aToken);
 	}
 
+	/**
+	 *
+	 * @param aSenderId
+	 * @param aSessionId
+	 * @param aToken
+	 * @param aSenderIncluded
+	 */
 	public void broadcastToSharedSession(String aSenderId, String aSessionId, Token aToken, boolean aSenderIncluded) {
 		// getting shared session connectors
 		Collection<WebSocketConnector> lConnectors = getSharedSessionConnectors(aSessionId).values();

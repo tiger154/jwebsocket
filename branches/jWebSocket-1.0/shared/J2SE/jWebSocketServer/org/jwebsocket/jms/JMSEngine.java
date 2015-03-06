@@ -55,6 +55,10 @@ public class JMSEngine extends BaseEngine {
 
 	private final static Logger mLog = Logging.getLogger();
 	private String mDestination;
+
+	/**
+	 *
+	 */
 	public static final String NS = "org.jwebsocket.jms.engine";
 	private final ApplicationContext mBeanFactory;
 	private Connection mConnection;
@@ -172,6 +176,11 @@ public class JMSEngine extends BaseEngine {
 		return mConnectorsManager;
 	}
 
+	/**
+	 *
+	 * @param aNodeId
+	 * @throws Exception
+	 */
 	public void shutdownNode(String aNodeId) throws Exception {
 		Assert.isTrue(mNodesManager.exists(aNodeId), "The node '" + aNodeId + "' does not exists!");
 

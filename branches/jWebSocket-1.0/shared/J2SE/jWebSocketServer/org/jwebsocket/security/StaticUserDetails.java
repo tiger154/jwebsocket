@@ -33,6 +33,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  */
 public class StaticUserDetails implements UserDetailsService {
 
+	/**
+	 *
+	 * @param aUsername
+	 * @return
+	 * @throws UsernameNotFoundException
+	 */
 	@Override
 	public UserDetails loadUserByUsername(String aUsername) throws UsernameNotFoundException {
 		if (!SecurityFactory.isValidUser(aUsername)) {

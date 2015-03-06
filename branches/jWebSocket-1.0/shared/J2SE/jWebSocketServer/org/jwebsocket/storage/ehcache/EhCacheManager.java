@@ -37,7 +37,10 @@ public class EhCacheManager {
     private static CacheManager mInstance = null;
     private static final Logger mLog = Logging.getLogger();
 
-    public static void shutdown() {
+	/**
+	 *
+	 */
+	public static void shutdown() {
         if (null != mInstance) {
             getInstance().shutdown();
         }

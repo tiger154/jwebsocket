@@ -48,7 +48,14 @@ import org.springframework.util.Assert;
  */
 public class JMSSynchronizedEventBus extends BaseEventBus {
 
+	/**
+	 *
+	 */
 	protected static final String EVENT_BUS_MSG_UUID = "message_uuid";
+
+	/**
+	 *
+	 */
 	protected static final String EVENT_BUS_MSG_REPLYTO = "jms_replyto";
 	private final Connection mConnection;
 	private Session mSession;
@@ -61,14 +68,28 @@ public class JMSSynchronizedEventBus extends BaseEventBus {
 	private Topic mTopic;
 	private final IClusterSynchronizer mSynchronizer;
 
+	/**
+	 *
+	 * @return
+	 */
 	public IClusterSynchronizer getSynchronizer() {
 		return mSynchronizer;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Connection getConnection() {
 		return mConnection;
 	}
 
+	/**
+	 *
+	 * @param aConnection
+	 * @param aDestinationId
+	 * @param aSynchronizer
+	 */
 	public JMSSynchronizedEventBus(Connection aConnection, String aDestinationId, IClusterSynchronizer aSynchronizer) {
 		Assert.notNull(aConnection, "The 'connection' argument cannot be null!");
 		Assert.notNull(aDestinationId, "The 'destinationId' argument cannot be null!");
@@ -256,6 +277,12 @@ public class JMSSynchronizedEventBus extends BaseEventBus {
 		return lResponse;
 	}
 
+	/**
+	 *
+	 * @param aSendOp
+	 * @param aToken
+	 * @return
+	 */
 	@Override
 	protected boolean isAllowedToProcess(boolean aSendOp, Token aToken) {
 		if (aSendOp) {
