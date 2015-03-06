@@ -72,6 +72,11 @@ public class JMSAdvisoryListener implements MessageListener {
 		mBroadcastEvents = aBroadcastEvents;
 	}
 
+	/**
+	 *
+	 * @param aInfo
+	 * @return
+	 */
 	public String getEndPointId(ConsumerInfo aInfo) {
 		String lConnectionId = aInfo.getConsumerId().getConnectionId();
 		if (lIsConnectionIdPrefixed) {
@@ -93,10 +98,20 @@ public class JMSAdvisoryListener implements MessageListener {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnectionId
+	 * @return
+	 */
 	public String getEndPointId(String aConnectionId) {
 		return mConnections.get(aConnectionId);
 	}
 
+	/**
+	 *
+	 * @param aInfo
+	 * @return
+	 */
 	public String getEndPointIdAndRemove(RemoveInfo aInfo) {
 		DataStructure lDS = aInfo.getObjectId();
 		if (lDS instanceof ConsumerId) {

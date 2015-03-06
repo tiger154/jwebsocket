@@ -172,10 +172,18 @@ public class Settings {
 		mConnectionIdPrefix = aConnectionIdPrefix;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Boolean getFullTextLogging() {
 		return mFullTextLogging;
 	}
 
+	/**
+	 *
+	 * @param aFullTextLogging
+	 */
 	public void setFullTextLogging(Boolean aFullTextLogging) {
 		mFullTextLogging = aFullTextLogging;
 	}
