@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
+import java.util.Map;
+
 /**
  *
  * @author Alexander Schulze
@@ -42,7 +44,7 @@ public interface ILogger {
 	 * @param aMsg
 	 * @param aInfo
 	 */
-	void log(LogLevel aLogLevel, String aInfo, String aMsg);
+	void log(LogLevel aLogLevel, String aMsg, Map aInfo);
 
 	/**
 	 *
