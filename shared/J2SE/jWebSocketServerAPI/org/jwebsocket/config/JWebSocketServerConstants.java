@@ -28,7 +28,7 @@ public final class JWebSocketServerConstants {
 	/**
 	 * Current version string of the jWebSocket package.
 	 */
-	public static final String VERSION_STR = "1.0.0 RC3 (build 50119)";
+	public static final String VERSION_STR = "1.0.0 RC3 (build 50223)";
 	/**
 	 * Name space base for tokens and plug-ins.
 	 */
@@ -89,10 +89,19 @@ public final class JWebSocketServerConstants {
 	 */
 	public static final String CONNECTION_MANAGER_BEAN_ID = "org.jwebsocket.server.connection_manager";
 
+	/**
+	 *
+	 */
 	public static final boolean KEEP_ALIVE_CONNECTORS = false;
 
+	/**
+	 *
+	 */
 	public static final Integer KEEP_ALIVE_CONNECTORS_INTERVAL = 20000;
 
+	/**
+	 *
+	 */
 	public static final Integer KEEP_ALIVE_CONNECTORS_TIMEOUT = 10000;
 
 	/**
