@@ -18,9 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.logging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -58,29 +55,4 @@ public class BaseAppender implements ILog4JAppender {
 	public void append(LoggingEvent aLE) {
 		// do nothing on this level
 	}
-
-	/**
-	 *
-	 * @param aMsg
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public Map getInfoMapFromMsg(String aMsg) {
-		try {
-			if (null == aMsg) {
-				return null;
-			}
-			int lIdx = aMsg.lastIndexOf(", info:");
-			if (lIdx < 0) {
-				return null;
-			}
-			String lJSON = aMsg.substring(lIdx + 8);
-			Map lMap = new ObjectMapper().readValue(lJSON, HashMap.class);
-			lMap.put("message", aMsg.substring(0, lIdx));
-			return lMap;
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-
 }
