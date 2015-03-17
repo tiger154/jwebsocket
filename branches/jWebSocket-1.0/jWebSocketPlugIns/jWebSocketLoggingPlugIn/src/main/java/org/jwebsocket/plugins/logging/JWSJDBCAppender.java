@@ -18,21 +18,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.Iterator;
-import java.util.logging.Logger;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.jdbc.JDBCAppender;
-import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LoggingEvent;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.logging.ILog4JAppender;
