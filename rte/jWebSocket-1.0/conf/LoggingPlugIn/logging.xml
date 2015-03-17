@@ -8,7 +8,43 @@
 	<bean id="demoAppender" class="org.jwebsocket.plugins.logging.DemoAppender">
 	</bean>
 
-	<bean id="jdbcAppender" class="org.jwebsocket.plugins.logging.JDBCAppender">
+	<!--	<bean id="jdbcAppender" class="org.jwebsocket.plugins.logging.JDBCAppender">
+	</bean>-->
+	
+	<bean id="jdbcAppender" class="org.jwebsocket.plugins.logging.JWSJDBCAppender">
+		<!--Reference to the connection datasource, please ensure that the 
+		database exists before running your server-->
+		<constructor-arg index="0" type="java.lang.String" value="log4jJDBCConnection0"/>
+		<!--table name-->
+		<constructor-arg index="1" type="java.lang.String" value="logs_table"/>
+		<!-- Note, the %X parameter is used to not write the table name multiple 
+		times in configuration, this will be parsed later by JWSJDBCPatternLayout -->
+		<constructor-arg index="2" type="java.lang.String" value="create table 
+		IF NOT EXISTS logs_table (id int(20) unsigned NOT NULL auto_increment, message varchar(10000),
+		time_stamp DATETIME DEFAULT CURRENT_TIMESTAMP, level varchar(20), class_name varchar(255), 
+		method_name varchar(255), line_number int(20), filename varchar(300), 
+		logger_name varchar(255), thread_name varchar(255), 
+		stack_trace varchar(1024) not null, username varchar(50) not null, 
+		ip_number varchar(40), hostname varchar(255), product varchar(255), 
+		module varchar(255), classification varchar(255), version varchar(255), 
+		environment varchar(255), error_code varchar(255), system varchar(255), 
+		system_version varchar(255), condition_value varchar(255), source varchar(255), 
+		target varchar(255), primary key (id));"/>
+		
+		<!-- Please see the class JWSJDBCPatternLayout for more details -->
+		<property name="layout">
+			<bean class="org.jwebsocket.plugins.logging.JWSJDBCPatternLayout">
+				<property name="ConversionPattern" value="INSERT INTO logs_table(time_stamp, level, class_name, 
+				method_name, line_number, filename, logger_name, thread_name, 
+				stack_trace, message, username, ip_number, hostname, product,
+				module, classification, version, environment, error_code,
+				system, system_version, condition_value, source, target) VALUES 
+				('%d','%p', '%c', '%M', '%L', '%f', '%g', '%T', '%s', '%m', '%u', 
+				'%n', '%h', '%p', '%D', '%C', '%v', '%e', '%E', '%S', '%V', '%o', 
+				'%U', '%G')"
+				/>
+			</bean>
+		</property>
 	</bean>
 
 	<!-- here you configure which logger of the above ones to use in the plug-in -->
