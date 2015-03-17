@@ -36,7 +36,6 @@ import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -94,7 +93,7 @@ public class LoggingPlugIn extends TokenPlugIn {
 					mLog.info("Logging plug-in successfully instantiated.");
 				}
 			}
-		} catch (BeansException lEx) {
+		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating logging Plug-in"));
 		}
 	}
