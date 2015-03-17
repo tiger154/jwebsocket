@@ -6,17 +6,13 @@
 package org.jwebsocket.plugins.logging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.SettableAnyProperty;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.helpers.DateTimeDateFormat;
 import org.apache.log4j.helpers.PatternConverter;
 import org.apache.log4j.helpers.PatternParser;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
-import org.jwebsocket.jms.endpoint.JWSAutoSelectAuthenticator;
 
 /**
  *
