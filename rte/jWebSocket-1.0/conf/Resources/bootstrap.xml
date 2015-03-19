@@ -71,7 +71,7 @@
 		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
 		<!-- the URL to the MySQL server, please ensure that the database 
 		exists before running the server -->
-		<property name="url" value="jdbc:mysql://localhost:3306/jwebsocket"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/jwebsocket_logs"/>
 		<!-- database user and password for this connection -->
 		<property name="username" value="root"/>
 		<!-- password, please ensure that the location of this 
