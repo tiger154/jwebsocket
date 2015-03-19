@@ -134,8 +134,14 @@ public final class JWSJDBCAppender extends JDBCAppender implements ILog4JAppende
 
 	@Override
 	public void append(LoggingEvent aLE) {
-		System.out.println("[JWSJDBCAppender] " + getLayout().format(aLE));
-		buffer.add(aLE);
+		String lQuery = getLayout().format(aLE);
+		if (null != lQuery) {
+			System.out.println("[JWSJDBCAppender] " + lQuery);
+			buffer.add(aLE);
+		} else {
+			System.out.println("Error in Parser, empty query ");
+			System.out.println(aLE);
+		}
 		if (buffer.size() >= bufferSize) {
 			flushBuffer();
 		}
