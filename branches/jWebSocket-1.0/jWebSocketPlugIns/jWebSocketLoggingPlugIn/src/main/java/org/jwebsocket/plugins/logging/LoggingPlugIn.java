@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -185,10 +186,38 @@ public class LoggingPlugIn extends TokenPlugIn {
 
 	private void log(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
-
+		InetAddress lRemoteHost = null;
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
 		Map lInfoMap = aToken.getMap("info");
+		if (null == lInfoMap) {
+			lInfoMap = new FastMap<Object, Object>();
+		}
+		if (null != aConnector) {
+			lRemoteHost = aConnector.getRemoteHost();
+			lInfoMap.put("connector_id", aConnector.getId());
+			if (null == lInfoMap.get("user")) {
+				lInfoMap.put("user", aConnector.getUsername());
+			}
+			lInfoMap.put("system", aConnector.getVar("clientType"));
+			lInfoMap.put("system_version", aConnector.getVar("clientVersion"));
+			// TODO: parse these values and maybe put them into the database
+			lInfoMap.put("client_name", aConnector.getVar("clientName"));
+			lInfoMap.put("client_info", aConnector.getVar("clientInfo"));
+			lInfoMap.put("jws_type", aConnector.getVar("jwsType"));
+			lInfoMap.put("jws_version", aConnector.getVar("jwsVersion"));
+			lInfoMap.put("jws_info", aConnector.getVar("jwsInfo"));
+		}
+		//TODO: implement some condition mechanism here
+//		String lCondition = "success";
+//		if(0 == aToken.getCode()){
+//			
+//		}
+//		lInfoMap.put("condition", aToken.getCode());
+		if (null != lRemoteHost) {
+			lInfoMap.put("ip", lRemoteHost.getHostAddress());
+			lInfoMap.put("hostname", lRemoteHost.getCanonicalHostName());
+		}
 		String lMessage = aToken.getString("message");
 		String lLevel = aToken.getString("level");
 

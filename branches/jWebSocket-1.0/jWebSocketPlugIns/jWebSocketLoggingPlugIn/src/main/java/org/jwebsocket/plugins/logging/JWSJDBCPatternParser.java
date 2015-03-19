@@ -36,7 +36,7 @@ public class JWSJDBCPatternParser extends PatternParser {
 
 	// From the LoggerEvent we get the following data:
 	private static final char MESSAGE = 'm';
-	private static final char TIMESTAMP = 'd';
+//	private static final char TIMESTAMP = 'd';
 //	private static final char LEVEL = 'p'; // (debug, info, warn, error, fatal)
 	private static final char CLASS_NAME = 'c';// (from LocationInfo)
 	private static final char METHOD_NAME = 'M';// (from LocationInfo)
@@ -61,7 +61,7 @@ public class JWSJDBCPatternParser extends PatternParser {
 	private static final char MAP_CONDITION = 'o'; // (success, failure, timeout)
 	private static final char MAP_SOURCE = 'U'; // (sender)
 	private static final char MAP_TARGET = 'G'; // (receiver)
-	private static final char TABLE_NAME = 'X'; // (receiver)
+	private static final char MAP_CONNECTOR_ID = 'O';
 
 	public JWSJDBCPatternParser(String aPattern) {
 		super(aPattern);
@@ -71,7 +71,7 @@ public class JWSJDBCPatternParser extends PatternParser {
 	protected void finalizeConverter(char aChar) {
 		switch (aChar) {
 			case MESSAGE:
-			case TIMESTAMP://Timestamp delegated from the parser itself
+//			case TIMESTAMP://Timestamp delegated from the parser itself
 //			case LEVEL: Level captured automatically
 			case CLASS_NAME:
 			case METHOD_NAME:
@@ -95,7 +95,7 @@ public class JWSJDBCPatternParser extends PatternParser {
 			case MAP_CONDITION:
 			case MAP_SOURCE:
 			case MAP_TARGET:
-			case TABLE_NAME:
+			case MAP_CONNECTOR_ID:
 				currentLiteral.setLength(0);
 				addConverter(new JWSLog4jPatternConverter(aChar));
 				break;
@@ -144,6 +144,7 @@ public class JWSJDBCPatternParser extends PatternParser {
 				if (null != aLE) {
 					Map lInfo = null;
 					Object lMsg = aLE.getMessage();
+					Object lAux;
 					//	Trying to get info from the message, this could have been 
 					//	sent via a Token using the loggingPlugIn
 					if (null != lMsg) {
@@ -167,10 +168,10 @@ public class JWSJDBCPatternParser extends PatternParser {
 						case MESSAGE:
 							lResult = lMsg.toString();
 							break;
-				case TIMESTAMP:
-					// TODO: check how to get the timestamp properly from the event
-					lResult = org.jwebsocket.util.DateHandler.getCurrentDate() + " " + org.jwebsocket.util.DateHandler.getCurrentTime();
-					break;
+//				case TIMESTAMP:
+//					// TODO: check how to get the timestamp properly from the event
+//					lResult = org.jwebsocket.util.DateHandler.getCurrentDate() + " " + org.jwebsocket.util.DateHandler.getCurrentTime();
+//					break;
 //				case LEVEL:
 //					lResult = aLE.getLevel().toString();
 //					break;
@@ -202,72 +203,122 @@ public class JWSJDBCPatternParser extends PatternParser {
 						// The following data should be supported in the Info map:
 						case MAP_USERNAME:
 							if (null != lInfo) {
-								lResult = lInfo.get("username").toString();
+								lAux = lInfo.get("user");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_IP_NUMBER:
 							if (null != lInfo) {
-								lResult = lInfo.get("ip").toString();
+								lAux = lInfo.get("ip");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_HOSTNAME:
 							if (null != lInfo) {
-								lResult = lInfo.get("hostname").toString();
+								lAux = lInfo.get("hostname");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
+							}
+							break;
+						case MAP_CONNECTOR_ID:
+							if (null != lInfo) {
+								lAux = lInfo.get("connector_id");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_PRODUCT:
 							if (null != lInfo) {
-								lResult = lInfo.get("product").toString();
+								lAux = lInfo.get("product");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_MODULE:
 							if (null != lInfo) {
-								lResult = lInfo.get("module").toString();
+								lAux = lInfo.get("module");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_CLASSIFICATION:
 							if (null != lInfo) {
-								lResult = lInfo.get("classification").toString();
+								lAux = lInfo.get("classification");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_VERSION:
 							if (null != lInfo) {
-								lResult = lInfo.get("version").toString();
+								lAux = lInfo.get("version");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_ENVIRONMENT:
 							if (null != lInfo) {
-								lResult = lInfo.get("environment").toString();
+								lAux = lInfo.get("environment");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_ERROR_CODE:
 							if (null != lInfo) {
-								lResult = lInfo.get("code").toString();
+								lAux = lInfo.get("code");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_SYSTEM:
 							if (null != lInfo) {
-								lResult = lInfo.get("system").toString();
+								lAux = lInfo.get("client");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
-						case MAP_SYSTEM_VERSION: 
+						case MAP_SYSTEM_VERSION:
 							if (null != lInfo) {
-								lResult = lInfo.get("system_version").toString();
+								lAux = lInfo.get("system_version");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_CONDITION:
 							if (null != lInfo) {
-								lResult = lInfo.get("condition").toString();
+								lAux = lInfo.get("condition");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_SOURCE:
 							if (null != lInfo) {
-								lResult = lInfo.get("source").toString();
+								lAux = lInfo.get("source");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						case MAP_TARGET:
 							if (null != lInfo) {
-								lResult = lInfo.get("target").toString();
+								lAux = lInfo.get("target");
+								if (null != lAux) {
+									lResult = lAux.toString();
+								}
 							}
 							break;
 						default:
