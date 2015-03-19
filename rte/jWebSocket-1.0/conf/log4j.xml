@@ -156,7 +156,7 @@
 		<!--  select one of the above declared appenders -->
 		<appender-ref ref="developmentLog"/>
 	</logger>
-
+	
 	<!-- special treatment for all logging activities on the JMS gateway -->
 	<logger name="org.jwebsocket.plugins.jms.gateway.JMSLogger" additivity="false">
 		<level value="DEBUG"/>
