@@ -67,6 +67,21 @@ public class JDBCPlugIn extends TokenPlugIn {
 	private final int mConnValTimeout = 300;
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
+	public static final String TT_QUERY_SQL = "querySQL";
+	public static final String TT_UPDATE = "update";
+	public static final String TT_UPDATE_SQL = "updateSQL";
+	public static final String TT_EXEC_SQL = "execSQL";
+	public static final String TT_GET_NEXT_SEQ_VAL = "getNextSeqVal";
+	public static final String TT_SELECT = "select";
+	public static final String TT_DELETE = "delete";
+	public static final String TT_INSERT = "insert";
+	public static final String TT_COMMIT = "commit";
+	public static final String TT_ROLLBACK = "rollback";
+	public static final String TT_GET_SECURE = "getSecure";
+	public static final String TT_POST_SECURE = "postSecure";
+	public static final String TT_GET_SQL = "getSQL";
+	public static final String TT_POST_SQL = "postSQL";
+	public static final String TT_START_TA = "startTA";
 
 	/**
 	 *
@@ -136,52 +151,52 @@ public class JDBCPlugIn extends TokenPlugIn {
 		String lType = aToken.getType();
 
 		if (lType != null) {
-			if (lType.equals("querySQL")) {
+			if (lType.equals(TT_QUERY_SQL)) {
 				// run single native query sql command (select)
 				// with returning a result set
 				querySQL(aConnector, aToken);
-			} else if (lType.equals("updateSQL")) {
+			} else if (lType.equals(TT_UPDATE_SQL)) {
 				// run single native updateSQL sql command (updateSQL, delete, insert)
 				// w/o returning a result set, but number of affected rows
 				updateSQL(aConnector, aToken);
-			} else if (lType.equals("execSQL")) {
+			} else if (lType.equals(TT_EXEC_SQL)) {
 				// run single native updateSQL sql command (updateSQL, delete, insert)
 				// w/o returning a result set, but number of affected rows
 				execSQL(aConnector, aToken);
-			} else if (lType.equals("getNextSeqVal")) {
+			} else if (lType.equals(TT_GET_NEXT_SEQ_VAL)) {
 				// get the next value of a sequence
 				getNextSeqVal(aConnector, aToken);
-			} else if (lType.equals("select")) {
+			} else if (lType.equals(TT_SELECT)) {
 				// abstract select from database
 				select(aConnector, aToken);
 				// abstract updateSQL from database
-			} else if (lType.equals("update")) {
+			} else if (lType.equals(TT_UPDATE)) {
 				update(aConnector, aToken);
 				// abstract delete from database
-			} else if (lType.equals("delete")) {
+			} else if (lType.equals(TT_DELETE)) {
 				delete(aConnector, aToken);
 				// abstract insert into database
-			} else if (lType.equals("insert")) {
+			} else if (lType.equals(TT_INSERT)) {
 				insert(aConnector, aToken);
 				// abstract start transaction
-			} else if (lType.equals("startTA")) {
+			} else if (lType.equals(TT_START_TA)) {
 				startTA(aConnector, aToken);
 				// abstract commit transaction
-			} else if (lType.equals("commit")) {
+			} else if (lType.equals(TT_COMMIT)) {
 				commit(aConnector, aToken);
 				// abstract rollback transaction
-			} else if (lType.equals("rollback")) {
+			} else if (lType.equals(TT_ROLLBACK)) {
 				rollback(aConnector, aToken);
-			} else if (lType.equals("getSecure")) {
+			} else if (lType.equals(TT_GET_SECURE)) {
 				getSecure(aConnector, aToken);
 				// run multiple abstract updateSQL sql commands (updateSQL, delete, insert)
-			} else if (lType.equals("postSecure")) {
+			} else if (lType.equals(TT_POST_SECURE)) {
 				postSecure(aConnector, aToken);
 				// run multiple native query sql commands (select)
-			} else if (lType.equals("getSQL")) {
+			} else if (lType.equals(TT_GET_SQL)) {
 				getSQL(aConnector, aToken);
 				// run multiple native updateSQL sql commands (updateSQL, delete, insert)
-			} else if (lType.equals("postSQL")) {
+			} else if (lType.equals(TT_POST_SQL)) {
 				postSQL(aConnector, aToken);
 			}
 		}
@@ -227,13 +242,13 @@ public class JDBCPlugIn extends TokenPlugIn {
 		String lNS = aToken.getNS();
 
 		if (lType != null && getNamespace().equals(lNS)) {
-			if (lType.equals("getNextSeqVal")) {
+			if (lType.equals(TT_GET_NEXT_SEQ_VAL)) {
 				return getNextSeqVal(aToken);
-			} else if (lType.equals("updateSQL")) {
+			} else if (lType.equals(TT_UPDATE_SQL)) {
 				return updateSQL(aToken);
-			} else if (lType.equals("execSQL")) {
+			} else if (lType.equals(TT_EXEC_SQL)) {
 				return execSQL(aToken);
-			} else if (lType.equals("querySQL")) {
+			} else if (lType.equals(TT_QUERY_SQL)) {
 				return query(aToken);
 			}
 		}
@@ -688,7 +703,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			}
 		}
 
-		String lSQL = "update"
+		String lSQL = TT_UPDATE
 				+ " " + lTable
 				+ " set"
 				+ " " + lSetStr.toString();
