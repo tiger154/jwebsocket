@@ -1,0 +1,2 @@
+This is a plain document to be encrypted by an AES 256 algorithm using a 4096 bit passphrase.
+Test some special characters: äöü ÄÖÜ áóú àòù âôû [] {} () /\ *-+
