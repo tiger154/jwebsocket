@@ -18,145 +18,71 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.log4j.Level;
-import org.apache.log4j.jdbc.JDBCAppender;
+import java.util.Map;
 import org.apache.log4j.spi.LoggingEvent;
-import org.jwebsocket.config.JWebSocketServerConstants;
-import org.jwebsocket.logging.ILog4JAppender;
-import org.jwebsocket.spring.JWebSocketBeanFactory;
-import org.jwebsocket.util.ConnectionManager;
+import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.logging.BaseAppender;
+import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.plugins.jdbc.JDBCPlugIn;
+import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 
 /**
  *
  * @author Alexander Schulze
- * @author Victor Antonio Barzana Crespo
  */
-public final class JWSJDBCAppender extends JDBCAppender implements ILog4JAppender {
+public class JWSJDBCAppender extends BaseAppender {
 
-	// The table name, note, this will be created if not exists
-	private static String mTableName = "logs_table";
-	// The datasource id from ConnectionManager 
-	private static String mDataSourceId = "";
-	private Level mLevel = null;
+	private String mJDBCPlugInID;
+	private String mTableName;
+	private String mDBName;
+	private String mCreateTableQuery;
+	private String mInsertQuery;
+	private String mCreateUserQuery;
+	private String mJDBCConnAlias;
+	private TokenPlugIn mJDBCPlugIn;
 
-	public JWSJDBCAppender(String aDataSourceId, String aTableName, String aCreateTableQuery) throws Exception {
-		super();
-		mTableName = aTableName;
-		if (null == mDataSourceId) {
-			throw new Exception("JWSJDBCAppender could not be initialized, "
-					+ "the dataSourceId was not provided, please check.");
-		}
-		mDataSourceId = aDataSourceId;
-		try {
-			ensureTableExists(aCreateTableQuery);
-
-		} catch (Exception lEx) {
-			throw new Exception("JWSJDBCAppender could not be initialized: " + lEx.getLocalizedMessage());
-		}
-	}
-
-	public void ensureTableExists(String aQuery) throws Exception {
-		Statement lStatement = null;
-		ResultSet lResultSet = null;
-		Connection lConnection;
-		String lError = "";
-
-		lConnection = getConnection();
-		if (null != lConnection) {
-			lStatement = lConnection.createStatement();
-			DatabaseMetaData lMetadata = lConnection.getMetaData();
-			lResultSet = lMetadata.getTables(null, null, mTableName, null);
-			if (!lResultSet.next()) {
-				try {
-					lResultSet.close();
-					lStatement.close();
-				} catch (SQLException lEx) {
-				}
-				lStatement = lConnection.createStatement();
-				// Formats any given query to the proper sql statement
-				JWSJDBCPatternLayout lLayout = new JWSJDBCPatternLayout(aQuery);
-				String lQuery = lLayout.format();
-				lStatement.execute(lQuery);
-				lResultSet = lStatement.getResultSet();
-			}
-
-		}
-
-		if (lResultSet != null) {
-			try {
-				lResultSet.close();
-			} catch (SQLException lSQLEx) {
-			}
-		}
-		if (lStatement != null) {
-			try {
-				lStatement.close();
-			} catch (SQLException lSQLEx) {
-			}
-		}
-		getErrorHandler().error(lError);
-	}
-
-	public static String getDataSourceId() {
-		return mDataSourceId;
-	}
-
-	public static void setDataSourceId(String mDataSource) {
-		mDataSourceId = mDataSource;
-	}
-
-	/**
-	 * Handling the JDBC connection with our connection pooling system
-	 *
-	 * @return Connection lConnection
-	 * @throws java.sql.SQLException
-	 */
 	@Override
-	protected Connection getConnection() throws SQLException {
-		Connection lConnection = connection;
-		if (null == lConnection) {
-			ConnectionManager lConnManager = (ConnectionManager) JWebSocketBeanFactory.getInstance()
-					.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
-			BasicDataSource lDataSource = (BasicDataSource) lConnManager.getConnection(mDataSourceId);
-
-			if (null != lDataSource) {
-				lConnection = connection = lDataSource.getConnection();
+	public void initialize() throws Exception {
+		super.initialize();
+		TokenServer lServer = JWebSocketFactory.getTokenServer();
+		try {
+			// Loading the JDBCPlugIn from the list of loaded plugins
+			mJDBCPlugIn = (TokenPlugIn) lServer.getPlugInById(mJDBCPlugInID);
+		} catch (Exception lEx) {
+			// TODO: handle the error properly here
+		}
+		if (null != mJDBCPlugIn) {
+			Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(mCreateTableQuery));
+			if (null != lResponse) {
+				System.out.println(lResponse);
+				if (-1 == lResponse.getCode()) {
+					System.out.println("Error caught while creating the JDBCPlugin: " + lResponse.getString("msg"));
+				}
 			}
 		}
-		return lConnection;
 	}
 
 	@Override
 	public void append(LoggingEvent aLE) {
-		String lQuery = getLayout().format(aLE);
-		if (null != lQuery) {
-			System.out.println("[JWSJDBCAppender] " + lQuery);
-			buffer.add(aLE);
-		} else {
-			System.out.println("Error in Parser, empty query ");
-			System.out.println(aLE);
-		}
-		if (buffer.size() >= bufferSize) {
-			flushBuffer();
-		}
-//		super.append(aLE);
 //		Object lMsg = aLE.getMessage();
 //		Map lInfo = null;
-//		//	Trying to get info from the message, this could have been 
-//		//	sent via a Token using the loggingPlugIn
 //		if (null != lMsg) {
-//			//	lInfo = getInfoMapFromMsg((String) lMsg);
+//			lInfo = getInfoMapFromMsg((String) lMsg);
 //		}
 //		if (null != lInfo) {
 //			lMsg = lInfo.get("message");
 //			lInfo.remove("message");
 //		}
+		JWSJDBCPatternLayout lLayout = new JWSJDBCPatternLayout(prepareQuery(mInsertQuery));
+		Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(lLayout.format(aLE)));
+		if (0 == lResponse.getCode()) {
+			System.out.println("Successfully added log output to the database.");
+		} else if (-1 == lResponse.getCode()) {
+			System.out.println("Failed to insert the record in the database "
+					+ "with the following message:  " + lResponse.getString("msg"));
+		}
 //		System.out.println("[JDBC Appender]: "
 //				+ aLE.getLevel().toString() + ": "
 //				+ lMsg
@@ -166,31 +92,76 @@ public final class JWSJDBCAppender extends JDBCAppender implements ILog4JAppende
 //		);
 	}
 
-	@Override
-	protected void execute(String sql) throws SQLException {
-		Connection lConnection = null;
-		Statement lStatement = null;
-		try {
-			lConnection = getConnection();
-			lStatement = lConnection.createStatement();
-			lStatement.executeUpdate(sql);
-		} catch (SQLException lEx) {
-			if (lStatement != null) {
-				lStatement.close();
-			}
-			throw lEx;
+	private Token queryToToken(String aQuery) {
+		Token lCreateTableToken = TokenFactory.createToken(mJDBCPlugIn.getNamespace(),
+				JDBCPlugIn.TT_EXEC_SQL);
+		lCreateTableToken.setString("query", prepareQuery(aQuery));
+		lCreateTableToken.setString("alias", mJDBCConnAlias);
+		return lCreateTableToken;
+	}
+
+	private String prepareQuery(String aQuery) {
+		String lResult = "";
+		if (null != aQuery) {
+			lResult = aQuery.replace("${db_table}", mTableName);
 		}
-		lStatement.close();
-//		closeConnection(con);
+		return lResult;
 	}
 
-	@Override
-	public void setLevel(Level aLevel) {
-		mLevel = aLevel;
+	public String getJDBCPlugInID() {
+		return mJDBCPlugInID;
 	}
 
-	@Override
-	public Level getLevel() {
-		return mLevel;
+	public void setJDBCPlugInID(String mJDBCPlugInID) {
+		this.mJDBCPlugInID = mJDBCPlugInID;
 	}
+
+	public String getCreateTableQuery() {
+		return mCreateTableQuery;
+	}
+
+	public void setCreateTableQuery(String mCreateTableQuery) {
+		this.mCreateTableQuery = mCreateTableQuery;
+	}
+
+	public String getTableName() {
+		return mTableName;
+	}
+
+	public void setTableName(String mTableName) {
+		this.mTableName = mTableName;
+	}
+
+	public String getCreateUserQuery() {
+		return mCreateUserQuery;
+	}
+
+	public void setCreateUserQuery(String mCreateUserQuery) {
+		this.mCreateUserQuery = mCreateUserQuery;
+	}
+
+	public String getDBName() {
+		return mDBName;
+	}
+
+	public void setDBName(String mDBName) {
+		this.mDBName = mDBName;
+	}
+
+	public String getJDBCConnAlias() {
+		return mJDBCConnAlias;
+	}
+
+	public void setJDBCConnAlias(String mJDBCConnAlias) {
+		this.mJDBCConnAlias = mJDBCConnAlias;
+	}
+
+	public String getInsertQuery() {
+		return mInsertQuery;
+	}
+
+	public void setInsertQuery(String mInsertQuery) {
+		this.mInsertQuery = mInsertQuery;
+	}
+
 }
