@@ -105,6 +105,21 @@ public class LoggingPlugIn extends TokenPlugIn {
 	}
 
 	@Override
+	public void systemStopped() throws Exception {
+		JWSLog4JAppender lJWSAppender = JWSLog4JAppender.getInstance();
+		if (null != lJWSAppender) {
+			Set<ILog4JAppender> lAppenders = mSettings.getAppenders();
+			for (ILog4JAppender lAppender : lAppenders) {
+				lAppender.shutdown();
+			}
+		}
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Logging plug-in successfully stopped.");
+		}
+	}
+	
+
+	@Override
 	public String getVersion() {
 		return VERSION;
 	}
@@ -206,19 +221,22 @@ public class LoggingPlugIn extends TokenPlugIn {
 			}
 			lInfoMap.put("system", aConnector.getVar("clientType"));
 			lInfoMap.put("system_version", aConnector.getVar("clientVersion"));
-			// TODO: parse these values and maybe put them into the database
-			lInfoMap.put("client_name", aConnector.getVar("clientName"));
-			lInfoMap.put("client_info", aConnector.getVar("clientInfo"));
+			String lClientInfoString = "";
+			Object lClientName = aConnector.getVar("clientName"),
+					lClientInfo = aConnector.getVar("clientInfo");
+			if (null != lClientName) {
+				lClientInfoString += lClientName.toString() + ", ";
+			}
+			if (null != lClientInfo) {
+				lClientInfoString += lClientInfo.toString();
+			}
+			lInfoMap.put("client", lClientInfoString);
 			lInfoMap.put("jws_type", aConnector.getVar("jwsType"));
 			lInfoMap.put("jws_version", aConnector.getVar("jwsVersion"));
 			lInfoMap.put("jws_info", aConnector.getVar("jwsInfo"));
 		}
-		//TODO: implement some condition mechanism here
-//		String lCondition = "success";
-//		if(0 == aToken.getCode()){
-//			
-//		}
-//		lInfoMap.put("condition", aToken.getCode());
+		lInfoMap.put("condition_value", (null != aToken.getCode()) ? aToken.getCode() == 0 ? "success" : "failure" : "");
+
 		if (null != lRemoteHost) {
 			lInfoMap.put("ip", lRemoteHost.getHostAddress());
 			lInfoMap.put("hostname", lRemoteHost.getCanonicalHostName());
