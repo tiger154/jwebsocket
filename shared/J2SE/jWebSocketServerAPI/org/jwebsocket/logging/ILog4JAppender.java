@@ -20,12 +20,13 @@ package org.jwebsocket.logging;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.jwebsocket.api.IInitializable;
 
 /**
  *
  * @author Alexander Schulze
  */
-public interface ILog4JAppender {
+public interface ILog4JAppender extends IInitializable{
 
 	/**
 	 *
