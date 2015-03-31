@@ -88,7 +88,7 @@
 			<!-- In the log file (not for the C/S-transmission) tokens exceeding 
 				the here configured maximum log length will be automatically cut
 				(use 0 to log the tokens in full size, default: 512 characters) -->
-			<max_log_token_length>0</max_log_token_length>
+			<max_log_token_length>512</max_log_token_length>
 		</log4j>
 	</logging>
 

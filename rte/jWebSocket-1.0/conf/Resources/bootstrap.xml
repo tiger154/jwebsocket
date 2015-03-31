@@ -65,40 +65,12 @@
 		</property>
 	</bean>
 	
-	<!-- the MySQL DataSource (parameterized for configuration via a PropertyPlaceHolderConfigurer)  -->
-	<bean id="mysqlDataSource_log4j" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
-		<!-- the JDBC driver class for MySQL -->
-		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-		<!-- the URL to the MySQL server, please ensure that the database 
-		exists before running the server -->
-		<property name="url" value="jdbc:mysql://localhost:3306/jwebsocket_logs"/>
-		<!-- database user and password for this connection -->
-		<property name="username" value="root"/>
-		<!-- password, please ensure that the location of this 
-		JDBC config file is properly secured in your network! -->
-		<property name="password" value="root"/>
-		<!-- Timeout in seconds before connection validation queries fail. -->
-		<property name="validationQueryTimeout" value="5"/>
-		<!-- The maximum number of milliseconds that the pool will wait 
-		(when there are no available connections) for a connection to be 
-		returned before throwing an exception, or <= 0 to wait indefinitely. -->
-		<property name="maxWait" value="3000"/>
-		<!-- The initial number of connections that are created 
-		when the pool is started. -->
-		<property name="initialSize" value="2"/>
-		<!-- The maximum number of active connections that can be allocated 
-		from this pool at the same time, or negative for no limit. --> 
-		<property name="maxActive" value="2"/>
-	</bean>
-	
 	<!-- Global connections manager. REQUIRED BEAN -->
 	<bean id="org.jwebsocket.server.connection_manager" class="org.jwebsocket.util.ConnectionManager">
 		<constructor-arg>
 			<map>
 				<entry key="mongodbConnection0" value-ref="mongodbConnection0" />
 				<entry key="jmsConnection0" value-ref="jmsConnection0" />
-				<entry key="jmsConnection0" value-ref="jmsConnection0" />
-				<entry key="log4jJDBCConnection0" value-ref="mysqlDataSource_log4j" />
 				<entry key="org.jwebsocket.plugins.itemstorage" value-ref="itemStorageDataSource" />
 				<entry key="org.jwebsocket.plugins.channels" value-ref="channelsDataSource" />
 				<entry key="org.jwebsocket.plugins.monitoring" value-ref="mongodbConnection0" />
