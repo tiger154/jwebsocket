@@ -67,6 +67,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.Sigar;
+import org.json.JSONException;
+import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.springframework.util.Assert;
@@ -169,7 +171,8 @@ public class Tools {
 	}
 
 	/**
-	 * Returns the MD5 sum of the given byte array. The output always has 32 digits.
+	 * Returns the MD5 sum of the given byte array. The output always has 32
+	 * digits.
 	 *
 	 * @param aByteArray Byte array to calculate the MD5 sum for.
 	 * @return MD5 sum of the given string.
@@ -183,21 +186,23 @@ public class Tools {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Get the operating system name.
-	 * @return 
+	 *
+	 * @return
 	 */
-	public static String getOperatingSystem(){
-		if (null == mOS){
+	public static String getOperatingSystem() {
+		if (null == mOS) {
 			mOS = System.getProperty("os.name");
 		}
-		
+
 		return mOS;
 	}
 
 	/**
-	 * Returns the SHA1 sum of the given string. The output always has 32 digits.
+	 * Returns the SHA1 sum of the given string. The output always has 32
+	 * digits.
 	 *
 	 * @param aMsg String the string to calculate the MD5 sum for.
 	 * @return MD5 sum of the given string.
@@ -213,8 +218,9 @@ public class Tools {
 	}
 
 	/**
-	 * Returns the hex value of the given int as a string. If {@code aLen} is greater than zero the
-	 * output is cut or filled to the given length otherwise the exact number of digits is returned.
+	 * Returns the hex value of the given int as a string. If {@code aLen} is
+	 * greater than zero the output is cut or filled to the given length
+	 * otherwise the exact number of digits is returned.
 	 *
 	 * @param aInt Integer to be converted into a hex-string.
 	 * @param aLen Number of hex digits (optionally filled or cut if needed)
@@ -233,8 +239,9 @@ public class Tools {
 	}
 
 	/**
-	 * Returns the hex value of the given int as a string. If {@code aLen} is greater than zero the
-	 * output is cut or filled to the given length otherwise the exact number of digits is returned.
+	 * Returns the hex value of the given int as a string. If {@code aLen} is
+	 * greater than zero the output is cut or filled to the given length
+	 * otherwise the exact number of digits is returned.
 	 *
 	 * @param aInt Integer to be converted into a string.
 	 * @param aLen Number of digits (optionally filled or cut if needed)
@@ -253,12 +260,14 @@ public class Tools {
 	}
 
 	/**
-	 * Converts a string into an integer value and automatically sets it to a given default value if
-	 * the string could not be parsed.
+	 * Converts a string into an integer value and automatically sets it to a
+	 * given default value if the string could not be parsed.
 	 *
 	 * @param aString string to be converted into an integer.
-	 * @param aDefault default value assigned to the result in case of an exception.
-	 * @return integer value of string or given default value in case of exception.
+	 * @param aDefault default value assigned to the result in case of an
+	 * exception.
+	 * @return integer value of string or given default value in case of
+	 * exception.
 	 */
 	public static int stringToInt(String aString, int aDefault) {
 		int lRes;
@@ -271,11 +280,12 @@ public class Tools {
 	}
 
 	/**
-	 * Converts a string into a long value and automatically sets it to a given default value if the
-	 * string could not be parsed.
+	 * Converts a string into a long value and automatically sets it to a given
+	 * default value if the string could not be parsed.
 	 *
 	 * @param aString string to be converted into a long.
-	 * @param aDefault default value assigned to the result in case of an exception.
+	 * @param aDefault default value assigned to the result in case of an
+	 * exception.
 	 * @return long value of string or given default value in case of exception.
 	 */
 	public static long stringToLong(String aString, long aDefault) {
@@ -339,7 +349,8 @@ public class Tools {
 	}
 
 	/**
-	 * Return TRUE if the file is located inside of the given base path, FALSE otherwise
+	 * Return TRUE if the file is located inside of the given base path, FALSE
+	 * otherwise
 	 *
 	 * @param aFile
 	 * @param aBasePath
@@ -463,8 +474,8 @@ public class Tools {
 	}
 
 	/**
-	 * Replaces all pattern ${name} in a string by the values of the corresponding environment
-	 * variable.
+	 * Replaces all pattern ${name} in a string by the values of the
+	 * corresponding environment variable.
 	 *
 	 * @param aString
 	 * @return
@@ -475,7 +486,8 @@ public class Tools {
 	}
 
 	/**
-	 * Replaces all pattern ${name} in a string by the values of the corresponding system property.
+	 * Replaces all pattern ${name} in a string by the values of the
+	 * corresponding system property.
 	 *
 	 * @param aString
 	 * @return
@@ -494,9 +506,9 @@ public class Tools {
 	}
 
 	/**
-	 * Replaces all pattern ${name} in a string by the values of the corresponding environment
-	 * variable or system property. The setting of a system property overrides the setting of the
-	 * environment variable.
+	 * Replaces all pattern ${name} in a string by the values of the
+	 * corresponding environment variable or system property. The setting of a
+	 * system property overrides the setting of the environment variable.
 	 *
 	 * @param aString
 	 * @return
@@ -519,8 +531,8 @@ public class Tools {
 	}
 
 	/**
-	 * Compare 2 'Major.Minor.Fix' codified versions. Where Major, Minor, Fix values require to be
-	 * non-negative integer values.
+	 * Compare 2 'Major.Minor.Fix' codified versions. Where Major, Minor, Fix
+	 * values require to be non-negative integer values.
 	 *
 	 * @param aVersion1
 	 * @param aVersion2
@@ -942,8 +954,8 @@ public class Tools {
 	}
 
 	/**
-	 * Starts the jWebSocket utility timer. The timer automatically purge expired tasks every 5
-	 * minute.
+	 * Starts the jWebSocket utility timer. The timer automatically purge
+	 * expired tasks every 5 minute.
 	 */
 	public static void startUtilityTimer() {
 		if (System.getProperties().contains("JWEBSOCKET_HOME")) {
@@ -1047,11 +1059,12 @@ public class Tools {
 	}
 
 	/**
-	 * Checks if a path has trailing separator, if not it appends the correct one according to the
-	 * operating system.
+	 * Checks if a path has trailing separator, if not it appends the correct
+	 * one according to the operating system.
 	 *
 	 * @param aPath the path to be checked for the trailing separator.
-	 * @return the path ensuring the trailing separator or null if no path was given.
+	 * @return the path ensuring the trailing separator or null if no path was
+	 * given.
 	 */
 	public static String appendTrailingSeparator(String aPath) {
 		if (null != aPath) {
@@ -1133,7 +1146,8 @@ public class Tools {
 	 * Uncompress a byte array using zip compression
 	 *
 	 * @param aBA
-	 * @param aBase64Decode If TRUE, the byte array is Base64 decoded before uncompress
+	 * @param aBase64Decode If TRUE, the byte array is Base64 decoded before
+	 * uncompress
 	 * @return
 	 * @throws Exception
 	 */
@@ -1249,7 +1263,8 @@ public class Tools {
 	}
 
 	/**
-	 * Parse a string valid representation of a Java security permission. Example:
+	 * Parse a string valid representation of a Java security permission.
+	 * Example:
 	 * <code>permission java.util.PropertyPermission "java.util.logging.config.class", "read"</code>
 	 *
 	 * @param aPermission
@@ -1303,7 +1318,8 @@ public class Tools {
 	 *
 	 * @param aText the string to be matched.
 	 *
-	 * @param aPattern the wildcard pattern. This can contain the wildcard character '*' (asterisk).
+	 * @param aPattern the wildcard pattern. This can contain the wildcard
+	 * character '*' (asterisk).
 	 *
 	 * @see http://www.adarshr.com/papers/wildcard
 	 * @return <tt>true</tt> if a match is found, <tt>false</tt>
@@ -1335,13 +1351,13 @@ public class Tools {
 	}
 
 	/**
-	 * Performs a wildcard matching for a given string value. If the value matches one of the
-	 * patterns, the method returns TRUE.
+	 * Performs a wildcard matching for a given string value. If the value
+	 * matches one of the patterns, the method returns TRUE.
 	 *
 	 * @param aText the text to be tested for matches.
 	 *
-	 * @param aPatterns the wildcard patterns. This can contain the wildcard character '*'
-	 * (asterisk).
+	 * @param aPatterns the wildcard patterns. This can contain the wildcard
+	 * character '*' (asterisk).
 	 * @return <tt>true</tt> if a match is found, <tt>false</tt>
 	 * otherwise.
 	 */
@@ -1356,7 +1372,8 @@ public class Tools {
 	}
 
 	/**
-	 * Creates a LoadBalancer plug-in compliant response token from incoming token.
+	 * Creates a LoadBalancer plug-in compliant response token from incoming
+	 * token.
 	 *
 	 * @param aInToken The incoming token
 	 * @return
@@ -1410,5 +1427,19 @@ public class Tools {
 				Tools.getThreadPool().submit(aRunnable);
 			}
 		}, aTimeout);
+	}
+	
+	/**
+	 * Returns a given Map as String JSON format, so we can later use this to 
+	 * log certain server information within the MySQL logs database
+	 * @param aMap The map to be converted to JSON String
+	 * @return lInfoMap, the map in the following format: 
+	 *		", info: {\"name\": \"vbarzana\"}"
+	 * @throws JSONException
+	 */
+	public static String getInfoMap(Map aMap) throws JSONException {
+		// TODO: Maybe add some defaults here to the response map depending 
+		// on implementation requirements
+		return ", info: " + JSONProcessor.mapToJSONObject(aMap).toString();
 	}
 }
