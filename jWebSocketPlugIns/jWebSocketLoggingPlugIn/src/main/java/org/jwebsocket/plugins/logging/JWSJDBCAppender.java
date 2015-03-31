@@ -18,8 +18,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
-import java.util.Map;
+import java.util.Calendar;
+import java.util.TimerTask;
+import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.varia.FallbackErrorHandler;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.BaseAppender;
 import org.jwebsocket.plugins.TokenPlugIn;
@@ -27,21 +30,30 @@ import org.jwebsocket.plugins.jdbc.JDBCPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 
 /**
- *
  * @author Alexander Schulze
+ * @author Victor Antonio Barzana Crespo
  */
 public class JWSJDBCAppender extends BaseAppender {
 
 	private String mJDBCPlugInID;
 	private String mTableName;
-	private String mDBName;
 	private String mCreateTableQuery;
 	private String mInsertQuery;
-	private String mCreateUserQuery;
 	private String mJDBCConnAlias;
 	private TokenPlugIn mJDBCPlugIn;
+	// TODO: this error handler is not working properly, see how we can use 
+	// a different logger here
+	private final ErrorHandler mErrorHandler = new FallbackErrorHandler();
+
+	// Configuration to cleanup the database
+	private String mCleanupInterval;
+	private String mCleanupQuery;
+	private String mLogDuration;
+	private LogsCleanupTask mCleanupTask;
+	private Boolean mIsCleanupRunning;
 
 	@Override
 	public void initialize() throws Exception {
@@ -58,110 +70,149 @@ public class JWSJDBCAppender extends BaseAppender {
 			if (null != lResponse) {
 				System.out.println(lResponse);
 				if (-1 == lResponse.getCode()) {
-					System.out.println("Error caught while creating the JDBCPlugin: " + lResponse.getString("msg"));
+					mErrorHandler.error("Error caught while creating the JDBCPlugin: " + lResponse.getString("msg"));
 				}
 			}
 		}
+		mCleanupTask = new LogsCleanupTask();
+		mIsCleanupRunning = true;
+		Tools.getTimer().scheduleAtFixedRate(mCleanupTask, 5000, getIntervalInSeconds(mCleanupInterval));
+	}
+
+	/**
+	 * Used to parse the provided cleanup interval to seconds
+	 *
+	 * @param aCleanupInterval
+	 * @return lResponse the amount of seconds occurred in the given interval
+	 */
+	private long getIntervalInSeconds(String aCleanupInterval) {
+		long lOneSec = 1000,
+				lOneMinute = lOneSec * 60,
+				lOneHour = lOneMinute * 60,
+				lOneDay = lOneHour * 24;
+		String[] lUnitsArray;
+		lUnitsArray = new String[]{"SECOND", "MINUTE", "HOUR", "DAY", "WEEK", "MONTH", "QUARTER", "YEAR"};
+		String lReplaced;
+		long lValue = 0, lResult = 0;
+		String lCurrentUnit = null;
+		for (String lUnit : lUnitsArray) {
+			if (aCleanupInterval.contains(lUnit)) {
+				lReplaced = aCleanupInterval.trim().replace(lUnit, "");
+				if (lReplaced.length() > 0) {
+					lValue = Integer.valueOf(lReplaced.trim());
+					lCurrentUnit = lUnit;
+					break;
+				}
+			}
+		}
+		if (0 != lValue && null != lCurrentUnit) {
+			Calendar lCalendar = Calendar.getInstance();
+			if ("SECOND".equals(lCurrentUnit)) {
+				lResult = lValue * lOneSec;
+			}else if ("MINUTE".equals(lCurrentUnit)) {
+				lResult = lValue * lOneMinute;
+			} else if ("HOUR".equals(lCurrentUnit)) {
+				lResult = lValue * lOneHour;
+			} else if ("DAY".equals(lCurrentUnit)) {
+				lResult = lValue * lOneDay;
+			} else if ("WEEK".equals(lCurrentUnit)) {
+				lResult = lValue * lOneDay * lCalendar.getActualMaximum(Calendar.DAY_OF_WEEK);
+			} else if ("MONTH".equals(lCurrentUnit)) {
+				lResult = lValue * lOneDay * lCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+			} else if ("YEAR".equals(lCurrentUnit)) {
+				lResult = lValue * lOneDay * lCalendar.getActualMaximum(Calendar.DAY_OF_YEAR);
+			} else if ("QUARTER".equals(lCurrentUnit)) {
+				lResult = lValue * lOneDay * lCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) / 2;
+			}
+		}
+		return lResult;
+	}
+
+	private class LogsCleanupTask extends TimerTask {
+
+		@Override
+		public void run() {
+			if (mIsCleanupRunning && null != mJDBCPlugIn && null != mCleanupQuery) {
+				mJDBCPlugIn.invoke(null, queryToToken("SET SQL_SAFE_UPDATES=0;"));
+				Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(mCleanupQuery));
+				mJDBCPlugIn.invoke(null, queryToToken("SET SQL_SAFE_UPDATES=1;"));
+				if (0 == lResponse.getCode()) {
+				} else if (-1 == lResponse.getCode()) {
+					mErrorHandler.error("An error was caught while running the "
+							+ "cleanup mechanism: " + lResponse.getString("msg"));
+				}
+				System.out.println("Running Cleanup Mechanism");
+			}
+		}
+
+	}
+
+	@Override
+	public void shutdown() throws Exception {
+		super.shutdown();
+		mIsCleanupRunning = false;
+		mCleanupTask.cancel();
 	}
 
 	@Override
 	public void append(LoggingEvent aLE) {
-//		Object lMsg = aLE.getMessage();
-//		Map lInfo = null;
-//		if (null != lMsg) {
-//			lInfo = getInfoMapFromMsg((String) lMsg);
-//		}
-//		if (null != lInfo) {
-//			lMsg = lInfo.get("message");
-//			lInfo.remove("message");
-//		}
-		JWSJDBCPatternLayout lLayout = new JWSJDBCPatternLayout(prepareQuery(mInsertQuery));
-		Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(lLayout.format(aLE)));
-		if (0 == lResponse.getCode()) {
-			System.out.println("Successfully added log output to the database.");
-		} else if (-1 == lResponse.getCode()) {
-			System.out.println("Failed to insert the record in the database "
-					+ "with the following message:  " + lResponse.getString("msg"));
+		if (null != mJDBCPlugIn && null != mInsertQuery) {
+			JWSJDBCPatternLayout lLayout = new JWSJDBCPatternLayout(prepareQuery(mInsertQuery));
+			Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(lLayout.format(aLE)));
+			if (0 == lResponse.getCode()) {
+			} else if (-1 == lResponse.getCode()) {
+				mErrorHandler.error("Failed to insert the record in the database "
+						+ "with the following message:  " + lResponse.getString("msg"));
+			}
 		}
-//		System.out.println("[JDBC Appender]: "
-//				+ aLE.getLevel().toString() + ": "
-//				+ lMsg
-//				+ (lInfo != null
-//						? ", info: " + lInfo
-//						: "")
-//		);
 	}
 
 	private Token queryToToken(String aQuery) {
-		Token lCreateTableToken = TokenFactory.createToken(mJDBCPlugIn.getNamespace(),
-				JDBCPlugIn.TT_EXEC_SQL);
-		lCreateTableToken.setString("query", prepareQuery(aQuery));
-		lCreateTableToken.setString("alias", mJDBCConnAlias);
-		return lCreateTableToken;
+		Token lQueryToken = TokenFactory.createToken(mJDBCPlugIn.getNamespace(),
+				JDBCPlugIn.TT_EXEC_SQL_NO_LOGS);
+		lQueryToken.setString("sql", prepareQuery(aQuery));
+		lQueryToken.setString("alias", mJDBCConnAlias);
+		return lQueryToken;
 	}
 
 	private String prepareQuery(String aQuery) {
 		String lResult = "";
 		if (null != aQuery) {
-			lResult = aQuery.replace("${db_table}", mTableName);
+			lResult = aQuery.replace("${db_table}", mTableName)
+					.replace("${log_duration}", mLogDuration);
 		}
 		return lResult;
-	}
-
-	public String getJDBCPlugInID() {
-		return mJDBCPlugInID;
 	}
 
 	public void setJDBCPlugInID(String mJDBCPlugInID) {
 		this.mJDBCPlugInID = mJDBCPlugInID;
 	}
 
-	public String getCreateTableQuery() {
-		return mCreateTableQuery;
-	}
-
 	public void setCreateTableQuery(String mCreateTableQuery) {
 		this.mCreateTableQuery = mCreateTableQuery;
-	}
-
-	public String getTableName() {
-		return mTableName;
 	}
 
 	public void setTableName(String mTableName) {
 		this.mTableName = mTableName;
 	}
 
-	public String getCreateUserQuery() {
-		return mCreateUserQuery;
-	}
-
-	public void setCreateUserQuery(String mCreateUserQuery) {
-		this.mCreateUserQuery = mCreateUserQuery;
-	}
-
-	public String getDBName() {
-		return mDBName;
-	}
-
-	public void setDBName(String mDBName) {
-		this.mDBName = mDBName;
-	}
-
-	public String getJDBCConnAlias() {
-		return mJDBCConnAlias;
-	}
-
 	public void setJDBCConnAlias(String mJDBCConnAlias) {
 		this.mJDBCConnAlias = mJDBCConnAlias;
-	}
-
-	public String getInsertQuery() {
-		return mInsertQuery;
 	}
 
 	public void setInsertQuery(String mInsertQuery) {
 		this.mInsertQuery = mInsertQuery;
 	}
 
+	public void setCleanupInterval(String mCleanupInterval) {
+		this.mCleanupInterval = mCleanupInterval;
+	}
+
+	public void setCleanupQuery(String mCleanupQuery) {
+		this.mCleanupQuery = mCleanupQuery;
+	}
+
+	public void setLogDuration(String mLogDuration) {
+		this.mLogDuration = mLogDuration;
+	}
 }
