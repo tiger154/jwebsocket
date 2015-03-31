@@ -81,21 +81,26 @@ public class LoggingPlugIn extends TokenPlugIn {
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.logging.settings");
 				mLogger = mSettings.getTarget();
-
-				JWSLog4JAppender lJWSAppender = JWSLog4JAppender.getInstance();
-				if (null != lJWSAppender) {
-					Set<ILog4JAppender> lAppenders = mSettings.getAppenders();
-					for (ILog4JAppender lAppender : lAppenders) {
-						lJWSAppender.addAppender(lAppender);
-					}
-				}
-
-				if (mLog.isInfoEnabled()) {
-					mLog.info("Logging plug-in successfully instantiated.");
-				}
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating logging Plug-in"));
+		}
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		super.systemStarted();
+		JWSLog4JAppender lJWSAppender = JWSLog4JAppender.getInstance();
+		if (null != lJWSAppender) {
+			Set<ILog4JAppender> lAppenders = mSettings.getAppenders();
+			for (ILog4JAppender lAppender : lAppenders) {
+				lJWSAppender.addAppender(lAppender);
+				lAppender.initialize();
+			}
+		}
+
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Logging plug-in successfully instantiated.");
 		}
 	}
 
