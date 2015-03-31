@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.PluginConfiguration;
@@ -71,6 +72,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 	public static final String TT_UPDATE = "update";
 	public static final String TT_UPDATE_SQL = "updateSQL";
 	public static final String TT_EXEC_SQL = "execSQL";
+	public static final String TT_EXEC_SQL_NO_LOGS = "execSQLNoLogs";
 	public static final String TT_GET_NEXT_SEQ_VAL = "getNextSeqVal";
 	public static final String TT_SELECT = "select";
 	public static final String TT_DELETE = "delete";
@@ -248,6 +250,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 				return updateSQL(aToken);
 			} else if (lType.equals(TT_EXEC_SQL)) {
 				return execSQL(aToken);
+			} else if (lType.equals(TT_EXEC_SQL_NO_LOGS)) {
+				return execSQLNoLogs(aToken);
 			} else if (lType.equals(TT_QUERY_SQL)) {
 				return query(aToken);
 			}
@@ -465,6 +469,14 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		// send response to requester
 		lServer.sendToken(aConnector, lResToken);
+	}
+
+	private Token execSQLNoLogs(Token aToken) {
+		Level lSavedLevel = mLog.getLevel();
+		mLog.setLevel(Level.OFF);
+		Token lSQLResult = execSQL(aToken);
+		mLog.setLevel(lSavedLevel);
+		return lSQLResult;
 	}
 
 	private Token execSQL(Token aToken) {
