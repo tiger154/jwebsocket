@@ -2,4 +2,5 @@
 create user `jwsDemo`@`localhost` identified by 'demo_password';
 create user `jwsApp`@`localhost` identified by 'app_password';
 create user `jwsSys`@`localhost` identified by 'sys_password';
-create user `JWSLoggingUser`@`localhost` identified by 'xyz';
+
+create user `jwsLog`@`localhost` identified by 'log_password';

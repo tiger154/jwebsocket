@@ -28,7 +28,7 @@
 		
 		<property name="CreateTableQuery" value="CREATE TABLE 
 			IF NOT EXISTS ${db_table} (id int(20) unsigned NOT NULL auto_increment, message varchar(10000),
-			time_stamp DATETIME DEFAULT CURRENT_TIMESTAMP, level varchar(20), class_name varchar(255), 
+			time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, level varchar(20), class_name varchar(255), 
 			method_name varchar(255), line_number int(20), filename varchar(300), 
 			logger_name varchar(255), thread_name varchar(255), 
 			stack_trace varchar(1024) not null, username varchar(50) not null, 
