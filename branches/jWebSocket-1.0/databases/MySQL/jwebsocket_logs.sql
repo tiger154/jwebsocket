@@ -4,12 +4,12 @@
 # Port     : 3306
 # Database : jwebsocket_logs
 
-
 SET FOREIGN_KEY_CHECKS=0;
 
 CREATE DATABASE `jwebsocket_logs`
-    CHARACTER SET 'latin1'
-    COLLATE 'latin1_swedish_ci';
+    CHARACTER SET 'utf8'
+    COLLATE 'utf8_general_ci';
+use `jwebsocket_logs`;
 
 #
 # Structure for the `logs_table` table:
@@ -18,7 +18,7 @@ CREATE DATABASE `jwebsocket_logs`
 CREATE TABLE IF NOT EXISTS `logs_table` (
 	id int(20) unsigned NOT NULL auto_increment, 
 	message varchar(10000),
-	time_stamp DATETIME DEFAULT CURRENT_TIMESTAMP, 
+	time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
 	level varchar(20), 
 	class_name varchar(255), 
 	method_name varchar(255), 
@@ -42,4 +42,4 @@ CREATE TABLE IF NOT EXISTS `logs_table` (
 	source varchar(255), 
 	target varchar(255),
 	connector_id varchar(255), 
-	primary key (id)) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=latin1 PACK_KEYS=0;
+	primary key (id)) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 PACK_KEYS=0;
