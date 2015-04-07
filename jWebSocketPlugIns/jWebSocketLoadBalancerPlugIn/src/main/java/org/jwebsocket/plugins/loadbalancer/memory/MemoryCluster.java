@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer.memory;
 
-import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +25,9 @@ import java.util.Map;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.plugins.loadbalancer.BaseCluster;
 import org.jwebsocket.plugins.loadbalancer.EndPointStatus;
+import org.jwebsocket.plugins.loadbalancer.EndPointsPerformanceTable;
 import org.jwebsocket.plugins.loadbalancer.api.Attributes;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 
@@ -37,12 +38,12 @@ import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
  * @author Rolando Betancourt Toucet
  * @author Rolando Santamaria Maso
  */
-public class MemoryCluster implements ICluster {
+public class MemoryCluster extends BaseCluster {
 
 	/**
 	 * List of endpoints.
 	 */
-	private List<IClusterEndPoint> mEndPoints = new FastList<IClusterEndPoint>();
+	private final List<IClusterEndPoint> mEndPoints = new FastList<IClusterEndPoint>();
 	/**
 	 * MemoryCluster name space.
 	 */
@@ -274,5 +275,25 @@ public class MemoryCluster implements ICluster {
 		}
 
 		return lRequests;
+	}
+
+	@Override
+	public IClusterEndPoint getQuickerEndPoint(EndPointsPerformanceTable aPI) {
+		double lLeastCpuUsage = Double.MAX_VALUE;
+		int lEndPointPos = -1;
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			IClusterEndPoint lClusterEndPoint = mEndPoints.get(lPos);
+			if (lClusterEndPoint.getStatus().equals(EndPointStatus.ONLINE)) {
+				double lTempCpuUsage = lClusterEndPoint.getCpuUsage() / aPI.getEndPointPowerFactor(lClusterEndPoint.getEndPointId());
+
+				// discard all java script clients because they can't update the CPU usage.
+				if (!lClusterEndPoint.getClientRuntimePlatform().equals(Attributes.JAVASCRIPT_RUNTIME_PLATFORM)
+						&& lTempCpuUsage < lLeastCpuUsage) {
+					lLeastCpuUsage = lTempCpuUsage;
+					lEndPointPos = lPos;
+				}
+			}
+		}
+		return (lEndPointPos == -1 ? null : mEndPoints.get(lEndPointPos));
 	}
 }

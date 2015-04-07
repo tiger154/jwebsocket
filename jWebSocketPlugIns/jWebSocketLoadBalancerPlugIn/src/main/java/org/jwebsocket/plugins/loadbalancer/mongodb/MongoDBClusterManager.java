@@ -28,19 +28,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.jwebsocket.api.IInitializable;
+import org.jwebsocket.plugins.loadbalancer.BaseClusterManager;
 import static org.jwebsocket.plugins.loadbalancer.api.Attributes.*;
 import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
-import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
 import org.jwebsocket.util.Tools;
 
 /**
  *
  * @author Rolando Santamaria Maso
  */
-public class MongoDBClusterManager implements IClusterManager, IInitializable {
+public class MongoDBClusterManager extends BaseClusterManager implements IInitializable {
 
-	private DBCollection mConfig, mClusters, mEndPoints;
+	private final DBCollection mConfig, mClusters, mEndPoints;
 	private List<ICluster> mStartupClusters;
 
 	public MongoDBClusterManager(DBCollection aConfig, DBCollection aClusters, DBCollection aEndPoints) {
@@ -173,21 +173,6 @@ public class MongoDBClusterManager implements IClusterManager, IInitializable {
 		ICluster lCluster = getClusterByNamespace(aNS);
 
 		return getOptimumServiceEndPoint(lCluster);
-	}
-
-	@Override
-	public IClusterEndPoint getOptimumServiceEndPoint(ICluster aCluster) {
-		if (aCluster.isEndPointAvailable()) {
-			if (getBalancerAlgorithm() == 1) {
-				return aCluster.getRoundRobinEndPoint();
-			} else if (getBalancerAlgorithm() == 2) {
-				return aCluster.getOptimumEndPoint();
-			} else {
-				return aCluster.getOptimumRREndPoint();
-			}
-		} else {
-			return null;
-		}
 	}
 
 	@Override

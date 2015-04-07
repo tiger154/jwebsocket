@@ -22,16 +22,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
+import org.jwebsocket.plugins.loadbalancer.BaseClusterManager;
 import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
-import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
 import org.jwebsocket.util.Tools;
 
 /**
  *
  * @author Rolando Santamaria Maso
  */
-public class MemoryClusterManager implements IClusterManager {
+public class MemoryClusterManager extends BaseClusterManager {
 
 	private List<ICluster> mClusters = new FastList<ICluster>();
 	private int mLbAlgorithm = 3;
@@ -124,21 +124,6 @@ public class MemoryClusterManager implements IClusterManager {
 		ICluster lCluster = getClusterByNamespace(aNS);
 
 		return getOptimumServiceEndPoint(lCluster);
-	}
-
-	@Override
-	public IClusterEndPoint getOptimumServiceEndPoint(ICluster aCluster) {
-		if (aCluster.isEndPointAvailable()) {
-			if (getBalancerAlgorithm() == 1) {
-				return aCluster.getRoundRobinEndPoint();
-			} else if (getBalancerAlgorithm() == 2) {
-				return aCluster.getOptimumEndPoint();
-			} else {
-				return aCluster.getOptimumRREndPoint();
-			}
-		} else {
-			return null;
-		}
 	}
 
 	@Override
