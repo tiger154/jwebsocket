@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.logging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,33 +49,34 @@ public class JWSJDBCPatternParser extends PatternParser {
 	 */
 
 	// From the LoggerEvent we get the following data:
-	private final char MESSAGE = 'm';
+	private static final char MESSAGE = 'm';
 //	private  final char TIMESTAMP = 'd';
 //	private  final char LEVEL = 'p'; // (debug, info, warn, error, fatal)
-	private final char CLASS_NAME = 'c';// (from LocationInfo)
-	private final char METHOD_NAME = 'M';// (from LocationInfo)
-	private final char LINE_NUMBER = 'L';// (from LocationInfo)
-	private final char FILENAME = 'f'; // (from LocationInfo)
-	private final char LOGGER_NAME = 'g';
-	private final char THREAD_NAME = 'T';
-	private final char STACK_TRACE = 's'; // (if available from getThrowable information)
+	private static final char CLASS_NAME = 'c';// (from LocationInfo)
+	private static final char METHOD_NAME = 'M';// (from LocationInfo)
+	private static final char LINE_NUMBER = 'L';// (from LocationInfo)
+	private static final char FILENAME = 'f'; // (from LocationInfo)
+	private static final char LOGGER_NAME = 'g';
+	private static final char THREAD_NAME = 'T';
+	private static final char STACK_TRACE = 's'; // (if available from getThrowable information)
 
 	// The following data should be supported in the Info map:
-	private final char MAP_USERNAME = 'u';
-	private final char MAP_IP_NUMBER = 'n';
-	private final char MAP_HOSTNAME = 'h';
-	private final char MAP_PRODUCT = 'P';
-	private final char MAP_MODULE = 'D';
-	private final char MAP_CLASSIFICATION = 'C';
-	private final char MAP_VERSION = 'v';
-	private final char MAP_ENVIRONMENT = 'e';
-	private final char MAP_ERROR_CODE = 'E';
-	private final char MAP_SYSTEM = 'S'; // (e.g. Browser, Java, OS)
-	private final char MAP_SYSTEM_VERSION = 'V'; // VERSION
-	private final char MAP_CONDITION = 'o'; // (success, failure, timeout)
-	private final char MAP_SOURCE = 'U'; // (sender)
-	private final char MAP_TARGET = 'G'; // (receiver)
-	private final char MAP_CONNECTOR_ID = 'O';
+	private static final char MAP_USERNAME = 'u';
+	private static final char MAP_IP_NUMBER = 'n';
+	private static final char MAP_HOSTNAME = 'h';
+	private static final char MAP_PRODUCT = 'P';
+	private static final char MAP_MODULE = 'D';
+	private static final char MAP_CLASSIFICATION = 'C';
+	private static final char MAP_VERSION = 'v';
+	private static final char MAP_ENVIRONMENT = 'e';
+	private static final char MAP_ERROR_CODE = 'E';
+	private static final char MAP_SYSTEM = 'S'; // (e.g. Browser, Java, OS)
+	private static final char MAP_SYSTEM_VERSION = 'V'; // VERSION
+	private static final char MAP_CONDITION = 'o'; // (success, failure, timeout)
+	private static final char MAP_SOURCE = 'U'; // (sender)
+	private static final char MAP_TARGET = 'G'; // (receiver)
+	private static final char MAP_CONNECTOR_ID = 'O';
+
 	private LoggingEvent mLoggingEvent;
 	private Map mInfo;
 	private Object mMessage;
@@ -148,7 +150,7 @@ public class JWSJDBCPatternParser extends PatternParser {
 				Map lMap = new ObjectMapper().readValue(lJSON, HashMap.class);
 				lMap.put("message", aMsg.substring(0, lIdx));
 				return lMap;
-			} catch (Exception lEx) {
+			} catch (IOException lEx) {
 				return null;
 			}
 		}

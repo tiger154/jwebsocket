@@ -109,7 +109,7 @@ public class JWSJDBCAppender extends BaseAppender {
 			Calendar lCalendar = Calendar.getInstance();
 			if ("SECOND".equals(lCurrentUnit)) {
 				lResult = lValue * lOneSec;
-			}else if ("MINUTE".equals(lCurrentUnit)) {
+			} else if ("MINUTE".equals(lCurrentUnit)) {
 				lResult = lValue * lOneMinute;
 			} else if ("HOUR".equals(lCurrentUnit)) {
 				lResult = lValue * lOneHour;
@@ -184,35 +184,35 @@ public class JWSJDBCAppender extends BaseAppender {
 		return lResult;
 	}
 
-	public void setJDBCPlugInID(String mJDBCPlugInID) {
-		this.mJDBCPlugInID = mJDBCPlugInID;
+	public void setJDBCPlugInID(String aJDBCPlugInID) {
+		mJDBCPlugInID = aJDBCPlugInID;
 	}
 
-	public void setCreateTableQuery(String mCreateTableQuery) {
-		this.mCreateTableQuery = mCreateTableQuery;
+	public void setCreateTableQuery(String aCreateTableQuery) {
+		mCreateTableQuery = aCreateTableQuery;
 	}
 
-	public void setTableName(String mTableName) {
-		this.mTableName = mTableName;
+	public void setTableName(String aTableName) {
+		mTableName = aTableName;
 	}
 
-	public void setJDBCConnAlias(String mJDBCConnAlias) {
-		this.mJDBCConnAlias = mJDBCConnAlias;
+	public void setJDBCConnAlias(String aJDBCConnAlias) {
+		mJDBCConnAlias = aJDBCConnAlias;
 	}
 
-	public void setInsertQuery(String mInsertQuery) {
-		this.mInsertQuery = mInsertQuery;
+	public void setInsertQuery(String aInsertQuery) {
+		mInsertQuery = aInsertQuery;
 	}
 
-	public void setCleanupInterval(String mCleanupInterval) {
-		this.mCleanupInterval = mCleanupInterval;
+	public void setCleanupInterval(String aCleanupInterval) {
+		mCleanupInterval = aCleanupInterval;
 	}
 
-	public void setCleanupQuery(String mCleanupQuery) {
-		this.mCleanupQuery = mCleanupQuery;
+	public void setCleanupQuery(String aCleanupQuery) {
+		mCleanupQuery = aCleanupQuery;
 	}
 
-	public void setLogDuration(String mLogDuration) {
-		this.mLogDuration = mLogDuration;
+	public void setLogDuration(String aLogDuration) {
+		mLogDuration = aLogDuration;
 	}
 }
