@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.plugins.loadbalancer.EndPointsPerformanceTable;
 
 /**
  *
@@ -74,6 +75,22 @@ public interface ICluster {
 	 * @return optimum cluster endpoint.
 	 */
 	IClusterEndPoint getOptimumRREndPoint();
+
+	/**
+	 * Get the best endpoint according to CPU performance tables.
+	 *
+	 * @param aPI The endpoints performance index
+	 * @return
+	 */
+	IClusterEndPoint getQuickerEndPoint(EndPointsPerformanceTable aPI);
+
+	/**
+	 * Get the best group endpoint according to CPU performance tables.
+	 *
+	 * @param aPI The endpoints performance index
+	 * @return
+	 */
+	IClusterEndPoint getGroupQuickerEndPoint(EndPointsPerformanceTable aPI);
 
 	/**
 	 * @return cluster password.
