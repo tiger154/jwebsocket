@@ -21,7 +21,6 @@ package org.jwebsocket.plugins.logging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.apache.log4j.Logger;
 
