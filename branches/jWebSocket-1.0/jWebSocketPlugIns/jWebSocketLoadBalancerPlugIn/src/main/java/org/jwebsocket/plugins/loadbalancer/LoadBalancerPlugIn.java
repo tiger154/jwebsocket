@@ -376,7 +376,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		// checking arguments.
 		Assert.notNull(lAlgorithm, "The argument 'algorithm' cannot be null!");
-		Assert.isTrue((lAlgorithm > 0 && lAlgorithm < 4), "The argument 'algorithm' only must be (1, 2 or 3)!");
+		Assert.isTrue((lAlgorithm > 0 && lAlgorithm < 6), "The argument 'algorithm' only must be (1, 2 or 3)!");
 
 		// set the current algorithm.
 		mClusterManager.setBalancerAlgorithm(lAlgorithm);
@@ -392,6 +392,12 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 				break;
 			case 3:
 				lAlgorithmName = "Optimum Balance [3]";
+				break;
+			case 4:
+				lAlgorithmName = "Best Performance [4]";
+				break;
+			case 5:
+				lAlgorithmName = "Best Performance Group [5]";
 				break;
 		}
 

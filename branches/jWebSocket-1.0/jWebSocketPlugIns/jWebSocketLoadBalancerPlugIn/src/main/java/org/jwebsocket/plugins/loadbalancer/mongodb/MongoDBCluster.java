@@ -29,19 +29,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.plugins.loadbalancer.BaseCluster;
 import org.jwebsocket.plugins.loadbalancer.EndPointStatus;
+import org.jwebsocket.plugins.loadbalancer.EndPointsPerformanceTable;
 import static org.jwebsocket.plugins.loadbalancer.api.Attributes.*;
-import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 
 /**
  *
  * @author Rolando Santamaria Maso
  */
-public class MongoDBCluster implements ICluster {
+public class MongoDBCluster extends BaseCluster {
 
-	private DBCollection mClusters, mEndPoints;
-	private DBObject mDocument;
+	private final DBCollection mClusters, mEndPoints;
+	private final DBObject mDocument;
 
 	public MongoDBCluster(DBObject aCluster, DBCollection aClusters, DBCollection aEndPoints) {
 		mClusters = aClusters;
@@ -286,5 +287,29 @@ public class MongoDBCluster implements ICluster {
 	@Override
 	public String getGrantedEndPoints() {
 		return (String) mDocument.get(GRANTED_ENDPOINTS);
+	}
+
+	@Override
+	public IClusterEndPoint getQuickerEndPoint(EndPointsPerformanceTable aPI) {
+		DBCursor lCursor = mEndPoints.find(new BasicDBObject()
+				.append(CLUSTER_ALIAS, getAlias())
+				.append(STATUS, EndPointStatus.ONLINE.name())
+				.append(RUNTIME_PLATFORM, new BasicDBObject()
+						.append("$ne", JAVASCRIPT_RUNTIME_PLATFORM)));
+
+		double lMinCPU = Double.MAX_VALUE;
+		DBObject lTemp;
+		DBObject lCandidate = null;
+
+		while (lCursor.hasNext()) {
+			lTemp = lCursor.next();
+			double lEndPointCPU = (Double) lTemp.get(CPU) / aPI.getEndPointPowerFactor((String) lTemp.get(ENDPOINT_ID));
+			if (lEndPointCPU < lMinCPU) {
+				lMinCPU = lEndPointCPU;
+				lCandidate = lTemp;
+			}
+		}
+
+		return toEndPoint(lCandidate);
 	}
 }
