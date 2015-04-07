@@ -35,166 +35,166 @@
 		<script src="../../res/js/jwsLoadBalancerPlugIn.js" type="text/javascript"></script>
 
 		<script type="text/javascript" language="JavaScript">
-		
+
 			var mClusterInfoValues = new Array();
-			
-			function clustersInfo(){
+
+			function clustersInfo() {
 				log(" ");
 				log("Getting clusters information...");
-				if( lWSC.isConnected() ) {
+				if (lWSC.isConnected()) {
 					lWSC.lbClustersInfo({
-						OnResponse: function( aToken ) {
+						OnResponse: function (aToken) {
 							mClusterInfoValues = aToken.data;
 						}
 					});
 				} else {
-					log( "Not connected." );
+					log("Not connected.");
 				}
 			}
-		
+
 			function stickyRoutes() {
 				log(" ");
 				log("Getting sticky routes...");
-				if( lWSC.isConnected() ) {
+				if (lWSC.isConnected()) {
 					lWSC.lbStickyRoutes({
-						OnResponse: function( aToken ) {
-							loadEndpointIdOptions( aToken.data );
+						OnResponse: function (aToken) {
+							loadEndpointIdOptions(aToken.data);
 						}
 					});
 				} else {
-					log( "Not connected." );
+					log("Not connected.");
 				}
 			}
-			
-			function createServiceEndPoint(){
+
+			function createServiceEndPoint() {
 				log(" ");
 				log("Running create new service endpoint...");
-				if( lWSC.isConnected() ) {
-					if(mClusterInfoValues.length == 0){
+				if (lWSC.isConnected()) {
+					if (mClusterInfoValues.length == 0) {
 						log("INFO - Select the cluster alias!.")
-					}else{
+					} else {
 						var lPassword = document.getElementById("stxPass").value;
 						var lClusterAlias = document.getElementById("stxService").value;
 						var lNamespace = getServicesNamespace();
-						if(lNamespace == -1){
+						if (lNamespace == -1) {
 							log("INFO - Select the cluster alias!.")
-						}else{
-							lWSC.lbSampleService( lClusterAlias, lPassword, {
+						} else {
+							lWSC.lbSampleService(lClusterAlias, lPassword, {
 								nameSpace: getServicesNamespace()
 							});
 						}
 					}
 				} else {
-					log( "Not connected." );
+					log("Not connected.");
 				}
 			}
-			
+
 			function deregisterServiceEndPoint() {
 				log(" ");
 				log("Running deregister service endpoint...");
-				if( lWSC.isConnected() ) {
+				if (lWSC.isConnected()) {
 					var lEndPointId = document.getElementById("stxfEpId").value;
 					var lClusterAlias = document.getElementById("stxService").value;
 					var lPassword = document.getElementById("stxPass").value;
 					lWSC.lbDeregisterServiceEndPoint(lClusterAlias, lPassword, lEndPointId);
 				} else {
-					log( "Not connected." );
+					log("Not connected.");
 				}
 			}
-			
-			function shutdownEndPoint(){
+
+			function shutdownEndPoint() {
 				log(" ");
 				log("Running Shutting down endpoint...");
-				if( lWSC.isConnected() ) {
+				if (lWSC.isConnected()) {
 					var lEndPointId = document.getElementById("stxfEpId").value;
 					var lClusterAlias = document.getElementById("stxService").value;
 					var lPassword = document.getElementById("stxPass").value;
 					lWSC.lbShutdownEndPoint(lClusterAlias, lPassword, lEndPointId);
 				} else {
-					log( "Not connected." );
+					log("Not connected.");
 				}
 			}
-				
-			function ChooseBalanceAlgorithm(){
+
+			function ChooseBalanceAlgorithm() {
 				log(" ");
 				log("Running choose balance algorithm...");
-				if( lWSC.isConnected() ) {
-					var lChosenAlgorithm =  parseInt( document.getElementById("stxChoAlg").value );
+				if (lWSC.isConnected()) {
+					var lChosenAlgorithm = parseInt(document.getElementById("stxChoAlg").value);
 					lWSC.lbChangeAlgorithm(lChosenAlgorithm, {});
 				} else {
-					log( "Not connected." );
+					log("Not connected.");
 				}
 			}
-			
+
 			function testServiceEndpoint() {
 				log(" ");
 				log("Running test services...");
-				if( lWSC.isConnected() ) {
+				if (lWSC.isConnected()) {
 					var lNamespace = getServicesNamespace();
-					if(lNamespace == -1){
+					if (lNamespace == -1) {
 						log("INFO - Select the cluster alias!.")
-					}else{
-						lWSC.sendToken( {
+					} else {
+						lWSC.sendToken({
 							ns: lNamespace,
 							type: 'test'
 						});
 					}
 				} else {
-					log( "Not connected." );
+					log("Not connected.");
 				}
 			}
-			
-			function removeOptions(optionMenu){
-				for (var i=0; i < optionMenu.options.length; i++)
+
+			function removeOptions(optionMenu) {
+				for (var i = 0; i < optionMenu.options.length; i++)
 					optionMenu.options[i] = null;
 			}
-			
-			function addOptions(optionList, optionMenu){
-				removeOptions(optionMenu); 
-				for (var i=0; i < optionList.length; i++)
+
+			function addOptions(optionList, optionMenu) {
+				removeOptions(optionMenu);
+				for (var i = 0; i < optionList.length; i++)
 					optionMenu[i] = new Option(optionList[i]);
 			}
-			
-			function loadEndpointIdOptions( aOptionList ){
-				var lEndpointsId  = new Array();	
+
+			function loadEndpointIdOptions(aOptionList) {
+				var lEndpointsId = new Array();
 				var lClusterOptions = document.getElementById("stxService");
 				var lPosEndpointId = 0;
-				for(var lPos=0; lPos < aOptionList.length; lPos++){
-					if(aOptionList[lPos].clusterAlias == lClusterOptions.value){
+				for (var lPos = 0; lPos < aOptionList.length; lPos++) {
+					if (aOptionList[lPos].clusterAlias == lClusterOptions.value) {
 						lEndpointsId[lPosEndpointId] = aOptionList[lPos].id;
-						lPosEndpointId ++;
+						lPosEndpointId++;
 					}
-				}	
-		
+				}
+
 				var lEndpointOptions = document.getElementById("stxfEpId");
 				addOptions(lEndpointsId, lEndpointOptions);
-				
-				if(lEndpointOptions.options.length == 0)
+
+				if (lEndpointOptions.options.length == 0)
 					lEndpointOptions[0] = new Option("--------- Select service endpoint id ---------");
 			}
-			
-			function loadServiceOptions(){
-				if(mClusterInfoValues.length == 0){
+
+			function loadServiceOptions() {
+				if (mClusterInfoValues.length == 0) {
 					log(" ");
 					log("INFO - Press key 'Endpoints Info' to load dynamically the cluster alias and their namespaces!.")
-				}else{
-			
-					var lService  = new Array();
-					for(var lPos=0; lPos < mClusterInfoValues.length; lPos++)
+				} else {
+
+					var lService = new Array();
+					for (var lPos = 0; lPos < mClusterInfoValues.length; lPos++)
 						lService[lPos] = mClusterInfoValues[lPos].clusterAlias;
-					
+
 					var lClusterOptions = document.getElementById("stxService");
 					addOptions(lService, lClusterOptions);
-				
-					if(lClusterOptions.options.length == 0)
+
+					if (lClusterOptions.options.length == 0)
 						lClusterOptions[0] = new Option("-Select-");
 				}
 			}
-			
+
 			function getServicesNamespace() {
 				var lClusterOptions = document.getElementById("stxService").value;
-				for(var lPos=0; lPos < mClusterInfoValues.length; lPos++){
-					if(mClusterInfoValues[lPos].clusterAlias == lClusterOptions){
+				for (var lPos = 0; lPos < mClusterInfoValues.length; lPos++) {
+					if (mClusterInfoValues[lPos].clusterAlias == lClusterOptions) {
 						return mClusterInfoValues[lPos].clusterNS;
 					}
 				}
@@ -213,17 +213,19 @@
 			});
 			processInitPage();
 		</script>
-		
+
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 				<tr class="strDlg">
 					<td class="stdDlg" id="stdAlg"> Select the algorithm:
 					</td>
 					<td>
-					    <select name="cluster" id="stxChoAlg">
+						<select name="cluster" id="stxChoAlg">
 							<option value="1"> Round Robin </option>
 							<option value="2"> Least CPU Usage </option>
 							<option value="3"> Optimum Balance </option>
+							<option value="4"> Best CPU Performance </option>
+							<option value="5"> Priority Group & Best CPU Performance </option>
 						</select>
 						<input class="sbtnDlg" id="sbtnChoAlg" type="button" value="Choose" onclick="ChooseBalanceAlgorithm();"
 							   title="Choose the convenient algorithm for load balance.">
