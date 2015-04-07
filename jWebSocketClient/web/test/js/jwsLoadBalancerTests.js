@@ -268,7 +268,7 @@ jws.tests.LoadBalancer = {
 		it(lSpec, function () {
 
 			// perform the change algorithm  on the server
-			jws.Tests.getAdminTestConn().lbChangeAlgorithm(4, {
+			jws.Tests.getAdminTestConn().lbChangeAlgorithm(6, {
 				OnResponse: function (aResponse) {
 					lResponse = aResponse;
 				}
