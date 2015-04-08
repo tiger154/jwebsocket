@@ -41,7 +41,7 @@
 		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
 		<property name="alias" value="clock"/>
 		<property name="namespace" value="somecompany.service.*,com.jwebsocket.service.*"/>
-		<property name="grantedEndPoints" value="SomeCompany.Service.Node1,SomeCompany.Service.Node2"/>
+		<property name="grantedEndPoints" value="SomeCompany.Service.Node1,SomeCompany.Service.Node2,SomeCompany.Service.Node3"/>
 	</bean>
 	
 	<!-- the memory cluster manager -->
@@ -154,6 +154,11 @@
 				<bean class="org.jwebsocket.plugins.loadbalancer.EndPointPerformanceInfo">
 					<property name="endPointId" value="SomeCompany.Service.Node1" />
 					<property name="performanceFactor" value="5" />
+					<property name="priorityGroup" ref="priorityGroup1" />
+				</bean>
+				<bean class="org.jwebsocket.plugins.loadbalancer.EndPointPerformanceInfo">
+					<property name="endPointId" value="SomeCompany.Service.Node3" />
+					<property name="performanceFactor" value="6" />
 					<property name="priorityGroup" ref="priorityGroup1" />
 				</bean>
 				<bean class="org.jwebsocket.plugins.loadbalancer.EndPointPerformanceInfo">
