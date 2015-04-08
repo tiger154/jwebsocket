@@ -138,12 +138,12 @@
 	<!-- describing endpoints priority groups for LB algorithm 5 -->
 	<bean id="priorityGroup1" class="org.jwebsocket.plugins.loadbalancer.PriorityGroup">
 		<property name="name" value="HighPerformance" />
-		<property name="description" value="..." />
+		<property name="description" value="The group should contains high performance endpoints" />
 		<property name="threshold" value="30.0" />
 	</bean>
 	<bean id="priorityGroup2" class="org.jwebsocket.plugins.loadbalancer.PriorityGroup">
 		<property name="name" value="MediumPerformance" />
-		<property name="description" value="..." />
+		<property name="description" value="The group should contains medium performance endpoints" />
 		<property name="threshold" value="75.0" />
 	</bean>
 	<!-- the endpoints custom performance information related to LB algorithm 4 and 5 -->
@@ -153,12 +153,12 @@
 			<list>
 				<bean class="org.jwebsocket.plugins.loadbalancer.EndPointPerformanceInfo">
 					<property name="endPointId" value="SomeCompany.Service.Node1" />
-					<property name="performanceFactor" value="2" />
+					<property name="performanceFactor" value="5" />
 					<property name="priorityGroup" ref="priorityGroup1" />
 				</bean>
 				<bean class="org.jwebsocket.plugins.loadbalancer.EndPointPerformanceInfo">
 					<property name="endPointId" value="SomeCompany.Service.Node2" />
-					<property name="performanceFactor" value="5" />
+					<property name="performanceFactor" value="2" />
 					<property name="priorityGroup" ref="priorityGroup2" />
 				</bean>
 			</list>
