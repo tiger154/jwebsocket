@@ -18,13 +18,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
+import org.jwebsocket.logging.LoggingEventFieldFilter;
 import java.util.Calendar;
 import java.util.TimerTask;
-import org.apache.log4j.spi.ErrorHandler;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.varia.FallbackErrorHandler;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.BaseAppender;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.jdbc.JDBCPlugIn;
 import org.jwebsocket.server.TokenServer;
@@ -44,9 +45,12 @@ public class JWSJDBCAppender extends BaseAppender {
 	private String mInsertQuery;
 	private String mJDBCConnAlias;
 	private TokenPlugIn mJDBCPlugIn;
-	// TODO: this error handler is not working properly, see how we can use 
-	// a different logger here
-	private final ErrorHandler mErrorHandler = new FallbackErrorHandler();
+	private static final Logger mLog = Logging.getLogger();
+
+	// Specific configuration so the JWSJDBCAppender logs don't appear in the database
+	private LoggingEventFields mLoggingEventFields;
+	private final String LOGGER_BLACK_LIST_PATTERN = "*JWSJDBCAppender,*JWSJDBCPatternLayout,*JWSJDBCPatternParser";
+	private final String LOGGER_BLACK_LIST_FIELD = "class_name";
 
 	// Configuration to cleanup the database
 	private String mCleanupInterval;
@@ -63,20 +67,32 @@ public class JWSJDBCAppender extends BaseAppender {
 			// Loading the JDBCPlugIn from the list of loaded plugins
 			mJDBCPlugIn = (TokenPlugIn) lServer.getPlugInById(mJDBCPlugInID);
 		} catch (Exception lEx) {
-			// TODO: handle the error properly here
+			mLog.error(lEx.getLocalizedMessage());
 		}
 		if (null != mJDBCPlugIn) {
 			Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(mCreateTableQuery));
 			if (null != lResponse) {
 				System.out.println(lResponse);
 				if (-1 == lResponse.getCode()) {
-					mErrorHandler.error("Error caught while creating the JDBCPlugin: " + lResponse.getString("msg"));
+					mLog.error("Error caught while creating the JDBCPlugin: " + lResponse.getString("msg"));
 				}
 			}
 		}
+		mLoggingEventFields = new LoggingEventFields();
+
+		// Configuring the plugIn itself so it doesn't log any output from 
+		// JWSJDBCAppender itself
+		LoggingEventFieldFilter lPrivateFilter = new LoggingEventFieldFilter();
+		lPrivateFilter.setFieldName(LOGGER_BLACK_LIST_FIELD);
+		lPrivateFilter.setBlackList(LOGGER_BLACK_LIST_PATTERN);
+		this.mFieldFilterList.add(lPrivateFilter);
+
 		mCleanupTask = new LogsCleanupTask();
 		mIsCleanupRunning = true;
 		Tools.getTimer().scheduleAtFixedRate(mCleanupTask, 5000, getIntervalInSeconds(mCleanupInterval));
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("JWSJDBCAppender successfully initialized!");
+		}
 	}
 
 	/**
@@ -128,6 +144,36 @@ public class JWSJDBCAppender extends BaseAppender {
 		return lResult;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param aLE
+	 * @return boolean whether the event can be logged or not
+	 */
+	@Override
+	public boolean filterEvent(LoggingEvent aLE) {
+		boolean lResult = true;
+		for (LoggingEventFieldFilter lFilterItem : mFieldFilterList) {
+			String lFieldName = lFilterItem.getFieldName();
+			String lFieldValue = null;
+			if (null != lFilterItem.getBlackList() || null != lFilterItem.getWhiteList()) {
+				try {
+					lFieldValue = mLoggingEventFields.getFieldValueFromEvent(aLE, lFieldName);
+				} catch (Exception lEx) {
+					mLog.error(lEx.getLocalizedMessage());
+				}
+				if (null != lFieldValue && !"".equals(lFieldValue)) {
+					lResult = lFilterItem.matchesFilter(lFieldValue);
+				}
+			}
+			// If at least one filter does not match for the given event
+			if (!lResult) {
+				break;
+			}
+		}
+		return lResult;
+	}
+
 	private class LogsCleanupTask extends TimerTask {
 
 		@Override
@@ -138,10 +184,9 @@ public class JWSJDBCAppender extends BaseAppender {
 				mJDBCPlugIn.invoke(null, queryToToken("SET SQL_SAFE_UPDATES=1;"));
 				if (0 == lResponse.getCode()) {
 				} else if (-1 == lResponse.getCode()) {
-					mErrorHandler.error("An error was caught while running the "
+					mLog.error("An error was caught while running the "
 							+ "cleanup mechanism: " + lResponse.getString("msg"));
 				}
-				System.out.println("Running Cleanup Mechanism");
 			}
 		}
 
@@ -156,13 +201,15 @@ public class JWSJDBCAppender extends BaseAppender {
 
 	@Override
 	public void append(LoggingEvent aLE) {
-		if (null != mJDBCPlugIn && null != mInsertQuery) {
-			JWSJDBCPatternLayout lLayout = new JWSJDBCPatternLayout(prepareQuery(mInsertQuery));
-			Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(lLayout.format(aLE)));
-			if (0 == lResponse.getCode()) {
-			} else if (-1 == lResponse.getCode()) {
-				mErrorHandler.error("Failed to insert the record in the database "
-						+ "with the following message:  " + lResponse.getString("msg"));
+		if (filterEvent(aLE)) {
+			if (null != mJDBCPlugIn && null != mInsertQuery) {
+				JWSJDBCPatternLayout lLayout = new JWSJDBCPatternLayout(prepareQuery(mInsertQuery));
+				Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(lLayout.format(aLE)));
+				if (0 == lResponse.getCode()) {
+				} else if (-1 == lResponse.getCode()) {
+					mLog.error("Failed to insert the record in the database "
+							+ "with the following message:  " + lResponse.getString("msg"));
+				}
 			}
 		}
 	}

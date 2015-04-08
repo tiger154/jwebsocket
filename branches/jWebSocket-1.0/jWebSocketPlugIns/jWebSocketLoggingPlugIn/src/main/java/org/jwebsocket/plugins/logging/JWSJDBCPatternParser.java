@@ -18,15 +18,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.logging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.PatternConverter;
 import org.apache.log4j.helpers.PatternParser;
 import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
+import org.jwebsocket.logging.Logging;
 
 /**
  *
@@ -76,10 +72,8 @@ public class JWSJDBCPatternParser extends PatternParser {
 	private static final char MAP_SOURCE = 'U'; // (sender)
 	private static final char MAP_TARGET = 'G'; // (receiver)
 	private static final char MAP_CONNECTOR_ID = 'O';
-
-	private LoggingEvent mLoggingEvent;
-	private Map mInfo;
-	private Object mMessage;
+	private static final LoggingEventFields mLoggingEventFields = new LoggingEventFields();
+	private static final Logger mLog = Logging.getLogger();
 
 	public JWSJDBCPatternParser(String aPattern) {
 		super(aPattern);
@@ -125,7 +119,7 @@ public class JWSJDBCPatternParser extends PatternParser {
 
 	/**
 	 * This converter is internally used to generate the data required to fill
-	 * the query
+	 * the query with the proper values of each field
 	 */
 	private class JWSLog4jPatternConverter extends PatternConverter {
 
@@ -136,215 +130,111 @@ public class JWSJDBCPatternParser extends PatternParser {
 			mType = aType;
 		}
 
-		@SuppressWarnings("unchecked")
-		public Map getInfoMapFromMsg(String aMsg) {
-			try {
-				if (null == aMsg) {
-					return null;
-				}
-				int lIdx = aMsg.lastIndexOf(", info:");
-				if (lIdx < 0) {
-					return null;
-				}
-				String lJSON = aMsg.substring(lIdx + 8);
-				Map lMap = new ObjectMapper().readValue(lJSON, HashMap.class);
-				lMap.put("message", aMsg.substring(0, lIdx));
-				return lMap;
-			} catch (IOException lEx) {
-				return null;
-			}
-		}
-
 		@Override
 		protected String convert(LoggingEvent aLE) {
-			// Caching the logging event so this algorithm runs only once per logging event
-			if (null != aLE && (null == mLoggingEvent
-					|| mLoggingEvent.timeStamp != aLE.timeStamp)) {
-				mLoggingEvent = aLE;
-				mMessage = mLoggingEvent.getMessage();
-				//	Trying to get info from the message, this could have been 
-				//	sent via a Token using the loggingPlugIn
-				if (null != mMessage) {
-					mInfo = getInfoMapFromMsg((String) mMessage);
-				} else {
-					mMessage = "";
-				}
-				if (null != mInfo) {
-					mMessage = mInfo.get("message");
-					mInfo.remove("message");
-				}
-			}
 			String lResult = "";
 			try {
-				if (null != mLoggingEvent) {
-					// LoggingEvent related information
-					switch (mType) {
-						case MESSAGE:
-							if (null != mMessage) {
-								lResult = mMessage.toString();
-							}
-							break;
-						case CLASS_NAME:
-							lResult = mLoggingEvent.getLocationInformation().getClassName();
-							break;
-						case METHOD_NAME:
-							lResult = mLoggingEvent.getLocationInformation().getMethodName();
-							break;
-						case LINE_NUMBER:
-							lResult = mLoggingEvent.getLocationInformation().getLineNumber();
-							break;
-						case FILENAME:
-							lResult = mLoggingEvent.getLocationInformation().getFileName();
-							break;
-						case LOGGER_NAME:
-							lResult = mLoggingEvent.getLoggerName();
-							break;
-						case THREAD_NAME:
-							lResult = mLoggingEvent.getThreadName();
-							break;
-						case STACK_TRACE:
-							ThrowableInformation lThrowableInfo = mLoggingEvent.getThrowableInformation();
-							if (null != lThrowableInfo) {
-								lResult = Arrays.toString(lThrowableInfo.getThrowableStrRep());
-							}
-							break;
-						default:
-							break;
-					}
-					// info Map related data
-					if (null != mInfo) {
-						Object lAux;
-						switch (mType) {
-							// The following data should be supported in the Info map:
-							case MAP_USERNAME:
-								if (null != mInfo) {
-									lAux = mInfo.get("user");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_IP_NUMBER:
-								if (null != mInfo) {
-									lAux = mInfo.get("ip");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_HOSTNAME:
-								if (null != mInfo) {
-									lAux = mInfo.get("hostname");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_CONNECTOR_ID:
-								if (null != mInfo) {
-									lAux = mInfo.get("connector_id");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_PRODUCT:
-								if (null != mInfo) {
-									lAux = mInfo.get("product");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_MODULE:
-								if (null != mInfo) {
-									lAux = mInfo.get("module");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_CLASSIFICATION:
-								if (null != mInfo) {
-									lAux = mInfo.get("classification");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_VERSION:
-								if (null != mInfo) {
-									lAux = mInfo.get("version");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_ENVIRONMENT:
-								if (null != mInfo) {
-									lAux = mInfo.get("environment");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_ERROR_CODE:
-								if (null != mInfo) {
-									lAux = mInfo.get("code");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_SYSTEM:
-								if (null != mInfo) {
-									lAux = mInfo.get("client");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_SYSTEM_VERSION:
-								if (null != mInfo) {
-									lAux = mInfo.get("system_version");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_CONDITION:
-								if (null != mInfo) {
-									lAux = mInfo.get("condition_value");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_SOURCE:
-								if (null != mInfo) {
-									lAux = mInfo.get("source");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							case MAP_TARGET:
-								if (null != mInfo) {
-									lAux = mInfo.get("target");
-									if (null != lAux) {
-										lResult = lAux.toString();
-									}
-								}
-								break;
-							default:
-								break;
-						}
-					}
+				switch (mType) {
+					case MESSAGE:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.MESSAGE);
+						break;
+					case CLASS_NAME:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.CLASS_NAME);
+						break;
+					case METHOD_NAME:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.METHOD_NAME);
+						break;
+					case LINE_NUMBER:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.LINE_NUMBER);
+						break;
+					case FILENAME:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.FILENAME);
+						break;
+					case LOGGER_NAME:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.LOGGER_NAME);
+						break;
+					case THREAD_NAME:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.THREAD_NAME);
+						break;
+					case STACK_TRACE:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.STACK_TRACE);
+						break;
+					// The following data should be supported in the Info map:
+					case MAP_USERNAME:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.USERNAME);
+						break;
+					case MAP_IP_NUMBER:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.IP_NUMBER);
+						break;
+					case MAP_HOSTNAME:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.HOSTNAME);
+						break;
+					case MAP_CONNECTOR_ID:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.CONNECTOR_ID);
+						break;
+					case MAP_PRODUCT:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.PRODUCT);
+						break;
+					case MAP_MODULE:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.MODULE);
+						break;
+					case MAP_CLASSIFICATION:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.CLASSIFICATION);
+						break;
+					case MAP_VERSION:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.VERSION);
+						break;
+					case MAP_ENVIRONMENT:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.ENVIRONMENT);
+						break;
+					case MAP_ERROR_CODE:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.ERROR_CODE);
+						break;
+					case MAP_SYSTEM:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.SYSTEM);
+						break;
+					case MAP_SYSTEM_VERSION:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.SYSTEM_VERSION);
+						break;
+					case MAP_CONDITION:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.CONDITION_VALUE);
+						break;
+					case MAP_SOURCE:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.SOURCE);
+						break;
+					case MAP_TARGET:
+						lResult = mLoggingEventFields.getFieldValueFromEvent(aLE,
+								LoggingEventFields.TARGET);
+						break;
+					default:
+						break;
 				}
 			} catch (Exception lEx) {
-				System.out.println(lEx.getLocalizedMessage());
+				mLog.error(lEx.getLocalizedMessage());
 			}
-			return lResult.replace("'", "''").replace("\\", "\\\\");
+			return lResult;
 		}
 	}
 }

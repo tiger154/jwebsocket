@@ -13,13 +13,13 @@
 		<property name="JDBCPlugInID" value="jws.jdbc"/>
 		<property name="TableName" value="logs_table"/>
 		<!-- Cleanup Interval and LogDuration are configured with one of the 
-			following values: <value Integer><MICROSECOND | SECOND | MINUTE | 
-			HOUR | DAY | WEEK | MONTH | QUARTER| YEAR>
-			the cleanup mechanism will be executed by the first time on server startup -->
+		following values: <value Integer><MICROSECOND | SECOND | MINUTE | 
+		HOUR | DAY | WEEK | MONTH | QUARTER| YEAR>
+		the cleanup mechanism will be executed by the first time on server startup -->
 		<property name="CleanupInterval" value="1 DAY"/>
 		<!-- Log Duration in the database, for example, a LogDuration=1DAY 
-			indicates to MySQL server to remove the logs with date less than 
-			1 day before the current date -->
+		indicates to MySQL server to remove the logs with date less than 
+		1 day before the current date -->
 		<!-- MICROSECOND, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR --> 
 		<property name="LogDuration" value="1 MONTH"/>
 		<property name="CleanupQuery">
@@ -45,6 +45,34 @@
 			('%d{yyyy-MM-dd HH:mm:ss}','%p', '%c', '%M', '%L', '%f', '%g', '%T', '%s', '%m', '%u', 
 			'%n', '%h', '%P', '%D', '%C', '%v', '%e', '%E', '%S', '%V', '%o', 
 			'%U', '%G', '%O')"/>
+		
+		<!-- fieldFilterList, this property allows us to set a certain 
+		white/black List configuration patterns that will restrict the 
+		events that are being logged in the database.
+		For example, if we only want to log the TokenServer class 
+		information, then we need to add the following configuration:
+			<property name="fieldName" value="class_name" />
+			<property name="blackList" value="*" />
+			<property name="whiteList" value="*TokenServer" />
+		Other pattern configurations could be:
+			<property name="blackList" value="startsWith*, *contains*, *endsWith, equals" />
+		NOTE: Please don't use wildcard for whiteList and blackList at the 
+		same time, this doesn't make any sense
+		Uncomment the below configuration to see it working
+		-->
+		<!--<property name="fieldFilterList">
+			<list>
+				<bean class="org.jwebsocket.logging.LoggingEventFieldFilter">
+					<property name="fieldName" value="class_name" />
+					<property name="whiteList" value="*" />
+					<property name="blackList" value="*TokenServer" />
+				</bean>
+				<bean class="org.jwebsocket.logging.LoggingEventFieldFilter">
+					<property name="fieldName" value="hostname" />
+					<property name="blackList" value="localhost" />
+				</bean>
+			</list>
+		</property>-->
 	</bean>
 
 	<!-- here you configure which logger of the above ones to use in the plug-in -->
