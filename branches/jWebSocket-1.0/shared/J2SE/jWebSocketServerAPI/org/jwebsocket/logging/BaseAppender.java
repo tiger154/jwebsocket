@@ -18,9 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.logging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -28,15 +26,17 @@ import org.apache.log4j.spi.LoggingEvent;
  *
  * @author Alexander Schulze
  */
-public class BaseAppender implements ILog4JAppender{
+public abstract class BaseAppender implements ILog4JAppender {
 
 	private Level mLevel = Level.INFO;
+	protected List<LoggingEventFieldFilter> mFieldFilterList;
 
 	/**
 	 *
 	 * @param aLevel
 	 */
 	@Override
+
 	public void setLevel(Level aLevel) {
 		mLevel = aLevel;
 	}
@@ -49,6 +49,25 @@ public class BaseAppender implements ILog4JAppender{
 	public Level getLevel() {
 		return mLevel;
 	}
+	
+	/**
+	 * Obtains the configured Filter List for a certain appender
+	 * @return The filters
+	 */
+	public List<LoggingEventFieldFilter> getFieldFilterList() {
+		return mFieldFilterList;
+	}
+	
+	/**
+	 * Every jWebSocket Appender might be configured with a list of filters to 
+	 * avoid logging certain events if they match a configured black and white 
+	 * list, for more information, please see the class LoggingEventFieldFilter
+	 * 
+	 * @param aFieldFilterList 
+	 */
+	public void setFieldFilterList(List<LoggingEventFieldFilter> aFieldFilterList) {
+		this.mFieldFilterList = aFieldFilterList;
+	}
 
 	/**
 	 *
@@ -57,30 +76,6 @@ public class BaseAppender implements ILog4JAppender{
 	@Override
 	public void append(LoggingEvent aLE) {
 		// do nothing on this level
-	}
-
-	/**
-	 *
-	 * @param aMsg
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public Map getInfoMapFromMsg(String aMsg) {
-		try {
-			if (null == aMsg) {
-				return null;
-			}
-			int lIdx = aMsg.lastIndexOf(", info:");
-			if (lIdx < 0) {
-				return null;
-			}
-			String lJSON = aMsg.substring(lIdx + 8);
-			Map lMap = new ObjectMapper().readValue(lJSON, HashMap.class);
-			lMap.put("message", aMsg.substring(0, lIdx));
-			return lMap;
-		} catch (Exception ex) {
-			return null;
-		}
 	}
 
 	@Override

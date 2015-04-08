@@ -34,4 +34,9 @@ public class DemoAppender extends BaseAppender {
 				+ aLE.getMessage());
 	}
 
+	@Override
+	public boolean filterEvent(LoggingEvent aLE) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 }

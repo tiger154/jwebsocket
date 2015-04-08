@@ -26,7 +26,7 @@ import org.jwebsocket.api.IInitializable;
  *
  * @author Alexander Schulze
  */
-public interface ILog4JAppender extends IInitializable{
+public interface ILog4JAppender extends IInitializable {
 
 	/**
 	 *
@@ -45,5 +45,14 @@ public interface ILog4JAppender extends IInitializable{
 	 * @param aLE
 	 */
 	public void append(LoggingEvent aLE);
+
+	/**
+	 * Filters the event to check if it can be logged or not, if returns true,
+	 * then the event will be logged, otherwise it will not
+	 *
+	 * @param aLE
+	 * @return boolean, if the even can be logged or not
+	 */
+	public boolean filterEvent(LoggingEvent aLE);
 
 }
