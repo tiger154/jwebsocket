@@ -53,7 +53,7 @@
 		balancing considering the type of service (Web or Java) .The algorithm "1" to behave as 
 		a simple round robin. This algorithm will work with both types of services. For example:
 
-								Algorithm Round Robin ( value = 1 )
+							Algorithm Round Robin ( value = 1 )
 
 		Requests   R1   R2   R3   R1   R2   R3
 				  _____________________________
@@ -65,7 +65,7 @@
 		this is the perfect choice, because this algorithm uses the "sigar" library to get the cpu usage
 		in each online service. In this way we can achieve load balance more accurately. For example:
 
-							   Algorithm Least CPU Usage ( value = 2 )
+							Algorithm Least CPU Usage ( value = 2 )
 
 		Requests    R2   R6   R3        R4        R5   R1   R7
 				   ______________________________________________________  
@@ -78,14 +78,50 @@
 		is (Web) it executes the round robin algorithm and when the service selected is (Java) 
 		it execute the least cpu usage algorithm. For example:
 
-							  Algorithm Optimum Balance ( value = 3 )
+							Algorithm Optimum Balance ( value = 3 )
 
 		Requests    R1   R8   R3   R4   R5   R6   R7   R2   R1   R2   R3
 				   ______________________________________________________  
 		Services  |Web |Java|Java|Web |Java|Web |Java|Java|Web |Web |Web | 
-		CPU Usage |____|90%_|32%_|____|45%_|____|60%_|15%_|____|____|____|					  
+		CPU Usage |____|90%_|32%_|____|45%_|____|60%_|15%_|____|____|____|		
+		
+							Best CPU Performance ( value = 4 )
+
+        The algorithm takes in consideration that different endpoints could have different CPU specification, 
+        producing a clear difference in performance. In some cases an endpoint with 70% of CPU load could be 
+		best candidate in front of other endpoint with 50% of CPU if we consider the CPU specification.
+		For example: An Intel Core i7 CPU featured endpoint, should have priority over an Intel Dual-Core, even 
+        with a huge margin of CPU load. 
+		To help the LB decide about the best candidate, the algorithm uses a variable named: PerformanceFactor.
+		
+		The LB administrator is responsible for the creation of the endpoints custom performance table.
+		We assume 1 to be the default performance factor. A smaller number means less performance, 
+        a higher number means higher performance. So the first step is to use an equation considering the 
+        reported CPU work load of an endpoint as well as its performance factor to calculate the most 
+        appropriate endpoint to execute a request. The performance factor is used in a division. 
+
+        Example: EP1 CPU-Load: 50%, Perf.F: 1 (50/1 = 50), EP2: CPU Load: 60% Perf.F: 2 (60/2 = 30). 
+        IN this case the LB would select EP2, although it has currently a higher CPU work load, the expected over all 
+        performance will be higher due to the higher performance factor of EP2.
+		
+					Priority Group & Best CPU Performance ( value = 5 )
+					
+		Each endpoint shall have its own "priority group" (Default "UnassignedGroup:100"). A priority group gathers 
+		one or more endpoints to a group and defines a threshold(the CPU load %) for this group. If no threshold is defined 
+		for a priority group, the default value of 50 is assumed. As long as at least one of the endpoints in 
+		this group does not exceed this threshold the endpoint with the least load (benchmark composed of CPU load 
+		and performance, see above) in this group is selected. If all of the endpoints in the first priority group 
+		exceed the threshold for this group the next priority group (2) is checked with the same algorithm like group (1) 
+		and so forth. In the last priority group the threshold is ignored, the endpoint with the least load in this group 
+		is selected. 
+		Example: Prio Group 1 defines a threshold of 50 and includes EP1 (load = 40) and EP2 (load = 60). 
+		Prio Group 2 defines a threshold of 75 and includes EP3 (load = 10) and EP4 (load = 20). 
+		Prio Group 3 does not define any threshold and includes EP5 (load = 35) and EP6 (load = 65). 
+		Here EP1 is selected (although EP3, EP4 and EP5 have less load), since its load is below the threshold of 50 and EP1 
+		is in the first priority group.
+		
 		-->
-		<property name="balancerAlgorithm" value="3" />
+		<property name="balancerAlgorithm" value="4" />
 		<property name="clustersList">
 			<list>
 				<ref bean="service1cluster" />
@@ -95,8 +131,40 @@
 				<ref bean="jmsServerCluster" />
 			</list>
 		</property>
+		<!-- the endpoints custom performance index -->
+		<property name="endPointsPerformanceTable" ref="endPointsPerformanceTable"/>
 	</bean>
-			
+	
+	<!-- describing endpoints priority groups for LB algorithm 5 -->
+	<bean id="priorityGroup1" class="org.jwebsocket.plugins.loadbalancer.PriorityGroup">
+		<property name="name" value="HighPerformance" />
+		<property name="description" value="..." />
+		<property name="threshold" value="1.0" />
+	</bean>
+	<bean id="priorityGroup2" class="org.jwebsocket.plugins.loadbalancer.PriorityGroup">
+		<property name="name" value="MediumPerformance" />
+		<property name="description" value="..." />
+		<property name="threshold" value="75.0" />
+	</bean>
+	<!-- the endpoints custom performance information related to LB algorithm 4 and 5 -->
+	<bean id="endPointsPerformanceTable" class="org.jwebsocket.plugins.loadbalancer.EndPointsPerformanceTable">
+		<property name="defaultPerformanceFactor" value="1.0" />
+		<property name="endPoints">
+			<list>
+				<bean class="org.jwebsocket.plugins.loadbalancer.EndPointPerformanceInfo">
+					<property name="endPointId" value="SomeCompany.Service.Node1" />
+					<property name="performanceFactor" value="2" />
+					<property name="priorityGroup" ref="priorityGroup1" />
+				</bean>
+				<bean class="org.jwebsocket.plugins.loadbalancer.EndPointPerformanceInfo">
+					<property name="endPointId" value="SomeCompany.Service.Node2" />
+					<property name="performanceFactor" value="5" />
+					<property name="priorityGroup" ref="priorityGroup2" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
 	<!-- the LoadBalancer database instance to store the plugin data -->
 	<bean id="lbDatabase" class="org.jwebsocket.storage.mongodb.MongoDBUtils" factory-method="getDB">
 		<!-- the connection resource -->
@@ -137,7 +205,7 @@
 		balancing considering the type of service (Web or Java) .The algorithm "1" to behave as 
 		a simple round robin. This algorithm will work with both types of services. For example:
 
-								Algorithm Round Robin ( value = 1 )
+							Algorithm Round Robin ( value = 1 )
 
 		Requests   R1   R2   R3   R1   R2   R3
 				  _____________________________
@@ -149,7 +217,7 @@
 		this is the perfect choice, because this algorithm uses the "sigar" library to get the cpu usage
 		in each online service. In this way we can achieve load balance more accurately. For example:
 
-							   Algorithm Least CPU Usage ( value = 2 )
+							Algorithm Least CPU Usage ( value = 2 )
 
 		Requests    R2   R6   R3        R4        R5   R1   R7
 				   ______________________________________________________  
@@ -162,14 +230,51 @@
 		is (Web) it executes the round robin algorithm and when the service selected is (Java) 
 		it execute the least cpu usage algorithm. For example:
 
-							  Algorithm Optimum Balance ( value = 3 )
+							Algorithm Optimum Balance ( value = 3 )
 
 		Requests    R1   R8   R3   R4   R5   R6   R7   R2   R1   R2   R3
 				   ______________________________________________________  
 		Services  |Web |Java|Java|Web |Java|Web |Java|Java|Web |Web |Web | 
-		CPU Usage |____|90%_|32%_|____|45%_|____|60%_|15%_|____|____|____|					  
+		CPU Usage |____|90%_|32%_|____|45%_|____|60%_|15%_|____|____|____|	
+			
+							Best CPU Performance ( value = 4 )
+
+        The algorithm takes in consideration that different endpoints could have different CPU specification, 
+        producing a clear difference in performance. In some cases an endpoint with 70% of CPU load could be 
+		best candidate in front of other endpoint with 50% of CPU if we consider the CPU specification.
+		For example: An Intel Core i7 CPU featured endpoint, should have priority over an Intel Dual-Core, even 
+        with a huge margin of CPU load. 
+		To help the LB decide about the best candidate, the algorithm uses a variable named: PerformanceFactor.
+		
+		The LB administrator is responsible for the creation of the endpoints custom performance table.
+		We assume 1 to be the default performance factor. A smaller number means less performance, 
+        a higher number means higher performance. So the first step is to use an equation considering the 
+        reported CPU work load of an endpoint as well as its performance factor to calculate the most 
+        appropriate endpoint to execute a request. The performance factor is used in a division. 
+
+        Example: EP1 CPU-Load: 50%, Perf.F: 1 (50/1 = 50), EP2: CPU Load: 60% Perf.F: 2 (60/2 = 30). 
+        IN this case the LB would select EP2, although it has currently a higher CPU work load, the expected over all 
+        performance will be higher due to the higher performance factor of EP2.
+		
+					Priority Group & Best CPU Performance ( value = 5 )
+					
+		Each endpoint shall have its own "priority group" (Default "UnassignedGroup:100"). A priority group gathers 
+		one or more endpoints to a group and defines a threshold(the CPU load %) for this group. If no threshold is defined 
+		for a priority group, the default value of 50 is assumed. As long as at least one of the endpoints in 
+		this group does not exceed this threshold the endpoint with the least load (benchmark composed of CPU load 
+		and performance, see above) in this group is selected. If all of the endpoints in the first priority group 
+		exceed the threshold for this group the next priority group (2) is checked with the same algorithm like group (1) 
+		and so forth. In the last priority group the threshold is ignored, the endpoint with the least load in this group 
+		is selected. 
+		Example: Prio Group 1 defines a threshold of 50 and includes EP1 (load = 40) and EP2 (load = 60). 
+		Prio Group 2 defines a threshold of 75 and includes EP3 (load = 10) and EP4 (load = 20). 
+		Prio Group 3 does not define any threshold and includes EP5 (load = 35) and EP6 (load = 65). 
+		Here EP1 is selected (although EP3, EP4 and EP5 have less load), since its load is below the threshold of 50 and EP1 
+		is in the first priority group.
+		
+						  				  
 		-->
-		<property name="balancerAlgorithm" value="1" />
+		<property name="balancerAlgorithm" value="4" />
 		<!-- the initial clusters list (only added if not already registered) -->
 		<property name="startupClusters">
 			<list>
@@ -180,13 +285,15 @@
 				<ref bean="jmsServerCluster" />
 			</list>
 		</property>
+		<!-- the endpoints custom performance index -->
+		<property name="endPointsPerformanceTable" ref="endPointsPerformanceTable"/>
 	</bean>
 			
 	<!-- Service Cluster alias/instance assignment -->
 	<bean id="org.jwebsocket.plugins.loadbalancer.settings" class="org.jwebsocket.plugins.loadbalancer.Settings">
 		<!-- load balancer cluster manager implementation -->
-		<property name="clusterManager" ref="memoryClusterManager" />
-		<!--<property name="clusterManager" ref="mongodbClusterManager" />-->
+		<!--<property name="clusterManager" ref="memoryClusterManager" />-->
+		<property name="clusterManager" ref="mongodbClusterManager" />
 		
 		<!-- load balancer message delivery timeout -->
 		<property name="messageTimeout" value="3000" />
