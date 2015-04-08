@@ -139,7 +139,7 @@
 	<bean id="priorityGroup1" class="org.jwebsocket.plugins.loadbalancer.PriorityGroup">
 		<property name="name" value="HighPerformance" />
 		<property name="description" value="..." />
-		<property name="threshold" value="1.0" />
+		<property name="threshold" value="30.0" />
 	</bean>
 	<bean id="priorityGroup2" class="org.jwebsocket.plugins.loadbalancer.PriorityGroup">
 		<property name="name" value="MediumPerformance" />
