@@ -1,7 +1,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket BaseClusterManager class for LBP (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2015 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,8 +23,8 @@ import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterManager;
 
 /**
- *
- * @author kyberneees
+ * @author Alexander Schulze
+ * @author Rolando Santamaria Maso
  */
 public abstract class BaseClusterManager implements IClusterManager {
 
