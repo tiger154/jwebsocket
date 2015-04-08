@@ -292,8 +292,8 @@
 	<!-- Service Cluster alias/instance assignment -->
 	<bean id="org.jwebsocket.plugins.loadbalancer.settings" class="org.jwebsocket.plugins.loadbalancer.Settings">
 		<!-- load balancer cluster manager implementation -->
-		<!--<property name="clusterManager" ref="memoryClusterManager" />-->
-		<property name="clusterManager" ref="mongodbClusterManager" />
+		<property name="clusterManager" ref="memoryClusterManager" />
+		<!--<property name="clusterManager" ref="mongodbClusterManager" />-->
 		
 		<!-- load balancer message delivery timeout -->
 		<property name="messageTimeout" value="3000" />
