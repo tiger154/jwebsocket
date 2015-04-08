@@ -43,3 +43,10 @@ CREATE TABLE IF NOT EXISTS `logs_table` (
 	target varchar(255),
 	connector_id varchar(255), 
 	primary key (id)) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 PACK_KEYS=0;
+	
+	CREATE INDEX `idx_logs_table_time_stamp`  ON `jwebsocket_logs`.`logs_table` (time_stamp) ALGORITHM DEFAULT LOCK DEFAULT;
+	CREATE INDEX `idx_logs_table_product`  ON `jwebsocket_logs`.`logs_table` (product) ALGORITHM DEFAULT LOCK DEFAULT;
+	CREATE INDEX `idx_logs_table_filename`  ON `jwebsocket_logs`.`logs_table` (filename) ALGORITHM DEFAULT LOCK DEFAULT;
+	CREATE INDEX `idx_logs_table_ip_number`  ON `jwebsocket_logs`.`logs_table` (ip_number) ALGORITHM DEFAULT LOCK DEFAULT;
+	CREATE INDEX `idx_logs_table_hostname`  ON `jwebsocket_logs`.`logs_table` (hostname) ALGORITHM DEFAULT LOCK DEFAULT;
+	CREATE INDEX `idx_logs_table_environment`  ON `jwebsocket_logs`.`logs_table` (environment) ALGORITHM DEFAULT LOCK DEFAULT;
