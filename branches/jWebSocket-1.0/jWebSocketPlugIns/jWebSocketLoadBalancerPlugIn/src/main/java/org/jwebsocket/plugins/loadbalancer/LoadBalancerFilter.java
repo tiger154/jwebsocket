@@ -69,6 +69,11 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+		if (null == mLoadBalancerPlugIn) {
+			// system is starting, avoid request
+			return;
+		}
+
 		String lType = aToken.getType();
 		String lNS = aToken.getNS();
 		if (null == lType || null == lNS) {
