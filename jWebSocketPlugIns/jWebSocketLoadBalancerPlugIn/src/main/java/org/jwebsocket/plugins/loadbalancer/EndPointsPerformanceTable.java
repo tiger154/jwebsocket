@@ -32,20 +32,21 @@ import javolution.util.FastMap;
 /**
  * Contains the endpoints custom information for LB algorithms 4 and 5.
  *
+ * @author Alexander Schulze
  * @author Rolando Santamaria Maso
  */
 public class EndPointsPerformanceTable {
 
-	private double mDefaultPowerFactor = 1.0;
+	private double mDefaultPerformanceFactor = 1.0;
 	private final Map<String, EndPointPerformanceInfo> mEndPoints = new FastMap<String, EndPointPerformanceInfo>().shared();
 	private final List<PriorityGroup> mPriorityGroups = new FastList<PriorityGroup>();
 
-	public double getDefaultPowerFactor() {
-		return mDefaultPowerFactor;
+	public double getDefaultPerformanceFactor() {
+		return mDefaultPerformanceFactor;
 	}
 
-	public void setDefaultPowerFactor(double aDefaultPowerFactor) {
-		mDefaultPowerFactor = aDefaultPowerFactor;
+	public void setDefaultPerformanceFactor(double aDefaultPerformanceFactor) {
+		mDefaultPerformanceFactor = aDefaultPerformanceFactor;
 	}
 
 	public Collection<EndPointPerformanceInfo> getEndPoints() {
@@ -56,7 +57,7 @@ public class EndPointsPerformanceTable {
 		Set<PriorityGroup> lPGs = new HashSet<PriorityGroup>();
 		for (Iterator<EndPointPerformanceInfo> lIt = aEndPoints.iterator(); lIt.hasNext();) {
 			EndPointPerformanceInfo lEndPointInfo = lIt.next();
-			mEndPoints.put(lEndPointInfo.getId(), lEndPointInfo);
+			mEndPoints.put(lEndPointInfo.getEndPointId(), lEndPointInfo);
 
 			if (null != lEndPointInfo.getPriorityGroup()) {
 				lPGs.add(lEndPointInfo.getPriorityGroup());
@@ -87,12 +88,12 @@ public class EndPointsPerformanceTable {
 		}
 	}
 
-	public double getEndPointPowerFactor(String aEndPointId) {
+	public double getEndPointPerformanceFactor(String aEndPointId) {
 		if (mEndPoints.containsKey(aEndPointId)) {
-			return mEndPoints.get(aEndPointId).getPowerFactor();
+			return mEndPoints.get(aEndPointId).getPerformanceFactor();
 		}
 
-		return getDefaultPowerFactor();
+		return getDefaultPerformanceFactor();
 	}
 
 	public List<PriorityGroup> getPriorityGroups() {
