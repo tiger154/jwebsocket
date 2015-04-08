@@ -18,8 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
-import java.util.Collection;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -49,11 +48,11 @@ public class EndPointsPerformanceTable {
 		mDefaultPerformanceFactor = aDefaultPerformanceFactor;
 	}
 
-	public Collection<EndPointPerformanceInfo> getEndPoints() {
-		return mEndPoints.values();
+	public List<EndPointPerformanceInfo> getEndPoints() {
+		return new ArrayList<EndPointPerformanceInfo>(mEndPoints.values());
 	}
 
-	public void setEndPoints(Collection<EndPointPerformanceInfo> aEndPoints) {
+	public void setEndPoints(List<EndPointPerformanceInfo> aEndPoints) {
 		Set<PriorityGroup> lPGs = new HashSet<PriorityGroup>();
 		for (Iterator<EndPointPerformanceInfo> lIt = aEndPoints.iterator(); lIt.hasNext();) {
 			EndPointPerformanceInfo lEndPointInfo = lIt.next();
@@ -64,22 +63,7 @@ public class EndPointsPerformanceTable {
 			}
 		}
 
-		// sorting priority groups
-		PriorityQueue<PriorityGroup> lPQ = new PriorityQueue<PriorityGroup>(
-				new Comparator<PriorityGroup>() {
-
-					@Override
-					public int compare(PriorityGroup aPG1, PriorityGroup aPG2) {
-						if (aPG1.getThreshold() < aPG2.getThreshold()) {
-							return -1;
-						} else if (aPG1.getThreshold() > aPG2.getThreshold()) {
-							return 1;
-						} else {
-							return 0;
-						}
-					}
-				});
-
+		PriorityQueue<PriorityGroup> lPQ = new PriorityQueue<PriorityGroup>();
 		for (PriorityGroup lPG : lPGs) {
 			lPQ.add(lPG);
 		}
