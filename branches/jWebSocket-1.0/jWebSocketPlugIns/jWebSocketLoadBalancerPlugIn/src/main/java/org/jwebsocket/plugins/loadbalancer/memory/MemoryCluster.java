@@ -1,7 +1,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket Load Balancer MemoryCluster (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2015 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -284,7 +284,7 @@ public class MemoryCluster extends BaseCluster {
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
 			IClusterEndPoint lClusterEndPoint = mEndPoints.get(lPos);
 			if (lClusterEndPoint.getStatus().equals(EndPointStatus.ONLINE)) {
-				double lTempCpuUsage = lClusterEndPoint.getCpuUsage() / aPI.getEndPointPowerFactor(lClusterEndPoint.getEndPointId());
+				double lTempCpuUsage = lClusterEndPoint.getCpuUsage() / aPI.getEndPointPerformanceFactor(lClusterEndPoint.getConnectorId());
 
 				// discard all java script clients because they can't update the CPU usage.
 				if (!lClusterEndPoint.getClientRuntimePlatform().equals(Attributes.JAVASCRIPT_RUNTIME_PLATFORM)

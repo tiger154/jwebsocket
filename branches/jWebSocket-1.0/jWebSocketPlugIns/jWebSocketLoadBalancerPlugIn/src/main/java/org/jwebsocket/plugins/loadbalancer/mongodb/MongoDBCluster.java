@@ -1,7 +1,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket Load Balancer MongoDBCluster (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2015 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -303,7 +303,7 @@ public class MongoDBCluster extends BaseCluster {
 
 		while (lCursor.hasNext()) {
 			lTemp = lCursor.next();
-			double lEndPointCPU = (Double) lTemp.get(CPU) / aPI.getEndPointPowerFactor((String) lTemp.get(ENDPOINT_ID));
+			double lEndPointCPU = (Double) lTemp.get(CPU) / aPI.getEndPointPerformanceFactor((String) lTemp.get(CONNECTOR_ID));
 			if (lEndPointCPU < lMinCPU) {
 				lMinCPU = lEndPointCPU;
 				lCandidate = lTemp;
@@ -311,5 +311,12 @@ public class MongoDBCluster extends BaseCluster {
 		}
 
 		return toEndPoint(lCandidate);
+	}
+
+	@Override
+	public IClusterEndPoint getEndPointByConnectorId(String aConnectorId) {
+		return toEndPoint(mEndPoints.findOne(new BasicDBObject()
+				.append(CONNECTOR_ID, aConnectorId)
+				.append(STATUS, EndPointStatus.ONLINE.name())));
 	}
 }

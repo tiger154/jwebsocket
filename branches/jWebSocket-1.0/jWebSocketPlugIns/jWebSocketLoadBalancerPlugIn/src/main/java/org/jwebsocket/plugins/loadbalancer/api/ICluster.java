@@ -1,7 +1,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - Cluster interface (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2015 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,13 +37,21 @@ public interface ICluster {
 	boolean isEndPointAvailable();
 
 	/**
-	 * Verify if endpoints list contains a cluster endpoint with a specific id.
+	 * Get cluster endpoint by it's id.
 	 *
 	 * @param aEndPointId endpoint id.
 	 * @return if the endpoints list contains the specified cluster endpoint returns it, but returns
 	 * <code>null</code>
 	 */
 	IClusterEndPoint getEndPoint(String aEndPointId);
+
+	/**
+	 * Get cluster endpoint by it's connector id.
+	 *
+	 * @param aConnectorId
+	 * @return
+	 */
+	IClusterEndPoint getEndPointByConnectorId(String aConnectorId);
 
 	/**
 	 * @return a list of endpoints.

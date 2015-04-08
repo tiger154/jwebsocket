@@ -1,7 +1,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket BaseCluster class for LBP (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2015 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,13 +19,14 @@
 package org.jwebsocket.plugins.loadbalancer;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import org.jwebsocket.plugins.loadbalancer.api.ICluster;
 import org.jwebsocket.plugins.loadbalancer.api.IClusterEndPoint;
 
 /**
- *
+ * @author Alexander Schulze
  * @author Rolando Santamaria Maso
  */
 public abstract class BaseCluster implements ICluster {
@@ -39,8 +40,8 @@ public abstract class BaseCluster implements ICluster {
 
 					@Override
 					public int compare(IClusterEndPoint lEP1, IClusterEndPoint lEP2) {
-						double lEP1Cpu = lEP1.getCpuUsage() / aPI.getEndPointPowerFactor(lEP1.getEndPointId());
-						double lEP2Cpu = lEP2.getCpuUsage() / aPI.getEndPointPowerFactor(lEP2.getEndPointId());
+						double lEP1Cpu = lEP1.getCpuUsage() / aPI.getEndPointPerformanceFactor(lEP1.getEndPointId());
+						double lEP2Cpu = lEP2.getCpuUsage() / aPI.getEndPointPerformanceFactor(lEP2.getEndPointId());
 
 						if (lEP1Cpu < lEP2Cpu) {
 							return -1;
@@ -51,24 +52,43 @@ public abstract class BaseCluster implements ICluster {
 						}
 					}
 				});
-		// getting ordered priority groups endpoints
-		for (PriorityGroup lPG : lPGs) {
+
+		IClusterEndPoint lAvailable = null;
+		for (Iterator<PriorityGroup> it = lPGs.iterator(); it.hasNext();) {
+			PriorityGroup lPG = it.next();
+			// inserting endpoints into priority queue to order them
 			for (EndPointPerformanceInfo lEPI : lPG.getEndPointsInfo()) {
-				IClusterEndPoint lEP = getEndPoint(lEPI.getId());
+				IClusterEndPoint lEP = getEndPointByConnectorId(lEPI.getEndPointId());
 				if (null != lEP) {
 					lEndPointsPQ.add(lEP);
 				}
 			}
-
+			// getting group best candidate if exists
 			if (!lEndPointsPQ.isEmpty()) {
 				IClusterEndPoint lEP = lEndPointsPQ.poll();
-				if (lEP.getCpuUsage() / aPI.getEndPointPowerFactor(lEP.getEndPointId()) <= lPG.getThreshold()) {
+				lAvailable = lEP;
+				if (lEP.getCpuUsage() / aPI.getEndPointPerformanceFactor(lEP.getEndPointId()) <= lPG.getThreshold()) {
 					return lEP;
 				}
 			}
+			// clear priority queue
+			lEndPointsPQ.clear();
 		}
 
 		// non endpoint satisfy the requirement
+		return lAvailable;
+	}
+
+	@Override
+	public IClusterEndPoint getEndPointByConnectorId(String aConnectorId) {
+		Iterator<IClusterEndPoint> lIt = getEndPoints();
+		while (lIt.hasNext()) {
+			IClusterEndPoint lEP = lIt.next();
+			if (lEP.getConnectorId().equals(aConnectorId)) {
+				return lEP;
+			}
+		}
+
 		return null;
 	}
 }
