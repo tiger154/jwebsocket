@@ -22,7 +22,7 @@ import javolution.util.FastSet;
  *
  * @author kyberneees
  */
-public class PriorityGroup {
+public class PriorityGroup implements Comparable<PriorityGroup> {
 
 	private String mName, mDescription;
 	private double mThreshold = 50.0;
@@ -57,5 +57,16 @@ public class PriorityGroup {
 
 	public Set<EndPointPerformanceInfo> getEndPointsInfo() {
 		return mEndPointsInfo;
+	}
+
+	@Override
+	public int compareTo(PriorityGroup aPG) {
+		if (getThreshold() < aPG.getThreshold()) {
+			return -1;
+		} else if (getThreshold() > aPG.getThreshold()) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 }

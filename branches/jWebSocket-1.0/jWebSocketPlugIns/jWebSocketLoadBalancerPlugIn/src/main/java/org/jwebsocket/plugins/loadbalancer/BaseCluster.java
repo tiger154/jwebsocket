@@ -35,27 +35,27 @@ public abstract class BaseCluster implements ICluster {
 	public IClusterEndPoint getGroupQuickerEndPoint(final EndPointsPerformanceTable aPI) {
 		List<PriorityGroup> lPGs = aPI.getPriorityGroups();
 		// ordering best candidate endpoint with a prority queue
-		PriorityQueue<IClusterEndPoint> lEndPointsPQ = new PriorityQueue<IClusterEndPoint>(
-				new Comparator<IClusterEndPoint>() {
+		final Comparator<IClusterEndPoint> lComparator = new Comparator<IClusterEndPoint>() {
 
-					@Override
-					public int compare(IClusterEndPoint lEP1, IClusterEndPoint lEP2) {
-						double lEP1Cpu = lEP1.getCpuUsage() / aPI.getEndPointPerformanceFactor(lEP1.getEndPointId());
-						double lEP2Cpu = lEP2.getCpuUsage() / aPI.getEndPointPerformanceFactor(lEP2.getEndPointId());
+			@Override
+			public int compare(IClusterEndPoint lEP1, IClusterEndPoint lEP2) {
+				double lEP1Cpu = lEP1.getCpuUsage() / aPI.getEndPointPerformanceFactor(lEP1.getConnectorId());
+				double lEP2Cpu = lEP2.getCpuUsage() / aPI.getEndPointPerformanceFactor(lEP2.getConnectorId());
 
-						if (lEP1Cpu < lEP2Cpu) {
-							return -1;
-						} else if (lEP1Cpu > lEP2Cpu) {
-							return 1;
-						} else {
-							return 0;
-						}
-					}
-				});
+				if (lEP1Cpu < lEP2Cpu) {
+					return -1;
+				} else if (lEP1Cpu > lEP2Cpu) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+		};
 
 		IClusterEndPoint lAvailable = null;
 		for (Iterator<PriorityGroup> it = lPGs.iterator(); it.hasNext();) {
 			PriorityGroup lPG = it.next();
+			PriorityQueue<IClusterEndPoint> lEndPointsPQ = new PriorityQueue<IClusterEndPoint>(lPG.getEndPointsInfo().size(), lComparator);
 			// inserting endpoints into priority queue to order them
 			for (EndPointPerformanceInfo lEPI : lPG.getEndPointsInfo()) {
 				IClusterEndPoint lEP = getEndPointByConnectorId(lEPI.getEndPointId());
@@ -71,8 +71,6 @@ public abstract class BaseCluster implements ICluster {
 					return lEP;
 				}
 			}
-			// clear priority queue
-			lEndPointsPQ.clear();
 		}
 
 		// non endpoint satisfy the requirement
