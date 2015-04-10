@@ -153,23 +153,23 @@ public class JWSJDBCAppender extends BaseAppender {
 	@Override
 	public boolean filterEvent(LoggingEvent aLE) {
 		boolean lResult = true;
-		for (LoggingEventFieldFilter lFilterItem : mFieldFilterList) {
-			String lFieldName = lFilterItem.getFieldName();
-			String lFieldValue = null;
-			if (null != lFilterItem.getBlackList() || null != lFilterItem.getWhiteList()) {
-				try {
+		try {
+			for (LoggingEventFieldFilter lFilterItem : mFieldFilterList) {
+				String lFieldName = lFilterItem.getFieldName();
+				String lFieldValue = null;
+				if (null != lFilterItem.getBlackList() || null != lFilterItem.getWhiteList()) {
 					lFieldValue = mLoggingEventFields.getFieldValueFromEvent(aLE, lFieldName);
-				} catch (Exception lEx) {
-					mLog.error(lEx.getLocalizedMessage());
+					if (null != lFieldValue && !"".equals(lFieldValue)) {
+						lResult = lFilterItem.matchesFilter(lFieldValue);
+					}
 				}
-				if (null != lFieldValue && !"".equals(lFieldValue)) {
-					lResult = lFilterItem.matchesFilter(lFieldValue);
+				// If at least one filter does not match for the given event
+				if (!lResult) {
+					break;
 				}
 			}
-			// If at least one filter does not match for the given event
-			if (!lResult) {
-				break;
-			}
+		} catch (Exception lEx) {
+			mLog.error(lEx.getLocalizedMessage());
 		}
 		return lResult;
 	}
