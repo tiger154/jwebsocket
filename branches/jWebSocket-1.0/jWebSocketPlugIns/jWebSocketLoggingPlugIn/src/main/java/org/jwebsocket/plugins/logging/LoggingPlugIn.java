@@ -94,8 +94,15 @@ public class LoggingPlugIn extends TokenPlugIn {
 		if (null != lJWSAppender) {
 			Set<ILog4JAppender> lAppenders = mSettings.getAppenders();
 			for (ILog4JAppender lAppender : lAppenders) {
-				lJWSAppender.addAppender(lAppender);
-				lAppender.initialize();
+				try {
+					lAppender.initialize();
+					lJWSAppender.addAppender(lAppender);
+				} catch (Exception lEx) {
+					mLog.error("At least one JWSLog4JAppender could not be initialized, "
+							+ "please check the following exception: " + lEx.getLocalizedMessage());
+					lAppender.shutdown();
+					lJWSAppender.removeAppender(lAppender);
+				}
 			}
 		}
 
@@ -117,7 +124,6 @@ public class LoggingPlugIn extends TokenPlugIn {
 			mLog.info("Logging plug-in successfully stopped.");
 		}
 	}
-	
 
 	@Override
 	public String getVersion() {
