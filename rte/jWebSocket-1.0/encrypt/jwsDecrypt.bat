@@ -1,6 +1,7 @@
 @echo off
-echo Decrpyting a file using a private key!
+echo Decrpyting a file using a private key.
 echo (C) Copyright 2015 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+rem  Authors: Domma Moreno Dager, Alexander Schulze
 echo.
 
 rem you can change the name of your private key file here:
@@ -13,7 +14,7 @@ if not exist %pkeyfile% goto keyErr
 goto start
 
 :argErr
-echo decryptFile needs to be called with to arguments: decryptFile sourceFile(encrypted) decryptedFile(decrypted)
+echo jwsDecrypt needs to be called with to arguments: jwsDecrypt sourceFile(encrypted) decryptedFile(decrypted)
 goto :end
 
 :keyErr
@@ -21,8 +22,7 @@ echo decryptFile needs have a private key file called %pkeyfile% in the same fol
 goto :end
 
 :start
-rem openssl aes-256-cbc -d -a -salt -in %1 -out %2 -pass file:%pkeyfile%
-openssl rsautl -decrypt -in %1 -out %2 -inkey %pkeyfile%
+openssl smime -decrypt -binary -in %1 -inform DER -out %2 -inkey %pkeyfile%
 
 :end
 pause
