@@ -1,9 +1,13 @@
 #! /bin/bash 
 clear
-echo Encrpyting a file using a private key!
-echo (C) Copyright 2015 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
-echo .
+echo "Creating a private certificate for encryption."
+echo "(C) Copyright 2015 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath"
+# Authors: Domma Moreno Dager, Alexander Schulze
+echo "."
 
-pkeyfile=private.key
-openssl req -new -key $pkeyfile -out info.csr
-openssl x509 -req -days 7300 -in info.csr -signkey $pkeyfile -out private.crt  
+pkeyfile=demo.key
+csrfile=demo.csr
+crtfile=demo.crt
+
+openssl req -new -key $pkeyfile -out $csrfile
+openssl x509 -req -days 7300 -in $csrfile -signkey $pkeyfile -out $crtfile
