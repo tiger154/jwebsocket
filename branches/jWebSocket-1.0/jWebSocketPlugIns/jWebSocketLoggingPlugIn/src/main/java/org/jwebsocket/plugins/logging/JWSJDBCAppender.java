@@ -21,6 +21,7 @@ package org.jwebsocket.plugins.logging;
 import org.jwebsocket.logging.LoggingEventFieldFilter;
 import java.util.Calendar;
 import java.util.TimerTask;
+import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.jwebsocket.factory.JWebSocketFactory;
@@ -58,22 +59,24 @@ public class JWSJDBCAppender extends BaseAppender {
 	private String mLogDuration;
 	private LogsCleanupTask mCleanupTask;
 	private Boolean mIsCleanupRunning;
+	private Boolean mInstantiationError = false;
 
 	@Override
 	public void initialize() throws Exception {
 		super.initialize();
 		TokenServer lServer = JWebSocketFactory.getTokenServer();
-		try {
-			// Loading the JDBCPlugIn from the list of loaded plugins
-			mJDBCPlugIn = (TokenPlugIn) lServer.getPlugInById(mJDBCPlugInID);
-		} catch (Exception lEx) {
-			mLog.error(lEx.getLocalizedMessage());
+		if (null == this.mFieldFilterList) {
+			this.mFieldFilterList = new FastList<LoggingEventFieldFilter>();
 		}
+		// Loading the JDBCPlugIn from the list of loaded plugins
+		mJDBCPlugIn = (TokenPlugIn) lServer.getPlugInById(mJDBCPlugInID);
+
 		if (null != mJDBCPlugIn) {
 			Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(mCreateTableQuery));
 			if (null != lResponse) {
 				if (-1 == lResponse.getCode()) {
-					mLog.error("Error caught while creating the JDBCPlugin: " + lResponse.getString("msg"));
+					mInstantiationError = true;
+					throw new Exception(lResponse.getString("msg"));
 				}
 			}
 		}
@@ -195,12 +198,14 @@ public class JWSJDBCAppender extends BaseAppender {
 	public void shutdown() throws Exception {
 		super.shutdown();
 		mIsCleanupRunning = false;
-		mCleanupTask.cancel();
+		if (null != mCleanupTask) {
+			mCleanupTask.cancel();
+		}
 	}
 
 	@Override
 	public void append(LoggingEvent aLE) {
-		if (filterEvent(aLE)) {
+		if (!mInstantiationError && filterEvent(aLE)) {
 			if (null != mJDBCPlugIn && null != mInsertQuery) {
 				JWSJDBCPatternLayout lLayout = new JWSJDBCPatternLayout(prepareQuery(mInsertQuery));
 				Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(lLayout.format(aLE)));

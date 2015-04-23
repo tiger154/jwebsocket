@@ -98,8 +98,10 @@ public class LoggingPlugIn extends TokenPlugIn {
 					lAppender.initialize();
 					lJWSAppender.addAppender(lAppender);
 				} catch (Exception lEx) {
-					mLog.error("At least one JWSLog4JAppender could not be initialized, "
-							+ "please check the following exception: " + lEx.getLocalizedMessage());
+					mLog.error(lAppender.getClass().getName() + " could not be "
+							+ "initialized, please check the following exception "
+							+ "thrown by the initializer method of the appender: "
+							+ lEx.getLocalizedMessage());
 					lAppender.shutdown();
 					lJWSAppender.removeAppender(lAppender);
 				}
