@@ -72,7 +72,6 @@ public class JWSJDBCAppender extends BaseAppender {
 		if (null != mJDBCPlugIn) {
 			Token lResponse = mJDBCPlugIn.invoke(null, queryToToken(mCreateTableQuery));
 			if (null != lResponse) {
-				System.out.println(lResponse);
 				if (-1 == lResponse.getCode()) {
 					mLog.error("Error caught while creating the JDBCPlugin: " + lResponse.getString("msg"));
 				}
