@@ -8,13 +8,10 @@ echo "."
 #you can change the name of your private key file here:
 pkeyfile=demo.key
 
-if [! -f $1]; then 
+if [ ! $# = 2 ]; then 
 echo "jwsDecrypt needs to be called with to arguments: jwsDecrypt sourceFile(encrypted) decryptedFile(decrypted)"
 
-elif [! -f $2]; then 
-echo "jwsDecrypt needs to be called with to arguments: jwsDecrypt sourceFile(encrypted) decryptedFile(decrypted)"
-
-elif [! -f $pkeyfile]; then
+elif [ ! -f $pkeyfile ]; then
 echo "decryptFile needs have a private key file called $pkeyfile in the same folder like the batch"
 
 else
