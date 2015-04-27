@@ -33,152 +33,159 @@ import org.springframework.util.Assert;
  */
 public class MongoDBCacheStorageBuilder implements IInitializable {
 
-	private Mongo mConnection;
-	private String mDatabaseName;
-	private String mCollectionName;
-	private String mUsername, mPassword;
-	/**
-	 *
-	 */
-	public static final String V1 = "v1";
-	/**
-	 *
-	 */
-	public static final String V2 = "v2";
-	private DBCollection mCollection = null;
-	private DB mDatabase = null;
+    private Mongo mConnection;
+    private String mDatabaseName;
+    private String mCollectionName;
+    private String mUsername, mPassword;
+    /**
+     *
+     */
+    public static final String V1 = "v1";
+    /**
+     *
+     */
+    public static final String V2 = "v2";
+    /**
+     *
+     */
+    public static final String V3 = "v3";
+    private DBCollection mCollection = null;
+    private DB mDatabase = null;
 
-	/**
-	 *
-	 * @return
-	 */
-	public String getUsername() {
-		return mUsername;
-	}
+    /**
+     *
+     * @return
+     */
+    public String getUsername() {
+        return mUsername;
+    }
 
-	/**
-	 *
-	 * @param aUsername
-	 */
-	public void setUsername(String aUsername) {
-		this.mUsername = aUsername;
-	}
+    /**
+     *
+     * @param aUsername
+     */
+    public void setUsername(String aUsername) {
+        this.mUsername = aUsername;
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	public String getPassword() {
-		return mPassword;
-	}
+    /**
+     *
+     * @return
+     */
+    public String getPassword() {
+        return mPassword;
+    }
 
-	/**
-	 *
-	 * @param aPassword
-	 */
-	public void setPassword(String aPassword) {
-		mPassword = aPassword;
-	}
+    /**
+     *
+     * @param aPassword
+     */
+    public void setPassword(String aPassword) {
+        mPassword = aPassword;
+    }
 
-	/**
-	 *
-	 * @return The Mongo database connection
-	 */
-	public Mongo getConnection() {
-		return mConnection;
-	}
+    /**
+     *
+     * @return The Mongo database connection
+     */
+    public Mongo getConnection() {
+        return mConnection;
+    }
 
-	/**
-	 *
-	 * @param aConnection The Mongo database connection to set
-	 */
-	public void setConnection(Mongo aConnection) {
-		mConnection = aConnection;
-	}
+    /**
+     *
+     * @param aConnection The Mongo database connection to set
+     */
+    public void setConnection(Mongo aConnection) {
+        mConnection = aConnection;
+    }
 
-	/**
-	 *
-	 * @param aVersion
-	 * @param aName The cache storage name to build
-	 * @return The cache storage ready to use.
-	 * @throws Exception
-	 */
-	public IBasicCacheStorage<String, Object> getCacheStorage(String aVersion, String aName) throws Exception {
-		IBasicCacheStorage<String, Object> lCache = null;
-		if (aVersion.equals(V1)) {
-			lCache = new MongoDBCacheStorageV1<String, Object>(aName, mDatabase);
-			lCache.initialize();
-		} else if (aVersion.equals(V2)) {
-			lCache = new MongoDBCacheStorageV2<String, Object>(aName, mCollection);
-			lCache.initialize();
-		}
+    /**
+     *
+     * @param aVersion
+     * @param aName The cache storage name to build
+     * @return The cache storage ready to use.
+     * @throws Exception
+     */
+    public IBasicCacheStorage<String, Object> getCacheStorage(String aVersion, String aName) throws Exception {
+        IBasicCacheStorage<String, Object> lCache = null;
+        if (V1.equals(aVersion)) {
+            lCache = new MongoDBCacheStorageV1<String, Object>(aName, mDatabase);
+            lCache.initialize();
+        } else if (V2.equals(aVersion)) {
+            lCache = new MongoDBCacheStorageV2<String, Object>(aName, mCollection);
+            lCache.initialize();
+        } else if (V3.equals(aVersion)) {
+            lCache = new MongoDBCacheStorageV3<String, Object>(aName, mCollection);
+            lCache.initialize();
+        }
 
-		return lCache;
-	}
+        return lCache;
+    }
 
-	/**
-	 *
-	 * @param aVersion
-	 * @param aName
-	 * @throws Exception
-	 */
-	public void removeCacheStorage(String aVersion, String aName) throws Exception {
-		if (aVersion.equals(V1)) {
-			mDatabase.getCollection(aName).drop();
-		} else if (aVersion.equals(V2)) {
-			mCollection.remove(new BasicDBObject().append("ns", aName));
-		}
-	}
+    /**
+     *
+     * @param aVersion
+     * @param aName
+     * @throws Exception
+     */
+    public void removeCacheStorage(String aVersion, String aName) throws Exception {
+        if (aVersion.equals(V1)) {
+            mDatabase.getCollection(aName).drop();
+        } else if (aVersion.equals(V2)) {
+            mCollection.remove(new BasicDBObject().append("ns", aName));
+        }
+    }
 
-	/**
-	 * @return the databaseName
-	 */
-	public String getDatabaseName() {
-		return mDatabaseName;
-	}
+    /**
+     * @return the databaseName
+     */
+    public String getDatabaseName() {
+        return mDatabaseName;
+    }
 
-	/**
-	 *
-	 * @param aDatabaseName
-	 */
-	public void setDatabaseName(String aDatabaseName) {
-		mDatabaseName = aDatabaseName;
-	}
+    /**
+     *
+     * @param aDatabaseName
+     */
+    public void setDatabaseName(String aDatabaseName) {
+        mDatabaseName = aDatabaseName;
+    }
 
-	/**
-	 * @return The database collection name for cache storages of version 2
-	 */
-	public String getCollectionName() {
-		return mCollectionName;
-	}
+    /**
+     * @return The database collection name for cache storages of version 2
+     */
+    public String getCollectionName() {
+        return mCollectionName;
+    }
 
-	/**
-	 * @param aCollectionName The database collection name for cache storages of
-	 * version 2
-	 */
-	public void setCollectionName(String aCollectionName) {
-		mCollectionName = aCollectionName;
-	}
+    /**
+     * @param aCollectionName The database collection name for cache storages of
+     * version 2
+     */
+    public void setCollectionName(String aCollectionName) {
+        mCollectionName = aCollectionName;
+    }
 
-	@Override
-	public void initialize() throws Exception {
-		Assert.notNull(mConnection, "The 'connection' property cannot be null!");
-		Assert.notNull(mDatabaseName, "The 'databaseName' property cannot be null!");
-		Assert.notNull(mCollectionName, "The 'collectionName' property cannot be null!");
+    @Override
+    public void initialize() throws Exception {
+        Assert.notNull(mConnection, "The 'connection' property cannot be null!");
+        Assert.notNull(mDatabaseName, "The 'databaseName' property cannot be null!");
+        Assert.notNull(mCollectionName, "The 'collectionName' property cannot be null!");
 
-		//Getting the temporal database instance to improve performance
-		mDatabase = mConnection.getDB(mDatabaseName);
-		if (null != mUsername) {
-			// authenticating on database
-			Assert.isTrue(mDatabase.authenticate(mUsername, mPassword.toCharArray()),
-					"Invalid credentials!");
-		}
+        //Getting the temporal database instance to improve performance
+        mDatabase = mConnection.getDB(mDatabaseName);
+        if (null != mUsername) {
+            // authenticating on database
+            Assert.isTrue(mDatabase.authenticate(mUsername, mPassword.toCharArray()),
+                    "Invalid credentials!");
+        }
 
-		//Getting the temporal collection instance to improve performance
-		mCollection = mDatabase.getCollection(mCollectionName);
-	}
+        //Getting the temporal collection instance to improve performance
+        mCollection = mDatabase.getCollection(mCollectionName);
+    }
 
-	@Override
-	public void shutdown() throws Exception {
-	}
+    @Override
+    public void shutdown() throws Exception {
+    }
 }
