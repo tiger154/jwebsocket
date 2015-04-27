@@ -37,192 +37,202 @@ import org.jwebsocket.storage.BaseStorage;
  */
 public class MongoDBCacheStorageV2<K, V> extends BaseStorage<K, V> implements IBasicCacheStorage<K, V> {
 
-	private String mName;
-	private final DBCollection mCollection;
+    private String mName;
+    private final DBCollection mCollection;
 
-	/**
-	 *
-	 * @param aName
-	 * @param aCollection
-	 */
-	public MongoDBCacheStorageV2(String aName, DBCollection aCollection) {
-		this.mName = aName;
-		mCollection = aCollection;
-	}
+    /**
+     *
+     * @param aName
+     * @param aCollection
+     */
+    public MongoDBCacheStorageV2(String aName, DBCollection aCollection) {
+        this.mName = aName;
+        mCollection = aCollection;
+    }
 
-	/**
-	 * {@inheritDoc
-	 *
-	 * @param lKey
-	 * @param lValue
-	 * @param aExpTime
-	 */
-	@Override
-	public V put(K lKey, V lValue, int aExpTime) {
-		mCollection.insert(new BasicDBObject().append("ns", mName).
-				append("k", lKey).append("v", lValue).
-				append("it", (Long) (System.currentTimeMillis() / 1000)).
-				append("et", aExpTime));
+    /**
+     * {@inheritDoc
+     *
+     * @param aKey
+     * @param aValue
+     * @param aExpTime
+     */
+    @Override
+    public V put(K aKey, V aValue, int aExpTime) {
+        DBObject lRecord = new BasicDBObject();
+        lRecord.put("k", aKey);
+        lRecord.put("ns", mName);
 
-		return lValue;
-	}
+        DBObject lExisting = mCollection.findOne(lRecord);
+        if (null != lExisting) {
+            lRecord = lExisting;
+        }
 
-	/**
-	 * {@inheritDoc
-	 *
-	 * @param lKey
-	 * @param lValue
-	 */
-	@Override
-	public V put(K lKey, V lValue) {
-		return put(lKey, lValue, 0);
-	}
+        lRecord.put("v", aValue);
+        lRecord.put("it", (Long) (System.currentTimeMillis() / 1000));
+        lRecord.put("et", aExpTime);
 
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public String getName() {
-		return mName;
-	}
+        mCollection.save(lRecord);
 
-	/**
-	 * {@inheritDoc
-	 *
-	 * @param aNewName
-	 * @throws java.lang.Exception
-	 */
-	@Override
-	public void setName(String aNewName) throws Exception {
-		mCollection.update(new BasicDBObject().append("ns", mName),
-				new BasicDBObject().append("$set", new BasicDBObject().append("ns", aNewName)));
+        return aValue;
+    }
 
-		mName = aNewName;
-	}
+    /**
+     * {@inheritDoc
+     *
+     * @param aKey
+     * @param aValue
+     */
+    @Override
+    public V put(K aKey, V aValue) {
+        return put(aKey, aValue, 0);
+    }
 
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public void clear() {
-		mCollection.remove(new BasicDBObject().append("ns", mName));
-	}
+    /**
+     * {@inheritDoc
+     */
+    @Override
+    public String getName() {
+        return mName;
+    }
 
-	/**
-	 * {@inheritDoc
-	 *
-	 * @param aKey
-	 */
-	@Override
-	public boolean containsKey(Object aKey) {
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
-				append("k", aKey));
+    /**
+     * {@inheritDoc
+     *
+     * @param aNewName
+     * @throws java.lang.Exception
+     */
+    @Override
+    public void setName(String aNewName) throws Exception {
+        mCollection.update(new BasicDBObject().append("ns", mName),
+                new BasicDBObject().append("$set", new BasicDBObject().append("ns", aNewName)));
 
-		if (lRecord != null && isValid(lRecord)) {
-			return true;
-		}
-		return false;
-	}
+        mName = aNewName;
+    }
 
-	/**
-	 *
-	 * @param aRecord The DBObject record
-	 * @return TRUE if the record is not expired, FALSE otherwise
-	 */
-	private boolean isValid(DBObject aRecord) {
-		Integer lExpTime = (Integer) aRecord.get("et");
-		if (lExpTime < 1) {
-			return true;
-		}
+    /**
+     * {@inheritDoc
+     */
+    @Override
+    public void clear() {
+        mCollection.remove(new BasicDBObject().append("ns", mName));
+    }
 
-		if (((Long) aRecord.get("it")) + lExpTime >= System.currentTimeMillis() / 1000) {
-			return true;
-		}
-		//Useful to keep the collection up to date with only non-expired values
-		mCollection.remove(aRecord);
+    /**
+     * {@inheritDoc
+     *
+     * @param aKey
+     */
+    @Override
+    public boolean containsKey(Object aKey) {
+        DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
+                append("k", aKey));
 
-		return false;
-	}
+        if (lRecord != null && isValid(lRecord)) {
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc
-	 *
-	 * @param aValue
-	 */
-	@Override
-	public boolean containsValue(Object aValue) {
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
-				append("v", aValue));
+    /**
+     *
+     * @param aRecord The DBObject record
+     * @return TRUE if the record is not expired, FALSE otherwise
+     */
+    private boolean isValid(DBObject aRecord) {
+        Integer lExpTime = (Integer) aRecord.get("et");
+        if (lExpTime < 1) {
+            return true;
+        }
 
-		if (lRecord != null && isValid(lRecord)) {
-			return true;
-		}
-		return false;
-	}
+        if (((Long) aRecord.get("it")) + lExpTime >= System.currentTimeMillis() / 1000) {
+            return true;
+        }
+        // keeping the collection up to date with only non-expired values
+        mCollection.remove(aRecord);
 
-	/**
-	 * {@inheritDoc
-	 *
-	 * @param aValue
-	 */
-	@Override
-	public V get(Object aValue) {
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
-				append("k", aValue));
+        return false;
+    }
 
-		if (lRecord != null) {
-			if (isValid(lRecord)) {
-				return (V) lRecord.get("v");
-			}
-		}
-		return null;
-	}
+    /**
+     * {@inheritDoc
+     *
+     * @param aValue
+     */
+    @Override
+    public boolean containsValue(Object aValue) {
+        DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
+                append("v", aValue));
 
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public Set<K> keySet() {
-		Set<K> lKeySet = new FastSet<K>();
-		DBCursor lCursor = mCollection.find(new BasicDBObject().append("ns", mName));
+        if (lRecord != null && isValid(lRecord)) {
+            return true;
+        }
+        return false;
+    }
 
-		while (lCursor.hasNext()) {
-			DBObject lRecord = lCursor.next();
-			if (isValid(lRecord)) {
-				lKeySet.add((K) lRecord.get("k"));
-			}
-		}
+    /**
+     * {@inheritDoc
+     *
+     * @param aValue
+     */
+    @Override
+    public V get(Object aValue) {
+        DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
+                append("k", aValue));
 
-		return lKeySet;
-	}
+        if (lRecord != null) {
+            if (isValid(lRecord)) {
+                return (V) lRecord.get("v");
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc
-	 *
-	 * @param aKey
-	 */
-	@Override
-	public V remove(Object aKey) {
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
-				append("k", aKey));
+    /**
+     * {@inheritDoc
+     */
+    @Override
+    public Set<K> keySet() {
+        Set<K> lKeySet = new FastSet<K>();
+        DBCursor lCursor = mCollection.find(new BasicDBObject().append("ns", mName));
 
-		if (lRecord != null) {
-			mCollection.remove(lRecord);
-			if (isValid(lRecord)) {
-				return (V) lRecord.get("v");
-			}
-		}
-		return null;
-	}
+        while (lCursor.hasNext()) {
+            DBObject lRecord = lCursor.next();
+            if (isValid(lRecord)) {
+                lKeySet.add((K) lRecord.get("k"));
+            }
+        }
 
-	/**
-	 * {@inheritDoc
-	 *
-	 * @throws java.lang.Exception
-	 */
-	@Override
-	public void initialize() throws Exception {
-		mCollection.createIndex(new BasicDBObject().append("ns", 1).append("k", 1),
-				new BasicDBObject().append("unique", true));
-	}
+        return lKeySet;
+    }
+
+    /**
+     * {@inheritDoc
+     *
+     * @param aKey
+     */
+    @Override
+    public V remove(Object aKey) {
+        DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
+                append("k", aKey));
+
+        if (lRecord != null) {
+            mCollection.remove(lRecord);
+            if (isValid(lRecord)) {
+                return (V) lRecord.get("v");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc
+     *
+     * @throws java.lang.Exception
+     */
+    @Override
+    public void initialize() throws Exception {
+        mCollection.createIndex(new BasicDBObject().append("ns", 1).append("k", 1),
+                new BasicDBObject().append("unique", true));
+    }
 }
