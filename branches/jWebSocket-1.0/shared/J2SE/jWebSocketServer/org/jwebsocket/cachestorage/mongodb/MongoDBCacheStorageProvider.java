@@ -57,7 +57,7 @@ public class MongoDBCacheStorageProvider extends MongoDBCacheStorageBuilder impl
     public IBasicCacheStorage getCacheStorage(String aName) throws Exception {
         if (isServerExpirationSupported()) {
             // TTL is default option
-            return this.getCacheStorage(MongoDBStorageBuilder.V3, aName);
+            return this.getCacheStorage(MongoDBCacheStorageBuilder.V3, aName);
         }
         return this.getCacheStorage(MongoDBStorageBuilder.V2, aName);
     }
