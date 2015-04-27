@@ -28,21 +28,43 @@ import org.jwebsocket.storage.mongodb.MongoDBStorageBuilder;
  */
 public class MongoDBCacheStorageProvider extends MongoDBCacheStorageBuilder implements ICacheStorageProvider {
 
-	/**
-	 *
-	 */
-	public MongoDBCacheStorageProvider() {
-		super();
-	}
+    /**
+     * Available in MongoDB server from version 2.2
+     */
+    private boolean mServerExpirationSupported = false;
 
+    /**
+     *
+     */
+    public MongoDBCacheStorageProvider() {
+        super();
+    }
 
-	@Override
-	public IBasicCacheStorage getCacheStorage(String aName) throws Exception {
-		return this.getCacheStorage(MongoDBStorageBuilder.V2, aName);
-	}
+    /**
+     * Indicates of the MongoDB server supports documents expiration.
+     *
+     * @return
+     */
+    public boolean isServerExpirationSupported() {
+        return mServerExpirationSupported;
+    }
 
-	@Override
-	public void removeCacheStorage(String aName) throws Exception {
-		super.removeCacheStorage(V2, aName);
-	}
+    public void setServerExpirationSupported(boolean aIsServerExpirationSupported) {
+        this.mServerExpirationSupported = aIsServerExpirationSupported;
+    }
+
+    @Override
+    public IBasicCacheStorage getCacheStorage(String aName) throws Exception {
+        if (isServerExpirationSupported()) {
+            // TTL is default option
+            return this.getCacheStorage(MongoDBStorageBuilder.V3, aName);
+        }
+        return this.getCacheStorage(MongoDBStorageBuilder.V2, aName);
+    }
+
+    @Override
+    public void removeCacheStorage(String aName) throws Exception {
+        // V3 and V2 is same behavior 
+        super.removeCacheStorage(V2, aName);
+    }
 }
