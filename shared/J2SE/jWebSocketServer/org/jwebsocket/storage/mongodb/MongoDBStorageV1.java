@@ -78,15 +78,15 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 	/**
 	 * {@inheritDoc
 	 *
-	 * @param newName
+	 * @param aNewName
 	 * @throws java.lang.Exception
 	 */
 	@Override
-	public void setName(String newName) throws Exception {
+	public void setName(String aNewName) throws Exception {
 		Assert.isTrue(null != mName, "The 'newName', argument cannot be null!");
 
-		mDatabase.createCollection(newName, null);
-		DBCollection lNewCollection = mDatabase.getCollection(newName);
+		mDatabase.createCollection(aNewName, null);
+		DBCollection lNewCollection = mDatabase.getCollection(aNewName);
 
 		DBCursor lRecords = mCollection.find();
 		while (lRecords.hasNext()) {
@@ -95,7 +95,7 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 		mCollection.drop();
 		mCollection = lNewCollection;
-		mName = newName;
+		mName = aNewName;
 	}
 
 	/**
