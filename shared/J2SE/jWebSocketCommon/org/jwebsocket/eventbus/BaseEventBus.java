@@ -36,181 +36,189 @@ import org.springframework.util.Assert;
  */
 public abstract class BaseEventBus implements IEventBus, IInitializable {
 
-	protected static final String SEND_METHOD = "SEND";
-	protected static final String PUBLISH_METHOD = "PUBLISH";
-	private final Map<String, IHandler> mResponseHandlers = new FastMap<String, IHandler>().shared();
-	private final Map<String, List<IHandler>> mHandlers = new FastMap<String, List<IHandler>>().shared();
-	private IExceptionHandler mExceptionHandler = new IExceptionHandler() {
+    protected static final String SEND_METHOD = "SEND";
+    protected static final String PUBLISH_METHOD = "PUBLISH";
+    private final Map<String, IHandler> mResponseHandlers = new FastMap<String, IHandler>().shared();
+    private final Map<String, List<IHandler>> mHandlers = new FastMap<String, List<IHandler>>().shared();
+    private IExceptionHandler mExceptionHandler = new IExceptionHandler() {
 
-		@Override
-		public void handle(Exception lEx) {
+        @Override
+        public void handle(Exception lEx) {
 
-		}
-	};
+        }
+    };
 
-	@Override
-	public IEventBus send(Token aToken) {
-		return send(aToken, null);
-	}
+    @Override
+    public IEventBus send(Token aToken) {
+        return send(aToken, null);
+    }
 
-	@Override
-	public Token createResponse(Token aInToken) {
-		Token lResponse = TokenFactory.createToken(aInToken.getNS(), "response");
-		lResponse.setCode(STATUS_OK);
-		lResponse.setString(JMSEventBus.EVENT_BUS_MSG_UUID, aInToken.getString(JMSEventBus.EVENT_BUS_MSG_UUID));
-		lResponse.setString("reqType", aInToken.getType());
+    @Override
+    public Token createResponse(Token aInToken) {
+        Token lResponse = TokenFactory.createToken(aInToken.getNS(), "response");
+        lResponse.setCode(STATUS_OK);
+        lResponse.setString(JMSEventBus.EVENT_BUS_MSG_UUID, aInToken.getString(JMSEventBus.EVENT_BUS_MSG_UUID));
+        lResponse.setString("reqType", aInToken.getType());
 
-		return lResponse;
-	}
+        return lResponse;
+    }
 
-	@Override
-	public Token createErrorResponse(Token aInToken) {
-		Token lResponse = createResponse(aInToken);
-		lResponse.setCode(-1);
+    @Override
+    public Token createErrorResponse(Token aInToken) {
+        Token lResponse = createResponse(aInToken);
+        lResponse.setCode(-1);
 
-		return lResponse;
-	}
+        return lResponse;
+    }
 
-	protected IHandler removeResponseHandler(String aTokenUID) {
-		return mResponseHandlers.remove(aTokenUID);
-	}
+    protected IHandler removeResponseHandler(String aTokenUID) {
+        return mResponseHandlers.remove(aTokenUID);
+    }
 
-	protected void storeResponseHandler(String aTokenUID, IHandler aHandler) {
-		mResponseHandlers.put(aTokenUID, aHandler);
-	}
+    protected void storeResponseHandler(String aTokenUID, IHandler aHandler) {
+        mResponseHandlers.put(aTokenUID, aHandler);
+    }
 
-	protected void removeHandler(String aNS, IHandler aHandler) {
-		if (mHandlers.containsKey(aNS)) {
-			mHandlers.get(aNS).remove(aHandler);
-		}
-	}
+    protected void removeHandler(String aNS, IHandler aHandler) {
+        if (mHandlers.containsKey(aNS)) {
+            mHandlers.get(aNS).remove(aHandler);
+        }
+    }
 
-	protected synchronized void storeHandler(String aNS, IHandler aHandler) {
-		if (!mHandlers.containsKey(aNS)) {
-			mHandlers.put(aNS, new FastList<IHandler>());
-		}
+    protected synchronized void storeHandler(String aNS, IHandler aHandler) {
+        if (!mHandlers.containsKey(aNS)) {
+            mHandlers.put(aNS, new FastList<IHandler>());
+        }
 
-		mHandlers.get(aNS).add(aHandler);
-	}
+        mHandlers.get(aNS).add(aHandler);
+    }
 
-	protected void invokeHandlers(String aNS, final Token aToken) {
-		for (String lNS : mHandlers.keySet()) {
-			if ((!aNS.matches(lNS) && !Tools.wildCardMatch(aNS, lNS)) || mHandlers.get(lNS).isEmpty()) {
-				continue;
-			}
+    protected void invokeHandlers(String aNS, final Token aToken) {
+        for (String lNS : mHandlers.keySet()) {
+            if ((!aNS.matches(lNS) && !Tools.wildCardMatch(aNS, lNS)) || mHandlers.get(lNS).isEmpty()) {
+                continue;
+            }
 
-			List<IHandler> lHandlers = mHandlers.get(lNS);
-			final IEventBus lEB = this;
+            List<IHandler> lHandlers = mHandlers.get(lNS);
+            final IEventBus lEB = this;
 
-			if (isAllowedToProcess(false, aToken)) {
-				for (final IHandler lH : lHandlers) {
-					Tools.getThreadPool().submit(new Runnable() {
+            if (isAllowedToProcess(false, aToken)) {
+                for (final IHandler lH : lHandlers) {
+                    Tools.getThreadPool().submit(new Runnable() {
 
-						@Override
-						public void run() {
-							try {
-								lH.setEventBus(lEB);
-								lH.OnMessage(aToken);
-							} catch (Exception lEx) {
-								mExceptionHandler.handle(lEx);
-							}
-						}
-					});
-				}
-			}
-		}
-	}
+                        @Override
+                        public void run() {
+                            try {
+                                lH.setEventBus(lEB);
+                                lH.OnMessage(aToken);
+                            } catch (Exception lEx) {
+                                mExceptionHandler.handle(lEx);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
 
-	@Override
-	public IRegistration register(final String aNS, final IHandler aHandler) {
-		Assert.notNull(aNS, "The 'NS' argument cannot be null!");
-		Assert.notNull(aHandler, "The 'handler' argument cannot be null!");
+    @Override
+    public IRegistration register(final String aNS, final IHandler aHandler) {
+        Assert.notNull(aNS, "The 'NS' argument cannot be null!");
+        Assert.notNull(aHandler, "The 'handler' argument cannot be null!");
 
-		storeHandler(aNS, aHandler);
+        storeHandler(aNS, aHandler);
 
-		return new IRegistration() {
+        return new IRegistration() {
 
-			@Override
-			public String getNS() {
-				return aNS;
-			}
+            @Override
+            public String getNS() {
+                return aNS;
+            }
 
-			@Override
-			public void cancel() {
-				removeHandler(aNS, aHandler);
-			}
+            @Override
+            public void cancel() {
+                removeHandler(aNS, aHandler);
+            }
 
-			@Override
-			public IHandler getHandler() {
-				return aHandler;
-			}
-		};
-	}
+            @Override
+            public IHandler getHandler() {
+                return aHandler;
+            }
+        };
+    }
 
-	protected void invokeHandler(String aNS, final Token aToken) {
-		for (String lNS : mHandlers.keySet()) {
-			if (!aNS.matches(lNS) && !Tools.wildCardMatch(aNS, lNS) || mHandlers.get(lNS).isEmpty()) {
-				continue;
-			}
+    protected void invokeHandler(String aNS, final Token aToken) {
+        for (String lNS : mHandlers.keySet()) {
+            if (!aNS.matches(lNS) && !Tools.wildCardMatch(aNS, lNS) || mHandlers.get(lNS).isEmpty()) {
+                continue;
+            }
 
-			final IHandler lH = mHandlers.get(lNS).get(0);
-			final IEventBus lEB = this;
+            final IHandler lH = mHandlers.get(lNS).get(0);
+            final IEventBus lEB = this;
 
-			if (isAllowedToProcess(true, aToken)) {
-				Tools.getThreadPool().submit(new Runnable() {
+            if (isAllowedToProcess(true, aToken)) {
+                Tools.getThreadPool().submit(new Runnable() {
 
-					@Override
-					public void run() {
-						try {
-							lH.setEventBus(lEB);
-							lH.OnMessage(aToken);
-						} catch (Exception lEx) {
-							mExceptionHandler.handle(lEx);
-						}
-					}
-				});
-			}
+                    @Override
+                    public void run() {
+                        try {
+                            lH.setEventBus(lEB);
+                            lH.OnMessage(aToken);
+                        } catch (Exception lEx) {
+                            mExceptionHandler.handle(lEx);
+                        }
+                    }
+                });
+            }
 
-			return;
-		}
-	}
+            return;
+        }
+    }
 
-	protected void invokeResponseHandler(String aTokenUID, final Token aResponse) {
-		final IHandler lH = removeResponseHandler(aTokenUID);
-		if (null != lH) {
-			Tools.getThreadPool().submit(new Runnable() {
+    protected void invokeResponseHandler(String aTokenUID, final Token aResponse) {
+        final IHandler lH = removeResponseHandler(aTokenUID);
+        if (null != lH) {
+            Tools.getThreadPool().submit(new Runnable() {
 
-				@Override
-				public void run() {
-					try {
-						lH.OnMessage(aResponse);
+                @Override
+                public void run() {
+                    try {
+                        lH.OnMessage(aResponse);
 
-						// supporting jWebSocket callbacks style
-						lH.OnResponse(aResponse);
+                        // supporting jWebSocket callbacks style
+                        lH.OnResponse(aResponse);
 
-						if (Handler.STATUS_OK.equals(aResponse.getCode())) {
-							lH.OnSuccess(aResponse);
-						} else {
-							lH.OnFailure(aResponse);
-						}
-					} catch (Exception lEx) {
-						mExceptionHandler.handle(lEx);
-					}
-				}
-			});
-		}
-	}
+                        if (Handler.STATUS_OK.equals(aResponse.getCode())) {
+                            lH.OnSuccess(aResponse);
+                        } else {
+                            lH.OnFailure(aResponse);
+                        }
+                    } catch (Exception lEx) {
+                        mExceptionHandler.handle(lEx);
+                    }
+                }
+            });
+        }
+    }
 
-	@Override
-	public void setExceptionHandler(IExceptionHandler aHandler) {
-		mExceptionHandler = aHandler;
-	}
+    @Override
+    public void setExceptionHandler(IExceptionHandler aHandler) {
+        mExceptionHandler = aHandler;
+    }
 
-	public IExceptionHandler getExceptionHandler() {
-		return mExceptionHandler;
-	}
+    public IExceptionHandler getExceptionHandler() {
+        return mExceptionHandler;
+    }
 
-	protected boolean isAllowedToProcess(boolean aSendOp, Token aToken) {
-		return true;
-	}
+    protected boolean isAllowedToProcess(boolean aSendOp, Token aToken) {
+        return true;
+    }
+
+    @Override
+    public Token createMessage(String aNS) {
+        Token lMsg = TokenFactory.createToken();
+        lMsg.setNS(aNS);
+
+        return lMsg;
+    }
 }
