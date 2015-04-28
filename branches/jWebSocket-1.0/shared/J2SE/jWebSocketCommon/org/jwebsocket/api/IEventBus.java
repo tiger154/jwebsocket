@@ -29,122 +29,130 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
  */
 public interface IEventBus {
 
-	public interface IRegistration {
+    public interface IRegistration {
 
-		/**
-		 * Get name-space
-		 *
-		 * @return
-		 */
-		public String getNS();
+        /**
+         * Get name-space
+         *
+         * @return
+         */
+        public String getNS();
 
-		/**
-		 * Cancel handler registration
-		 */
-		public void cancel();
+        /**
+         * Cancel handler registration
+         */
+        public void cancel();
 
-		/**
-		 * Get handler reference
-		 *
-		 * @return
-		 */
-		public IHandler getHandler();
-	}
+        /**
+         * Get handler reference
+         *
+         * @return
+         */
+        public IHandler getHandler();
+    }
 
-	public interface IHandler extends WebSocketResponseTokenListener {
+    public interface IHandler extends WebSocketResponseTokenListener {
 
-		/**
-		 * Reply token
-		 *
-		 * @param aResponse
-		 */
-		void reply(Token aResponse);
+        /**
+         * Reply token
+         *
+         * @param aResponse
+         */
+        void reply(Token aResponse);
 
-		/**
-		 * Reply token
-		 *
-		 * @param aResponse
-		 * @param aHandler
-		 */
-		void reply(Token aResponse, IHandler aHandler);
+        /**
+         * Reply token
+         *
+         * @param aResponse
+         * @param aHandler
+         */
+        void reply(Token aResponse, IHandler aHandler);
 
-		void setEventBus(IEventBus aEB);
+        void setEventBus(IEventBus aEB);
 
-		IEventBus getEventBus();
+        IEventBus getEventBus();
 
-		/**
-		 * Called when a token is received on a target name-space
-		 *
-		 * @param aToken
-		 */
-		void OnMessage(Token aToken);
-	}
+        /**
+         * Called when a token is received on a target name-space
+         *
+         * @param aToken
+         */
+        void OnMessage(Token aToken);
+    }
 
-	public interface IExceptionHandler {
+    public interface IExceptionHandler {
 
-		/**
-		 * Handle uncaught exceptions during handlers invocation
-		 *
-		 * @param lEx
-		 */
-		void handle(Exception lEx);
-	}
-	
-	/**
-	 * Publish a token
-	 *
-	 * @param aToken
-	 * @return
-	 */
-	IEventBus publish(Token aToken);
+        /**
+         * Handle uncaught exceptions during handlers invocation
+         *
+         * @param lEx
+         */
+        void handle(Exception lEx);
+    }
 
-	/**
-	 * Register a handler to a target name-space
-	 *
-	 * @param aNS
-	 * @param aHandler
-	 * @return
-	 */
-	IRegistration register(String aNS, IHandler aHandler);
+    /**
+     * Publish a token
+     *
+     * @param aToken
+     * @return
+     */
+    IEventBus publish(Token aToken);
 
-	/**
-	 * Send a token
-	 *
-	 * @param aToken
-	 * @return
-	 */
-	IEventBus send(Token aToken);
+    /**
+     * Register a handler to a target name-space
+     *
+     * @param aNS
+     * @param aHandler
+     * @return
+     */
+    IRegistration register(String aNS, IHandler aHandler);
 
-	/**
-	 * Send a token with reply processing
-	 *
-	 * @param aToken
-	 * @param aHandler
-	 * @return
-	 */
-	IEventBus send(Token aToken, IHandler aHandler);
+    /**
+     * Send a token
+     *
+     * @param aToken
+     * @return
+     */
+    IEventBus send(Token aToken);
 
-	/**
-	 * Create response Token message
-	 *
-	 * @param aInToken The request Token
-	 * @return The response Token
-	 */
-	Token createResponse(Token aInToken);
+    /**
+     * Send a token with reply processing
+     *
+     * @param aToken
+     * @param aHandler
+     * @return
+     */
+    IEventBus send(Token aToken, IHandler aHandler);
 
-	/**
-	 * Create error response Token message
-	 *
-	 * @param aInToken The request Token
-	 * @return The response Token
-	 */
-	Token createErrorResponse(Token aInToken);
+    /**
+     * Create response Token message
+     *
+     * @param aInToken The request Token
+     * @return The response Token
+     */
+    Token createResponse(Token aInToken);
 
-	/**
-	 * Set the EventBus exception handler to allow developers control of
-	 * uncaught handlers exception during invocation.
-	 *
-	 * @param aHandler
-	 */
-	void setExceptionHandler(IExceptionHandler aHandler);
+    /**
+     * Create request message
+     *
+     * @param aNS The message Token name-space.
+     * @return
+     */
+    Token createMessage(String aNS);
+
+    /**
+     * Create error response Token message
+     *
+     * @param aInToken The request Token
+     * @return The response Token
+     */
+    Token createErrorResponse(Token aInToken);
+
+    /**
+     * Set the EventBus exception handler to allow developers control of
+     * uncaught handlers exception during invocation.
+     *
+     * @param aHandler
+     */
+    void setExceptionHandler(IExceptionHandler aHandler);
 }
