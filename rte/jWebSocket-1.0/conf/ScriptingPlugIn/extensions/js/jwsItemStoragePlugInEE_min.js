@@ -1,3 +1,4 @@
+/* global jws */
 
 //	---------------------------------------------------------------------------
 //	jWebSocket Enterprise ItemStorage Client Plug-In
