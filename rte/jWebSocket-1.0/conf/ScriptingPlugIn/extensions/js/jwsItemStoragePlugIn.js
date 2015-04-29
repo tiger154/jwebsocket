@@ -1,3 +1,5 @@
+/* global jws */
+
 //	---------------------------------------------------------------------------
 //	jWebSocket ItemStorage Client Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
@@ -529,7 +531,7 @@ jws.ItemStoragePlugIn = {
 			this.OnCollectionUnsubscription = aListeners.OnCollectionUnsubscription;
 		}
 	}
-}
+};
 
 // add the jWebSocket ItemStoragePlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ItemStoragePlugIn );
