@@ -1,3 +1,5 @@
+/* global EventBus, Packages, AppUtils */
+
 //	---------------------------------------------------------------------------
 //	jWebSocket ScriptingPlugIn JavaScript App module (Community Edition, CE)
 //	---------------------------------------------------------------------------
@@ -18,7 +20,7 @@
 //	---------------------------------------------------------------------------
 
 // @author Rolando Santamaria Maso
-var App = (function() {
+var App = (function () {
 // app listeners container
 	var mListeners = AppUtils.newThreadSafeMap();
 	// app public objects (controllers) container
@@ -42,7 +44,7 @@ var App = (function() {
 		password: /^(?=^.{6,}$)((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.*$/
 	};
 	return {
-		getJMSManager: function(aUseTransaction, aConn) {
+		getJMSManager: function (aUseTransaction, aConn) {
 			var lJMSManager;
 			if (undefined !== aUseTransaction && undefined !== aConn) {
 				lJMSManager = AppUtils.getJMSManager(aUseTransaction, aConn);
@@ -52,35 +54,35 @@ var App = (function() {
 			lJMSManager = AppUtils.getJMSManager();
 			return lJMSManager;
 		},
-		newAsyncResult: function(aHandler) {
+		newAsyncResult: function (aHandler) {
 			return new Packages.org.jwebsocket.async.AsyncResult(aHandler);
 		},
-		getDescription: function() {
+		getDescription: function () {
 			return mDescription;
 		},
-		getWebSocketServer: function() {
+		getWebSocketServer: function () {
 			return AppUtils.getWebSocketServer();
 		},
-		isArray: function(aObject) {
+		isArray: function (aObject) {
 			return 'array' === App.getType(aObject);
 		},
-		isObject: function(aObject) {
+		isObject: function (aObject) {
 			return 'object' === App.getType(aObject);
 		},
-		setDescription: function(aDescription) {
+		setDescription: function (aDescription) {
 			mDescription = aDescription;
 		},
-		getVersion: function() {
+		getVersion: function () {
 			return mVersion;
 		},
-		getStorage: function() {
+		getStorage: function () {
 			return mStorage;
 		},
-		set: function(aAttrName, aValue) {
+		set: function (aAttrName, aValue) {
 			mStorage.put(aAttrName, aValue);
 			return aValue;
 		},
-		get: function(aAttrName, aDefaultValue) {
+		get: function (aAttrName, aDefaultValue) {
 			var lValue = mStorage.get(aAttrName);
 			if (null === lValue) {
 				lValue = aDefaultValue;
@@ -88,31 +90,31 @@ var App = (function() {
 
 			return lValue;
 		},
-		setVersion: function(aVersion) {
+		setVersion: function (aVersion) {
 			mVersion = aVersion;
 		},
-		getName: function() {
+		getName: function () {
 			return AppUtils.getName();
 		},
-		getNodeId: function() {
+		getNodeId: function () {
 			return AppUtils.getNodeId();
 		},
-		loadJar: function(aFile) {
+		loadJar: function (aFile) {
 			return AppUtils.loadJar(aFile);
 		},
-		getPath: function() {
+		getPath: function () {
 			return AppUtils.getPath();
 		},
-		publish: function(aObjectId, aObject) {
+		publish: function (aObjectId, aObject) {
 			mAPI.put(aObjectId, aObject);
 		},
-		getPublished: function(aObjectId) {
+		getPublished: function (aObjectId) {
 			return mAPI.get(aObjectId);
 		},
-		unpublish: function(aObjectId) {
+		unpublish: function (aObjectId) {
 			mAPI.remove(aObjectId);
 		},
-		getClientAPI: function() {
+		getClientAPI: function () {
 			var lClientAPI = {};
 			var lIt = mAPI.keySet().iterator();
 			while (lIt.hasNext()) {
@@ -150,22 +152,22 @@ var App = (function() {
 
 			return lClientAPI;
 		},
-		isPublished: function(aObjectId) {
+		isPublished: function (aObjectId) {
 			return mAPI.containsKey(aObjectId);
 		},
-		getLogger: function() {
+		getLogger: function () {
 			return AppUtils.getLogger();
 		},
-		assertTrue: function(aBoolean, aMessage) {
+		assertTrue: function (aBoolean, aMessage) {
 			AppUtils.assertTrue(aBoolean, aMessage);
 		},
-		assertNotNull: function(aObject, aMessage) {
+		assertNotNull: function (aObject, aMessage) {
 			AppUtils.assertNotNull(aObject, aMessage);
 		},
-		importScript: function(aFile) {
+		importScript: function (aFile) {
 			AppUtils.importScript(aFile);
 		},
-		sendToken: function(aConnector, aToken, aArg3, aArg4) {
+		sendToken: function (aConnector, aToken, aArg3, aArg4) {
 			var lToken = App.toMap(aToken);
 			if (!aArg3) {
 				AppUtils.sendToken(aConnector, lToken);
@@ -175,40 +177,40 @@ var App = (function() {
 				AppUtils.sendToken(aConnector, lToken, aArg3, aArg4);
 			}
 		},
-		sendChunkable: function(aConnector, aChunkable, aListener) {
+		sendChunkable: function (aConnector, aChunkable, aListener) {
 			(!aListener)
 					? AppUtils.sendChunkable(aConnector, aChunkable)
 					: AppUtils.sendChunkable(aConnector, aChunkable, aListener);
 		},
-		getAllConnectors: function() {
+		getAllConnectors: function () {
 			return AppUtils.getAllConnectors();
 		},
-		hasAuthority: function(aConnector, aAuthority) {
+		hasAuthority: function (aConnector, aAuthority) {
 			return AppUtils.hasAuthority(aConnector, aAuthority);
 		},
-		requireAuthority: function(aConnector, aAuthority) {
+		requireAuthority: function (aConnector, aAuthority) {
 			AppUtils.requireAuthority(aConnector, aAuthority);
 		},
-		requireAuthenticated: function(aConnector) {
+		requireAuthenticated: function (aConnector) {
 			AppUtils.requireAuthenticated(aConnector);
 		},
-		createResponse: function(aInToken) {
+		createResponse: function (aInToken) {
 			return App.toJS(AppUtils.createResponse(App.toMap(aInToken)));
 		},
-		broadcast: function(aArg1, aArg2) {
+		broadcast: function (aArg1, aArg2) {
 			if (null !== aArg2) {
 				AppUtils.broadcast(aArg1, App.toMap(aArg2));
 			} else {
 				AppUtils.broadcast(App.toMap(aArg1));
 			}
 		},
-		newThreadSafeMap: function() {
+		newThreadSafeMap: function () {
 			return AppUtils.newThreadSafeMap();
 		},
-		newThreadSafeCollection: function() {
+		newThreadSafeCollection: function () {
 			return AppUtils.newThreadSafeCollection();
 		},
-		on: function(aEventName, aFn) {
+		on: function (aEventName, aFn) {
 			if ('array' === App.getType(aEventName)) {
 				for (var lIndex = 0; lIndex < aEventName.length; lIndex++) {
 					App.on(aEventName[lIndex], aFn);
@@ -220,12 +222,12 @@ var App = (function() {
 			}
 			mListeners.get(aEventName).add(aFn);
 		},
-		un: function(aEventName, aFn) {
+		un: function (aEventName, aFn) {
 			if (mListeners.containsKey(aEventName)) {
 				mListeners.get(aEventName).remove(aFn);
 			}
 		},
-		notifyEvent: function(aEventName, aArgs) {
+		notifyEvent: function (aEventName, aArgs) {
 			if (mListeners.containsKey(aEventName)) {
 				var lArgs = new Array();
 				for (var lIndex = 0; lIndex < aArgs.length; lIndex++) {
@@ -248,7 +250,7 @@ var App = (function() {
 				}
 			}
 		},
-		invokeObject: function(aObjectId, aMethod, aArgs) {
+		invokeObject: function (aObjectId, aMethod, aArgs) {
 			var lArgsJS = App.toJS(aArgs);
 			var lObject = App.getPublished(aObjectId);
 			if ('function' === typeof (lObject[aMethod])) {
@@ -300,6 +302,9 @@ var App = (function() {
 					for (var lIndex in lDef.args) {
 						lMessage[lDef.args[lIndex]] = lArgsJS[lIndex];
 					}
+					// fixed message properties (for developers convenience)
+					lMessage['connectorUsername'] = lArgsJS[lArgsJS.length - 2].getUsername();
+					lMessage['connectorId'] = lArgsJS[lArgsJS.length - 2].getId();
 
 					// sending message through the EventBus
 					if ('publish' === lBridge.action) {
@@ -309,7 +314,7 @@ var App = (function() {
 					} else if ('send' === lBridge.action) {
 						var lResponseHandler = lArgsJS[lArgsJS.length - 1];
 						EventBus.send(lMessage, {
-							OnSuccess: function(aResponse) {
+							OnSuccess: function (aResponse) {
 								// removing response header 
 								delete aResponse.code;
 								delete aResponse.message_uuid;
@@ -321,7 +326,7 @@ var App = (function() {
 								App.newAsyncResult(lResponseHandler)
 										.setResult(App.toJava(aResponse));
 							},
-							OnFailure: function(aResponse) {
+							OnFailure: function (aResponse) {
 								App.newAsyncResult(lResponseHandler)
 										.setFailure(new Packages.java.lang.Exception(aResponse.msg));
 							}
@@ -334,7 +339,7 @@ var App = (function() {
 
 			throw new Error('Method \'' + aMethod + '\' does not exists on target object!');
 		},
-		assertValue: function(aDef, aValue, aMessage) {
+		assertValue: function (aDef, aValue, aMessage) {
 			if (aDef['not_null']) {
 				App.assertTrue(aValue !== null, aMessage + 'not_null');
 			}
@@ -383,13 +388,13 @@ var App = (function() {
 			App.notifyEvent('controller.argument.annotation.evaluation', [aDef, aValue, aMessage]);
 
 		},
-		invokePlugIn: function(aPlugInId, aConnector, aToken) {
+		invokePlugIn: function (aPlugInId, aConnector, aToken) {
 			return AppUtils.invokePlugIn(aPlugInId, aConnector, App.toMap(aToken));
 		},
-		isClusterEnabled: function() {
+		isClusterEnabled: function () {
 			return AppUtils.isClusterEnabled();
 		},
-		toMap: function(aObject) {
+		toMap: function (aObject) {
 			try {
 				// processing only raw JSON objects
 				if (aObject.constructor.toString().indexOf("function Object") === 0) {
@@ -409,7 +414,7 @@ var App = (function() {
 
 			return aObject;
 		},
-		toJava: function(aObject) {
+		toJava: function (aObject) {
 			if (App.isObject(aObject)) {
 				return App.toMap(aObject);
 			} else if (App.isArray(aObject)) {
@@ -418,7 +423,7 @@ var App = (function() {
 
 			return aObject;
 		},
-		toJS: function(aObject) {
+		toJS: function (aObject) {
 			if (aObject instanceof Packages.org.jwebsocket.token.Token) {
 				return App.toJS(aObject.getMap());
 			} else if (aObject instanceof Packages.java.util.Map) {
@@ -450,7 +455,7 @@ var App = (function() {
 
 			return aObject;
 		},
-		toList: function(aArray) {
+		toList: function (aArray) {
 			var lList = new Packages.java.util.LinkedList();
 			for (var lIndex in aArray) {
 				lList.add(App.toJava(aArray[lIndex]));
@@ -458,18 +463,18 @@ var App = (function() {
 
 			return lList;
 		},
-		getAppBeanFactory: function() {
+		getAppBeanFactory: function () {
 			return AppUtils.getAppBeanFactory();
 		},
-		loadToAppBeanFactory: function(aFile) {
+		loadToAppBeanFactory: function (aFile) {
 			AppUtils.loadToAppBeanFactory(aFile);
 		},
-		getBean: function(aBeanId, aNamespace) {
+		getBean: function (aBeanId, aNamespace) {
 			return (undefined === aNamespace)
 					? AppUtils.getBean(aBeanId)
 					: AppUtils.getBean(aBeanId, aNamespace);
 		},
-		getType: function(aObject) {
+		getType: function (aObject) {
 			var lRes = typeof aObject;
 			if (aObject === undefined) {
 				lRes = 'undefined';
@@ -485,52 +490,52 @@ var App = (function() {
 					aObject.constructor
 					&& aObject.constructor.toString().indexOf('function Array()') === 0) {
 				lRes = 'array';
-			} else if (aObject instanceof Packages.java.lang.Double){
+			} else if (aObject instanceof Packages.java.lang.Double) {
 				return 'double';
-			} else if (aObject instanceof Packages.java.lang.Integer){
+			} else if (aObject instanceof Packages.java.lang.Integer) {
 				return 'integer';
 			}
 
 			return lRes;
 		},
-		getAppBean: function(aBeanId) {
+		getAppBean: function (aBeanId) {
 			return AppUtils.getAppBean(aBeanId);
 		},
-		getSystemProperty: function(aPropertyName) {
+		getSystemProperty: function (aPropertyName) {
 			return AppUtils.getSystemProperty(aPropertyName);
 		},
-		setSystemProperty: function(aPropertyName, aValue) {
+		setSystemProperty: function (aPropertyName, aValue) {
 			return AppUtils.setSystemProperty(aPropertyName, aValue);
 		},
-		setModule: function(aName, aModule) {
+		setModule: function (aName, aModule) {
 			App.getStorage().put('module.' + aName, aModule);
 			return aModule;
 		},
-		getModule: function(aName) {
+		getModule: function (aName) {
 			return App.getStorage().get('module.' + aName);
 		},
-		hasModule: function(aName) {
+		hasModule: function (aName) {
 			return App.getStorage().containsKey('module.' + aName);
 		},
-		removeModule: function(aName) {
+		removeModule: function (aName) {
 			return App.getStorage().remove('module.' + aName);
 		},
-		getEventBus: function() {
+		getEventBus: function () {
 			if (!mEventBus) {
 				var lEventBus = App.getWebSocketServer().getEventBus();
-				var lToHandler = function(aListener) {
+				var lToHandler = function (aListener) {
 					if (!aListener)
 						return null;
 					var lListener = new Packages.org.jwebsocket.eventbus.Handler.IEventListener(){
-						OnMessage: function(aToken) {
+						OnMessage: function (aToken) {
 							var lMessage = App.toJS(aToken.getMap());
-							lMessage.reply = function(aResponse, aListener) {
+							lMessage.reply = function (aResponse, aListener) {
 								var lResponse = lEventBus.createResponse(aToken);
 								lResponse.getMap().putAll(App.toMap(aResponse));
 
 								lEventBus.send(lResponse, lToHandler(aListener));
 							};
-							lMessage.fail = function(aResponse, aListener) {
+							lMessage.fail = function (aResponse, aListener) {
 								var lResponse = lEventBus.createErrorResponse(aToken);
 								lResponse.getMap().putAll(App.toMap(aResponse));
 
@@ -554,7 +559,7 @@ var App = (function() {
 								}
 							}
 						},
-						OnTimeout: function(aToken) {
+						OnTimeout: function (aToken) {
 							var lMessage = App.toJS(aToken.getMap());
 							if (aListener.OnTimeout) {
 								aListener.OnTimeout(lMessage);
@@ -565,16 +570,16 @@ var App = (function() {
 				};
 				mEventBus = {
 					cancelHandlersOnShutdown: true,
-					publish: function(aObject) {
+					publish: function (aObject) {
 						lEventBus.publish(AppUtils.toToken(App.toMap(aObject)));
 					},
-					send: function(aObject, aListener) {
+					send: function (aObject, aListener) {
 						lEventBus.send(AppUtils.toToken(App.toMap(aObject)), lToHandler(aListener));
 					},
-					register: function(aNS, aListener) {
+					register: function (aNS, aListener) {
 						var lRegistration = lEventBus.register(aNS, lToHandler(aListener));
 						if (this.cancelHandlersOnShutdown) {
-							App.on(['undeploying', 'beforeAppReload'], function() {
+							App.on(['undeploying', 'beforeAppReload'], function () {
 								lRegistration.cancel();
 							});
 						}
@@ -587,7 +592,7 @@ var App = (function() {
 			return mEventBus;
 		}
 		,
-		getServerClient: function() {
+		getServerClient: function () {
 			if (!mServerClient) {
 				// get internal client instance
 				var lClient = AppUtils.getServerClient();
@@ -595,80 +600,80 @@ var App = (function() {
 				mServerClient = {
 					NS_SYSTEM: 'org.jwebsocket.plugins.system',
 					listeners: {},
-					getConnection: function() {
+					getConnection: function () {
 						return lClient;
 					},
-					sendToken: function(aToken, aCallbacks) {
+					sendToken: function (aToken, aCallbacks) {
 						if (null === aCallbacks) {
 							aCallbacks = {};
 						}
 						return lClient.sendToken(App.toMap(aToken), {
-							getTimeout: function() {
+							getTimeout: function () {
 								if (aCallbacks['getTimeout']) {
 									return aCallbacks['getTimeout']();
 								}
 								return 5000;
 							},
-							setTimeout: function(aTimeout) {
+							setTimeout: function (aTimeout) {
 							},
-							OnTimeout: function(aToken) {
+							OnTimeout: function (aToken) {
 								if (aCallbacks['OnTimeout']) {
 									aCallbacks['OnTimeout'](App.toJS(aToken.getMap()));
 								}
 							},
-							OnResponse: function(aResponse) {
+							OnResponse: function (aResponse) {
 								if (aCallbacks['OnResponse']) {
 									aCallbacks['OnResponse'](App.toJS(aResponse.getMap()));
 								}
 							},
-							OnSuccess: function(aResponse) {
+							OnSuccess: function (aResponse) {
 								if (aCallbacks['OnSuccess']) {
 									aCallbacks['OnSuccess'](App.toJS(aResponse.getMap()));
 								}
 							},
-							OnFailure: function(aResponse) {
+							OnFailure: function (aResponse) {
 								if (aCallbacks['OnFailure']) {
 									aCallbacks['OnFailure'](App.toJS(aResponse.getMap()));
 								}
 							}
 						});
 					},
-					open: function() {
+					open: function () {
 						lClient.open();
 					},
-					isConnected: function() {
+					isConnected: function () {
 						return lClient.isConnected();
 					},
-					addListener: function(aListener) {
+					addListener: function (aListener) {
 						return lClient.addListener({
-							processPacket: function(aPacket) {
+							processPacket: function (aPacket) {
 								if (aListener['processPacket']) {
 									aListener['processPacket'](aPacket);
 								}
 							},
-							processToken: function(aToken) {
+							processToken: function (aToken) {
 								if (aListener['processToken']) {
 									aListener['processToken'](App.toJS(aToken.getMap()));
 								}
 							},
-							processClosed: function(aReason) {
+							processClosed: function (aReason) {
 								if (aListener['processClosed']) {
 									aListener['processClosed'](aReason);
 								}
 							},
-							processWelcome: function(aToken) {
+							processWelcome: function (aToken) {
 								if (aListener['processWelcome']) {
 									aListener['processWelcome'](App.toJS(aToken.getMap()));
 								}
 							},
-							processOpened: function() {
+							processOpened: function () {
 								if (aListener['processOpened']) {
 									aListener['processOpened']();
 								}
 							}
 						});
 					},
-					logon: function(aUsername, aPassword, aCallbacks) {
+					logon: function (aUsername, aPassword, aCallbacks) {
 						this.sendToken({
 							ns: this.NS_SYSTEM,
 							type: 'logon',
@@ -676,19 +681,19 @@ var App = (function() {
 							password: aPassword
 						}, aCallbacks);
 					},
-					logoff: function(aCallbacks) {
+					logoff: function (aCallbacks) {
 						this.sendToken({
 							ns: this.NS_SYSTEM,
 							type: 'logoff'
 						}, aCallbacks);
 					},
-					removeListener: function(aListener) {
+					removeListener: function (aListener) {
 						lClient.removeListener(aListener);
 					},
-					close: function() {
+					close: function () {
 						lClient.close();
 					},
-					checkConnected: function() {
+					checkConnected: function () {
 						var lRes = {
 							code: 0,
 							msg: 'Ok'
@@ -701,7 +706,7 @@ var App = (function() {
 					}
 				};
 				mServerClient.addListener({
-					processToken: function(aToken) {
+					processToken: function (aToken) {
 						for (var lIndex in mServerClient.listeners) {
 							var lListener = mServerClient.listeners[lIndex];
 							if (lListener) {
@@ -710,7 +715,7 @@ var App = (function() {
 						}
 					}
 				});
-				App.on('beforeAppReload', function(aHotLoad) {
+				App.on('beforeAppReload', function (aHotLoad) {
 					if (false === aHotLoad) {
 						mServerClient.close();
 					}
@@ -727,13 +732,13 @@ var App = (function() {
  */
 EventBus = App.getEventBus();
 /**
- * jWebSocket JavaScript plug-ins bridge
+ * jWebSocket JavaScript plug-ins bridge for intercompatibility.
  */
 var jws = {
 	NS_BASE: 'org.jwebsocket',
 	NS_SYSTEM: 'org.jwebsocket.plugins.system',
 	oop: {
-		addPlugIn: function(a, aPlugIn) {
+		addPlugIn: function (a, aPlugIn) {
 			// getting server instance
 			var lServer = App.getServerClient();
 			// storing the plugin for future incoming token notifications.
