@@ -651,7 +651,7 @@
 			<onmaxconnections>reject</onmaxconnections>
 			<settings>
 				<!-- directory that contains the public web folder path -->
-				<setting key="document_root">/storage/Projects/svn/ijwssvn/branches/jWebSocket-1.0/jWebSocketClient/web/</setting>
+				<setting key="document_root">/path/to/public/web/directory/</setting>
 				<!-- max threads property value for each tomcat connector -->
 				<setting key="max_threads">200</setting>
 			</settings>
