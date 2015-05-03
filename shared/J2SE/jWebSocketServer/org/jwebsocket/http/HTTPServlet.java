@@ -21,6 +21,7 @@ package org.jwebsocket.http;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServlet;
@@ -97,7 +98,8 @@ public class HTTPServlet extends HttpServlet {
 	String getSessionId(HttpServletRequest aReq) {
 		String lSessionId = aReq.getParameter("sessionId");
 		if (null == lSessionId) {
-			lSessionId = aReq.getSession().getId();
+			// generate random session if missing 
+			lSessionId = Tools.getMD5(UUID.randomUUID().toString());
 		}
 
 		return Tools.getMD5(lSessionId);
@@ -106,7 +108,7 @@ public class HTTPServlet extends HttpServlet {
 	String getConnectorId(HttpServletRequest aReq, String aSessionId) {
 		String lConnectionId = aReq.getParameter("connectionId");
 		if (null == lConnectionId) {
-			lConnectionId = aSessionId;
+			return null;
 		}
 
 		return Tools.getMD5(lConnectionId + aReq.getRemoteAddr());
@@ -131,6 +133,10 @@ public class HTTPServlet extends HttpServlet {
 		String lAction = aReq.getParameter("action");
 		String lSessionId = getSessionId(aReq);
 		String lConnectorId = getConnectorId(aReq, lSessionId);
+		if (null == lConnectorId) {
+			sendMessage(400, "Missing 'connectionId' parameter value!", aResp);
+			return;
+		}
 
 		if ("sync".equals(lAction)) {
 			processSync(lConnectorId, aReq, aResp);
@@ -178,6 +184,10 @@ public class HTTPServlet extends HttpServlet {
 		String lAction = aReq.getParameter("action");
 		String lSessionId = getSessionId(aReq);
 		String lConnectorId = getConnectorId(aReq, lSessionId);
+		if (null == lConnectorId) {
+			sendMessage(400, "Missing 'connectionId' parameter value!", aResp);
+			return;
+		}
 
 		if (!mConnectorsManager.connectorExists(lConnectorId)) {
 			sendMessage(411, "Invalid connection state!", aResp);
