@@ -141,7 +141,7 @@ var App = (function () {
                         } else if ('object' === typeof (lObj[lMethod]['ebBridge'])) {
                             lObjAPI.methods.push({
                                 name: lMethod,
-                                length: lObj[lMethod]['args'].length
+                                length: (undefined != lObj[lMethod]['args']) ? lObj[lMethod]['args'].length : 0
                             });
                         }
                     }
