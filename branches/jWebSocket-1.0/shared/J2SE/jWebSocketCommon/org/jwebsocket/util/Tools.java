@@ -466,6 +466,12 @@ public class Tools {
 				lEnvVal = "";
 			} else {
 				lEnvVal = lEnvVal.replace("\\", "\\\\");
+				// specially supporting jWebSocket server environmental variables
+				if ("JWEBSOCKET_HOME".equals(lFoundVal) || "JWEBSOCKET_EE_HOME".equals(lFoundVal)) {
+					if (!lEnvVal.endsWith(File.separator)) {
+						lEnvVal += File.separator;
+					}
+				}
 			}
 			Pattern lSubExpr = Pattern.compile(Pattern.quote(lMatcher.group(0)));
 			aString = lSubExpr.matcher(aString).replaceAll(lEnvVal);
@@ -1428,13 +1434,14 @@ public class Tools {
 			}
 		}, aTimeout);
 	}
-	
+
 	/**
-	 * Returns a given Map as String JSON format, so we can later use this to 
+	 * Returns a given Map as String JSON format, so we can later use this to
 	 * log certain server information within the MySQL logs database
+	 *
 	 * @param aMap The map to be converted to JSON String
-	 * @return lInfoMap, the map in the following format: 
-	 *		", info: {\"name\": \"vbarzana\"}"
+	 * @return lInfoMap, the map in the following format: ", info: {\"name\":
+	 * \"vbarzana\"}"
 	 * @throws JSONException
 	 */
 	public static String getInfoMap(Map aMap) throws JSONException {
