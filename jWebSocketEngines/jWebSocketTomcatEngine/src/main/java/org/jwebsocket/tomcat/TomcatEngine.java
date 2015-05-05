@@ -121,21 +121,23 @@ public class TomcatEngine extends BaseEngine {
 			mTomcat.getService().addConnector(lPlainConnector);
 
 			// setting the SSL connector
-			Connector lSSLConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-			lSSLConnector.setEnableLookups(false);
-			lSSLConnector.setScheme("https");
-			lSSLConnector.setSecure(true);
-			lSSLConnector.setProperty("maxThreads", lMaxThreads);
-			lSSLConnector.setPort(lSSLPort);
-			lSSLConnector.setProperty("SSLEnabled", "true");
-			lSSLConnector.setProperty("clientAuth", "false");
-			lSSLConnector.setProperty("sslProtocol", "TLS");
-			lSSLConnector.setProperty("keystoreFile",
-					JWebSocketConfig.expandEnvVarsAndProps(getConfiguration().getKeyStore()));
-			lSSLConnector.setProperty("keystorePass", getConfiguration().getKeyStorePassword());
+			if (lSSLPort > 0) {
+				Connector lSSLConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+				lSSLConnector.setEnableLookups(false);
+				lSSLConnector.setScheme("https");
+				lSSLConnector.setSecure(true);
+				lSSLConnector.setProperty("maxThreads", lMaxThreads);
+				lSSLConnector.setPort(lSSLPort);
+				lSSLConnector.setProperty("SSLEnabled", "true");
+				lSSLConnector.setProperty("clientAuth", "false");
+				lSSLConnector.setProperty("sslProtocol", "TLS");
+				lSSLConnector.setProperty("keystoreFile",
+						JWebSocketConfig.expandEnvVarsAndProps(getConfiguration().getKeyStore()));
+				lSSLConnector.setProperty("keystorePass", getConfiguration().getKeyStorePassword());
 
-			// registering the SSL connector
-			mTomcat.getService().addConnector(lSSLConnector);
+				// registering the SSL connector
+				mTomcat.getService().addConnector(lSSLConnector);
+			}
 
 			final Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
 
