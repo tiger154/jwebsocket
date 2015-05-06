@@ -32,6 +32,7 @@ import org.jwebsocket.plugins.annotations.AllowMethodInvokation;
 import org.jwebsocket.plugins.annotations.AnnotationManager;
 import org.jwebsocket.plugins.annotations.Param;
 import org.jwebsocket.plugins.annotations.Params;
+import org.jwebsocket.plugins.annotations.ServiceActionMapping;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.MapAppender;
@@ -67,8 +68,9 @@ public class ActionPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Listener method that is executed before every action execution. If an exception is thrown
-	 * during the method execution, the target action execution is canceled.
+	 * Listener method that is executed before every action execution. If an
+	 * exception is thrown during the method execution, the target action
+	 * execution is canceled.
 	 *
 	 * @param aActionName The target action name
 	 * @param aConnector The calling connector
@@ -159,8 +161,8 @@ public class ActionPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Get a parameter value from Token instance. Throws an AssertionException if parameter value is
-	 * null.
+	 * Get a parameter value from Token instance. Throws an AssertionException
+	 * if parameter value is null.
 	 *
 	 * @param aToken
 	 * @param aParameterName
@@ -210,7 +212,16 @@ public class ActionPlugIn extends TokenPlugIn {
 		for (Object lService : aServices) {
 			Method[] lServiceMethods = lService.getClass().getMethods();
 			for (Method lServiceMethod : lServiceMethods) {
-				if (lServiceMethod.getName().equals(lType) && lServiceMethod.isAnnotationPresent(AllowMethodInvokation.class)) {
+				// extracting service method name
+				String lServiceMethodName;
+				if (lServiceMethod.isAnnotationPresent(ServiceActionMapping.class)) {
+					lServiceMethodName = lServiceMethod.getAnnotation(ServiceActionMapping.class).value();
+				} else {
+					lServiceMethodName = lServiceMethod.getName();
+				}
+
+				if (lServiceMethodName.equals(lType)
+						&& (lServiceMethod.isAnnotationPresent(AllowMethodInvokation.class) || lServiceMethod.isAnnotationPresent(ServiceActionMapping.class))) {
 					try {
 						// processing method annotations
 						processAnnotations(lServiceMethod, aConnector, aToken);
@@ -278,7 +289,7 @@ public class ActionPlugIn extends TokenPlugIn {
 
 			// invoke method
 			Object lResult = aMethod.invoke(aSubject, aParams.toArray());
-			boolean lIsServiceMethod = aMethod.isAnnotationPresent(AllowMethodInvokation.class);
+			boolean lIsServiceMethod = aMethod.isAnnotationPresent(AllowMethodInvokation.class) || aMethod.isAnnotationPresent(ServiceActionMapping.class);
 			if (lIsServiceMethod) {
 				// send method's invokation result to calling client
 				Token lResponse = createResponse(aToken);
