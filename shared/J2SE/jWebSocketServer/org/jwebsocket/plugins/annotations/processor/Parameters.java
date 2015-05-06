@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import org.jwebsocket.api.IAnnotationProcessor;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.plugins.annotations.Param;
 import org.jwebsocket.plugins.annotations.Params;
 import org.jwebsocket.token.Token;
@@ -70,9 +71,17 @@ public class Parameters implements IAnnotationProcessor {
 				if (null != lParameterValue) {
 					lType.cast(lParameterValue);
 				}
-			} catch (Exception lEx) {
-				throw new Exception("The given '" + lAnnotation.id() + "' parameter value,"
-						+ " cannot be casted to '" + lType.getName() + "' class!");
+			} catch (ClassCastException e) {
+				try {
+					// trying to perform "readFromToken" operation to automatically
+					// generate expected parameter value
+					ITokenizable lObject = (ITokenizable) lType.newInstance();
+					lObject.readFromToken(lToken);
+					lToken.getMap().put(lAnnotation.id(), lObject);
+				} catch (Exception lEx) {
+					throw new Exception("The given '" + lAnnotation.id() + "' parameter value,"
+							+ " cannot be casted to '" + lType.getName() + "' class!");
+				}
 			}
 		} else if (lClazz.equals(Params.class)) {
 			Params lAnnotation = (Params) aAnnotation;
