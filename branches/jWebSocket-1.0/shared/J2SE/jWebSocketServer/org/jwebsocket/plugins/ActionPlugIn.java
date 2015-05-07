@@ -213,13 +213,10 @@ public class ActionPlugIn extends TokenPlugIn {
 			Method[] lServiceMethods = lService.getClass().getMethods();
 			for (Method lServiceMethod : lServiceMethods) {
 				// extracting service method name
-				String lServiceMethodName;
+				String lServiceMethodName = lServiceMethod.getName();
 				if (lServiceMethod.isAnnotationPresent(ServiceActionMapping.class)) {
 					lServiceMethodName = lServiceMethod.getAnnotation(ServiceActionMapping.class).value();
-				} else {
-					lServiceMethodName = lServiceMethod.getName();
 				}
-
 				if (lServiceMethodName.equals(lType)
 						&& (lServiceMethod.isAnnotationPresent(AllowMethodInvokation.class) || lServiceMethod.isAnnotationPresent(ServiceActionMapping.class))) {
 					try {
@@ -463,7 +460,13 @@ public class ActionPlugIn extends TokenPlugIn {
 				}
 			}
 		} else {
-			lMethodAPI.put("name", aMethod.getName());
+			// extracting service method name
+			String lServiceMethodName = aMethod.getName();
+			if (aMethod.isAnnotationPresent(ServiceActionMapping.class)) {
+				lServiceMethodName = aMethod.getAnnotation(ServiceActionMapping.class).value();
+			}
+			lMethodAPI.put("name", lServiceMethodName);
+			// getting service params
 			List<ReflectionUtils.MethodParameter> lParamAnnotations = ReflectionUtils.getMethodParameters(aMethod);
 			for (ReflectionUtils.MethodParameter lParamAnnotation : lParamAnnotations) {
 				Param lParam = (Param) lParamAnnotation.getAnnotation(Param.class);
