@@ -23,7 +23,6 @@ import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.util.Tools;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
