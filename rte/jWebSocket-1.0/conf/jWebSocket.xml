@@ -1242,6 +1242,18 @@
 			<id>convert_bpmn_file</id>
 			<description>Allows to convert a bpmn file to owl</description>
 		</right>
+		
+		<!-- jWebSocket WATCHDOG rights-->
+		<right>
+			<ns>org.jwebsocket.enterprise.plugins.watchdog</ns>
+			<id>admin</id>
+			<description>Allow users to perform write operations in the Watchdog plug-in</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.enterprise.plugins.watchdog</ns>
+			<id>stduser</id>
+			<description>Allow users to perform read operations in the Watchdog plug-in</description>
+		</right>
 	</rights>
 
 	<!-- jWebSocket roles -->
@@ -1385,6 +1397,9 @@
 				<right>org.jwebsocket.plugins.bpmn.get_tasks_by_processinstance</right>
 				<right>org.jwebsocket.plugins.bpmn.complete_task</right>
 				
+				<!-- WATCHDOG rights -->
+				<right>org.jwebsocket.enterprise.plugins.watchdog.admin</right>
+				<right>org.jwebsocket.enterprise.plugins.watchdog.stduser</right>
 			</rights>
 		</role>
 		<role>
@@ -2369,6 +2384,22 @@
 			</jars>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/BPMN2OWLPlugInEE/bpmn2owl.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		 
+		<!-- Watchdog plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.watchdog.WatchdogPlugIn</name>
+			<id>jws.watchdog</id>
+			<ns>org.jwebsocket.enterprise.plugins.watchdog</ns>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketWatchdogPlugInEE-1.0.jar</jar>
+			</jars>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/WatchdogPlugInEE/watchdog.xml</setting>
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
