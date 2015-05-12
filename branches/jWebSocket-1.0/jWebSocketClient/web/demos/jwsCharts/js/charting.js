@@ -26,7 +26,7 @@ Ext.Loader.setConfig({
 	// Don't set to true, it's easier to use the debugger option to disable caching
 	disableCaching: false,
 	paths: {
-		'Ext.jws': '../../lib/ExtJS/jWebSocketSenchaPlugIn/'
+		'Ext.jws': '../../res/js/jWebSocketSenchaPlugIn/'
 	}
 });
 Ext.require([
@@ -74,7 +74,7 @@ jws.ChartingPlugIn = {
 	 * @param {type} aInterest
 	 * @param {type} aData
 	 */
-	registerTo: function(aInterest, aData) {
+	registerTo: function (aInterest, aData) {
 		if (aInterest) {
 			if (typeof aData === "undefined") {
 				aData = {};
@@ -84,10 +84,10 @@ jws.ChartingPlugIn = {
 			Ext.jwsClient.send(this.NS_MONITORING, this.TT_REGISTER, aData);
 		}
 	},
-	unregister: function( ) {
+	unregister: function ( ) {
 		Ext.jwsClient.send(this.NS_MONITORING, this.TT_UNREGISTER);
 	},
-	onReady: function() {
+	onReady: function () {
 		var lClientStatus = Ext.get("client_status"),
 				lClientId = Ext.get("client_id"),
 				lWebSocketType = Ext.get("websocket_type");
@@ -98,11 +98,11 @@ jws.ChartingPlugIn = {
 
 		Ext.jwsClient.open(jws.getAutoServerURL());
 
-		Ext.jwsClient.on('open', function( ) {
+		Ext.jwsClient.on('OnOpen', function ( ) {
 			lScope.registerTo(lScope.TT_COMPUTER_INFO);
 		});
 
-		Ext.jwsClient.on('close', function( ) {
+		Ext.jwsClient.on('OnClose', function ( ) {
 			lClientId.dom.innerHTML = "Client-ID: - ";
 			lClientStatus.dom.innerHTML = "disconnected";
 			lClientStatus.dom.className = "offline";
@@ -110,7 +110,7 @@ jws.ChartingPlugIn = {
 		Ext.jwsClient.addPlugIn(this);
 		this.init();
 	},
-	init: function() {
+	init: function () {
 		var lScope = this;
 		lScope.initModels();
 		lScope.initStores();
@@ -118,7 +118,7 @@ jws.ChartingPlugIn = {
 		lScope.views.tabPanelComputerInfo = new Ext.TabPanel({
 			renderTo: Ext.getBody( ),
 			id: 'main-tabs',
-			bodyCls: 'x-jwebsocket-tab',
+//			bodyCls: 'x-jwebsocket-tab',
 			height: 380,
 			width: 400,
 			activeTab: 0,
@@ -143,7 +143,8 @@ jws.ChartingPlugIn = {
 						axes: [{
 								type: 'Numeric',
 								position: 'left',
-								fields: ['data'], label: {
+								fields: ['data'],
+								label: {
 									renderer: Ext.util.Format.numberRenderer('0,0')
 								},
 								//title: 'Number of Hits',
@@ -152,8 +153,10 @@ jws.ChartingPlugIn = {
 							}, {
 								type: 'Category',
 								position: 'bottom',
-								fields: ['name'], title: 'Machine resources'
-							}], series: [{
+								fields: ['name'],
+								title: 'Machine resources'
+							}],
+						series: [{
 								type: 'column',
 								axis: 'left',
 								//gutter: 150,
@@ -162,7 +165,7 @@ jws.ChartingPlugIn = {
 									trackMouse: true,
 									width: 100,
 									height: 28,
-									renderer: function(storeItem, item) {
+									renderer: function (storeItem, item) {
 										this.setTitle(storeItem.get('name') + ': '
 												+ storeItem.get('data') + ' %');
 									}
@@ -171,7 +174,8 @@ jws.ChartingPlugIn = {
 									display: 'outside',
 									'text-anchor': 'middle',
 									field: 'data',
-									renderer: Ext.util.Format.numberRenderer('0.0'), orientation: 'horizontal',
+									renderer: Ext.util.Format.numberRenderer('0.0'),
+									orientation: 'horizontal',
 									color: '#333'
 								},
 								xField: 'name',
@@ -207,14 +211,18 @@ jws.ChartingPlugIn = {
 									trackMouse: true,
 									width: 90,
 									height: 35,
-									renderer: function(storeItem, item) {
+									renderer: function (storeItem, item) {
 										//calculate percentage.
 										var total = 0;
-										lScope.stores.hDDInfo.each(function(rec) {
-											total += rec.get('data');
+										lScope.stores.hDDInfo.each(function (aRecord) {
+											total += aRecord.get('data');
 										});
-										this.setTitle(storeItem.get('name') + ': '
-												+ Math.round(storeItem.get('data') / total * 100) + '%');
+										if (lScope.stores.hDDInfo.typeOfData) {
+											this.setTitle(storeItem.get('name') + ": " + storeItem.get('data') + lScope.stores.hDDInfo.typeOfData);
+										} else {
+											this.setTitle(storeItem.get('name') + ': '
+													+ Math.round(storeItem.get('data') / total * 100) + '%' + storeItem.get('data'));
+										}
 									}
 								},
 								/* highlight: {
@@ -250,7 +258,7 @@ jws.ChartingPlugIn = {
 			queryMode: 'local',
 			typeAhead: true,
 			listeners: {
-				change: function(aField, aRecord, aIndex) {
+				change: function (aField, aRecord, aIndex) {
 					var lValue = aField.getValue( );
 
 					var lDate = new Date(),
@@ -277,7 +285,7 @@ jws.ChartingPlugIn = {
 			queryMode: 'local',
 			typeAhead: true,
 			listeners: {
-				select: function(aField, aRecord, aIndex) {
+				select: function (aField, aRecord, aIndex) {
 					var lValue = aField.getValue( );
 					lScope.registerTo(lScope.TT_SERVER_XCHG_INFO_X_MONTH, {
 						year: lValue.toString()
@@ -299,7 +307,7 @@ jws.ChartingPlugIn = {
 			value: new Date(),
 			minValue: '01/01/2013',
 			listeners: {
-				select: function(aField, aDate) {
+				select: function (aField, aDate) {
 					var lSelectedDate = aField.rawValue,
 							lDateArray = lSelectedDate.split('/', 3), lSelMonth = lDateArray[0],
 							lDay = lDateArray[1],
@@ -346,7 +354,7 @@ jws.ChartingPlugIn = {
 			typeAhead: false,
 			editable: false,
 			listeners: {
-				change: function(aField, aValue) {
+				change: function (aField, aValue) {
 					var lIdx = lScope.stores.typeOfStream.find("name", aValue),
 							lMainCmp = Ext.getCmp('main_panel');
 
@@ -380,10 +388,7 @@ jws.ChartingPlugIn = {
 		lScope.views.panelOptions = new Ext.Panel({
 			border: true,
 			frame: false,
-			x: 400,
-			y: -470,
-			width: 290,
-			bodyStyle: 'background:#e4e4e4;padding-top: 7px;',
+			bodyStyle: 'background:#e4e4e4; padding: 7px 6px 0 0;',
 			height: 75,
 			items: [lScope.views.comboSelectStream, lScope.views.comboChooseMonth, lScope.views.comboChooseYear,
 				lScope.views.panelChooseDate]
@@ -392,14 +397,16 @@ jws.ChartingPlugIn = {
 		lScope.views.tabPanelServerPackets = new Ext.TabPanel({
 			renderTo: Ext.getBody( ),
 			id: 'exchanges-main-tabs',
-			bodyCls: 'x-jwebsocket-tab',
 			height: 380,
 			width: 400,
-			activeTab: 0, border: false,
-			margin: 0, defaults: {
-				padding: 10},
+			activeTab: 0,
+			border: false,
+			margin: 0,
+			defaults: {
+				padding: 10
+			},
 			hideTabStripItem: true,
-			bodyStyle: 'background:#e4e4e4;',
+			bodyStyle: 'background: #e4e4e4;',
 			items: [{
 					title: 'Packets/Hour',
 					id: 'tab_pkt_x_h',
@@ -439,7 +446,7 @@ jws.ChartingPlugIn = {
 										trackMouse: true,
 										width: 180,
 										height: 28,
-										renderer: function(aRecord, aSerie, aOther) {
+										renderer: function (aRecord, aSerie, aOther) {
 											this.setTitle("Hour " + aRecord.get('name') + ', Requests: '
 													+ (aSerie.value.length > 1 ? aSerie.value[1] : " total: " + aRecord.get("total")));
 										}
@@ -495,7 +502,7 @@ jws.ChartingPlugIn = {
 										trackMouse: true,
 										width: 180,
 										height: 28,
-										renderer: function(aRecord, aSerie, aOther) {
+										renderer: function (aRecord, aSerie, aOther) {
 											this.setTitle("Day " + aRecord.get('name') + ', Requests: '
 													+ (aSerie.value.length > 1 ? aSerie.value[1] : " total: " + aRecord.get("total")));
 										}
@@ -549,7 +556,7 @@ jws.ChartingPlugIn = {
 										trackMouse: true,
 										width: 180,
 										height: 28,
-										renderer: function(aRecord, aSerie, aOther) {
+										renderer: function (aRecord, aSerie, aOther) {
 											this.setTitle("Day " + aRecord.get('name') + ', Requests: '
 													+ (aSerie.value.length > 1 ? aSerie.value[1] : " total: " + aRecord.get("total")));
 										}
@@ -566,7 +573,7 @@ jws.ChartingPlugIn = {
 						})]
 				}],
 			listeners: {
-				tabchange: function(aTabPanel, aNewCard, aOldCard) {
+				tabchange: function (aTabPanel, aNewCard, aOldCard) {
 					switch (aNewCard.id) {
 						case 'tab_pkt_x_h':
 							lScope.registerTo(lScope.TT_SERVER_XCHG_INFO);
@@ -650,7 +657,7 @@ jws.ChartingPlugIn = {
 									trackMouse: true,
 									width: 120,
 									height: 40,
-									renderer: function(storeItem, item) {
+									renderer: function (storeItem, item) {
 										this.setTitle(storeItem.get('name') + " Seconds ago"
 												+ '<br />' + storeItem.get('data')
 												+ " users online");
@@ -700,17 +707,18 @@ jws.ChartingPlugIn = {
 						axes: [{
 								type: 'Numeric',
 								position: 'bottom',
-								fields: ['data'], label: {
+								fields: ['data'], 
+								label: {
 									renderer: Ext.util.Format.numberRenderer('0,0')
 								},
 								title: 'Number of Requests',
 								grid: true,
 								minimum: 0
-										//maximum:100
 							}, {
 								type: 'Category',
 								position: 'left',
-								fields: ['name'], title: 'Plug-ins'
+								fields: ['name'], 
+								title: 'Plug-ins'
 							}], series: [{
 								type: 'bar',
 								axis: 'bottom',
@@ -719,7 +727,7 @@ jws.ChartingPlugIn = {
 									trackMouse: true,
 									width: 180,
 									height: 28,
-									renderer: function(storeItem, item) {
+									renderer: function (storeItem, item) {
 										this.setTitle(storeItem.get('name') + ': '
 												+ storeItem.get('data') + " packets");
 									}
@@ -742,7 +750,6 @@ jws.ChartingPlugIn = {
 		var lMainPanel = new Ext.Panel({
 			id: 'main_panel',
 			border: false,
-			frame: false,
 			width: 700,
 			x: 0,
 			y: 0,
@@ -758,20 +765,17 @@ jws.ChartingPlugIn = {
 		});
 
 		// Panel that contains the text of the main view
-		var lDescription = new Ext.Panel({
-			frame: false,
-			border: false,
-			width: 350,
-			height: 100,
+		var lDescription = {
+			width: '61%',
+			xtype: 'container',
+			bodyPadding: 10,
+			margin: '10 0 10 10',
 			html: "The Charting Demo displays server statistics graphically in " +
 					"real-time. Please select one of the data sources provided " +
 					"by server to see the various possibilities of real-time " +
 					"server monitoring with jWebSocket.",
-			x: 20,
-			y: 10,
-			//  layout:'absolute',
-			bodyStyle: 'background:#eaf4dc;'
-		});
+			bodyStyle: 'background: transparent;'
+		};
 
 		var lGraphicPanel = new Ext.Panel({
 			frame: false,
@@ -783,32 +787,32 @@ jws.ChartingPlugIn = {
 			items: [lMainPanel]
 		});
 
-		var lChartingDemo = new Ext.Window({
+		var lChartingDemo = new Ext.Panel({
 			renderTo: 'content',
-			x: 0, y: 85,
-			width: 710,
+			width: '100%',
 			height: 490,
 			border: false,
-			frame: true,
-			resizable: false,
-			closable: false,
-			draggable: false,
-			maximizable: false,
-			cls: "border",
-			minimizable: false,
-			bodyStyle: 'background:#eaf4dc;',
-			items: [lDescription, lGraphicPanel, lScope.views.panelOptions]
+			bodyStyle: 'background:transparent; margin-top: 10px;',
+			items: [{
+					xtype: 'container',
+					layout: 'hbox',
+					items: [
+						lDescription,
+						lScope.views.panelOptions
+					]
+				}, lGraphicPanel
+			]
 		});
-		lChartingDemo.show( );
+		lChartingDemo.show();
 	},
-	initModels: function() {
+	initModels: function () {
 		Ext.define('State', {
 			extend: 'Ext.data.Model',
 			fields: ['name']
 		});
 	},
-	initStores: function() {
-		var lHours = ['name'],
+	initStores: function () {
+		var lHours = ['name', 'incoming', 'outgoing', 'total'],
 				lHour, lDay,
 				lDate = new Date();
 
@@ -816,26 +820,26 @@ jws.ChartingPlugIn = {
 			lHours.push(lHour);
 		}
 
-		this.stores.computerInfo = Ext.create('Ext.data.JsonStore', {
-			fields: ['name', 'Memory', 'Cpu', 'Swap']
+		this.stores.computerInfo = Ext.create('Ext.data.Store', {
+			fields: ['name', 'data']
 		});
-		this.stores.hDDInfo = Ext.create('Ext.data.JsonStore', {
-			fields: ['name', 'Total Hdd Space', 'Free', 'Used']
+		this.stores.hDDInfo = Ext.create('Ext.data.Store', {
+			fields: ['name', 'data']
 		});
-		this.stores.serverExchangesPerHour = Ext.create('Ext.data.JsonStore', {
+		this.stores.serverExchangesPerHour = Ext.create('Ext.data.Store', {
 			fields: lHours
 		});
-		this.stores.serverExchangesPerDay = Ext.create('Ext.data.JsonStore', {
+		this.stores.serverExchangesPerDay = Ext.create('Ext.data.Store', {
 			fields: ['name', 'incoming', 'outgoing', 'total']
 		});
-		this.stores.serverExchangesPerMonth = Ext.create('Ext.data.JsonStore', {
-			fields: ['name', lDate.getFullYear() - 1, lDate.getFullYear(), lDate.getFullYear() + 1]
+		this.stores.serverExchangesPerMonth = Ext.create('Ext.data.Store', {
+			fields: ['name', 'incoming', 'outgoing', 'total', lDate.getFullYear() - 1, lDate.getFullYear(), lDate.getFullYear() + 1]
 		});
-		this.stores.onlineUsers = Ext.create('Ext.data.JsonStore', {
+		this.stores.onlineUsers = Ext.create('Ext.data.Store', {
 			fields: ['name', {name: 'data', type: 'Integer'}]
 		});
-		this.stores.useOfPlugIns = Ext.create('Ext.data.JsonStore', {
-			fields: ['name', 'plugins']
+		this.stores.useOfPlugIns = Ext.create('Ext.data.Store', {
+			fields: ['name', 'plugins', 'data']
 		});
 
 		var lDate = new Date(),
@@ -880,7 +884,7 @@ jws.ChartingPlugIn = {
 		});
 
 	},
-	processToken: function(aToken) {
+	processToken: function (aToken) {
 		if (aToken.ns === this.NS_MONITORING) {
 			var lScope = this;
 			if (aToken.type === this.TT_COMPUTER_INFO) {
@@ -889,7 +893,6 @@ jws.ChartingPlugIn = {
 						lCPUs = aToken.consumeCPUCharts,
 						lCPUData = [], lHDDData,
 						lIdx, lSwap, lFreeHd, lUsedHd;
-
 				for (lIdx = 0; lIdx < lCPUs.length; lIdx++) {
 					lCPUData.push({
 						name: 'CPU ' + (lIdx + 1),
@@ -923,6 +926,9 @@ jws.ChartingPlugIn = {
 						name: 'Used Hdd Space',
 						data: lUsedHd
 					}];
+				// Extracting the data from the hard disk
+				var lSplit = aToken.freeHddSpace.split(" ");
+				this.stores.hDDInfo.typeOfData = lSplit.length > 1 ? lSplit[1] : "";
 				this.stores.hDDInfo.loadData(lHDDData);
 
 			}
@@ -1040,31 +1046,31 @@ jws.ChartingPlugIn = {
 	}
 };
 
-Ext.onReady(function( ) {
+Ext.onReady(function ( ) {
 	Ext.tip.QuickTipManager.init( );
 	jws.ChartingPlugIn.onReady();
 });
 
 
 /* Defining some month names to be used later */
-Date.prototype.getMonthName = function(aLang, aNumber) {
+Date.prototype.getMonthName = function (aLang, aNumber) {
 	var lLang = aLang && (aLang in Date.locale) ? aLang : 'en';
 	var lMonth = (aNumber && aNumber >= 0) ? aNumber : this.getMonth( );
 	return Date.locale[ lLang ].month_names[ lMonth ];
 };
 
-Date.prototype.getMonthNameShort = function(aLang, aNumber) {
+Date.prototype.getMonthNameShort = function (aLang, aNumber) {
 	var lLang = aLang && (aLang in Date.locale) ? aLang : 'en',
 			lMonth = (aNumber && aNumber >= 0) ? aNumber : this.getMonth( );
 	return Date.locale[ lLang ].month_names_short[ lMonth ];
 };
 
-Date.prototype.getMonths = function(aLang) {
+Date.prototype.getMonths = function (aLang) {
 	var lLang = aLang && (aLang in Date.locale) ? aLang : 'en';
 	return Date.locale[ lLang ].month_names;
 };
 
-Date.prototype.getShortMonths = function(aLang) {
+Date.prototype.getShortMonths = function (aLang) {
 	var lLang = aLang && (aLang in Date.locale) ? aLang : 'en';
 	return Date.locale[ lLang ].month_names_short;
 };
