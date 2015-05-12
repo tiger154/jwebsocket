@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<!DOCTYPE html>
+<html itemscope="" itemtype="http://schema.org/WebPage" lang="en">
     <head>
         <!-- If Google's chrome frame installed, use it! -->
         <!-- Comment needs to be BELOW this meta tag! -->
@@ -23,22 +23,20 @@
                 //	limitations under the License.
                 //	****************************************************************************
         -->
-        <meta http-equiv="Content-Language" content="en"/>
         <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
         <title>jWebSocket Sencha Demo</title>
 
         <!-- ExtJS STYLES  -->
-        <link rel="stylesheet" type="text/css" href="../../lib/ExtJS/css/ext-all.css" />
-
+        <link rel="stylesheet" type="text/css" href="../../lib/ExtJS/css/ext-all-4.1.1.css" />
 
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/style.css" />
 
         <!-- EXTJS LIBRARIES	-->
-        <script type="text/javascript" src="../../lib/ExtJS/ext-all-debug.js"></script>
+        <script type="text/javascript" src="../../lib/ExtJS/ext-all-4.1.1.js"></script>
 
         <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
@@ -47,131 +45,111 @@
         <script type="text/javascript" src="app/App.js"></script> 
 
         <script>
+			Ext.tip.QuickTipManager.init();
 
-            Ext.tip.QuickTipManager.init();
+			Ext.Loader.setConfig({
+				enabled: true,
+				// Don't set to true, it's easier to use the debugger option to disable caching
+				disableCaching: false,
+				paths: {
+					'Ext.jws': '../../res/js/jWebSocketSenchaPlugIn/'
+				}
+			});
 
-            Ext.Loader.setConfig({
-                enabled: true,
-                // Don't set to true, it's easier to use the debugger option to disable caching
-                disableCaching: false,
-                paths: {
-                    'Ext.jws': 'extjs/plugins/jws/'
-					// TODO: we need to use this one to avoid redundancy
-					// but this one screws up the demo, please check!
-                    // 'Ext.jws': '../../lib/ExtJS/jWebSocketSenchaPlugIn/'
-                }
-            });
+			Ext.require([
+				'Ext.jws.Client',
+				'Ext.jws.form.action.Submit',
+				'Ext.jws.data.Proxy'
+			]);
 
-            Ext.require([
-                'Ext.jws.Client',
-                'Ext.jws.form.action.Submit',
-                'Ext.jws.data.Proxy'
-            ]);
+			jws.ExtJSDemo = {
+				//"org.jwebsocket"
+				NS_EXTJS_DEMO: jws.NS_BASE + '.plugins.sencha',
+				// Type of tokens
+				LISTENER_OPEN: 'OnOpen',
+				LISTENER_CLOSE: 'OnClose',
+				LISTENER_LOGON: 'OnLogon',
+				LISTENER_WELCOME: 'OnWelcome',
+				TT_REGISTER: 'register',
+				TT_CREATE: 'create',
+				TT_READ: 'read',
+				TT_UPDATE: 'update',
+				TT_DESTROY: 'destroy',
+				TT_RESET: 'reset',
+				TT_NOTIFY_CREATE: 'notifyCreate',
+				TT_NOTIFY_UPDATE: 'notifyUpdate',
+				TT_NOTIFY_DESTROY: 'notifyDestroy',
+				TT_NOTIFY_RESET: 'notifyReset',
+				// Texts
+				TEXT_CONNECTED: "connected",
+				TEXT_AUTHENTICATED: "authenticated",
+				TEXT_DISCONNECTED: "disconnected",
+				TEXT_WEBSOCKET: "WebSocket: ",
+				TEXT_CLIENT_ID: "Client-ID: ",
+				// Styles
+				CLS_AUTH: "authenticated",
+				CLS_ONLINE: "online",
+				CLS_OFFLINE: "offline"
+			};
 
+			Ext.onReady(function () {
+				// DOM elements
+				var eDisconnectMessage = Ext.get("not_connected"),
+						eBtnDisconnect = Ext.get("disconnect_button"),
+						eBtnConnect = Ext.get("connect_button"),
+						eClient = document.getElementById("client_status"),
+						eClientId = document.getElementById("client_id"),
+						eWebSocketType = document.getElementById("websocket_type");
 
-            jws.ExtJSDemo = {
-                //"org.jwebsocket"
-                NS_EXTJS_DEMO: jws.NS_BASE + '.plugins.sencha',
-                // Type of tokens
-                TT_OPEN: 'open',
-                TT_CLOSE: 'close',
-                TT_LOGON: 'logon',
-                TT_REGISTER: 'register',
-                TT_WELCOME: 'welcome',
-                TT_CREATE: 'create',
-                TT_READ: 'read',
-                TT_UPDATE: 'update',
-                TT_DESTROY: 'destroy',
-                TT_RESET: 'reset',
-                TT_NOTIFY_CREATE: 'notifyCreate',
-                TT_NOTIFY_UPDATE: 'notifyUpdate',
-                TT_NOTIFY_DESTROY: 'notifyDestroy',
-                TT_NOTIFY_RESET: 'notifyReset',
-                // Texts
-                TEXT_CONNECTED: "connected",
-                TEXT_AUTHENTICATED: "authenticated",
-                TEXT_DISCONNECTED: "disconnected",
-                TEXT_WEBSOCKET: "WebSocket: ",
-                TEXT_CLIENT_ID: "Client-ID: ",
-                // Styles
-                CLS_AUTH: "authenticated",
-                CLS_ONLINE: "online",
-                CLS_OFFLINE: "offline"
-            };
-
-            Ext.onReady(function() {
-                // DOM elements
-                var eDisconnectMessage = Ext.get("not_connected"),
-                        eBtnDisconnect = Ext.get("disconnect_button"),
-                        eBtnConnect = Ext.get("connect_button"),
-                        eClient = document.getElementById("client_status");
-                eClientId = document.getElementById("client_id");
-                eWebSocketType = document.getElementById("websocket_type");
-
-                Ext.jwsClient.on(jws.ExtJSDemo.TT_OPEN, function() {
-                    // Registering to the Sencha demo to receive notifications 
-                    // from the server when other clients create, update or remove 
-                    // users from the server users list
-                    eClient.innerHTML = jws.ExtJSDemo.TEXT_CONNECTED;
-                    eClient.className = jws.ExtJSDemo.CLS_ONLINE;
-
-                    eBtnDisconnect.show();
-                    eBtnConnect.hide();
-                    eDisconnectMessage.hide();
-                });
+				Ext.jwsClient.on(jws.ExtJSDemo.LISTENER_OPEN, function () {
+					// Registering to the Sencha demo to receive notifications 
+					// from the server when other clients create, update or remove 
+					// users from the server users list
+					eClient.innerHTML = jws.ExtJSDemo.TEXT_CONNECTED;
+					eClient.className = jws.ExtJSDemo.CLS_ONLINE;
+					var lServerStatusCmp = Ext.getCmp("server_status");
+					lServerStatusCmp.setValue("Connected!");
+					lServerStatusCmp.getEl().removeCls('error');
+					
+					eBtnDisconnect.show();
+					eBtnConnect.hide();
+					eDisconnectMessage.hide();
+				});
 
 
-                Ext.jwsClient.on(jws.ExtJSDemo.TT_LOGON, function(aToken) {
-                    if (aToken.username) {
-                        eClient.innerHTML = aToken.username;
-                    }
-                    Ext.jwsClient.send(jws.ExtJSDemo.NS_EXTJS_DEMO, jws.ExtJSDemo.TT_REGISTER);
+				Ext.jwsClient.on(jws.ExtJSDemo.LISTENER_LOGON, function (aToken) {
+					if (aToken.username) {
+						eClient.innerHTML = aToken.username;
+					}
+					Ext.jwsClient.send(jws.ExtJSDemo.NS_EXTJS_DEMO, jws.ExtJSDemo.TT_REGISTER);
+					eClient.className = jws.ExtJSDemo.CLS_AUTH;
+					eBtnDisconnect.show();
+					eBtnConnect.hide();
+					eDisconnectMessage.hide();
+					initDemo();
+				});
 
-                    eClient.className = jws.ExtJSDemo.CLS_AUTH;
+				Ext.jwsClient.on(jws.ExtJSDemo.LISTENER_CLOSE, function () {
+					eBtnDisconnect.hide();
+					eBtnConnect.show();
+					eClient.innerHTML = jws.ExtJSDemo.TEXT_DISCONNECTED;
+					eClient.className = jws.ExtJSDemo.CLS_OFFLINE;
+				});
 
-                    eBtnDisconnect.show();
-                    eBtnConnect.hide();
-                    eDisconnectMessage.hide();
-                    initDemo();
-                });
+				eBtnDisconnect.hide();
+				eBtnConnect.on("click", function () {
+					Ext.jwsClient.open();
+				});
 
-                Ext.jwsClient.on(jws.ExtJSDemo.TT_CLOSE, function() {
-                    eBtnDisconnect.hide();
-                    eBtnConnect.show();
-                    eClient.innerHTML = jws.ExtJSDemo.TEXT_DISCONNECTED;
-                    eClient.className = jws.ExtJSDemo.CLS_OFFLINE;
+				eBtnDisconnect.on("click", function () {
+					Ext.jwsClient.close();
+					Ext.ComponentQuery.query('window vwork displayfield')[0].setValue('Fail');
+					Ext.ComponentQuery.query('window vwork displayfield')[0].setFieldStyle('color:red');
+				});
 
-
-
-                });
-
-                eBtnDisconnect.hide();
-                eBtnConnect.on("click", function() {
-
-                    Ext.jwsClient.open();
-
-
-
-                });
-
-                eBtnDisconnect.on("click", function() {
-
-                    Ext.jwsClient.close();
-                    Ext.ComponentQuery.query('window vwork displayfield')[0].setValue('Fail');
-                    Ext.ComponentQuery.query('window vwork displayfield')[0].setFieldStyle('color:red');
-
-                });
-
-                Ext.jwsClient.open();
-            });
-
-
-
-
-
-        </script>  
-
-
+				Ext.jwsClient.open();
+			});
+        </script>
     </head>
     <body>
         <div id="demo_box">
