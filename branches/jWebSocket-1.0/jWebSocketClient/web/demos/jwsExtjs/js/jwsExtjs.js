@@ -7,7 +7,7 @@ Ext.Loader.setConfig({
 	// Don't set to true, it's easier to use the debugger option to disable caching
 	disableCaching: false,
 	paths: {
-		'Ext.jws': '../../lib/ExtJS/jWebSocketSenchaPlugIn/'
+		'Ext.jws': '../../res/js/jWebSocketSenchaPlugIn/'
 	}
 });
 Ext.require([
@@ -38,11 +38,11 @@ Ext.define('User', {
 jws.ExtJSDemo = {
 	NS_EXTJS_DEMO: jws.NS_BASE + '.plugins.sencha',
 	// Type of tokens
-	TT_OPEN: 'open',
-	TT_CLOSE: 'close',
-	TT_LOGON: 'logon',
+	LISTENER_OPEN: 'OnOpen',
+	LISTENER_CLOSE: 'OnClose',
+	LISTENER_LOGON: 'OnLogon',
+	LISTENER_WELCOME: 'OnWelcome',
 	TT_REGISTER: 'register',
-	TT_WELCOME: 'welcome',
 	TT_CREATE: 'create',
 	TT_READ: 'read',
 	TT_UPDATE: 'update',
@@ -63,7 +63,7 @@ jws.ExtJSDemo = {
 	CLS_ONLINE: "online",
 	CLS_OFFLINE: "offline"
 };
-Ext.onReady(function() {
+Ext.onReady(function () {
 	// DOM elements
 	var eDisconnectMessage = Ext.get("not_connected"),
 			eBtnDisconnect = Ext.get("disconnect_button"),
@@ -72,7 +72,7 @@ Ext.onReady(function() {
 	eClientId = document.getElementById("client_id");
 	eWebSocketType = document.getElementById("websocket_type");
 
-	Ext.jwsClient.on(jws.ExtJSDemo.TT_OPEN, function() {
+	Ext.jwsClient.on(jws.ExtJSDemo.LISTENER_OPEN, function () {
 		// Registering to the Sencha demo to receive notifications 
 		// from the server when other clients create, update or remove 
 		// users from the server users list
@@ -84,29 +84,28 @@ Ext.onReady(function() {
 		eDisconnectMessage.hide();
 	});
 
-	Ext.jwsClient.on(jws.ExtJSDemo.TT_WELCOME, function(aToken) {
+	Ext.jwsClient.on(jws.ExtJSDemo.LISTENER_WELCOME, function (aToken) {
 		if (aToken.username !== "anonymous") {
-			Ext.jwsClient.fireEvent(jws.ExtJSDemo.TT_LOGON, aToken, Ext.jwsClient);
+			Ext.jwsClient.fireEvent(jws.ExtJSDemo.LISTENER_LOGON, aToken, Ext.jwsClient);
 		} else {
 			Ext.jwsClient.getConnection().systemLogon(jws.DEMO_ROOT_LOGINNAME, jws.DEMO_ROOT_PASSWORD);
 		}
 	});
 
-	Ext.jwsClient.on(jws.ExtJSDemo.TT_LOGON, function(aToken) {
+	Ext.jwsClient.on(jws.ExtJSDemo.LISTENER_LOGON, function (aToken) {
 		if (aToken.username) {
 			eClient.innerHTML = aToken.username;
 		}
 		Ext.jwsClient.send(jws.ExtJSDemo.NS_EXTJS_DEMO, jws.ExtJSDemo.TT_REGISTER);
 
 		eClient.className = jws.ExtJSDemo.CLS_AUTH;
-
 		eBtnDisconnect.show();
 		eBtnConnect.hide();
 		eDisconnectMessage.hide();
 		initDemo();
 	});
 
-	Ext.jwsClient.on(jws.ExtJSDemo.TT_CLOSE, function() {
+	Ext.jwsClient.on(jws.ExtJSDemo.LISTENER_CLOSE, function () {
 		eClient.innerHTML = jws.ExtJSDemo.TEXT_DISCONNECTED;
 		eClient.className = jws.ExtJSDemo.CLS_OFFLINE;
 		eDisconnectMessage.show();
@@ -118,16 +117,16 @@ Ext.onReady(function() {
 	});
 
 	eBtnDisconnect.hide();
-	eBtnConnect.on("click", function() {
+	eBtnConnect.on("click", function () {
 		Ext.jwsClient.open();
 	});
 
-	eBtnDisconnect.on("click", function() {
+	eBtnDisconnect.on("click", function () {
 		Ext.jwsClient.getConnection().systemLogoff({
-			OnSuccess: function(aToken) {
+			OnSuccess: function (aToken) {
 				Ext.jwsClient.close();
 			},
-			OnFailure: function() {
+			OnFailure: function () {
 				Ext.jwsClient.close();
 			}
 		});
@@ -161,7 +160,7 @@ function initDemo() {
 		model: 'User',
 		proxy: lJWSProxy,
 		listeners: {
-			write: function(aStore, aOperation) {
+			write: function (aStore, aOperation) {
 				var lRecord = aOperation.getRecords()[0],
 						lName = Ext.String.capitalize(aOperation.action),
 						lText;
@@ -189,10 +188,10 @@ function initDemo() {
 
 	var lRowEditor = Ext.create('Ext.grid.plugin.RowEditing', {
 		listeners: {
-			edit: function(aEdit) {
-				if (aEdit.record.data) {
-					if (aEdit.record.data.email && aEdit.record.data.name) {
-						aEdit.store.save();
+			edit: function (aOperation, aContext) {
+				if (aContext.record.data) {
+					if (aContext.record.data.email && aContext.record.data.name) {
+						aContext.store.save();
 					}
 				}
 			}
@@ -202,7 +201,7 @@ function initDemo() {
 	// create Vtype for vtype:'num'
 	var lNumTest = /^[0-9]+$/;
 	Ext.apply(Ext.form.field.VTypes, {
-		num: function(aVal, aField) {
+		num: function (aVal, aField) {
 			return lNumTest.test(aVal);
 		},
 		// vtype Text property: The error text to display when the validation function returns false
@@ -212,8 +211,8 @@ function initDemo() {
 
 	//=====form============
 	var lFormPanel = Ext.create('Ext.form.Panel', {
-		frame: false,
 		jwsSubmit: true,
+		frame: false,
 		bodyPadding: 10,
 		id: 'formPanelCreate',
 		border: false,
@@ -256,10 +255,8 @@ function initDemo() {
 				text: 'Add User',
 				id: 'submit_button',
 				width: 120,
-				handler: function() {
-
+				handler: function () {
 					var lForm = this.up('form').getForm();
-
 					var lAction = null;
 					if (lForm.findField('id').getValue() !== "") {
 						lAction = {
@@ -275,17 +272,16 @@ function initDemo() {
 							tokentype: jws.ExtJSDemo.TT_CREATE
 						};
 					}
-					lAction.failure = function(aForm, aAction) {
+					lAction.failure = function (aForm, aAction) {
 						if (aAction === 'undefined') {
 							var message = "Please you have errors in the form";
 							log(-1, message);
 						} else {
 							log(-1, aAction.response.message);
-
 						}
 					};
 
-					lAction.success = function(aForm, aAction) {
+					lAction.success = function (aForm, aAction) {
 						Ext.getCmp('submit_button').setText('Add User');
 						aForm.reset();
 						log(aAction.response.code, aAction.response.message);
@@ -303,7 +299,7 @@ function initDemo() {
 				xtype: 'button',
 				text: 'Reset',
 				width: 120,
-				handler: function() {
+				handler: function () {
 					var lForm = this.up('form').getForm();
 					Ext.getCmp('submit_button').setText('Add User');
 					lForm.reset();
@@ -362,7 +358,7 @@ function initDemo() {
 				}
 			}],
 		listeners: {
-			select: function(aView, aRecord) {
+			select: function (aView, aRecord) {
 				lGridPanel.mLastSelected = aRecord.index;
 				var lForm = lFormPanel.getForm(),
 						lAction = {
@@ -396,9 +392,9 @@ function initDemo() {
 				items: [{
 						text: 'Add',
 						iconCls: 'icon-add',
-						handler: function(aAction) {
+						handler: function (aAction) {
 							var lPhantoms = lStore.getNewRecords();
-							Ext.Array.each(lPhantoms, function(el) {
+							Ext.Array.each(lPhantoms, function (el) {
 								lStore.remove(el);
 							});
 
@@ -411,8 +407,7 @@ function initDemo() {
 						text: 'Delete',
 						iconCls: 'icon-delete',
 						disabled: true,
-						handler: function() {
-
+						handler: function () {
 							var lSelection = lGridPanel.getView().getSelectionModel().getSelection()[0];
 							if (lSelection) {
 								var lId = lSelection.data.id;
@@ -427,7 +422,7 @@ function initDemo() {
 						text: 'Reset to default',
 						iconCls: 'icon-reset',
 						disabled: false,
-						handler: function() {
+						handler: function () {
 							Ext.jwsClient.send(jws.ExtJSDemo.NS_EXTJS_DEMO, jws.ExtJSDemo.TT_RESET);
 							var lSelection = lGridPanel.getView().getSelectionModel().getSelection()[0];
 							if (lSelection) {
@@ -445,12 +440,14 @@ function initDemo() {
 			emptyMsg: "No rows to display"
 		})
 	});
-	lGridPanel.getSelectionModel().on('selectionchange', function(aSelModel, aSelections) {
+	lGridPanel.getSelectionModel().on('selectionchange', function (aSelModel, aSelections) {
 		lGridPanel.down('#delete').setDisabled(aSelections.length === 0);
 	});
-	lGridPanel.getView().on('beforeitemkeydown', function(aView, aRecord, aItem, aIdx, aEvent) {
-		if (aEvent.keyCode === 13)
+	lGridPanel.getView().on('beforeitemkeydown', function (aView, aRecord, aItem, aIdx, aEvent) {
+		debugger;
+		if (aEvent.keyCode === 13) {
 			lFormPanel.loadRecord(aRecord);
+		}
 
 	});
 	function log(aType, aMsg) {
@@ -521,7 +518,7 @@ function initDemo() {
 	}).show();
 
 	Ext.jwsClient.addPlugIn({
-		processToken: function(aToken) {
+		processToken: function (aToken) {
 			if (aToken.ns === jws.ExtJSDemo.NS_EXTJS_DEMO) {
 				if (aToken.type === jws.ExtJSDemo.TT_NOTIFY_CREATE ||
 						aToken.type === jws.ExtJSDemo.TT_NOTIFY_UPDATE ||
@@ -531,7 +528,7 @@ function initDemo() {
 					var lOptions = {};
 					if (aToken.type === jws.ExtJSDemo.TT_NOTIFY_UPDATE) {
 						lOptions = {
-							callback: function() {
+							callback: function () {
 								lGridPanel.getSelectionModel().select(lGridPanel.mLastSelected);
 							}
 						}

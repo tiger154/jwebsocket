@@ -2,6 +2,14 @@
 	width: 718px;
 }
 
+#server_status .x-form-display-field{
+	color: green;
+}
+
+#server_status.error .x-form-display-field{
+	color: red;
+}
+
 #demo_box_description{
 	font-family: Verdana;
 	font-size: 11px;
