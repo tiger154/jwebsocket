@@ -42,7 +42,7 @@ import org.jwebsocket.util.ReflectionUtils;
  *
  * @author Rolando Santamaria Maso
  */
-public class ActionPlugIn extends TokenPlugIn {
+public abstract class ActionPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logger.getLogger(ActionPlugIn.class);
 
@@ -264,7 +264,18 @@ public class ActionPlugIn extends TokenPlugIn {
 	 * @return
 	 */
 	protected boolean routeToServices(WebSocketConnector aConnector, Token aToken) {
-		return false;
+		try {
+			boolean lServiceWasInvoked = doServicesInvokation(getServices(), aConnector, aToken);
+
+			return lServiceWasInvoked;
+		} catch (Exception lEx) {
+			Token lResponse = createResponse(aToken);
+			lResponse.setCode(-1);
+			lResponse.setString("msg", lEx.getLocalizedMessage());
+			sendToken(aConnector, lResponse);
+
+			return true;
+		}
 	}
 
 	/**
