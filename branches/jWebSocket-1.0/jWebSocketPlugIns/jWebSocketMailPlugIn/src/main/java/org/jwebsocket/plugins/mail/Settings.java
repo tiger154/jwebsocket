@@ -41,6 +41,15 @@ public class Settings {
 	private String mPop3Password = null;
 	private String mMailRoot = null;
 	private String mRarPath = null;
+	private boolean mSSL = false;
+
+	public boolean isSSL() {
+		return mSSL;
+	}
+
+	public void setSSL(boolean aSSL) {
+		this.mSSL = aSSL;
+	}
 
 	/**
 	 * @return the smtpHost

@@ -35,6 +35,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
@@ -571,10 +572,11 @@ public class MailPlugInService {
 
 			lEmail.setHostName(mSettings.getSmtpHost());
 			lEmail.setSmtpPort(mSettings.getSmtpPort());
+			lEmail.setSSL(mSettings.isSSL());
 			if (mSettings.getSmtpAuth()) {
-				lEmail.setAuthentication(
-						mSettings.getSmtpUser(),
-						mSettings.getSmtpPassword());
+				lEmail.setAuthenticator(new DefaultAuthenticator(
+						mSettings.getSmtpUser(), 
+						mSettings.getSmtpPassword()));
 			}
 			if (mSettings.getSmtpPop3Before()) {
 				lEmail.setPopBeforeSmtp(
