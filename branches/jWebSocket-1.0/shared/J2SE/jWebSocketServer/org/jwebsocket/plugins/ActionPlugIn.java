@@ -30,9 +30,11 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.plugins.annotations.AllowMethodInvokation;
 import org.jwebsocket.plugins.annotations.AnnotationManager;
+import org.jwebsocket.plugins.annotations.Inject;
 import org.jwebsocket.plugins.annotations.Param;
 import org.jwebsocket.plugins.annotations.Params;
 import org.jwebsocket.plugins.annotations.ServiceActionMapping;
+import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.MapAppender;
@@ -243,6 +245,20 @@ public abstract class ActionPlugIn extends TokenPlugIn {
 								lInvokationParams.add(getParam(aToken, lParamAnnotation.id()));
 							} else {
 								lInvokationParams.add(aToken.getObject(lParamAnnotation.id()));
+							}
+						}
+
+						// injecting required parameter value
+						Inject lInjectAnnotation = (Inject) lMethodParam.getAnnotation(Inject.class);
+						if (null != lInjectAnnotation) {
+							if (lMethodParam.getType().equals(WebSocketConnector.class)) {
+								lInvokationParams.add(aConnector);
+							} else if (lMethodParam.getType().equals(ActionPlugIn.class)) {
+								lInvokationParams.add(this);
+							} else if (lMethodParam.getType().equals(TokenServer.class)) {
+								lInvokationParams.add(this.getServer());
+							} else {
+								lInvokationParams.add(JWebSocketBeanFactory.getInstance(getNamespace()).getBean(lMethodParam.getType()));
 							}
 						}
 					}
