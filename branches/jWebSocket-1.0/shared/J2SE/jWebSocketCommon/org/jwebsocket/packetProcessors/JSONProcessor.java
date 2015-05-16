@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -214,14 +215,14 @@ public class JSONProcessor {
 	 * @return
 	 */
 	public static String escapeForJSON(String aValue) {
-		aValue = aValue
-				.replace("\\", "\\\\")
-				.replace("\"", "\\\"")
-				.replace("\n", "\\n")
-				.replace("\t", "\\t")
-				.replace("\r", "\\r")
-				.replace("\b", "\\b")
-				.replace("\f", "\\f");
+		aValue = StringUtils.replace(aValue, "\\", "\\\\");
+		aValue = StringUtils.replace(aValue, "\"", "\\\"");
+		aValue = StringUtils.replace(aValue, "\n", "\\n");
+		aValue = StringUtils.replace(aValue, "\t", "\\t");
+		aValue = StringUtils.replace(aValue, "\r", "\\r");
+		aValue = StringUtils.replace(aValue, "\b", "\\b");
+		aValue = StringUtils.replace(aValue, "\f", "\\f");
+		
 		return aValue;
 	}
 
