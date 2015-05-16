@@ -732,6 +732,8 @@ jws.tests.ItemStorageEE = {
 	},
 	
 	testGetCollectionLogs: function( aCollectionName, aOffset, aLength, aExpectedCode, aExpectedSize) {
+		return; // disabled by default 
+		
 		var lSpec = "getLogs (admin, " + aCollectionName + ", " + aOffset 
 		+ ", " + aLength + ", " + aExpectedCode + ", " + aExpectedSize + ")";
 		
@@ -763,6 +765,8 @@ jws.tests.ItemStorageEE = {
 	},
 	
 	testGetItemLogs: function( aCollectionName, aItemPK, aOffset, aLength, aExpectedCode, aExpectedSize) {
+		return; // disabled by default 
+		
 		var lSpec = "getLogs (admin, " + aCollectionName + ":" + aItemPK+ ", " + aOffset 
 		+ ", " + aLength + ", " + aExpectedCode + ", " + aExpectedSize + ")";
 		
